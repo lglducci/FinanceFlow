@@ -1,5 +1,8 @@
 import './globals.css';
 import { getThemeByEmpresa } from '@/lib/theme';
+ 
+import { THEME } from '@/lib/theme'
+
 
 export default async function RootLayout({ children }) {
 
@@ -25,3 +28,4 @@ export default async function RootLayout({ children }) {
     </html>
   );
 }
+
