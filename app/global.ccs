@@ -1,0 +1,24 @@
+:root {
+  --cor-primaria: #0057FF;
+  --cor-primaria-light: #197AFF;
+  --cor-bg: #ffffff;
+  --cor-card: #f5f7fa;
+  --cor-texto: #111111;
+  --cor-subtexto: #333333;
+}
+
+body {
+  background: var(--cor-bg);
+  color: var(--cor-texto);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Tailwind base + utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Classe aplicada quando a empresa usa tema customizado */
+[data-theme] {
+  transition: all 0.25s ease-in-out;
+}
