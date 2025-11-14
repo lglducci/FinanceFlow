@@ -2,36 +2,31 @@
 
 import { useState } from "react";
 
-export default function LoginPage() {
+export default function Page() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  const fazerLogin = async (e) => {
+  async function fazerLogin(e) {
     e.preventDefault();
 
-    try {
-      const response = await fetch(
-        "https://webhook.lglducci.com.br/webhook/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password: senha }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data?.id_empresa) {
-        localStorage.setItem("empresa", JSON.stringify(data));
-        window.location.href = "/Dashboard";
-      } else {
-        alert("E-mail ou senha incorretos.");
+    const response = await fetch(
+      "https://webhook.lglducci.com.br/webhook/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: senha }),
       }
-    } catch (error) {
-      alert("Erro ao conectar ao servidor.");
-      console.error(error);
+    );
+
+    const data = await response.json();
+
+    if (data?.id_empresa) {
+      localStorage.setItem("empresa", JSON.stringify(data));
+      window.location.href = "/Dashboard";
+    } else {
+      alert("E-mail ou senha incorretos.");
     }
-  };
+  }
 
   return (
     <div
