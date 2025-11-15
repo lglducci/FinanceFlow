@@ -16,7 +16,7 @@ export default function Sidebar({ page, setPage }) {
   }
 
   return (
- <aside className="w-64 bg-[#1f5f8b] shadow-lg flex flex-col">
+ <aside className="w-64 bg-[#3862b7] shadow-lg flex flex-col">
   <div className="px-6 py-4 border-b border-blue-800/40">
     <h2 className="text-xl font-bold text-white">Finance-Flow</h2>
     <p className="text-xs text-blue-100">Painel pessoal</p>
@@ -29,7 +29,7 @@ export default function Sidebar({ page, setPage }) {
         onClick={() => setPage(item.id)}
         className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${
           page === item.id
-            ? "bg-white text-[#1f5f8b]"
+            ? "bg-white text-[#3862b7]"
             : "text-white/80 hover:bg-[#245f90]"
         }`}
       >
