@@ -4,7 +4,9 @@ const items = [
   { id: "transactions", label: "Lançamentos" },
   { id: "categories", label: "Categorias" },
   { id: "reports", label: "Relatórios" },
-  { id: "settings", label: "Configurações" },
+  { id: "settings", label: "Configurações" }, 
+  { id: "settings", label: "teste" },t
+  { id: "settings", label: "teste2" },
 ];
 
 export default function Sidebar({ page, setPage }) {
