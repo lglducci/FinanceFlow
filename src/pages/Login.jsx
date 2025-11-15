@@ -19,8 +19,8 @@ export default function Login({ onLogin }) {
   }
 
   return (
-   <div className="min-h-screen flex items-center justify-center bg-[#3862b7] px-4">
-  <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8">
+   <div className="min-h-screen flex items-center justify-center bg-[#3862b7] px-4"> 
+  <div className="w-full max-w-sm bg-[#a9bde5] rounded-2xl shadow-xl p-8">
     <h1 className="text-2xl font-bold text-center mb-2 text-gray-900">
       Finance-Flow
     </h1>
@@ -33,7 +33,7 @@ export default function Login({ onLogin }) {
         <label className="text-sm font-semibold">E-mail</label>
         <input
           type="email"
-          className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#a9bde5]
+          className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]
             focus:outline-none focus:ring-2 focus:ring-primary"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
