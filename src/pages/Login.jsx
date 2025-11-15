@@ -20,7 +20,7 @@ export default function Login({ onLogin }) {
 
   return (
    <div className="min-h-screen flex items-center justify-center bg-[#3862b7] px-4"> 
-  <div className="w-full max-w-sm bg-[#a9bde5] rounded-2xl shadow-xl p-8">
+  <div className="w-full max-w-sm bg-[#85B9EA] rounded-2xl shadow-xl p-8">
     <h1 className="text-2xl font-bold text-center mb-2 text-gray-900">
       Finance-Flow
     </h1>
