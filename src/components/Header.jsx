@@ -1,6 +1,6 @@
  export default function Header() {
   return (
-    <header className="h-16 border-b flex items-center justify-between px-6 bg-[#2e2ed2]">
+    <header className="h-16 border-b flex items-center justify-between px-6 bg-[#14409a]">
       <div>
         <h1 className="text-lg font-semibold text-white">Finance-Flow</h1>
         <p className="text-xs text-gray-200">
