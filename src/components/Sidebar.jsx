@@ -13,7 +13,8 @@ export default function Sidebar({ page, setPage }) {
   }
 
   return (
-    <aside className="w-64 bg-white shadow-lg flex flex-col">
+   
+    <aside className="w-64 bg-[#1f5f8b] shadow-lg flex flex-col">
       <div className="px-6 py-4 border-b">
         <h2 className="text-xl font-bold">Finance-Flow</h2>
         <p className="text-xs text-gray-500">Painel pessoal</p>
