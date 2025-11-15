@@ -5,7 +5,7 @@ const items = [
   { id: "categories", label: "Categorias" },
   { id: "reports", label: "Relatórios" },
   { id: "settings", label: "Configurações" }, 
-  { id: "settings", label: "teste" },t
+  { id: "settings", label: "teste" }, 
   { id: "settings", label: "teste2" },
 ];
 
