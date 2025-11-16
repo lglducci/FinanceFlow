@@ -8,17 +8,21 @@ export default function Sidebar() {
     window.location.reload();
   }
 
+
  
  const items = [
   { id: "dashboard",      label: "Visão geral" },
   { id: "transactions",   label: "Lançamentos" },
   { id: "cards",          label: "Cartões" },
-  { id: "saldos",         label: "Saldos" },
+  { id: "saldos", label: "Saldos por Conta" },
   { id: "consultacartao", label: "Transações cartão" },
   { id: "reports",        label: "Relatórios" },
   { id: "settings",       label: "Configurações" },
+  { id: "cartao-transacoes", label: "Transações Cartão" },
 ];
 
+ 
+ 
   
 
   return (
