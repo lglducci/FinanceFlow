@@ -1,4 +1,4 @@
- import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Login from "./pages/Login";
@@ -10,13 +10,18 @@ import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NovoPagarReceber from "./pages/NovoPagarReceber";
-import ContasPagar from "./pages/ContasPagar";
-import ContasReceber from "./pages/ContasReceber";
+
+// ❌ REMOVE ISSO – NÃO EXISTE
+// import ContasPagar from "./pages/ContasPagar";
+// import ContasReceber from "./pages/ContasReceber";
+
+// ✅ IMPORTA AS PÁGINAS QUE EXISTEM
+import SaldosPorConta from "./pages/SaldosPorConta";
+import ConsultaTransacaoCartao from "./pages/ConsultaTransacaoCartao";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
 
-  // Se não estiver logado → mostra Login
   if (!token) {
     return <Login onLogin={() => window.location.reload()} />;
   }
@@ -34,17 +39,20 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/transactions" element={<Lancamentos />} />
               <Route path="/new-transaction" element={<NovoLancamento />} />
+
               <Route path="/categories" element={<Categories />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/settings" element={<Settings />} />
 
-              <Route path="/payables" element={<ContasPagar />} />
-              <Route path="/receivables" element={<ContasReceber />} />
+              {/* ALTERADO */}
+              <Route path="/saldos" element={<SaldosPorConta />} />
+              <Route path="/cartao-transacoes" element={<ConsultaTransacaoCartao />} />
 
               <Route
                 path="/new-payable"
                 element={<NovoPagarReceber tipoInicial="pagar" />}
               />
+
               <Route
                 path="/new-receivable"
                 element={<NovoPagarReceber tipoInicial="receber" />}
@@ -56,3 +64,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+ 
