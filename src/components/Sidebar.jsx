@@ -9,14 +9,14 @@ export default function Sidebar() {
   }
 
  
-const items = [
-  { id: "/dashboard",      label: "Visão geral" },
-  { id: "/transactions",   label: "Lançamentos" },
-  { id: "/cards",          label: "Cartões" },
-  { id: "/payables",       label: "Contas a pagar" },
-  { id: "/receivables",    label: "Contas a receber" },
-  { id: "/reports",        label: "Relatórios" },
-  { id: "/settings",       label: "Configurações" },
+ const items = [
+  { id: "dashboard",      label: "Visão geral" },
+  { id: "transactions",   label: "Lançamentos" },
+  { id: "cards",          label: "Cartões" },
+  { id: "saldos",         label: "Saldos" },
+  { id: "consultacartao", label: "Transações cartão" },
+  { id: "reports",        label: "Relatórios" },
+  { id: "settings",       label: "Configurações" },
 ];
 
   
