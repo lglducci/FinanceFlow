@@ -1,35 +1,40 @@
- import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+ import { useState } from "react";
 import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
+import Login from "./pages/Login";
+
+// Páginas
 import Dashboard from "./pages/Dashboard";
 import Lancamentos from "./pages/Lancamentos";
-import NovoLancamento from "./pages/NovoLancamento";
-import Categorias from "./pages/Categorias";
-import Relatorios from "./pages/Relatorios";
-import Configuracoes from "./pages/Configuracoes";
+import Categories from "./pages/Categories";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 
 export default function App() {
+  const [page, setPage] = useState("dashboard");
   const token = localStorage.getItem("ff_token");
 
-  if (!token) return <Login onLogin={() => window.location.reload()} />;
+  if (!token) {
+    return <Login onLogin={() => window.location.reload()} />;
+  }
 
   return (
-    <BrowserRouter>
-      <div className="flex">
-        <Sidebar />
+    <div className="min-h-screen flex bg-bgSoft">
+      <Sidebar page={page} setPage={setPage} />
 
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/lancamentos" element={<Lancamentos />} />
-            <Route path="/novo-lancamento" element={<NovoLancamento />} />
-            <Route path="/categorias" element={<Categorias />} />
-            <Route path="/relatorios" element={<Relatorios />} />
-            <Route path="/configuracoes" element={<Configuracoes />} />
-          </Routes>
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="p-6">
+          {page === "dashboard" && <Dashboard />}
+          {page === "transactions" && <Lancamentos setPage={setPage} />}
+          {page === "categories" && <Categories />}
+          {page === "reports" && <Reports />}
+          {page === "settings" && <Settings />}
+          {page === "new-transaction" && (
+            <div>Em breve: tela de novo lançamento</div>
+          )}
         </main>
       </div>
-    </BrowserRouter>
+    </div>
   );
 }
