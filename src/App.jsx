@@ -1,18 +1,35 @@
-import { useEffect, useState } from "react";
-import Login from "./pages/Login.jsx";
-import Layout from "./components/Layout.jsx";
+ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./pages/Dashboard";
+import Lancamentos from "./pages/Lancamentos";
+import NovoLancamento from "./pages/NovoLancamento";
+import Categorias from "./pages/Categorias";
+import Relatorios from "./pages/Relatorios";
+import Configuracoes from "./pages/Configuracoes";
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const token = localStorage.getItem("ff_token");
 
-  useEffect(() => {
-    const token = localStorage.getItem("ff_token");
-    if (token) setLoggedIn(true);
-  }, []);
+  if (!token) return <Login onLogin={() => window.location.reload()} />;
 
-  if (!loggedIn) {
-    return <Login onLogin={() => setLoggedIn(true)} />;
-  }
+  return (
+    <BrowserRouter>
+      <div className="flex">
+        <Sidebar />
 
-  return <Layout />;
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/lancamentos" element={<Lancamentos />} />
+            <Route path="/novo-lancamento" element={<NovoLancamento />} />
+            <Route path="/categorias" element={<Categorias />} />
+            <Route path="/relatorios" element={<Relatorios />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
+  );
 }
