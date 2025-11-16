@@ -8,15 +8,18 @@ export default function Sidebar() {
     window.location.reload();
   }
 
-  const items = [
-    { id: "/dashboard", label: "Visão geral" },
-    { id: "/transactions", label: "Lançamentos" },
-    { id: "/cards", label: "Cartões" },
-    { id: "/payables", label: "Contas a pagar" },
-    { id: "/receivables", label: "Contas a receber" },
-    { id: "/reports", label: "Relatórios" },
-    { id: "/settings", label: "Configurações" }
-  ];
+ 
+const items = [
+  { id: "/dashboard",      label: "Visão geral" },
+  { id: "/transactions",   label: "Lançamentos" },
+  { id: "/cards",          label: "Cartões" },
+  { id: "/payables",       label: "Contas a pagar" },
+  { id: "/receivables",    label: "Contas a receber" },
+  { id: "/reports",        label: "Relatórios" },
+  { id: "/settings",       label: "Configurações" },
+];
+
+  
 
   return (
     <aside className="w-64 bg-[#3862b7] shadow-lg flex flex-col">
