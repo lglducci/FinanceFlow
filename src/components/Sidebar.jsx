@@ -8,14 +8,27 @@ export default function Sidebar() {
     window.location.reload();
   }
 
-  const items = [
-    { id: "/dashboard", label: "Visão geral" },
-    { id: "/lancamentos", label: "Lançamentos" },
-    { id: "/categorias", label: "Categorias" },
-    { id: "/relatorios", label: "Relatórios" },
-    { id: "/configuracoes", label: "Configurações" },
-  ];
+  
 
+const items = [
+  { id: "/dashboard",      label: "Visão geral" },
+  { id: "/transactions",   label: "Lançamentos" },
+  { id: "/cards",          label: "Cartões" },
+  { id: "/payables",       label: "Contas a pagar" },
+  { id: "/receivables",    label: "Contas a receber" },
+  { id: "/reports",        label: "Relatórios" },
+  { id: "/settings",       label: "Configurações" },
+];
+
+
+
+
+
+
+
+
+
+ 
   return (
     <aside className="w-64 bg-[#3862b7] shadow-lg flex flex-col">
       <div className="px-6 py-4 border-b border-blue-800/40">
