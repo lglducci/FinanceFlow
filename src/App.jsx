@@ -2,6 +2,7 @@
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Login from "./pages/Login";
+import NovoPagarReceber from "./pages/NovoPagarReceber";
 
 // Páginas
 import Dashboard from "./pages/Dashboard";
@@ -34,6 +35,21 @@ export default function App() {
           {page === "categories" && <Categories />}
           {page === "reports" && <Reports />}
           {page === "settings" && <Settings />}
+
+  
+         
+           {page === "payables" && <ContasPagar setPage={setPage} />}
+           {page === "receivables" && <ContasReceber setPage={setPage} />}
+         
+           {page === "new-payable" && (
+             <NovoPagarReceber setPage={setPage} tipoInicial="pagar" />
+           )}
+         
+           {page === "new-receivable" && (
+             <NovoPagarReceber setPage={setPage} tipoInicial="receber" />
+           )}
+
+         
         </main>
       </div>
     </div>
