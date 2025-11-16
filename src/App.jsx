@@ -1,32 +1,17 @@
- import { useNavigate } from "react-router-dom";
-
-export default function Sidebar() {
-  const navigate = useNavigate();
-
+ export default function Sidebar({ page, setPage }) {
   function logout() {
     localStorage.removeItem("ff_token");
     window.location.reload();
   }
 
   const items = [
-    { id: "/dashboard",      label: "Visão geral" },
-
-    // MOVIMENTOS
-    { id: "/transactions",   label: "Lançamentos" },
-    { id: "/saldos",         label: "Saldos por conta" },
-    { id: "/cards-trans",    label: "Transações cartão" },
-
-    // CADASTROS
-    { id: "/cards",          label: "Cartões" },
-    { id: "/accounts",       label: "Contas financeiras" },
-    { id: "/categories",     label: "Categorias" },
-
-    // OUTROS
-    { id: "/payables",       label: "Contas a pagar" },
-    { id: "/receivables",    label: "Contas a receber" },
-
-    { id: "/reports",        label: "Relatórios" },
-    { id: "/settings",       label: "Configurações" },
+    { id: "dashboard",    label: "Visão geral" },
+    { id: "transactions", label: "Lançamentos" },
+    { id: "cards",        label: "Cartões" },
+    { id: "payables",     label: "Contas a pagar" },
+    { id: "receivables",  label: "Contas a receber" },
+    { id: "reports",      label: "Relatórios" },
+    { id: "settings",     label: "Configurações" },
   ];
 
   return (
@@ -40,8 +25,12 @@ export default function Sidebar() {
         {items.map((item) => (
           <button
             key={item.id}
-            onClick={() => navigate(item.id)}
-            className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:bg-[#245f90]"
+            onClick={() => setPage(item.id)}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${
+              page === item.id
+                ? "bg-white text-[#3862b7]"
+                : "text-white/80 hover:bg-[#245f90]"
+            }`}
           >
             {item.label}
           </button>
