@@ -1,50 +1,58 @@
- export default function Sidebar({ page, setPage }) {
-  function logout() {
-    localStorage.removeItem("ff_token");
-    window.location.reload();
+ import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import Header from "./components/Header";
+import Login from "./pages/Login";
+
+import Dashboard from "./pages/Dashboard";
+import Lancamentos from "./pages/Lancamentos";
+import NovoLancamento from "./pages/NovoLancamento";
+import Categories from "./pages/Categories";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
+import NovoPagarReceber from "./pages/NovoPagarReceber";
+import ContasPagar from "./pages/ContasPagar";
+import ContasReceber from "./pages/ContasReceber";
+
+export default function App() {
+  const token = localStorage.getItem("ff_token");
+
+  // Se não estiver logado → mostra Login
+  if (!token) {
+    return <Login onLogin={() => window.location.reload()} />;
   }
 
-  const items = [
-    { id: "dashboard",    label: "Visão geral" },
-    { id: "transactions", label: "Lançamentos" },
-    { id: "cards",        label: "Cartões" },
-    { id: "payables",     label: "Contas a pagar" },
-    { id: "receivables",  label: "Contas a receber" },
-    { id: "reports",      label: "Relatórios" },
-    { id: "settings",     label: "Configurações" },
-  ];
-
   return (
-    <aside className="w-64 bg-[#3862b7] shadow-lg flex flex-col">
-      <div className="px-6 py-4 border-b border-blue-800/40">
-        <h2 className="text-xl font-bold text-white">Finance-Flow</h2>
-        <p className="text-xs text-blue-100">Painel pessoal</p>
-      </div>
+    <BrowserRouter>
+      <div className="min-h-screen flex bg-bgSoft">
+        <Sidebar />
 
-      <nav className="flex-1 px-2 py-4 space-y-1">
-        {items.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setPage(item.id)}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium ${
-              page === item.id
-                ? "bg-white text-[#3862b7]"
-                : "text-white/80 hover:bg-[#245f90]"
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
-      </nav>
+        <div className="flex-1 flex flex-col">
+          <Header />
 
-      <div className="px-4 py-3 border-t border-blue-800/40">
-        <button
-          onClick={logout}
-          className="w-full text-left text-sm text-red-200 hover:text-red-300"
-        >
-          Sair
-        </button>
+          <main className="p-6">
+            <Routes>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/transactions" element={<Lancamentos />} />
+              <Route path="/new-transaction" element={<NovoLancamento />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/settings" element={<Settings />} />
+
+              <Route path="/payables" element={<ContasPagar />} />
+              <Route path="/receivables" element={<ContasReceber />} />
+
+              <Route
+                path="/new-payable"
+                element={<NovoPagarReceber tipoInicial="pagar" />}
+              />
+              <Route
+                path="/new-receivable"
+                element={<NovoPagarReceber tipoInicial="receber" />}
+              />
+            </Routes>
+          </main>
+        </div>
       </div>
-    </aside>
+    </BrowserRouter>
   );
 }
