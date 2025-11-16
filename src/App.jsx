@@ -1,57 +1,61 @@
- import { useState } from "react";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
-import Login from "./pages/Login";
-import NovoPagarReceber from "./pages/NovoPagarReceber";
+ import { useNavigate } from "react-router-dom";
 
-// Páginas
-import Dashboard from "./pages/Dashboard";
-import Lancamentos from "./pages/Lancamentos";
-import NovoLancamento from "./pages/NovoLancamento";
-import Categories from "./pages/Categories";
-import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
+export default function Sidebar() {
+  const navigate = useNavigate();
 
-export default function App() {
-  const [page, setPage] = useState("dashboard");
-  const token = localStorage.getItem("ff_token");
-
-  if (!token) {
-    return <Login onLogin={() => window.location.reload()} />;
+  function logout() {
+    localStorage.removeItem("ff_token");
+    window.location.reload();
   }
 
+  const items = [
+    { id: "/dashboard",      label: "Visão geral" },
+
+    // MOVIMENTOS
+    { id: "/transactions",   label: "Lançamentos" },
+    { id: "/saldos",         label: "Saldos por conta" },
+    { id: "/cards-trans",    label: "Transações cartão" },
+
+    // CADASTROS
+    { id: "/cards",          label: "Cartões" },
+    { id: "/accounts",       label: "Contas financeiras" },
+    { id: "/categories",     label: "Categorias" },
+
+    // OUTROS
+    { id: "/payables",       label: "Contas a pagar" },
+    { id: "/receivables",    label: "Contas a receber" },
+
+    { id: "/reports",        label: "Relatórios" },
+    { id: "/settings",       label: "Configurações" },
+  ];
+
   return (
-    <div className="min-h-screen flex bg-bgSoft">
-      <Sidebar page={page} setPage={setPage} />
-
-      <div className="flex-1 flex flex-col">
-        <Header />
-        <main className="p-6">
-          {page === "dashboard" && <Dashboard />}
-          {page === "transactions" && <Lancamentos setPage={setPage} />}
-          {page === "new-transaction" && (
-            <NovoLancamento setPage={setPage} />
-          )}
-          {page === "categories" && <Categories />}
-          {page === "reports" && <Reports />}
-          {page === "settings" && <Settings />}
-
-  
-         
-           {page === "payables" && <ContasPagar setPage={setPage} />}
-           {page === "receivables" && <ContasReceber setPage={setPage} />}
-         
-           {page === "new-payable" && (
-             <NovoPagarReceber setPage={setPage} tipoInicial="pagar" />
-           )}
-         
-           {page === "new-receivable" && (
-             <NovoPagarReceber setPage={setPage} tipoInicial="receber" />
-           )}
-
-         
-        </main>
+    <aside className="w-64 bg-[#3862b7] shadow-lg flex flex-col">
+      <div className="px-6 py-4 border-b border-blue-800/40">
+        <h2 className="text-xl font-bold text-white">Finance-Flow</h2>
+        <p className="text-xs text-blue-100">Painel pessoal</p>
       </div>
-    </div>
+
+      <nav className="flex-1 px-2 py-4 space-y-1">
+        {items.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => navigate(item.id)}
+            className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:bg-[#245f90]"
+          >
+            {item.label}
+          </button>
+        ))}
+      </nav>
+
+      <div className="px-4 py-3 border-t border-blue-800/40">
+        <button
+          onClick={logout}
+          className="w-full text-left text-sm text-red-200 hover:text-red-300"
+        >
+          Sair
+        </button>
+      </div>
+    </aside>
   );
 }
