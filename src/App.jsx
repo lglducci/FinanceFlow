@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 // Páginas
 import Dashboard from "./pages/Dashboard";
 import Lancamentos from "./pages/Lancamentos";
+import NovoLancamento from "./pages/NovoLancamento";
 import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
@@ -27,12 +28,12 @@ export default function App() {
         <main className="p-6">
           {page === "dashboard" && <Dashboard />}
           {page === "transactions" && <Lancamentos setPage={setPage} />}
+          {page === "new-transaction" && (
+            <NovoLancamento setPage={setPage} />
+          )}
           {page === "categories" && <Categories />}
           {page === "reports" && <Reports />}
           {page === "settings" && <Settings />}
-          {page === "new-transaction" && (
-            <div>Em breve: tela de novo lançamento</div>
-          )}
         </main>
       </div>
     </div>
