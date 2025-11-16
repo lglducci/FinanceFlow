@@ -1,6 +1,6 @@
-import { useState } from "react";
+ import { useState } from "react";
 
-export default function Lancamentos() {
+export default function Lancamentos({ setPage }) {
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [carregando, setCarregando] = useState(false);
@@ -54,17 +54,16 @@ export default function Lancamentos() {
     setCarregando(false);
   }
 
-  function novoLancamento() {
-    window.location.href = "/novo-lancamento";
+  function abrirNovoLancamento() {
+    setPage("new-transaction");
   }
 
   return (
-    <div className="p-6">
+    <div>
       <h2 className="text-2xl font-bold mb-4">Lançamentos</h2>
 
       {/* FILTROS */}
       <div className="bg-white p-4 rounded-xl shadow flex items-end gap-4 mb-6">
-
         <div>
           <label className="text-sm font-semibold">Data início</label>
           <input
@@ -93,7 +92,7 @@ export default function Lancamentos() {
         </button>
 
         <button
-          onClick={novoLancamento}
+          onClick={abrirNovoLancamento}
           className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold"
         >
           Novo lançamento
