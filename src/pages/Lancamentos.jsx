@@ -1,4 +1,6 @@
  import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+const navigate = useNavigate();
 
 export default function Lancamentos({ setPage }) {
   const [dataIni, setDataIni] = useState("");
@@ -44,11 +46,11 @@ export default function Lancamentos({ setPage }) {
   setCarregando(false);
 }
 
-  
-
   function abrirNovoLancamento() {
-    setPage("new-transaction");
-  }
+  navigate("/new-transaction");
+}
+
+  
 
   return (
     <div>
