@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const URL_NOVO_LANC = "https://webhook.lglducci.com.br/webhook/novolancamento";
 const URL_CONTAS = "https://webhook.lglducci.com.br/webhook/listacontas";
-const URL_CATEGORIAS =
-  "https://webhook.lglducci.com.br/webhook/listacategorias";
+const URL_CATEGORIAS = "https://webhook.lglducci.com.br/webhook/listacategorias";
 
 export default function NovoLancamento() {
   const navigate = useNavigate();
@@ -21,46 +20,45 @@ export default function NovoLancamento() {
 
   const [contas, setContas] = useState([]);
   const [categorias, setCategorias] = useState([]);
-  const [carregandoCombos, setCarregandoCombos] = useState(false);
 
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+
   const [erroLoad, setErroLoad] = useState("");
 
- 
-useEffect(() => {
-  async function carregarContasECategorias() {
-    try {
-      const [respContas, respCats] = await Promise.all([
-        fetch("https://webhook.lglducci.com.br/webhook/listacontas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
-        }),
-        fetch("https://webhook.lglducci.com.br/webhook/listacategorias", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
-        }),
-      ]);
+  // 🔥 CARREGAR CONTAS E CATEGORIAS
+  useEffect(() => {
+    async function load() {
+      try {
+        const [r1, r2] = await Promise.all([
+          fetch(URL_CONTAS, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_empresa }),
+          }),
+          fetch(URL_CATEGORIAS, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_empresa }),
+          }),
+        ]);
 
-      const contas = await respContas.json();
-      const categorias = await respCats.json();
+        const contasData = await r1.json();
+        const categoriasData = await r2.json();
 
-      setListaContas(contas);
-      setListaCategorias(categorias);
-      setErro("");
-    } catch (e) {
-      setErro("Erro ao carregar contas/categorias.");
+        setContas(contasData);
+        setCategorias(categoriasData);
+      } catch (e) {
+        console.error(e);
+        setErroLoad("Erro ao carregar contas/categorias.");
+      }
     }
-  }
 
-  carregarContasECategorias();
-}, [id_empresa]);
+    load();
+  }, [id_empresa]);
 
-
-  // ---------- SALVAR ----------
+  // 🔥 SALVAR LANÇAMENTO
   async function handleSalvar(e) {
     e.preventDefault();
     setErro("");
@@ -81,14 +79,13 @@ useEffect(() => {
     try {
       const payload = {
         id_empresa,
-        empresa_id: id_empresa,
         tipo,
         valor: Number(String(valor).replace(",", ".")),
         descricao,
         data_movimento: data,
         conta_id: Number(contaId),
         categoria_id: Number(categoriaId),
-        origem: origem || "web",
+        origem,
       };
 
       const resp = await fetch(URL_NOVO_LANC, {
@@ -100,62 +97,41 @@ useEffect(() => {
       const dados = await resp.json();
       const lanc = Array.isArray(dados) ? dados[0] : dados;
 
-      if (!lanc || !lanc.id) {
+      if (!lanc?.id) {
         setErro("Não foi possível confirmar o lançamento.");
       } else {
-        setSucesso(
-          `Lançamento #${lanc.id} salvo com sucesso (${lanc.tipo} - R$ ${lanc.valor}).`
-        );
-        // opcional: volta para lista
-        // navigate("/transactions");
+        setSucesso(`Lançamento #${lanc.id} salvo com sucesso!`);
       }
     } catch (err) {
       console.error(err);
       setErro("Erro ao salvar lançamento.");
-    } finally {
-      setSalvando(false);
     }
-  }
 
-  function voltar() {
-    navigate("/transactions");
+    setSalvando(false);
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Novo lançamento</h2>
-
-        <button
-          onClick={voltar}
-          className="px-4 py-2 rounded-lg border text-sm font-semibold"
-        >
+        <button onClick={() => navigate("/transactions")} className="px-4 py-2 rounded-lg border text-sm font-semibold">
           Voltar
         </button>
       </div>
 
       <div className="bg-white rounded-xl shadow p-6 max-w-xl">
         <form onSubmit={handleSalvar} className="space-y-4">
+
           {/* Tipo */}
           <div>
             <label className="text-sm font-semibold block mb-1">Tipo</label>
             <div className="flex gap-4">
               <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  value="entrada"
-                  checked={tipo === "entrada"}
-                  onChange={() => setTipo("entrada")}
-                />
+                <input type="radio" value="entrada" checked={tipo === "entrada"} onChange={() => setTipo("entrada")} />
                 Receita (entrada)
               </label>
               <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  value="saida"
-                  checked={tipo === "saida"}
-                  onChange={() => setTipo("saida")}
-                />
+                <input type="radio" value="saida" checked={tipo === "saida"} onChange={() => setTipo("saida")} />
                 Despesa (saída)
               </label>
             </div>
@@ -166,21 +142,20 @@ useEffect(() => {
             <label className="text-sm font-semibold block">Descrição</label>
             <input
               type="text"
-              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              placeholder="Ex.: 100 reais no posto do carlin"
             />
           </div>
 
-          {/* Valor / Data */}
+          {/* Valor/Data */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-semibold block">Valor (R$)</label>
               <input
                 type="number"
                 step="0.01"
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
                 value={valor}
                 onChange={(e) => setValor(e.target.value)}
               />
@@ -190,7 +165,7 @@ useEffect(() => {
               <label className="text-sm font-semibold block">Data</label>
               <input
                 type="date"
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
                 value={data}
                 onChange={(e) => setData(e.target.value)}
               />
@@ -237,35 +212,18 @@ useEffect(() => {
             <label className="text-sm font-semibold block">Origem</label>
             <input
               type="text"
-              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
               value={origem}
               onChange={(e) => setOrigem(e.target.value)}
+              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
             />
           </div>
 
-          {erroLoad && (
-            <div className="text-red-600 text-sm text-center">{erroLoad}</div>
-          )}
-          {erro && (
-            <div className="text-red-600 text-sm text-center">{erro}</div>
-          )}
-          {sucesso && (
-            <div className="text-green-600 text-sm text-center">{sucesso}</div>
-          )}
+          {erroLoad && <div className="text-red-600 text-sm">{erroLoad}</div>}
+          {erro && <div className="text-red-600 text-sm">{erro}</div>}
+          {sucesso && <div className="text-green-600 text-sm">{sucesso}</div>}
 
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={voltar}
-              className="px-4 py-2 rounded-lg border text-sm font-semibold"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={salvando || carregandoCombos}
-              className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primaryDark disabled:opacity-60"
-            >
+          <div className="flex justify-end gap-3">
+            <button type="submit" disabled={salvando} className="px-4 py-2 rounded-lg bg-primary text-white">
               {salvando ? "Salvando..." : "Salvar lançamento"}
             </button>
           </div>
