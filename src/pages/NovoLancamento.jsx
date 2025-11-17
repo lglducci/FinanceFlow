@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
   
 export default function NovoLancamento() {
   const navigate = useNavigate();
-
+   
   const id_empresa = Number(localStorage.getItem("id_empresa") || 1);
 
   const [tipo, setTipo] = useState("saida");
