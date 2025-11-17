@@ -27,32 +27,32 @@ export default function NovoLancamento() {
 
   const [erroLoad, setErroLoad] = useState("");
 
- useEffect(() => {
+  useEffect(() => {
   async function carregarContasECategorias() {
     try {
       const [respContas, respCats] = await Promise.all([
-        fetch("https://webhook.lglducci.com.br/webhook/listacontas", {
+        fetch(URL_CONTAS, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
         }),
-        fetch("https://webhook.lglducci.com.br/webhook/listacategorias", {
+        fetch(URL_CATEGORIAS, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
         }),
       ]);
 
-      const contasJson = await respContas.json();
-      const categoriasJson = await respCats.json();
+      const contasData = await respContas.json();
+      const categoriasData = await respCats.json();
 
-      // CORRETO AGORA
-      setContas(contasJson);
-      setCategorias(categoriasJson);
+      // CORREÇÃO AQUI
+      setContas(contasData);
+      setCategorias(categoriasData);
 
-      setErroLoad("");
+      setErro("");
     } catch (e) {
-      setErroLoad("Erro ao carregar contas/categorias.");
+      setErro("Erro ao carregar contas/categorias.");
     }
   }
 
