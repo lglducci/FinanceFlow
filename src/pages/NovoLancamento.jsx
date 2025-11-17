@@ -27,36 +27,38 @@ export default function NovoLancamento() {
 
   const [erroLoad, setErroLoad] = useState("");
 
-  // 🔥 CARREGAR CONTAS E CATEGORIAS
-  useEffect(() => {
-    async function load() {
-      try {
-        const [r1, r2] = await Promise.all([
-          fetch(URL_CONTAS, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id_empresa }),
-          }),
-          fetch(URL_CATEGORIAS, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id_empresa }),
-          }),
-        ]);
+ useEffect(() => {
+  async function carregarContasECategorias() {
+    try {
+      const [respContas, respCats] = await Promise.all([
+        fetch("https://webhook.lglducci.com.br/webhook/listacontas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
+        }),
+        fetch("https://webhook.lglducci.com.br/webhook/listacategorias", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
+        }),
+      ]);
 
-        const contasData = await r1.json();
-        const categoriasData = await r2.json();
+      const contasJson = await respContas.json();
+      const categoriasJson = await respCats.json();
 
-        setContas(contasData);
-        setCategorias(categoriasData);
-      } catch (e) {
-        console.error(e);
-        setErroLoad("Erro ao carregar contas/categorias.");
-      }
+      // CORRETO AGORA
+      setContas(contasJson);
+      setCategorias(categoriasJson);
+
+      setErroLoad("");
+    } catch (e) {
+      setErroLoad("Erro ao carregar contas/categorias.");
     }
+  }
 
-    load();
-  }, [id_empresa]);
+  carregarContasECategorias();
+}, [id_empresa]);
+
 
   // 🔥 SALVAR LANÇAMENTO
   async function handleSalvar(e) {
