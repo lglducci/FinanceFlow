@@ -10,6 +10,7 @@ import Categories from "./pages/Categories";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NovoPagarReceber from "./pages/NovoPagarReceber";
+import Cartoes from "./pages/Cartoes";
 
 // ❌ REMOVE ISSO – NÃO EXISTE
 // import ContasPagar from "./pages/ContasPagar";
@@ -52,12 +53,21 @@ export default function App() {
                 path="/new-payable"
                 element={<NovoPagarReceber tipoInicial="pagar" />}
               />
-
+             
               <Route
                 path="/new-receivable"
                 element={<NovoPagarReceber tipoInicial="receber" />}
               />
+
+                 <Route path="/cards" element={<Cartoes />} />
+              
             </Routes>
+
+              
+
+
+
+            
           </main>
         </div>
       </div>
