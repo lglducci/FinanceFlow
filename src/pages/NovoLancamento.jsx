@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const URL_NOVO_LANC = "https://webhook.lglducci.com.br/webhook/novolancamento";
 const URL_CONTAS = "https://webhook.lglducci.com.br/webhook/listacontas";
 const URL_CATEGORIAS = "https://webhook.lglducci.com.br/webhook/listacategorias";
-
+ 
 export default function NovoLancamento() {
   const navigate = useNavigate();
 
