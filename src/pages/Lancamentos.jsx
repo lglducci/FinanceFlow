@@ -9,50 +9,42 @@ export default function Lancamentos({ setPage }) {
   const id_empresa = localStorage.getItem("id_empresa") || 1;
 
   async function pesquisar() {
-    if (!dataIni || !dataFim) {
-      alert("Informe data inicial e final.");
-      return;
-    }
-
-    setCarregando(true);
-
-    try {
-      const resp = await fetch(
-        "https://webhook.lglducci.com.br/webhook/listalancamentos",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id_empresa,
-            data_ini: dataIni,
-            data_fim: dataFim,
-          }),
-        }
-      );
-
-      const dados = await resp.json();
-
-      const tratados = dados.map((l) => ({
-        id: l.id,
-        descricao: l.descricao,
-        tipo: l.tipo === "entrada" ? "Entrada" : "Saída",
-        categoria_id: l.categoria_id,
-        valor: Number(l.valor).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        data: new Date(l.data_movimento).toLocaleDateString("pt-BR"),
-        origem: l.origem || "-",
-      }));
-
-      setLista(tratados);
-    } catch (e) {
-      console.error(e);
-      alert("Erro ao consultar lançamentos.");
-    }
-
-    setCarregando(false);
+  if (!dataIni || !dataFim) {
+    alert("Informe data inicial e final.");
+    return;
   }
+
+  setCarregando(true);
+
+  try {
+    const url = `https://webhook.lglducci.com.br/webhook/listalancamentos?id_empresa=${id_empresa}&data_ini=${dataIni}&data_fim=${dataFim}`;
+
+    const resp = await fetch(url); // GET simples
+    const dados = await resp.json();
+
+    const tratados = dados.map((l) => ({
+      id: l.id,
+      descricao: l.descricao,
+      tipo: l.tipo === "entrada" ? "Entrada" : "Saída",
+      categoria_id: l.categoria_id,
+      valor: Number(l.valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }),
+      data: new Date(l.data_movimento).toLocaleDateString("pt-BR"),
+      origem: l.origem || "-",
+    }));
+
+    setLista(tratados);
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao consultar lançamentos.");
+  }
+
+  setCarregando(false);
+}
+
+  
 
   function abrirNovoLancamento() {
     setPage("new-transaction");
