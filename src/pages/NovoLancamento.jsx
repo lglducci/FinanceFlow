@@ -1,26 +1,69 @@
-import { useState } from "react";
+ import { useState, useEffect } from "react";
 
 export default function NovoLancamento({ setPage }) {
   const id_empresa = Number(localStorage.getItem("id_empresa") || 1);
 
-  const [tipo, setTipo] = useState("saida"); // "entrada" ou "saida"
+  const [tipo, setTipo] = useState("saida");
   const [descricao, setDescricao] = useState("");
   const [valor, setValor] = useState("");
-  const [data, setData] = useState(new Date().toISOString().slice(0, 10)); // yyyy-mm-dd
+  const [data, setData] = useState(new Date().toISOString().slice(0, 10));
+
+  const [contas, setContas] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+
   const [contaId, setContaId] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
+
   const [origem, setOrigem] = useState("web");
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
 
+  // ================================
+  // 🔥 CARREGA CONTAS E CATEGORIAS
+  // ================================
+  useEffect(() => {
+    async function load() {
+      try {
+        const r1 = await fetch(
+          "https://webhook.lglducci.com.br/webhook/listacontas",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_empresa }),
+          }
+        );
+        const contasLista = await r1.json();
+        setContas(contasLista);
+
+        const r2 = await fetch(
+          "https://webhook.lglducci.com.br/webhook/listacategorias",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_empresa }),
+          }
+        );
+        const catLista = await r2.json();
+        setCategorias(catLista);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    load();
+  }, []);
+
+  // =========================================
+  // 🔥 SALVAR LANÇAMENTO
+  // =========================================
   async function handleSalvar(e) {
     e.preventDefault();
     setErro("");
     setSucesso("");
 
-    if (!descricao || !valor || !data) {
-      setErro("Preencha descrição, valor e data.");
+    if (!descricao || !valor || !data || !contaId || !categoriaId) {
+      setErro("Preencha todos os campos obrigatórios.");
       return;
     }
 
@@ -28,16 +71,15 @@ export default function NovoLancamento({ setPage }) {
 
     try {
       const payload = {
-        // mando os dois nomes pra não ter erro de compatibilidade
         id_empresa,
         empresa_id: id_empresa,
-        tipo, // "entrada" ou "saida"
+        tipo,
         valor: Number(String(valor).replace(",", ".")),
         descricao,
-        data_movimento: data, // backend pode ajustar pra date
-        conta_id: contaId || null,
-        categoria_id: categoriaId || null,
-        origem: origem || "web",
+        data_movimento: data,
+        conta_id: Number(contaId),
+        categoria_id: Number(categoriaId),
+        origem,
       };
 
       const resp = await fetch(
@@ -50,16 +92,12 @@ export default function NovoLancamento({ setPage }) {
       );
 
       const dados = await resp.json();
-
-      // Esperando algo tipo: [ { id, empresa_id, conta_id, ... } ]
       const lanc = Array.isArray(dados) ? dados[0] : dados;
 
       if (!lanc || !lanc.id) {
-        setErro("Não foi possível confirmar o lançamento.");
+        setErro("Erro ao salvar lançamento.");
       } else {
-        setSucesso(
-          `Lançamento #${lanc.id} salvo com sucesso (${lanc.tipo} - R$ ${lanc.valor}).`
-        );
+        setSucesso(`Lançamento #${lanc.id} salvo com sucesso!`);
       }
     } catch (err) {
       console.error(err);
@@ -73,6 +111,9 @@ export default function NovoLancamento({ setPage }) {
     setPage("transactions");
   }
 
+  // ================================
+  // RENDER
+  // ================================
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -118,23 +159,22 @@ export default function NovoLancamento({ setPage }) {
             <label className="text-sm font-semibold block">Descrição</label>
             <input
               type="text"
-              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              placeholder="Ex.: 100 reais no posto do carlin"
             />
           </div>
 
-          {/* Valor e Data */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Valor + Data */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-semibold block">Valor (R$)</label>
               <input
                 type="number"
                 step="0.01"
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
                 value={valor}
                 onChange={(e) => setValor(e.target.value)}
+                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
               />
             </div>
 
@@ -142,60 +182,53 @@ export default function NovoLancamento({ setPage }) {
               <label className="text-sm font-semibold block">Data</label>
               <input
                 type="date"
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
                 value={data}
                 onChange={(e) => setData(e.target.value)}
+                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
               />
             </div>
           </div>
 
-          {/* Conta e Categoria (ID por enquanto) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-semibold block">Conta (ID)</label>
-              <input
-                type="number"
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
-                value={contaId}
-                onChange={(e) => setContaId(e.target.value)}
-                placeholder="Ex.: 1"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm font-semibold block">
-                Categoria (ID)
-              </label>
-              <input
-                type="number"
-                className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
-                value={categoriaId}
-                onChange={(e) => setCategoriaId(e.target.value)}
-                placeholder="Ex.: 27"
-              />
-            </div>
-          </div>
-
-          {/* Origem */}
+          {/* Conta */}
           <div>
-            <label className="text-sm font-semibold block">Origem</label>
-            <input
-              type="text"
-              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff] focus:outline-none focus:ring-2 focus:ring-primary"
-              value={origem}
-              onChange={(e) => setOrigem(e.target.value)}
-              placeholder='Ex.: "web", "zap"'
-            />
+            <label className="text-sm font-semibold block">Conta</label>
+            <select
+              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
+              value={contaId}
+              onChange={(e) => setContaId(e.target.value)}
+            >
+              <option value="">Selecione...</option>
+              {contas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nome} ({c.tipo})
+                </option>
+              ))}
+            </select>
           </div>
 
-          {erro && (
-            <div className="text-red-600 text-sm text-center">{erro}</div>
-          )}
-          {sucesso && (
-            <div className="text-green-600 text-sm text-center">{sucesso}</div>
-          )}
+          {/* Categoria */}
+          <div>
+            <label className="text-sm font-semibold block">Categoria</label>
+            <select
+              className="w-full mt-1 px-3 py-2 rounded-lg border bg-[#f0f6ff]"
+              value={categoriaId}
+              onChange={(e) => setCategoriaId(e.target.value)}
+            >
+              <option value="">Selecione...</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.nome} ({cat.tipo})
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          {/* Erros / Sucesso */}
+          {erro && <div className="text-red-600 text-sm">{erro}</div>}
+          {sucesso && <div className="text-green-600 text-sm">{sucesso}</div>}
+
+          {/* Botões */}
+          <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={voltar}
@@ -206,7 +239,7 @@ export default function NovoLancamento({ setPage }) {
             <button
               type="submit"
               disabled={salvando}
-              className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primaryDark disabled:opacity-60"
+              className="px-4 py-2 rounded-lg bg-primary text-white text-sm"
             >
               {salvando ? "Salvando..." : "Salvar lançamento"}
             </button>
