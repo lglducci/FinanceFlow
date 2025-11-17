@@ -28,8 +28,7 @@ export default function NovoLancamento() {
   const [sucesso, setSucesso] = useState("");
   const [erroLoad, setErroLoad] = useState("");
 
- const id_empresa = Number(localStorage.getItem("id_empresa") || 1);
-
+ 
 useEffect(() => {
   async function carregarContasECategorias() {
     try {
