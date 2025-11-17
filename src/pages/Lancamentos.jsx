@@ -17,8 +17,8 @@ export default function Lancamentos({ setPage }) {
   setCarregando(true);
 
   try {
-    const url = `https://webhook.lglducci.com.br/webhook/listalancamentos?id_empresa=${id_empresa}&data_ini=${dataIni}&data_fim=${dataFim}`;
-
+    const url = `https://n8n.lglducci.com.br/webhook-test/listalancamentos?id_empresa=${id_empresa}&data_ini=${dataIni}&data_fim=${dataFim}`;
+  
     const resp = await fetch(url); // GET simples
     const dados = await resp.json();
 
