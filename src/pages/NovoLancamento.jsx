@@ -28,34 +28,38 @@ export default function NovoLancamento() {
   const [sucesso, setSucesso] = useState("");
   const [erroLoad, setErroLoad] = useState("");
 
-  // ---------- CARREGA CONTAS E CATEGORIAS AO ABRIR ----------
-  useEffect(() => {
-    async function carregarCombos() {
-      try {
-        setCarregandoCombos(true);
-        setErroLoad("");
+ const id_empresa = Number(localStorage.getItem("id_empresa") || 1);
 
-        // GET simples – você testou no navegador e funciona
-        const [rContas, rCats] = await Promise.all([
-          fetch(URL_CONTAS),
-          fetch(URL_CATEGORIAS),
-        ]);
+useEffect(() => {
+  async function carregarContasECategorias() {
+    try {
+      const [respContas, respCats] = await Promise.all([
+        fetch("https://webhook.lglducci.com.br/webhook/listacontas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
+        }),
+        fetch("https://webhook.lglducci.com.br/webhook/listacategorias", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_empresa, empresa_id: id_empresa }),
+        }),
+      ]);
 
-        const jsContas = await rContas.json();
-        const jsCats = await rCats.json();
+      const contas = await respContas.json();
+      const categorias = await respCats.json();
 
-        setContas(Array.isArray(jsContas) ? jsContas : []);
-        setCategorias(Array.isArray(jsCats) ? jsCats : []);
-      } catch (e) {
-        console.error(e);
-        setErroLoad("Erro ao carregar contas/categorias.");
-      } finally {
-        setCarregandoCombos(false);
-      }
+      setListaContas(contas);
+      setListaCategorias(categorias);
+      setErro("");
+    } catch (e) {
+      setErro("Erro ao carregar contas/categorias.");
     }
+  }
 
-    carregarCombos();
-  }, []);
+  carregarContasECategorias();
+}, [id_empresa]);
+
 
   // ---------- SALVAR ----------
   async function handleSalvar(e) {
