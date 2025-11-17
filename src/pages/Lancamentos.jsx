@@ -1,6 +1,6 @@
- 
+ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const navigate = useNavigate();
+ 
 
 export default function Lancamentos({ setPage }) {
   const [dataIni, setDataIni] = useState("");
@@ -9,7 +9,8 @@ export default function Lancamentos({ setPage }) {
   const [lista, setLista] = useState([]);
 
   const id_empresa = localStorage.getItem("id_empresa") || 1;
-
+  const navigate = useNavigate();
+ 
   async function pesquisar() {
   if (!dataIni || !dataFim) {
     alert("Informe data inicial e final.");
