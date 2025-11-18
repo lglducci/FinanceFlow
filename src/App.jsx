@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Login from "./pages/Login";
@@ -11,6 +11,9 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import NovoPagarReceber from "./pages/NovoPagarReceber";
 import Cartoes from "./pages/Cartoes";
+import NovaConta from "./pages/NovaConta";
+import EditarConta from "./pages/EditarConta";
+
 
 // ❌ REMOVE ISSO – NÃO EXISTE
 // import ContasPagar from "./pages/ContasPagar";
@@ -48,7 +51,8 @@ export default function App() {
               {/* ALTERADO */}
               <Route path="/saldos" element={<SaldosPorConta />} />
               <Route path="/cartao-transacoes" element={<ConsultaTransacaoCartao />} />
-
+               <Route path="/nova-conta" element={<NovaConta />} />
+              <Route path="/editar-conta" element={<EditarConta />} />
               <Route
                 path="/new-payable"
                 element={<NovoPagarReceber tipoInicial="pagar" />}
