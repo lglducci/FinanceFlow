@@ -140,11 +140,19 @@ export default function SaldosPorConta() {
           <div key={idx} className="border border-blue-300 bg-white rounded-lg p-4 shadow-md shadow-blue-100 hover:shadow-blue-200 transition-all">
 
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold text-blue-700">{c.conta_nome}</h3>
-
-              <button onClick={() => editarConta(c)} className="text-sm text-blue-600 hover:text-blue-800 underline">
-                Editar
+            <h3 className="text-lg font-semibold text-blue-700">{c.conta_nome}</h3>
+              <button
+                onClick={() =>
+                  navigate("/editar-conta", {
+                    state: { id: conta.id }
+                  })
+                }
+              >
+                Editar Conta
               </button>
+
+                          
+            
             </div>
 
             <p className="text-sm text-gray-600">Banco: {c.nro_banco ?? "-"}</p>

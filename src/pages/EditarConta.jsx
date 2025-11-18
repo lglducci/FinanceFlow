@@ -25,19 +25,24 @@ export default function EditarConta() {
 
   // 🔵 1) RETRIEVE — BUSCA NO BANCO
   useEffect(() => {
-    if (!state || !state.id) {
-      alert("Conta inválida.");
-      navigate("/saldos");
-      return;
-    }
+
+    const id = state.id || state.conta_id || state.id_conta;
+
+        if (!id) {
+          alert("ID inválido");
+          navigate("/saldos");
+          return;
+        }
+
 
     const buscar = async () => {
       try {
-        const url = `https://webhook.lglducci.com.br/webhook/retrievecontafinanceira?id=${state.id}&empresa_id=${localStorage.getItem(
-          "id_empresa"
-        )}`;
+        
+ 
+        const url = `https://webhook.lglducci.com.br/webhook/retrieveontafinanceira?id=${id}&empresa_id=${localStorage.getItem("id_empresa")}`;
 
-        const resp = await fetch(url, { method: "GET" });
+             const resp = await fetch(url, { method: "GET" });
+
 
         if (!resp.ok) {
           alert("Erro ao buscar dados.");
