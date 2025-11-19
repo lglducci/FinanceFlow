@@ -13,8 +13,10 @@ export default function SaldosPorConta() {
 
   const carregar = async () => {
     try {
-      const url = `https://webhook.lglducci.com.br/webhook/consultasaldo?inicio=${inicio}&fim=${fim}`;
-      const resp = await fetch(url, { method: "GET" });
+      
+     const url = buildWebhookUrl('consultasaldo', { inicio, fim });
+ 
+     const resp = await fetch(url, { method: "GET" });
 
       if (!resp.ok) {
         console.log("ERRO STATUS:", resp.status);
@@ -177,3 +179,4 @@ export default function SaldosPorConta() {
     </div>
   );
 }
+
