@@ -1,5 +1,6 @@
  import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { buildWebhookUrl } from '../config/globals';
 
 export default function SaldosPorConta() {
 
@@ -179,4 +180,5 @@ export default function SaldosPorConta() {
     </div>
   );
 }
+
 
