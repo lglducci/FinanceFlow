@@ -1,7 +1,7 @@
  import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals.js'; // ✅ Import correto no topo
-
+    
 export default function EditarConta() {
   const navigate = useNavigate();
   const { state } = useLocation(); // recebe id e empresa_id
@@ -206,3 +206,4 @@ export default function EditarConta() {
     </div>
   );
 }
+
