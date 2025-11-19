@@ -66,9 +66,20 @@ export default function SaldosPorConta() {
   };
 
   const editarConta = (conta) => {
-    navigate("/editar-conta", { state: conta });
+    navigate('/editar-conta', {
+  state: {
+    ...conta,
+    id: conta.id ?? conta.conta_id ?? conta.id_conta,
+  } );
   };
 
+ 
+ 
+
+
+
+
+ 
   const novaConta = () => {
     navigate("/nova-conta");
   };
@@ -151,3 +162,4 @@ export default function SaldosPorConta() {
     </div>
   );
 }
+
