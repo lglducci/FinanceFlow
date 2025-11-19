@@ -1,5 +1,6 @@
  import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { buildWebhookUrl } from '../config/globals.js'; // ✅ Import correto no topo
 
 export default function EditarConta() {
   const navigate = useNavigate();
@@ -25,29 +26,22 @@ export default function EditarConta() {
 
   // 🔵 1) RETRIEVE — BUSCA NO BANCO
   useEffect(() => {
-
     const id = state.id || state.conta_id || state.id_conta;
 
-        if (!id) {
-          alert("ID inválido");
-          navigate("/saldos");
-          return;
-        }
-
+    if (!id) {
+      alert("ID inválido");
+      navigate("/saldos");
+      return;
+    }
 
     const buscar = async () => {
       try {
-        
-            import { buildWebhookUrl } from '../config/globals';
-           
-           const url = buildWebhookUrl('retrieveontafinanceira', {
-             id,
-             empresa_id: localStorage.getItem('id_empresa'),
-           });
+        const url = buildWebhookUrl('retrieveontafinanceira', {
+          id,
+          empresa_id: localStorage.getItem('id_empresa'),
+        });
 
-       
-             const resp = await fetch(url, { method: "GET" });
-
+        const resp = await fetch(url, { method: "GET" });
 
         if (!resp.ok) {
           alert("Erro ao buscar dados.");
@@ -79,7 +73,7 @@ export default function EditarConta() {
     };
 
     buscar();
-  }, []);
+  }, [state, navigate]);
 
   // 🔵 Atualiza estado dos inputs
   const handleChange = (e) => {
@@ -96,20 +90,7 @@ export default function EditarConta() {
       setLoading(true);
 
       const payload = {
-        body: {
-          id: form.id,
-          empresa_id: form.empresa_id,
-          nome: form.nome,
-          banco: form.banco,
-          tipo: form.tipo,
-          saldo_inicial: form.saldo_inicial,
-          nro_banco: form.nro_banco,
-          agencia: form.agencia,
-          conta: form.conta,
-          conjunta: form.conjunta,
-          juridica: form.juridica,
-          padrao: form.padrao,
-        },
+        body: { ...form },
       };
 
       console.log("UPDATE ENVIADO:", payload);
@@ -148,7 +129,6 @@ export default function EditarConta() {
       <h2 className="text-2xl font-bold mb-6">Editar Conta</h2>
 
       <div className="flex flex-col gap-4">
-
         <input name="nome" placeholder="Nome da Conta"
           className="border p-2 rounded"
           value={form.nome}
@@ -222,9 +202,7 @@ export default function EditarConta() {
         >
           {loading ? "Salvando..." : "Salvar Alterações"}
         </button>
-
       </div>
     </div>
   );
 }
-
