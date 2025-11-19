@@ -38,9 +38,14 @@ export default function EditarConta() {
     const buscar = async () => {
       try {
         
- 
-        const url = `https://webhook.lglducci.com.br/webhook/retrieveontafinanceira?id=${id}&empresa_id=${localStorage.getItem("id_empresa")}`;
+            import { buildWebhookUrl } from '../config/globals';
+           
+           const url = buildWebhookUrl('retrieveontafinanceira', {
+             id,
+             empresa_id: localStorage.getItem('id_empresa'),
+           });
 
+       
              const resp = await fetch(url, { method: "GET" });
 
 
@@ -222,3 +227,4 @@ export default function EditarConta() {
     </div>
   );
 }
+
