@@ -13,7 +13,7 @@ import NovoPagarReceber from "./pages/NovoPagarReceber";
 import Cartoes from "./pages/Cartoes";
 import NovaConta from "./pages/NovaConta";
 import EditarConta from "./pages/EditarConta";
-
+import Visaogeral from './pages/Visaogeral';
 
 // ❌ REMOVE ISSO – NÃO EXISTE
 // import ContasPagar from "./pages/ContasPagar";
@@ -53,6 +53,7 @@ export default function App() {
               <Route path="/cartao-transacoes" element={<ConsultaTransacaoCartao />} />
                <Route path="/nova-conta" element={<NovaConta />} />
               <Route path="/editar-conta" element={<EditarConta />} />
+             <Route path="/" element={<Visaogeral />} />
               <Route
                 path="/new-payable"
                 element={<NovoPagarReceber tipoInicial="pagar" />}
