@@ -1,5 +1,7 @@
  import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { buildWebhookUrl } from './config/globals';
+
 
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
@@ -65,7 +67,15 @@ export default function Lancamentos() {
 
     setCarregando(true);
     try {
-      const url = `https://webhook.lglducci.com.br/webhook/listalancamentos?id_empresa=${id_empresa}&data_ini=${dataIni}&data_fim=${dataFim}`;
+   //   const url = `https://webhook.lglducci.com.br/webhook/listalancamentos?id_empresa=${id_empresa}&data_ini=${dataIni}&data_fim=${dataFim}`;
+
+     const url = buildWebhookUrl('listalancamentos', {
+       id_empresa: id_empresa,
+       data_ini: dataIni,
+       data_fim: dataFim
+     });
+
+     
       const resp = await fetch(url);
       const dados = await resp.json();
 
@@ -245,3 +255,4 @@ export default function Lancamentos() {
     </div>
   );
 }
+
