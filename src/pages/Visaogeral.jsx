@@ -11,6 +11,9 @@ export default function Visaogeral() {
   const [inicio, setInicio] = useState("");
   const [fim, setFim] = useState("");
 
+ const [totalGeral, setTotalGeral] = useState(0);
+
+
   const calcularDatas = (tipo) => {
     const hoje = new Date();
     let ini = new Date();
@@ -44,6 +47,17 @@ export default function Visaogeral() {
         banco,
         ...valores
       }));
+        // Depois de setar os dados recebidos
+            useEffect(() => {
+              if (dados.length > 0) {
+                const total = dados.reduce((acc, c) => {
+                  const saldo = Number(c.saldo_final || 0);
+                  return acc + saldo;
+                }, 0);
+                setTotalGeral(total);
+              }
+            }, [dados]);
+
 
       let totRec = 0, totDesp = 0;
       lista.forEach(l => { totRec += l.receita; totDesp += l.despesa; });
@@ -51,6 +65,17 @@ export default function Visaogeral() {
       setTotalReceita(totRec);
       setTotalDespesa(totDesp);
       setDados(lista);
+      // Depois de setar os dados recebidos
+            useEffect(() => {
+              if (dados.length > 0) {
+                const total = dados.reduce((acc, c) => {
+                  const saldo = Number(c.saldo_final || 0);
+                  return acc + saldo;
+                }, 0);
+                setTotalGeral(total);
+              }
+            }, [dados]);
+
     } catch (e) {
       console.log("Erro fetch:", e);
     }
