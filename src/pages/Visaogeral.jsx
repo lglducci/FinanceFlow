@@ -5,126 +5,100 @@ export default function Visaogeral() {
   const hoje = new Date().toISOString().split("T")[0];
 
   const [dados, setDados] = useState([]);
+  const [periodo, setPeriodo] = useState("mes");
   const [inicio, setInicio] = useState("");
   const [fim, setFim] = useState("");
-  const [periodo, setPeriodo] = useState("");
-  const [totalReceita, setTotalReceita] = useState(0);
-  const [totalDespesa, setTotalDespesa] = useState(0);
-  const [totalSaldo, setTotalSaldo] = useState(0);
+  const [totais, setTotais] = useState({ receita: 0, despesa: 0, saldo: 0 });
+
+  const calcularDatas = (tipo) => {
+    const d = new Date();
+    let ini = new Date();
+
+    if (tipo === "mes") ini = new Date(d.getFullYear(), d.getMonth(), 1);
+    else if (tipo === "15") ini.setDate(d.getDate() - 15);
+    else if (tipo === "semana") ini.setDate(d.getDate() - 7);
+    else if (tipo === "hoje") ini = d;
+    else ini.setDate(d.getDate() - 30); // padrão últimos 30 dias
+
+    setInicio(ini.toISOString().split("T")[0]);
+    setFim(hoje);
+    setPeriodo(tipo);
+  };
 
   const carregar = async () => {
     try {
-      // caso período vazio, pega últimos 30 dias
-      const ini = inicio || new Date(new Date().setDate(new Date().getDate() - 30))
-        .toISOString()
-        .split("T")[0];
-      const fimData = fim || hoje;
-
-      const url = buildWebhookUrl("consultasaldo", { inicio: ini, fim: fimData });
-
+      const url = buildWebhookUrl("consultasaldo", { inicio, fim });
       const resp = await fetch(url);
       if (!resp.ok) {
         console.error("Erro status:", resp.status);
         return;
       }
       const data = await resp.json();
-      setDados(data);
 
-      // soma totais
-      let receita = 0,
-        despesa = 0,
-        saldo = 0;
-      data.forEach((c) => {
-        receita += Number(c.entradas_periodo || 0);
-        despesa += Number(c.saídas_periodo || 0);
-        saldo += Number(c.saldo_final || 0);
+      // Cálculo do saldo final de cada conta
+      const calculado = data.map((c) => {
+        const receita = Number(c.entradas_periodo || 0);
+        const despesa = Number(c.saídas_periodo || 0);
+        const saldoInicial = Number(c.saldo_inicial || 0);
+        const saldoFinal = saldoInicial + receita - despesa;
+
+        return {
+          banco: c.conta_nome || "Sem Banco",
+          saldo_inicial: saldoInicial,
+          receita,
+          despesa,
+          saldo_final: saldoFinal,
+        };
       });
-      setTotalReceita(receita);
-      setTotalDespesa(despesa);
-      setTotalSaldo(saldo);
+
+      setDados(calculado);
+
+      // Total geral
+      const tot = calculado.reduce(
+        (acc, c) => ({
+          receita: acc.receita + c.receita,
+          despesa: acc.despesa + c.despesa,
+          saldo: acc.saldo + c.saldo_final,
+        }),
+        { receita: 0, despesa: 0, saldo: 0 }
+      );
+      setTotais(tot);
     } catch (e) {
       console.error("Erro fetch:", e);
     }
   };
 
   useEffect(() => {
-    setPeriodo("mes");
-    selecionarPeriodo("mes");
+    calcularDatas(periodo);
   }, []);
 
-  const selecionarPeriodo = (tipo) => {
-    setPeriodo(tipo);
-    const d = new Date();
-    let ini, fimData;
-
-    fimData = hoje;
-
-    if (tipo === "mes") {
-      ini = new Date(d.getFullYear(), d.getMonth(), 1);
-    } else if (tipo === "15") {
-      ini = new Date();
-      ini.setDate(d.getDate() - 15);
-    } else if (tipo === "semana") {
-      ini = new Date();
-      ini.setDate(d.getDate() - 7);
-    } else if (tipo === "hoje") {
-      ini = d;
-    } else {
-      ini = new Date(d.getFullYear(), d.getMonth(), 1);
-    }
-
-    setInicio(ini.toISOString().split("T")[0]);
-    setFim(fimData);
-
-    // carrega dados com novo período
-    setTimeout(() => carregar(), 50);
-  };
+  useEffect(() => {
+    if (inicio && fim) carregar();
+  }, [inicio, fim]);
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Visão Geral</h2>
+      <h2 className="text-2xl font-bold mb-4 text-blue-700">Visão Geral</h2>
 
       {/* FILTROS */}
-      <div className="bg-white p-4 rounded shadow mb-6 border border-blue-300 flex flex-col gap-4">
-        <div className="flex gap-6 items-center">
-          <span className="font-semibold text-gray-700">Período:</span>
-          <label>
-            <input
-              type="checkbox"
-              checked={periodo === "mes"}
-              onChange={() => selecionarPeriodo("mes")}
-              className="mr-1"
-            />
-            Mês
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={periodo === "15"}
-              onChange={() => selecionarPeriodo("15")}
-              className="mr-1"
-            />
-            Últimos 15 dias
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={periodo === "semana"}
-              onChange={() => selecionarPeriodo("semana")}
-              className="mr-1"
-            />
-            Semana
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={periodo === "hoje"}
-              onChange={() => selecionarPeriodo("hoje")}
-              className="mr-1"
-            />
-            Hoje
-          </label>
-        </div>
+      <div className="mb-4 flex gap-4 items-center">
+        {["mes", "15", "semana", "hoje"].map((p) => (
+          <button
+            key={p}
+            onClick={() => calcularDatas(p)}
+            className={`px-4 py-2 rounded font-semibold ${
+              periodo === p ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            {p === "mes"
+              ? "Mês"
+              : p === "15"
+              ? "Últimos 15 dias"
+              : p === "semana"
+              ? "Semana"
+              : "Hoje"}
+          </button>
+        ))}
       </div>
 
       {/* TABELA */}
@@ -132,47 +106,43 @@ export default function Visaogeral() {
         <thead>
           <tr className="bg-gray-200 font-bold">
             <th className="p-2 text-left border">Banco</th>
+            <th className="p-2 text-right border text-blue-700">Saldo Inicial</th>
             <th className="p-2 text-right border text-green-700">Receita</th>
             <th className="p-2 text-right border text-red-600">Despesa</th>
-            <th className="p-2 text-right border text-blue-700">Saldo</th>
+            <th className="p-2 text-right border text-blue-700">Saldo Final</th>
           </tr>
         </thead>
         <tbody>
           {dados.map((c, i) => (
             <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-100"}>
-              <td className="p-2">{c.conta_nome}</td>
+              <td className="p-2">{c.banco}</td>
+              <td className="p-2 text-right text-blue-700">
+                {c.saldo_inicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </td>
               <td className="p-2 text-right text-green-700">
-                {Number(c.entradas_periodo || 0).toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
+                {c.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </td>
               <td className="p-2 text-right text-red-600">
-                {Number(c.saídas_periodo || 0).toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
+                {c.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </td>
               <td className="p-2 text-right text-blue-700 font-bold">
-                {Number(c.saldo_final || 0).toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
+                {c.saldo_final.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </td>
             </tr>
           ))}
 
           {/* TOTAL GERAL */}
           <tr className="bg-gray-300 font-bold">
-            <td className="p-2">Total</td>
+            <td className="p-2">Total Geral</td>
+            <td className="p-2 text-right text-blue-700">-</td>
             <td className="p-2 text-right text-green-700">
-              {totalReceita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              {totais.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
             </td>
             <td className="p-2 text-right text-red-600">
-              {totalDespesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              {totais.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
             </td>
-            <td className="p-2 text-right text-blue-700">
-              {totalSaldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            <td className="p-2 text-right text-blue-700 font-bold">
+              {totais.saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
             </td>
           </tr>
         </tbody>
