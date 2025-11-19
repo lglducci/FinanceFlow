@@ -8,22 +8,16 @@ export default function Sidebar() {
     window.location.reload();
   }
 
-
- 
- const items = [
-  { id: "dashboard",      label: "Visão geral" },
-  { id: "transactions",   label: "Lançamentos" },
-  { id: "cards",          label: "Cartões" },
-  { id: "saldos", label: "Saldos por Conta" },
-  { id: "consultacartao", label: "Transações cartão" },
-  { id: "reports",        label: "Relatórios" },
-  { id: "settings",       label: "Configurações" },
-  { id: "cartao-transacoes", label: "Transações Cartão" },
-];
-
- 
- 
-  
+  const items = [
+    { id: "dashboard",      label: "Visão geral", path: "/dashboard" },
+    { id: "transactions",   label: "Lançamentos", path: "/transactions" },
+    { id: "cards",          label: "Cartões", path: "/cards" },
+    { id: "saldos",         label: "Saldos por Conta", path: "/saldos" },
+    { id: "consultacartao", label: "Transações cartão", path: "/cartao-transacoes" },
+    { id: "reports",        label: "Relatórios", path: "/reports" },
+    { id: "settings",       label: "Configurações", path: "/settings" },
+    { id: "cartao-transacoes", label: "Transações Cartão", path: "/cartao-transacoes" },
+  ];
 
   return (
     <aside className="w-64 bg-[#3862b7] shadow-lg flex flex-col">
@@ -36,7 +30,7 @@ export default function Sidebar() {
         {items.map((item) => (
           <button
             key={item.id}
-            onClick={() => navigate(item.id)}
+            onClick={() => navigate(item.path)}
             className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:bg-[#245f90]"
           >
             {item.label}
