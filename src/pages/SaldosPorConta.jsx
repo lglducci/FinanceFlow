@@ -71,8 +71,12 @@ export default function SaldosPorConta() {
   };
 
   const editarConta = (conta) => {
-    navigate(`/editar-conta`, { state: conta });
-  };
+      navigate(`/editar-conta`, { state: conta });
+    };
+
+
+
+ 
 
   // 🚀 ABRIR NOVA CONTA
   const novaConta = () => {
@@ -144,15 +148,11 @@ export default function SaldosPorConta() {
 
             <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-semibold text-blue-700">{c.conta_nome}</h3>
-              <button
-                onClick={() =>
-                  navigate("/editar-conta", {
-                    state: { id: conta.id }
-                  })
-                }
-              >
-                Editar Conta
-              </button>
+              
+             
+             <button onClick={() => editarConta(c)}>
+               Editar Conta
+             </button>
 
                           
             
@@ -180,5 +180,6 @@ export default function SaldosPorConta() {
     </div>
   );
 }
+
 
 
