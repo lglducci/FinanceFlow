@@ -1,4 +1,5 @@
 import SummaryCard from "../components/SummaryCard.jsx";
+import { buildWebhookUrl } from '../config/globals';
 
 export default function Dashboard() {
   const saldo = 1250.75;
