@@ -39,8 +39,7 @@ export default function App() {
 
           <main className="p-6">
             
-              // Substitua o import do Dashboard pelo Visaogeral
- 
+              
  
 
 <Routes>
