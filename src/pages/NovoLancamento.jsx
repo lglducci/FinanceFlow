@@ -1,125 +1,195 @@
  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { buildWebhookUrl } from '../config/globals';
 
 export default function NovoLancamento() {
-  const navigate = useNavigate();
- 
-  const id_empresa = Number(localStorage.getItem("id_empresa") || 1);
+  const navigate = useNavigate();   
 
-  const [tipo, setTipo] = useState("saida");
-  const [descricao, setDescricao] = useState("");
-  const [valor, setValor] = useState("");
-  const [data, setData] = useState(new Date().toISOString().slice(0, 10));
+  const empresa_id = localStorage.getItem("empresa_id") || "1";
 
-  const [contaId, setContaId] = useState("");
-  const [categoriaId, setCategoriaId] = useState("");
-  const [origem, setOrigem] = useState("web");
+  const [form, setForm] = useState({
+    id: "",
+    empresa_id: empresa_id,
+    categoria_id: "",
+    conta_id: "",
+    valor: "",
+    data: new Date().toISOString().split("T")[0],
+    descricao: "",
+    tipo: "saida",
+  });
 
-  const [contas, setContas] = useState([]);
   const [categorias, setCategorias] = useState([]);
-
-  const [erroLoad, setErroLoad] = useState("");
+  const [contas, setContas] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function carregar() {
+    const carregarCategorias = async () => {
       try {
-        const body = JSON.stringify({
-          id_empresa,
-          empresa_id: id_empresa
-        });
-
-        const resp1 = await fetch(
-          "https://webhook.lglducci.com.br/webhook/listacontas",
-          { method: "POST", headers: { "Content-Type": "application/json" }, body }
-        );
-
-        const resp2 = await fetch(
-          "https://webhook.lglducci.com.br/webhook/listacategorias",
-          { method: "POST", headers: { "Content-Type": "application/json" }, body }
-        );
-
-        const contasJson = await resp1.json();
-        const categoriasJson = await resp2.json();
-
-        setContas(contasJson);
-        setCategorias(categoriasJson);
-      } catch (e) {
-        console.error(e);
-        setErroLoad("Erro ao carregar contas/categorias.");
+        const url = buildWebhookUrl("listacategorias", { empresa_id });
+        const resp = await fetch(url);
+        const data = await resp.json();
+        setCategorias(data);
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
       }
-    }
-
-    carregar();
-  }, [id_empresa]);
-
-  async function handleSalvar(e) {
-    e.preventDefault();
-
-    if (!descricao || !valor || !data || !contaId || !categoriaId) {
-      alert("Preencha tudo.");
-      return;
-    }
-
-    const payload = {
-      id_empresa,
-      empresa_id: id_empresa,
-      tipo,
-      descricao,
-      valor: Number(valor),
-      data_movimento: data,
-      conta_id: Number(contaId),
-      categoria_id: Number(categoriaId),
-      origem
     };
 
-    const resp = await fetch(
-      "https://webhook.lglducci.com.br/webhook/novolancamento",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+    const carregarContas = async () => {
+      try {
+        const url = buildWebhookUrl("listacontas", { empresa_id });
+        const resp = await fetch(url);
+        const data = await resp.json();
+        setContas(data);
+      } catch (error) {
+        console.error("Erro ao carregar contas:", error);
       }
-    );
+    };
 
-    const dados = await resp.json();
-    console.log("RETORNO:", dados);
+    carregarCategorias();
+    carregarContas();
+  }, [empresa_id]);
+
+
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+  setForm((prev) => ({ ...prev, [name]: value }));
+};
+
+
+
+ const handleSalvar = async () => {
+  if (!form.empresa_id) {
+    alert("Empresa não carregada.");
+    return;
   }
 
+   const payload = {
+  id_empresa: form.empresa_id,
+  tipo: form.tipo,
+  conta: form.conta_id,        // <-- CORRIGIDO
+  categoria: form.categoria_id, // <-- CORRIGIDO
+  valor: form.valor,
+  descricao: form.descricao,
+  data: form.data,
+};
+
+
+  try {
+    const url = buildWebhookUrl("novolancamento"); // ✅ AQUI estava o erro
+    console.log("URL gerada:", url);
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (resp.ok) {
+      alert("Lançamento salvo com sucesso!");
+      navigate(-1); // Volta para a tela anterior
+    } else {
+      const erro = await resp.text();
+      console.error("❌ Erro ao salvar:", erro);
+      alert("Erro ao salvar o lançamento.");
+    }
+  } catch (e) {
+    console.error("❌ Erro na requisição:", e);
+    alert("Erro na requisição.");
+  }
+
+
+
+
+};
+ 
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl mb-4">Novo lançamento</h2>
 
-      {erroLoad && <div className="text-red-600">{erroLoad}</div>}
+    
+    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow">
+      <h2 className="text-xl font-bold mb-4">Novo Lançamento</h2>
 
-      <form onSubmit={handleSalvar} className="space-y-4">
-        
-        <div>
-          <label>Conta</label>
-          <select value={contaId} onChange={(e) => setContaId(e.target.value)}>
-            <option value="">Selecione...</option>
-            {contas.map((c) => (
-              <option key={c.id} value={c.id}>{c.nome}</option>
-            ))}
-          </select>
-        </div>
+      <div className="mb-4">
+        <label className="block text-sm font-semibold mb-1">Tipo</label>
+        <select
+          value={form.tipo}
+          onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+          className="w-full border rounded-lg px-3 py-2"
+        >
+          <option value="entrada">Entrada</option>
+          <option value="saida">Saída</option>
+        </select>
+      </div>
 
-        <div>
-          <label>Categoria</label>
-          <select
-            value={categoriaId}
-            onChange={(e) => setCategoriaId(e.target.value)}
-          >
-            <option value="">Selecione...</option>
-            {categorias.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome} ({c.tipo})
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="mb-4">
+        <label className="block text-sm font-semibold mb-1">Categoria</label>
+        <select
+          value={form.categoria_id}
+          onChange={(e) => setForm({ ...form, categoria_id: e.target.value })}
+          className="w-full border rounded-lg px-3 py-2"
+        >
+          <option value="">Selecione</option>
+          {categorias.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.nome}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <button className="bg-blue-600 text-white px-4 py-2">Salvar</button>
-      </form>
+      <div className="mb-4">
+        <label className="block text-sm font-semibold mb-1">Conta</label>
+        <select
+          value={form.conta_id}
+          onChange={(e) => setForm({ ...form, conta_id: e.target.value })}
+          className="w-full border rounded-lg px-3 py-2"
+        >
+          <option value="">Selecione</option>
+          {contas.map((conta) => (
+            <option key={conta.id} value={conta.id}>
+              {conta.nome}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-semibold mb-1">Valor</label>
+        <input
+          type="number"
+          value={form.valor}
+          onChange={(e) => setForm({ ...form, valor: e.target.value })}
+          className="w-full border rounded-lg px-3 py-2"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-semibold mb-1">Data</label>
+        <input
+          type="date"
+          value={form.data}
+          onChange={(e) => setForm({ ...form, data: e.target.value })}
+          className="w-full border rounded-lg px-3 py-2"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-semibold mb-1">Descrição</label>
+        <input
+          type="text"
+          value={form.descricao}
+          onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+          className="w-full border rounded-lg px-3 py-2"
+        />
+      </div>
+
+      <button
+          onClick={handleSalvar}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32 text-center"
+        >
+          Salvar
+        </button>
+
+      
     </div>
   );
 }

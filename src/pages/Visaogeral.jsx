@@ -9,6 +9,8 @@ export default function Visaogeral() {
   const [fim, setFim] = useState("");
   const [periodo, setPeriodo] = useState("mes");
   const [totais, setTotais] = useState({ receita: 0, despesa: 0, saldo: 0 });
+  const empresa_id = localStorage.getItem("id_empresa");
+
 
   const calcularDatas = (tipo) => {
     const d = new Date();
@@ -25,53 +27,58 @@ export default function Visaogeral() {
     setPeriodo(tipo);
   };
 
-  const carregar = async () => {
-    try {
-      const ini = inicio || new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split("T")[0];
-      const fimData = fim || hoje;
+   const carregar = async () => {
+  try {
+    const ini = inicio || new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split("T")[0];
+    const fimData = fim || hoje;
+    const empresa_id = localStorage.getItem("id_empresa"); // ✅ PEGOU DA MEMÓRIA
 
-      const url = buildWebhookUrl("consultasaldo", { inicio: ini, fim: fimData });
+    const url = buildWebhookUrl("consultasaldo", {
+      inicio: ini,
+      fim: fimData,
+      empresa_id, // ✅ AGORA VAI
+    });
 
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        console.error("Erro status:", resp.status);
-        return;
-      }
-
-      const data = await resp.json();
-
-      const calculado = data.map((c) => {
-        const saldoInicial = Number(c.saldo_inicial || 0);
-        const receita = Number(c.entradas_periodo || 0);
-        const despesa = Number(c.saídas_periodo || 0);
-        const saldoFinal = saldoInicial + receita - despesa;
-
-        return {
-          banco: c.conta_nome,
-          saldo_inicial: saldoInicial,
-          receita,
-          despesa,
-          saldo_final: saldoFinal,
-        };
-      });
-
-      setDados(calculado);
-
-      const tot = calculado.reduce(
-        (acc, c) => ({
-          receita: acc.receita + c.receita,
-          despesa: acc.despesa + c.despesa,
-          saldo: acc.saldo + c.saldo_final,
-        }),
-        { receita: 0, despesa: 0, saldo: 0 }
-      );
-
-      setTotais(tot);
-
-    } catch (e) {
-      console.error("Erro fetch:", e);
+    const resp = await fetch(url);
+    if (!resp.ok) {
+      console.error("Erro status:", resp.status);
+      return;
     }
-  };
+
+    const data = await resp.json();
+
+    const calculado = data.map((c) => {
+      const saldoInicial = Number(c.saldo_inicial || 0);
+      const receita = Number(c.entradas_periodo || 0);
+      const despesa = Number(c.saídas_periodo || 0);
+      const saldoFinal = saldoInicial + receita - despesa;
+
+      return {
+        banco: c.conta_nome,
+        saldo_inicial: saldoInicial,
+        receita,
+        despesa,
+        saldo_final: saldoFinal,
+      };
+    });
+
+    setDados(calculado);
+
+    const tot = calculado.reduce(
+      (acc, c) => ({
+        receita: acc.receita + c.receita,
+        despesa: acc.despesa + c.despesa,
+        saldo: acc.saldo + c.saldo_final,
+      }),
+      { receita: 0, despesa: 0, saldo: 0 }
+    );
+
+    setTotais(tot);
+
+  } catch (e) {
+    console.error("Erro fetch:", e);
+  }
+};
 
   useEffect(() => {
     calcularDatas(periodo);
@@ -84,26 +91,43 @@ export default function Visaogeral() {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4 text-blue-700">Visão Geral</h2>
-
-      {/* Filtros */}
-      <div className="mb-4 flex gap-4 items-center">
-        {["mes", "15", "semana", "hoje"].map((p) => (
+ 
+{/* FILTROS */}
+<div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-4">
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="flex flex-col">
+      <span className="text-sm font-semibold mb-1">Períodos</span>
+      <div className="flex gap-4 text-sm flex-wrap">
+        {["mes", "15", "semana", "hoje"].map((tipo) => (
           <button
-            key={p}
-            onClick={() => calcularDatas(p)}
+            key={tipo}
+            onClick={() => calcularDatas(tipo)}
             className={`px-4 py-2 rounded font-semibold ${
-              periodo === p ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+              periodo === tipo
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700"
             }`}
           >
-            {p === "mes" ? "Mês" : p === "15" ? "Últimos 15 dias" : p === "semana" ? "Semana" : "Hoje"}
+            {tipo === "mes"
+              ? "Mês"
+              : tipo === "15"
+              ? "Últimos 15 dias"
+              : tipo === "semana"
+              ? "Semana"
+              : "Hoje"}
           </button>
         ))}
       </div>
+    </div>
+  </div>
+</div>
+
+
 
       {/* Tabela */}
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr className="bg-gray-200 font-bold">
+          <tr className="bg-gray-300 font-bold">
             <th className="p-2 text-left border">Banco</th>
             <th className="p-2 text-right border text-blue-700">Saldo Inicial</th>
             <th className="p-2 text-right border text-green-700">Receita</th>
@@ -113,12 +137,12 @@ export default function Visaogeral() {
         </thead>
         <tbody>
           {dados.map((c, i) => (
-            <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-100"}>
+            <tr key={i} className={i % 2 === 0 ? "bg-[#f5ffff]" : "bg-[#bef0ff]"}>
               <td className="p-2">{c.banco}</td>
-              <td className="p-2 text-right text-blue-700">{c.saldo_inicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-green-700">{c.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-red-600">{c.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-blue-700 font-bold">{c.saldo_final.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+              <td className="p-2 text-right text-blue-600">{c.saldo_inicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+              <td className="p-2 text-right text-green-600">{c.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+              <td className="p-2 text-right text-red-500">{c.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+              <td className="p-2 text-right text-blue-600 font-bold">{c.saldo_final.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
             </tr>
           ))}
 

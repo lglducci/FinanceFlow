@@ -5,6 +5,7 @@ import { buildWebhookUrl } from '../config/globals.js'; // ✅ Import correto no
 export default function EditarConta() {
   const navigate = useNavigate();
   const { state } = useLocation(); // recebe id e empresa_id
+  const empresa_id = state.empresa_id || localStorage.getItem('id_empresa');
 
   const [loading, setLoading] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(true);
@@ -24,6 +25,9 @@ export default function EditarConta() {
     padrao: false,
   });
 
+ 
+ 
+
   // 🔵 1) RETRIEVE — BUSCA NO BANCO
   useEffect(() => {
     const id = state.id || state.conta_id || state.id_conta;
@@ -34,12 +38,14 @@ export default function EditarConta() {
       return;
     }
 
+    
     const buscar = async () => {
       try {
-        const url = buildWebhookUrl('retrieveontafinanceira', {
-          id,
-          empresa_id: localStorage.getItem('id_empresa'),
-        });
+         const url = buildWebhookUrl('retrieveontafinanceira', {
+                id,
+                empresa_id,
+              });
+
 
         const resp = await fetch(url, { method: "GET" });
 
@@ -48,22 +54,29 @@ export default function EditarConta() {
           return;
         }
 
-        const data = await resp.json();
+         const data = await resp.json();
+            const conta = data[0]; // 👈 AQUI É O PULO DO GATO
 
-        setForm({
-          id: data.id,
-          empresa_id: data.empresa_id,
-          nome: data.nome,
-          banco: data.banco,
-          tipo: data.tipo,
-          saldo_inicial: data.saldo_inicial,
-          nro_banco: data.nro_banco,
-          agencia: data.agencia,
-          conta: data.conta,
-          conjunta: data.conjunta,
-          juridica: data.juridica,
-          padrao: data.padrao,
-        });
+            if (!conta) {
+              alert("Conta não encontrada.");
+              return;
+            }
+
+            setForm({
+              id: conta.id,
+              empresa_id: conta.empresa_id,
+              nome: conta.nome || "",
+              banco: conta.banco || "",
+              tipo: conta.tipo || "",
+              saldo_inicial: conta.saldo_inicial || "",
+              nro_banco: conta.nro_banco || "",
+              agencia: conta.agencia || "",
+              conta: conta.conta || "",
+              conjunta: conta.conjunta || false,
+              juridica: conta.juridica || false,
+              padrao: conta.padrao || false,
+            });
+
       } catch (e) {
         console.log("ERRO:", e);
         alert("Erro ao carregar conta.");
@@ -94,15 +107,18 @@ export default function EditarConta() {
       };
 
       console.log("UPDATE ENVIADO:", payload);
+ 
 
-      const resp = await fetch(
-        "https://webhook.lglducci.com.br/webhook/updatecontafinanceira",
-        {
+
+    const resp = await fetch(buildWebhookUrl('updatecontafinanceira'), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }
-      );
+        });
+
+
+
+
 
       if (!resp.ok) {
         alert("Erro ao atualizar conta.");

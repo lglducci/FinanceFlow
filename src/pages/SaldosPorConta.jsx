@@ -1,6 +1,6 @@
  import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { buildWebhookUrl } from '../config/globals';
+import { buildWebhookUrl } from "../config/globals";
 
 export default function SaldosPorConta() {
   const navigate = useNavigate();
@@ -11,22 +11,30 @@ export default function SaldosPorConta() {
   const [fim, setFim] = useState(hoje);
   const [periodo, setPeriodo] = useState("");
 
-  const carregar = async () => {
-    try {
-      const url = buildWebhookUrl('consultasaldo', { inicio, fim });
-      const resp = await fetch(url, { method: "GET" });
+   const carregar = async () => {
+  try {
+    const empresa_id = localStorage.getItem("id_empresa"); // 🔵 PEGOU!
 
-      if (!resp.ok) {
-        console.log("ERRO STATUS:", resp.status);
-        return;
-      }
+    const url = buildWebhookUrl("consultasaldo", { 
+      inicio, 
+      fim, 
+      empresa_id 
+    });
 
-      const data = await resp.json();
-      setDados(data);
-    } catch (e) {
-      console.log("ERRO FETCH:", e);
+    const resp = await fetch(url, { method: "GET" });
+
+    if (!resp.ok) {
+      console.log("ERRO STATUS:", resp.status);
+      return;
     }
-  };
+
+    const data = await resp.json();
+    setDados(data);
+  } catch (e) {
+    console.log("ERRO FETCH:", e);
+  }
+};
+
 
   useEffect(() => {
     carregar();
@@ -65,21 +73,26 @@ export default function SaldosPorConta() {
     }
   };
 
-  const editarConta = (conta) => {
-    navigate('/editar-conta', {
-  state: {
-    ...conta,
-    id: conta.id ?? conta.conta_id ?? conta.id_conta,
-  } );
-  };
-
- 
- 
 
 
 
+const editarConta = (conta) => {
+  const empresa_id = localStorage.getItem('id_empresa'); // ou outro contexto válido
 
- 
+  navigate('/editar-conta', {
+    state: {
+      ...conta,
+      id: conta.id ?? conta.conta_id ?? conta.id_conta,
+      empresa_id: conta.empresa_id ?? empresa_id,
+    }
+  });
+};
+
+
+
+
+
+
   const novaConta = () => {
     navigate("/nova-conta");
   };
@@ -128,38 +141,82 @@ export default function SaldosPorConta() {
             Pesquisar
           </button>
 
-          <button onClick={novaConta} className="bg-blue-600 text-white px-4 py-2 rounded h-10 mt-5">
+          <button onClick={novaConta} className="bg-green-600 text-white px-4 py-2 rounded h-10 mt-5">
             Nova Conta
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {dados.map((c, idx) => (
-          <div key={idx} className="border border-blue-300 bg-white rounded-lg p-4 shadow-md shadow-blue-100 hover:shadow-blue-200 transition-all">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold text-blue-700">{c.conta_nome}</h3>
-              <button onClick={() => editarConta(c)} className="text-blue-600 underline">
-                Editar Conta
-              </button>
-            </div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <p className="text-sm text-gray-600">Banco: {c.nro_banco ?? "-"}</p>
-            <p className="text-sm text-gray-600">Agência: {c.agencia ?? "-"}</p>
-            <p className="text-sm text-gray-600">Conta: {c.conta ?? "-"}</p>
-            <p className="text-sm text-gray-600">Conjunta: {c.conjunta ? "Sim" : "Não"}</p>
-            <p className="text-sm text-gray-600">Jurídica: {c.juridica ? "Sim" : "Não"}</p>
-            <hr className="my-2" />
-            <p><strong>Saldo inicial:</strong> R$ {c.saldo_inicial}</p>
-            <p><strong>Entradas:</strong> R$ {c.entradas_periodo}</p>
-            <p><strong>Saídas:</strong> R$ {c.saídas_periodo}</p>
-            <p className="text-blue-700 font-bold text-lg mt-2">
-              Saldo final: R$ {c.saldo_final}
-            </p>
-          </div>
-        ))}
+  {dados.map((c, idx) => {
+    const saldoFinal = Number(c.saldo_final);
+    const positivo = saldoFinal >= 0;
+
+    return (
+      <div
+        key={idx}
+        className={`bg-white rounded-xl shadow-lg p-5 border-l-8 
+          ${positivo ? "border-green-600" : "border-red-600"} 
+          transition-all hover:shadow-xl`}
+      >
+
+        {/* Título + Editar */}
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-xl font-bold text-blue-800 flex items-center gap-2">
+            🏦 {c.conta_nome}
+          </h3>
+
+          <button
+            onClick={() => editarConta(c)}
+            className="text-blue-600 underline hover:text-blue-800"
+          >
+            Editar
+          </button>
+        </div>
+
+        {/* Dados bancários */}
+        <div className="text-sm text-gray-600 mb-3">
+          <p><strong>Banco:</strong> {c.nro_banco ?? "-"}</p>
+          <p><strong>Agência:</strong> {c.agencia ?? "-"}</p>
+          <p><strong>Conta:</strong> {c.conta ?? "-"}</p>
+          <p><strong>Conjunta:</strong> {c.conjunta ? "Sim" : "Não"}</p>
+          <p><strong>Jurídica:</strong> {c.juridica ? "Sim" : "Não"}</p>
+        </div>
+
+        <div className="border-t my-3"></div>
+
+        {/* Indicadores financeiros */}
+        <div className="space-y-1 text-base">
+
+          <p>
+            <span className="font-semibold text-gray-700">Saldo inicial: </span>
+            R$ {c.saldo_inicial}
+          </p>
+
+          <p className="text-green-700 font-semibold">
+            Entradas: R$ {c.entradas_periodo}
+          </p>
+
+          <p className="text-red-600 font-semibold">
+            Saídas: R$ {c.saídas_periodo}
+          </p>
+
+          <p className={`text-lg font-bold mt-2 
+            ${positivo ? "text-green-700" : "text-red-700"}`}>
+            Saldo final: R$ {c.saldo_final}
+          </p>
+        </div>
+
       </div>
+    );
+  })}
+
+</div>
+
+
+
+            
     </div>
   );
 }
-
