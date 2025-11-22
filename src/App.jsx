@@ -13,7 +13,11 @@ import NovoPagarReceber from "./pages/NovoPagarReceber";
 import Cartoes from "./pages/Cartoes";
 import NovaConta from "./pages/NovaConta";
 import EditarConta from "./pages/EditarConta";
- import Visaogeral from './pages/Visaogeral'; //
+import Visaogeral from './pages/Visaogeral'; //
+import EditarLancamento from "./pages/EditarLancamento";
+import EditCardTransaction from "./pages/EditCardTransaction";
+
+
 // ❌ REMOVE ISSO – NÃO EXISTE
 // import ContasPagar from "./pages/ContasPagar";
 // import ContasReceber from "./pages/ContasReceber";
@@ -60,6 +64,9 @@ export default function App() {
   <Route path="/new-payable" element={<NovoPagarReceber tipoInicial="pagar" />} />
   <Route path="/new-receivable" element={<NovoPagarReceber tipoInicial="receber" />} />
   <Route path="/cards" element={<Cartoes />} />
+  <Route path="/editar-lancamento" element={<EditarLancamento />} />
+ <Route path="/edit-card-transaction" element={<EditCardTransaction />} />
+
 </Routes>
 
 
