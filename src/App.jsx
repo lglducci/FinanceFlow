@@ -16,6 +16,7 @@ import EditarConta from "./pages/EditarConta";
 import Visaogeral from './pages/Visaogeral'; //
 import EditarLancamento from "./pages/EditarLancamento";
 import EditCardTransaction from "./pages/EditCardTransaction";
+import NovoCardTransaction from "./pages/NovoCardTransaction";
 
 
 // ❌ REMOVE ISSO – NÃO EXISTE
@@ -66,7 +67,7 @@ export default function App() {
   <Route path="/cards" element={<Cartoes />} />
   <Route path="/editar-lancamento" element={<EditarLancamento />} />
  <Route path="/edit-card-transaction" element={<EditCardTransaction />} />
-
+ <Route path="/new-card-transaction" element={<NovoCardTransaction />} />
 </Routes>
 
 
