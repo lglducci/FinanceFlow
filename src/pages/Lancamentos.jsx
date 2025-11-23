@@ -13,9 +13,17 @@ export default function Lancamentos() {
   
 const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
+  
+ 
+const [contas, setContas] = useState([]);
+const [loading, setLoading] = useState(false);
 
-  const id_empresa = localStorage.getItem("id_empresa") || 1;
+  const empresa_id = localStorage.getItem("empresa_id") || 1;
   const navigate = useNavigate();
+
+  const [contaId, setContaId] = useState("");
+
+
 
   function aplicarPeriodo(tipo) {
     const hoje = new Date();
@@ -55,6 +63,26 @@ const [totalSaida, setTotalSaida] = useState(0);
       aplicarPeriodo(tipo);
     }
   }
+   
+  
+ useEffect(() => {
+     
+
+    const carregarContas = async () => {
+      try {
+        const url = buildWebhookUrl("listacontas", { empresa_id });
+        const resp = await fetch(url);
+        const data = await resp.json();
+        setContas(data);
+      } catch (error) {
+        console.error("Erro ao carregar contas:", error);
+      }
+    }; 
+    carregarContas();
+    
+  }, [empresa_id]);
+
+
 
   useEffect(() => {
     setPeriodo("mes");
@@ -70,7 +98,8 @@ const [totalSaida, setTotalSaida] = useState(0);
     setCarregando(true);
     try {
       const url = buildWebhookUrl('listalancamentos', {
-        id_empresa: id_empresa,
+        empresa_id: empresa_id,
+        conta_id: contaId,
         data_ini: dataIni,
         data_fim: dataFim
       });
@@ -138,6 +167,8 @@ const [totalSaida, setTotalSaida] = useState(0);
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Lançamentos</h2>
+ 
+ 
 
       {/* FILTROS */}
       <div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-6">
@@ -189,6 +220,25 @@ const [totalSaida, setTotalSaida] = useState(0);
               className="border rounded-lg px-3 py-2 w-40"
             />
           </div>
+
+
+         <div>
+          <label className="text-sm font-semibold">Conta</label>
+          <select
+            value={contaId}
+            onChange={(e) => setContaId(e.target.value)}
+            className="border rounded-lg px-3 py-2 w-40"
+          >
+            <option value="">Todas</option>
+            {contas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+
+
 
           <button
             onClick={pesquisar}
@@ -266,7 +316,7 @@ const [totalSaida, setTotalSaida] = useState(0);
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-gray-100">
+              <tr className="border-b bg-blue-300 text-base">
                 <th className="text-left py-2 px-2 w-10">ID</th>
                 <th className="text-left py-2 px-2 w-64">Descrição</th>
                 <th className="text-left py-2 px-2 w-32">Categoria</th>
@@ -284,7 +334,7 @@ const [totalSaida, setTotalSaida] = useState(0);
               {lista.map((l, i) => (
                 <tr
                   key={l.id}
-                  className={i % 2 === 0 ? "bg-[#f5ffff]" : "bg-[#bef0ff]"}
+                  className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
                 >
 
                   {/* ID como link */}
@@ -300,12 +350,28 @@ const [totalSaida, setTotalSaida] = useState(0);
                   <td className="px-2 font-semibold truncate max-w-xs">{l.descricao}</td>
                   <td className="px-2">{l.categoria_nome}</td>
                   <td className="px-2">{l.conta_nome}</td>
-                  <td className="px-2">{l.tipo}</td>
+            
+                  
+                       
+                        <td
+                          className={
+                            "px-2 font-bold " +
+                            (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
+                          }
+                        >
+                          {l.tipo}
+                        </td> 
                   <td className="px-2">{l.data}</td>
                   <td className="px-2">{l.origem}</td>
+                 
+<td
+  className={
+    "px-1 text-right font-bold " +
+    (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
+  }
+>{l.valor}</td>  
 
-                  <td className="px-1 text-right font-bold">{l.valor}</td>
-                </tr>
+                </tr> 
               ))}
             </tbody>
           </table>

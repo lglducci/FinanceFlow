@@ -127,27 +127,27 @@ export default function Visaogeral() {
       {/* Tabela */}
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr className="bg-gray-300 font-bold">
+          <tr className="bg-blue-300 font-black text-lg ">
             <th className="p-2 text-left border">Banco</th>
-            <th className="p-2 text-right border text-blue-700">Saldo Inicial</th>
-            <th className="p-2 text-right border text-green-700">Receita</th>
-            <th className="p-2 text-right border text-red-600">Despesa</th>
+            <th className="p-2 text-right border text-blue-800">Saldo Inicial</th>
+            <th className="p-2 text-right border text-green-900">Receita</th>
+            <th className="p-2 text-right border text-red-700">Despesa</th>
             <th className="p-2 text-right border text-blue-700">Saldo Final</th>
           </tr>
         </thead>
         <tbody>
           {dados.map((c, i) => (
-            <tr key={i} className={i % 2 === 0 ? "bg-[#f5ffff]" : "bg-[#bef0ff]"}>
-              <td className="p-2">{c.banco}</td>
-              <td className="p-2 text-right text-blue-600">{c.saldo_inicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-green-600">{c.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-red-500">{c.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-blue-600 font-bold">{c.saldo_final.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+            <tr key={i} className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
+              <td className="p-2 font-bold" >{c.banco}</td>
+              <td className="p-2 text-right text-blue-800 font-bold">{c.saldo_inicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+              <td className="p-2 text-right text-green-800 font-bold">{c.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+              <td className="p-2 text-right text-red-700 font-bold">{c.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+              <td className="p-2 text-right text-blue-800 font-bold">{c.saldo_final.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
             </tr>
           ))}
 
           {/* Total Geral */}
-          <tr className="bg-gray-300 font-bold">
+          <tr className="bg-blue-300 font-black text-lg">
             <td className="p-2">Total Geral</td>
             <td className="p-2 text-right text-blue-700">-</td>
             <td className="p-2 text-right text-green-700">{totais.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
