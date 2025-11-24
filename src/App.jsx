@@ -17,6 +17,9 @@ import Visaogeral from './pages/Visaogeral'; //
 import EditarLancamento from "./pages/EditarLancamento";
 import EditCardTransaction from "./pages/EditCardTransaction";
 import NovoCardTransaction from "./pages/NovoCardTransaction";
+import NovoCartao from "./pages/NovoCartao";
+import EditarCartao from "./pages/EditarCartao";
+
 
 
 // ❌ REMOVE ISSO – NÃO EXISTE
@@ -68,6 +71,10 @@ export default function App() {
   <Route path="/editar-lancamento" element={<EditarLancamento />} />
  <Route path="/edit-card-transaction" element={<EditCardTransaction />} />
  <Route path="/new-card-transaction" element={<NovoCardTransaction />} />
+ <Route path="/new-card" element={<NovoCartao />} />
+ <Route path="/edit-card/:id" element={<EditarCartao />} />
+
+
 </Routes>
 
 
