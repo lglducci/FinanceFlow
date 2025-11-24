@@ -213,7 +213,7 @@ export default function ConsultaTransacaoCartao() {
           <div className="bg-white shadow rounded p-3">
             <table className="w-full">
               <thead>
-                <tr className="bg-gray-200">
+                <tr className="bg-blue-300">
                   <th className="p-2 text-left">Data</th>
                   <th className="p-2 text-left">Descrição</th>
                   <th className="p-2 text-right">Valor</th>
@@ -231,8 +231,16 @@ export default function ConsultaTransacaoCartao() {
                   </tr>
                 )}
 
-                {dados.transacoes?.map((t) => (
-                  <tr key={t.id} className="border-t">
+                  {dados.transacoes?.map((t, i) => (
+                        <tr
+                          key={t.id}
+                          className={
+                            i % 2 === 0
+                              ? "bg-[#f2f2f2] text-base"
+                              : "bg-[#e6e6e6] text-base"
+                          }
+                        >
+
                     <td className="p-2">{t.data_parcela}</td>
                     <td className="p-2">{t.descricao}</td>
                     <td className="p-2 text-right">

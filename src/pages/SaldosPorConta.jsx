@@ -18,7 +18,8 @@ export default function SaldosPorConta() {
     const url = buildWebhookUrl("consultasaldo", { 
       inicio, 
       fim, 
-      empresa_id 
+      empresa_id ,
+      conta_id:0,
     });
 
     const resp = await fetch(url, { method: "GET" });

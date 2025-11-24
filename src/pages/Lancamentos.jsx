@@ -13,7 +13,10 @@ export default function Lancamentos() {
   
 const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
-  
+const [saldoInicial, setSaldoInicial] = useState(0);
+const [saldoFinal, setSaldoFinal] = useState(0);
+
+
  
 const [contas, setContas] = useState([]);
 const [loading, setLoading] = useState(false);
@@ -22,6 +25,8 @@ const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [contaId, setContaId] = useState("");
+
+
 
 
 
@@ -64,7 +69,50 @@ const [loading, setLoading] = useState(false);
     }
   }
    
-  
+   
+ const carregar = async () => {
+  try {
+    const url = buildWebhookUrl("consultasaldo", { 
+      inicio: dataIni,
+      fim: dataFim,
+      empresa_id:empresa_id,
+      conta_id:contaId,
+    });
+
+    const resp = await fetch(url, { method: "GET" });
+
+    if (!resp.ok) {
+      console.log("ERRO STATUS:", resp.status);
+      return;
+    }
+
+    const data = await resp.json();
+
+    let ini = 0;
+    let fim = 0;
+
+    data.forEach(c => {
+      ini += Number(c.saldo_inicial || 0);
+      fim += Number(c.saldo_final || 0);
+    });
+
+    setSaldoInicial(ini);
+    setSaldoFinal(fim);
+
+  } catch (e) {
+    console.log("ERRO FETCH:", e);
+  }
+};
+
+// 👉 ADICIONE SÓ ISSO
+ useEffect(() => {
+  if (dataIni && dataFim) {
+    carregar();
+  }
+}, [dataIni, dataFim, contaId]);
+
+
+
  useEffect(() => {
      
 
@@ -81,7 +129,12 @@ const [loading, setLoading] = useState(false);
     carregarContas();
     
   }, [empresa_id]);
-
+  // ⭐ AQUI EMBAIXO
+      useEffect(() => {
+        if (contas.length > 0 && !contaId) {
+          setContaId(contas[0].id);
+        }
+      }, [contas]);
 
 
   useEffect(() => {
@@ -152,7 +205,7 @@ const [loading, setLoading] = useState(false);
       alert("Erro ao consultar lançamentos.");
     }
     setCarregando(false);
-  }
+  }   
 
   function abrirNovoLancamento() {
     navigate("/new-transaction");
@@ -160,15 +213,13 @@ const [loading, setLoading] = useState(false);
 
   function editarLancamento(id) {
     navigate("/editar-lancamento", {
-      state: { id_lancamento: id, empresa_id: id_empresa }
+      state: { id_lancamento: id, empresa_id: empresa_id }
     });
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Lançamentos</h2>
- 
- 
+      <h2 className="text-2xl font-bold mb-4">Lançamentos</h2> 
 
       {/* FILTROS */}
       <div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-6">
@@ -200,43 +251,52 @@ const [loading, setLoading] = useState(false);
         </div>
 
         {/* linha 2 */}
+        
         <div className="flex flex-wrap items-end gap-4">
-          <div>
-            <label className="text-sm font-semibold">Data início</label>
-            <input
-              type="date"
-              value={dataIni}
-              onChange={(e) => setDataIni(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-40"
-            />
-          </div>
+        
 
-          <div>
-            <label className="text-sm font-semibold">Data fim</label>
+
+            <div className="flex flex-col">
+              <label className="text-base font-bold">Data início</label>
+              <input
+                type="date"
+                value={dataIni}
+                onChange={(e) => setDataIni(e.target.value)}
+                className="border rounded-lg px-3 py-2 w-40 mt-1"
+              />
+            </div> 
+
+          <div className="flex flex-col">
+            <label className="text-base font-bold">Data fim</label>
             <input
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-40"
+              className="border rounded-lg px-3 py-2 w-40 mt-1"
             />
           </div>
 
 
-         <div>
-          <label className="text-sm font-semibold">Conta</label>
-          <select
-            value={contaId}
-            onChange={(e) => setContaId(e.target.value)}
-            className="border rounded-lg px-3 py-2 w-40"
-          >
-            <option value="">Todas</option>
-            {contas.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome}
-              </option>
-            ))}
-          </select>
-        </div>
+         <div className="flex flex-col">
+            <label className="text- base font-bold">Conta</label>
+
+            <select
+              value={contaId}
+              onChange={(e) => setContaId(e.target.value)}
+              className="border rounded-lg px-3 py-2 w-40 mt-1"
+            >
+              {/* DEFAULT */}
+              <option value="" disabled>Selecione</option>
+
+              {/* LISTA DE CONTAS */}
+              {contas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
 
 
 
@@ -259,7 +319,15 @@ const [loading, setLoading] = useState(false);
        <div className="bg-white rounded-xl shadow p-4">
   
           {/* TOTAIS EM 3 COLUNAS */}
-          <div className="mb-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="mb-4 grid grid-cols-1 sm:grid-cols-5 gap-4">
+
+                     {/* SALDO INICIAL */}
+                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
+                  <div className="text-sm font-semibold text-gray-600">Saldo Inicial</div>
+                  <div className="text-2xl font-bold text-gray-800">
+                    {saldoInicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </div>
+                </div>
 
             {/* ENTRADAS */}
             <div className="bg-white shadow rounded-lg p-4 border-l-4 border-green-600">
@@ -275,7 +343,15 @@ const [loading, setLoading] = useState(false);
               <div className="text-2xl font-bold text-red-700">
                 {totalSaida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </div>
-            </div>
+            </div> 
+
+             {/* SALDO FINAL */}
+                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-800">
+                  <div className="text-sm font-semibold text-gray-600">Saldo Atual</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </div>
+                </div>
 
                  {/* RESULTADO LÍQUIDO */}
               <div className={`bg-white shadow rounded-lg p-4 border-l-4
@@ -290,13 +366,17 @@ const [loading, setLoading] = useState(false);
                     currency: "BRL" 
                   })}
                 </div>
-</div>
-
-
           </div>
+           
+             
+
+                
 
 
 
+
+
+          </div> 
 
 
   {/* TABELA */}
@@ -304,10 +384,7 @@ const [loading, setLoading] = useState(false);
     ...
   </table>
 
-</div>
- 
- 
-
+</div> 
 
       {/* TABELA */}
       <div className="bg-white rounded-xl shadow p-4">
@@ -349,27 +426,25 @@ const [loading, setLoading] = useState(false);
 
                   <td className="px-2 font-semibold truncate max-w-xs">{l.descricao}</td>
                   <td className="px-2">{l.categoria_nome}</td>
-                  <td className="px-2">{l.conta_nome}</td>
-            
-                  
+                  <td className="px-2">{l.conta_nome}</td> 
                        
-                        <td
-                          className={
-                            "px-2 font-bold " +
-                            (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
-                          }
-                        >
-                          {l.tipo}
-                        </td> 
+                  <td
+                    className={
+                      "px-2 font-bold " +
+                      (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
+                    }
+                  >
+                    {l.tipo}
+                  </td> 
                   <td className="px-2">{l.data}</td>
                   <td className="px-2">{l.origem}</td>
                  
-<td
-  className={
-    "px-1 text-right font-bold " +
-    (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
-  }
->{l.valor}</td>  
+                  <td
+                    className={
+                      "px-1 text-right font-bold " +
+                      (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
+                    }
+                  >{l.valor}</td>  
 
                 </tr> 
               ))}
