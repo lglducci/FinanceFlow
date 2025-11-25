@@ -16,7 +16,9 @@ export default function Sidebar() {
     { id: "consultacartao", label: "Transações cartão", path: "/cartao-transacoes" },
     { id: "reports",        label: "Relatórios", path: "/reports" },
     { id: "settings",       label: "Configurações", path: "/settings" },
-    { id: "cartao-transacoes", label: "Transações Cartão", path: "/cartao-transacoes" },
+    { id: "fornecedores",   label: "Fornecedores / Clientes", path: "/providers-clients" },
+    { id: "contas_pagar", label: "Contas a Pagar", path: "/contas-pagar" },
+
   ];
 
   return (
