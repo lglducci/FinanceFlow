@@ -19,6 +19,12 @@ import EditCardTransaction from "./pages/EditCardTransaction";
 import NovoCardTransaction from "./pages/NovoCardTransaction";
 import NovoCartao from "./pages/NovoCartao";
 import EditarCartao from "./pages/EditarCartao";
+import FornecedorCliente from "./pages/FornecedorCliente";
+import EditarFornecedorCliente from "./pages/EditarFornecedorCliente";
+import NovoFornecedorCliente from "./pages/NovoFornecedorCliente";
+import ContasPagar from "./pages/ContasPagar";
+import NovaContaPagar from "./pages/NovaContaPagar";
+
 
 
 
@@ -73,7 +79,11 @@ export default function App() {
  <Route path="/new-card-transaction" element={<NovoCardTransaction />} />
  <Route path="/new-card" element={<NovoCartao />} />
  <Route path="/edit-card/:id" element={<EditarCartao />} />
-
+ <Route path="/providers-clients" element={<FornecedorCliente />} />
+<Route path="/edit-fornecedorcliente/:id" element={<EditarFornecedorCliente />} />
+<Route path="/new-provider-client" element={<NovoFornecedorCliente />} />
+<Route path="/contas-pagar" element={<ContasPagar />} /> 
+<Route path="/nova-conta-pagar" element={<NovaContaPagar />} />
 
 </Routes>
 
