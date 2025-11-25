@@ -45,16 +45,54 @@ function novoCartao() {
   function editarCartao(id) {
   navigate(`/edit-card/${id}`);
 }
+ 
+ async function excluirCartao(id) {
+  if (!confirm("Tem certeza que deseja excluir este cartão?")) return;
 
+  try {
+    const url = buildWebhookUrl("excluircartoes");
 
-  function excluirCartao(id) {
-    if (!confirm("Tem certeza que deseja excluir este cartão?")) return;
-    alert("Webhook de exclusão ainda não configurado.");
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: Number(id),
+        id_empresa: Number(id_empresa)
+      })
+    });
+
+    const texto = await resp.text();
+    let json = {};
+
+    try {
+      json = texto ? JSON.parse(texto) : {};
+    } catch {
+      console.log("Resposta não JSON:", texto);
+    }
+
+    // ⚠️ Apenas ISSO foi acrescentado:
+    if (
+      texto.includes("foreign key") ||
+      texto.includes("violates") ||
+      texto.toLowerCase().includes("fatura") ||
+      json?.message?.toLowerCase?.().includes("não é possível excluir")
+    ) {
+      alert("Não é possível excluir: este cartão possui movimentações/faturas.");
+      return;
+    }
+
+    // Sucesso normal
+    alert(json?.message || "Cartão excluído com sucesso!");
+
+    carregar();  // recarrega a lista corretamente (igual estava antes)
+
+  } catch (e) {
+    console.error("Erro excluir cartão:", e);
+    alert("Erro ao excluir cartão.");
   }
+}
 
-  useEffect(() => {
-    carregar();
-  }, []);
+
 return (
   <div className="p-6">
 

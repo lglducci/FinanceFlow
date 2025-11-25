@@ -109,9 +109,7 @@ if (sucesso) {
 } else {
   console.log("DEBUG JSON:", json);
   alert("Erro ao atualizar cartão.");
-}
-
-    
+} 
  
   }
 
