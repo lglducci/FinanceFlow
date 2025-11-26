@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
-export default function NovaContaPagar() {
+export default function NovaContaReceber() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
 
@@ -82,7 +82,7 @@ export default function NovaContaPagar() {
   try {
     setSalvando(true);
 
-    const url = buildWebhookUrl("novacontapagar");
+    const url = buildWebhookUrl("novacontareceber");
 
     const resp = await fetch(url, {
       method: "POST",
@@ -109,8 +109,8 @@ export default function NovaContaPagar() {
       json?.success === true;
 
     if (sucesso) {
-      alert("Conta a pagar cadastrada com sucesso!");
-      navigate("/contas-pagar");
+      alert("Conta a Receber cadastrada com sucesso!");
+      navigate("/contas-receber");
       return;
     }
 
@@ -126,7 +126,7 @@ export default function NovaContaPagar() {
 
   return (
     <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow border border-blue-300">
-      <h2 className="text-xl font-bold mb-4">Nova Conta a Pagar</h2>
+      <h2 className="text-xl font-bold mb-4">Nova Conta a Receber</h2>
 
       <div className="flex flex-col gap-4">
 
@@ -254,7 +254,7 @@ export default function NovaContaPagar() {
           </button>
 
           <button
-            onClick={() => navigate("/contas-pagar")}
+            onClick={() => navigate("/contas-receber")}
             className="bg-gray-400 text-white px-5 py-2 rounded font-semibold"
           >
             Cancelar

@@ -2,7 +2,7 @@
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 
-export default function ContasPagar() {
+export default function ContasReceber() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
 
@@ -17,7 +17,6 @@ export default function ContasPagar() {
   const [dataFim, setDataFim] = useState("");
   const [loading, setLoading] = useState(false);
  const [totalPeriodo, setTotalPeriodo] = useState(0);
- const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false);
   //------------------------------------------------------------------
   // 1) CARREGAR FORNECEDORES
   //------------------------------------------------------------------
@@ -126,7 +125,7 @@ useEffect(() => {
     try {
       setLoading(true);
 
-      const url = buildWebhookUrl("consultarcontapagar", {
+      const url = buildWebhookUrl("consultarcontareceber", {
         empresa_id,
         status,
         data_ini: dataIni,
@@ -150,7 +149,7 @@ useEffect(() => {
 
     } catch (e) {
       console.log("ERRO PESQUISA:", e);
-      alert("Erro ao carregar contas a pagar.");
+      alert("Erro ao carregar contas a receber.");
     } finally {
       setLoading(false);
     }
@@ -163,7 +162,7 @@ useEffect(() => {
     if (!confirm("Confirmar exclusão?")) return;
 
     try {
-      const url = buildWebhookUrl("exclui_conta_pagar"); // <<< trocar pelo webhook real
+      const url = buildWebhookUrl("exclui_conta_receber"); // <<< trocar pelo webhook real
 
       const resp = await fetch(url, {
         method: "POST",
@@ -198,13 +197,13 @@ useEffect(() => {
   }, []);
 
 
-  
+ 
 
   //------------------------------------------------------------------
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Contas a Pagar</h2>
+      <h2 className="text-xl font-bold mb-4">Contas a Receber</h2>
       {/* FILTROS */}
 <div className="bg-white rounded-xl shadow p-5 border border-[#3862b7] mb-6">
 
@@ -345,21 +344,13 @@ useEffect(() => {
     <button onClick={pesquisar} className="bg-blue-600 text-white px-5 py-2 rounded font-semibold">
       Pesquisar
     </button>
-    <button onClick={() => navigate("/nova-conta-pagar")} className="bg-green-600 text-white px-5 py-2 rounded font-semibold">
+    <button onClick={() => navigate("/nova-conta-receber")} className="bg-green-600 text-white px-5 py-2 rounded font-semibold">
       Novo
     </button>
-  
-   <button
-  onClick={() => navigate("/excluir-parcelamento-pagar")}
-  className="bg-red-600 text-white px-5 py-2 rounded font-semibold"
->
-  Excluir Parcelamento
-</button>
+  </div>
+ 
 
-   
 
- </div>
-  
 
 </div>
    <div className="bg-white rounded-xl shadow p-5 border-l-4 border-red-500 w-64 mb-4">
@@ -427,7 +418,7 @@ useEffect(() => {
                 </td>
                 <td className="px-3 py-2 text-center">
                   <button
-                    onClick={() => navigate(`/edit-conta-pagar/${c.id}`)}
+                    onClick={() => navigate(`/edit-conta-receber/${c.id}`)}
                     className="text-blue-600 mr-3 underline"
                   >
                     Editar
@@ -437,8 +428,7 @@ useEffect(() => {
                     className="text-red-600 underline"
                   >
                     Excluir
-                  </button> 
-                  
+                  </button>
                 </td>
               </tr>
             ))}
