@@ -22,11 +22,15 @@ import EditarCartao from "./pages/EditarCartao";
 import FornecedorCliente from "./pages/FornecedorCliente";
 import EditarFornecedorCliente from "./pages/EditarFornecedorCliente";
 import NovoFornecedorCliente from "./pages/NovoFornecedorCliente";
+// Contas a  pagar 
 import ContasPagar from "./pages/ContasPagar";
 import NovaContaPagar from "./pages/NovaContaPagar";
-
-
-
+import EditarContaPagar from "./pages/EditarContaPagar";
+// Contas a  receber 
+import ContasReceber from "./pages/ContasReceber";
+import NovaContaReceber from "./pages/NovaContaReceber";
+import EditarContaReceber from "./pages/EditarContaReceber";
+ 
 
 // ❌ REMOVE ISSO – NÃO EXISTE
 // import ContasPagar from "./pages/ContasPagar";
@@ -35,6 +39,9 @@ import NovaContaPagar from "./pages/NovaContaPagar";
 // ✅ IMPORTA AS PÁGINAS QUE EXISTEM
 import SaldosPorConta from "./pages/SaldosPorConta";
 import ConsultaTransacaoCartao from "./pages/ConsultaTransacaoCartao";
+ import ExcluirParcelamentoPagar from "./pages/ExcluirParcelamentoPagar.jsx";
+ 
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -84,6 +91,14 @@ export default function App() {
 <Route path="/new-provider-client" element={<NovoFornecedorCliente />} />
 <Route path="/contas-pagar" element={<ContasPagar />} /> 
 <Route path="/nova-conta-pagar" element={<NovaContaPagar />} />
+<Route path="/edit-conta-pagar/:id" element={<EditarContaPagar />} />
+{/* Contas a receber */}
+
+<Route path="/contas-receber" element={<ContasReceber />} /> 
+<Route path="/nova-conta-receber" element={<NovaContaReceber />} />
+<Route path="/edit-conta-receber/:id" element={<EditarContaReceber />} />
+<Route path="/excluir-parcelamento-pagar" element={<ExcluirParcelamentoPagar />} />
+ 
 
 </Routes>
 
