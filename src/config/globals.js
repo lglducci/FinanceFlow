@@ -1,7 +1,7 @@
 // globals.js
 
 // Domínio base do webhook
-export const DOMINIO = 'https://tortunder.app.n8n.cloud/webhook/';
+export const DOMINIO = 'https://webhook.lglducci.com.br/webhook/';
                        
 /**
  * Função helper para gerar URLs completas de webhooks
