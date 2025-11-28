@@ -89,20 +89,27 @@ export default function Visaogeral() {
   }, [inicio, fim]);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4 text-blue-700">Visão Geral</h2>
+    <div className="p-2">
+      <h2 className="text-3xl font-bold mb-4 text-blue-500">Visão Geral</h2>
  
 {/* FILTROS */}
-<div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-4">
+{/*<div className="bg- blue p-6 rounded-xl shadow mb-10 flex flex-col gap-2">*/}
+
+ <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600"> 
+        
+  <div className="bg-gray-200 p-6 rounded-xl shadow mb-8 flex flex-col gap-2">
+
   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    
     <div className="flex flex-col">
-      <span className="text-sm font-semibold mb-1">Períodos</span>
+      
+      <span className="text-base font-semibold mb-1">Períodos</span>
       <div className="flex gap-4 text-sm flex-wrap">
         {["mes", "15", "semana", "hoje"].map((tipo) => (
           <button
             key={tipo}
             onClick={() => calcularDatas(tipo)}
-            className={`px-4 py-2 rounded font-semibold ${
+            className={`px-4 py-1.5 rounded font-semibold ${
               periodo === tipo
                 ? "bg-blue-600 text-white"
                 : "bg-gray-200 text-gray-700"
@@ -121,41 +128,96 @@ export default function Visaogeral() {
     </div>
   </div>
 </div>
+</div>
 
 
 
-      {/* Tabela */}
-      <table className="w-full text-sm border-collapse">
-        <thead>
-          <tr className="bg-blue-300 font-black text-lg ">
-            <th className="p-2 text-left border">Banco</th>
-            <th className="p-2 text-right border text-blue-800">Saldo Inicial</th>
-            <th className="p-2 text-right border text-green-900">Receita</th>
-            <th className="p-2 text-right border text-red-700">Despesa</th>
-            <th className="p-2 text-right border text-blue-700">Saldo Final</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dados.map((c, i) => (
-            <tr key={i} className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-              <td className="p-2 font-bold" >{c.banco}</td>
-              <td className="p-2 text-right text-blue-800 font-bold">{c.saldo_inicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-green-800 font-bold">{c.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-red-700 font-bold">{c.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-              <td className="p-2 text-right text-blue-800 font-bold">{c.saldo_final.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-            </tr>
-          ))}
+      {/* Tabela  
+  
+   <table className="w-full text-sm border-collapse">*/}
 
-          {/* Total Geral */}
-          <tr className="bg-blue-300 font-black text-lg">
-            <td className="p-2">Total Geral</td>
-            <td className="p-2 text-right text-blue-700">-</td>
-            <td className="p-2 text-right text-green-700">{totais.receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-            <td className="p-2 text-right text-red-600">{totais.despesa.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-            <td className="p-2 text-right text-blue-700 font-bold">{totais.saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
-          </tr>
-        </tbody>
-      </table>
+  <div className="bg-gray-300 p-4 rounded-xl shadow">
+  <table className="w-full text-sm border-collapse">
+  <thead>
+    <tr className="bg-blue-300 font-black text-lg">
+      <th className="p-2 text-left border">Banco</th>
+      <th className="p-2 text-right border text-blue-800">Saldo Inicial</th>
+      <th className="p-2 text-right border text-green-900">Receita</th>
+      <th className="p-2 text-right border text-red-700">Despesa</th>
+      <th className="p-2 text-right border text-blue-700">Saldo Final</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {dados.map((c, i) => (
+      <tr
+        key={i}
+        className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+      >
+        <td className="p-2 font-bold">{c.banco}</td>
+
+        <td className="p-2 text-right text-blue-800 font-bold">
+          {c.saldo_inicial.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </td>
+
+        <td className="p-2 text-right text-green-800 font-bold">
+          {c.receita.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </td>
+
+        <td className="p-2 text-right text-red-700 font-bold">
+          {c.despesa.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </td>
+
+        <td className="p-2 text-right text-blue-800 font-bold">
+          {c.saldo_final.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+
+  <tfoot>
+    <tr className="bg-blue-300 font-black text-lg">
+      <td className="p-2">Total Geral</td>
+
+      <td className="p-2 text-right text-blue-700">-</td>
+
+      <td className="p-2 text-right text-green-700">
+        {totais.receita.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })}
+      </td>
+
+      <td className="p-2 text-right text-red-600">
+        {totais.despesa.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })}
+      </td>
+
+      <td className="p-2 text-right text-blue-700 font-bold">
+        {totais.saldo.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })}
+      </td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+ 
     </div>
   );
 }

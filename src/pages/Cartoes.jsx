@@ -104,6 +104,7 @@ return (
     </div>
 
     {/* FILTROS */}
+     <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600"> 
     <div className="bg-white p-5 rounded-xl shadow flex items-end gap-6 mb-6">
 
       <div>
@@ -134,7 +135,7 @@ return (
       </button>
 
         
-
+      </div>
     </div>
 
     {/* DASHBOARD DE CARTÕES */}

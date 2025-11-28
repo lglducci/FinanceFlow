@@ -221,14 +221,14 @@ const [loading, setLoading] = useState(false);
     <div>
       <h2 className="text-2xl font-bold mb-4">Lançamentos</h2> 
 
-      {/* FILTROS */}
-      <div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-6">
-
+      {/* FILTROS  
+      <div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-6">*/}
+      <div className="bg-gray-200 p-6 rounded-xl shadow mb-8 flex flex-col gap-2"> 
         {/* linha 1 - períodos */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col">
-            <span className="text-sm font-semibold mb-1">Períodos</span>
-            <div className="flex gap-4 text-sm flex-wrap">
+            <span className="text-base font-bold mb-1">Períodos</span>
+            <div className="flex gap-4 text-sm font-bold flex-wrap">
               {["mes", "15", "semana", "hoje"].map((tipo) => (
                 <label key={tipo}>
                   <input
@@ -251,11 +251,10 @@ const [loading, setLoading] = useState(false);
         </div>
 
         {/* linha 2 */}
-        
-        <div className="flex flex-wrap items-end gap-4">
-        
 
-
+         <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600"> 
+        
+        <div className="flex flex-wrap items-end gap-4"> 
             <div className="flex flex-col">
               <label className="text-base font-bold">Data início</label>
               <input
@@ -316,17 +315,17 @@ const [loading, setLoading] = useState(false);
         </div>
       </div>
 
-
+</div>
       
   
-       <div className="bg-white rounded-xl shadow p-4">
+       <div className="bg-gray-200 rounded-xl shadow p-4">
   
           {/* TOTAIS EM 3 COLUNAS */}
           <div className="mb-4 grid grid-cols-1 sm:grid-cols-5 gap-4">
 
                      {/* SALDO INICIAL */}
                 <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
-                  <div className="text-sm font-semibold text-gray-600">Saldo Inicial</div>
+                  <div className="text-base font-bold text-gray-600">Saldo Inicial</div>
                   <div className="text-2xl font-bold text-gray-800">
                     {saldoInicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </div>
@@ -334,7 +333,7 @@ const [loading, setLoading] = useState(false);
 
             {/* ENTRADAS */}
             <div className="bg-white shadow rounded-lg p-4 border-l-4 border-green-600">
-              <div className="text-sm font-semibold text-gray-600">Total Entradas</div>
+              <div className="text- base font-bold text-gray-600">Total Entradas</div>
               <div className="text-2xl font-bold text-green-700">
                 {totalEntrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </div>
@@ -342,7 +341,7 @@ const [loading, setLoading] = useState(false);
 
             {/* SAÍDAS */}
             <div className="bg-white shadow rounded-lg p-4 border-l-4 border-red-600">
-              <div className="text-sm font-semibold text-gray-600">Total Saídas</div>
+              <div className="text-base font-bold text-gray-600">Total Saídas</div>
               <div className="text-2xl font-bold text-red-700">
                 {totalSaida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </div>
@@ -350,7 +349,7 @@ const [loading, setLoading] = useState(false);
 
              {/* SALDO FINAL */}
                 <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-800">
-                  <div className="text-sm font-semibold text-gray-600">Saldo Atual</div>
+                  <div className="text- base font-bold text-gray-600">Saldo Atual</div>
                   <div className="text-2xl font-bold text-gray-900">
                     {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </div>
@@ -369,28 +368,22 @@ const [loading, setLoading] = useState(false);
                     currency: "BRL" 
                   })}
                 </div>
-          </div>
-           
-             
-
-                
-
-
-
-
-
+          </div>  
           </div> 
 
 
-  {/* TABELA */}
+  {/* TABELA */} 
   <table className="w-full text-sm">
+   
     ...
   </table>
+</div>
+ 
 
-</div> 
-
-      {/* TABELA */}
-      <div className="bg-white rounded-xl shadow p-4">
+      {/* TABELA  
+      
+      <div className="bg-white rounded-xl shadow p-4">*/}
+          <div className="bg-gray-300 p-4 rounded-xl shadow">
         {lista.length === 0 ? (
           <p className="text-gray-600 text-sm">Nenhum lançamento encontrado.</p>
         ) : (

@@ -1,7 +1,7 @@
  import React, { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 
-export default function ExcluirParcelamentoPagar() {
+export default function ExcluirParcelamentoReceber() {
 
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
 
@@ -54,8 +54,8 @@ export default function ExcluirParcelamentoPagar() {
   setLoading(true);
   setParcelamentos([]); // limpa antes
 
-  try {
-    const url = buildWebhookUrl("conta_pagar_parcelado", {
+  try {                           
+    const url = buildWebhookUrl("conta_receber_parcelado", {
       empresa_id,
       fornecedor_id: fornecedor_id || 0,
       categoria_id: categoria_id || 0,
@@ -98,7 +98,7 @@ export default function ExcluirParcelamentoPagar() {
   if (!confirm("Excluir TODAS as parcelas deste lote?")) return;
 
   try {
-    const url = buildWebhookUrl("excluirparcelaspagar");
+    const url = buildWebhookUrl("excluirparcelasreceber");
 
     const resp = await fetch(url, {
       method: "POST",

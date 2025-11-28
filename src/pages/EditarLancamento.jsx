@@ -62,22 +62,20 @@ export default function EditarLancamento() {
   } catch (e) {
     console.error(e);
     alert("Erro ao carregar dados do lançamento.");
-    navigate("/transactions");
-    
- 
+    navigate("/transactions");  
   }
 
   setCarregando(false);
-};
-
-
+}; 
     carregar();
   }, []);
+
+  
 
   // 🔵 Carregar categorias
   const carregarCategorias = async () => {
     try {
-      const url = buildWebhookUrl("listacategorias", { empresa_id: id_empresa });
+      const url = buildWebhookUrl("listacategorias", { empresa_id: id_empresa, tipo :form.tipo  });
       const resp = await fetch(url);
       const data = await resp.json();
       setCategorias(data);
@@ -97,6 +95,16 @@ export default function EditarLancamento() {
       console.error("Erro contas", e);
     }
   };
+
+
+  useEffect(() => {
+  carregarCategorias();
+}, [form.tipo]);   // <-- AGORA FUNCIONA NA TROCA DE TIPO
+
+useEffect(() => {
+  carregarContas();
+}, []);
+
 
   function onChange(e) {
     const { name, value } = e.target;
@@ -198,12 +206,13 @@ export default function EditarLancamento() {
         className="border rounded-lg px-3 py-2 w-full mb-4"
       />
 
-      {/* Tipo */}
+      {/* Tipo */} 
+
       <label className="block mb-2 font-semibold text-sm">Tipo</label>
       <select
         name="tipo"
         value={form.tipo}
-        onChange={onChange}
+        onChange={onChange} 
         className="border rounded-lg px-3 py-2 w-full mb-4"
       >
         <option value="">Selecione</option>

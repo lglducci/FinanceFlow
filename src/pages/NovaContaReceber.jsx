@@ -54,7 +54,7 @@ export default function NovaContaReceber() {
   // =======================================================
   async function carregarCategorias() {
     try {
-      const url = buildWebhookUrl("listacategorias", { empresa_id });
+      const url = buildWebhookUrl("listacategorias", { empresa_id , tipo:'entrada'});
       const resp = await fetch(url);
       const txt = await resp.text();
 

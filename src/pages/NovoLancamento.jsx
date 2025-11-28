@@ -22,33 +22,43 @@ export default function NovoLancamento() {
   const [contas, setContas] = useState([]);
   const [loading, setLoading] = useState(false);
 
+
   useEffect(() => {
-    const carregarCategorias = async () => {
-      try {
-        const url = buildWebhookUrl("listacategorias", { empresa_id });
-        const resp = await fetch(url);
-        const data = await resp.json();
-        setCategorias(data);
-      } catch (error) {
-        console.error("Erro ao carregar categorias:", error);
-      }
-    };
+  carregarCategorias();
+}, [form.tipo, empresa_id]);  // <-- AGORA ATUALIZA QUANDO TIPO MUDA
 
-    const carregarContas = async () => {
-      try {
-        const url = buildWebhookUrl("listacontas", { empresa_id });
-        const resp = await fetch(url);
-        const data = await resp.json();
-        setContas(data);
-      } catch (error) {
-        console.error("Erro ao carregar contas:", error);
-      }
-    };
+useEffect(() => {
+  carregarContas();
+}, [empresa_id]);
 
-    carregarCategorias();
-    carregarContas();
-  }, [empresa_id]);
+async function carregarCategorias() {
+  try {
+    const url = buildWebhookUrl("listacategorias", { 
+      empresa_id, 
+      tipo: form.tipo 
+    });
 
+    const resp = await fetch(url);
+    const data = await resp.json();
+    setCategorias(data);
+  } catch (error) {
+    console.error("Erro ao carregar categorias:", error);
+  }
+}
+
+async function carregarContas() {
+  try {
+    const url = buildWebhookUrl("listacontas", { empresa_id });
+    const resp = await fetch(url);
+    const data = await resp.json();
+    setContas(data);
+  } catch (error) {
+    console.error("Erro ao carregar contas:", error);
+  }
+}
+
+
+ 
 
  const handleChange = (e) => {
   const { name, value } = e.target;

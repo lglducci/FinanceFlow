@@ -91,16 +91,18 @@ export default function ConsultaTransacaoCartao() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Transações de Cartão</h2>
 
       {/* FILTROS */}
-      <div className="bg-gray-100 p-4 rounded-lg mb-6 flex flex-col md:flex-row md:items-end gap-4">
+
+        <div className="bg-gray-200 p-2.5 rounded-xl shadow"> 
+      <div className="bg-gray-200 p-2.5 rounded-lg mb-4 flex flex-col md:flex-row md:items-end gap-4">
 
         <div className="flex flex-col">
           <label className="font-semibold mb-1">Cartão</label>
           <select
-            className="border px-3 py-2 rounded w-52"
+            className="border px-3 py-1.5 rounded w-52"
             value={cartao}
             onChange={(e) => setCartao(e.target.value)}
           >
@@ -115,12 +117,13 @@ export default function ConsultaTransacaoCartao() {
             )}
           </select>
         </div>
+        
 
         <div className="flex flex-col">
           <label className="font-semibold mb-1">Mês referência</label>
           <input
             type="month"
-            className="border px-3 py-2 rounded w-52"
+            className="border px-3 py-1.5 rounded w-52"
             value={referencia}
             onChange={(e) => setReferencia(e.target.value)}
           />
@@ -137,13 +140,13 @@ export default function ConsultaTransacaoCartao() {
 
           <button
             onClick={novaTransacao}
-            className="bg-green-600 text-white px-5 py-2 rounded h-10"
+            className="bg-green-600 text-white px-5 py-1.5 rounded h-10"
           >
             Nova Transação
           </button>
         </div>
       </div>
-
+     </div>
       {/* ====================== RESULTADO ====================== */}
 
       {dados?.erro && (
@@ -156,6 +159,7 @@ export default function ConsultaTransacaoCartao() {
       {dados && !dados.erro && dados.fatura && (
         <>
           {/* Painel superior */}
+           <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600"> 
           <div className="w-full bg-white p-4 rounded shadow mb-6 max-w-2xl">
             <h2 className="text-lg font-bold text-gray-800 mb-3">
               Cartão: <span className="text-blue-700">{dados.cartao}</span>
@@ -208,63 +212,68 @@ export default function ConsultaTransacaoCartao() {
               </div>
             </div>
           </div>
+          </div>
 
           {/* Tabela */}
-          <div className="bg-white shadow rounded p-3">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-blue-300">
-                  <th className="p-2 text-left">Data</th>
-                  <th className="p-2 text-left">Descrição</th>
-                  <th className="p-2 text-right">Valor</th>
-                  <th className="p-2 text-center">Parcela</th>
-                  <th className="p-2 text-center">Editar</th>
-                </tr>
-              </thead>
+            <div className="bg-gray-300 p-4 rounded-xl shadow"> 
+            <div className="bg-white p-4 rounded-xl shadow">
+  <table className="w-full text-sm border-collapse">
+    <thead>
+      <tr className="bg-blue-300 font-black text-base">
+        <th className="p-2 text-left border">Data</th>
+        <th className="p-2 text-left border">Descrição</th>
+        <th className="p-2 text-right border text-blue-800">Valor</th>
+        <th className="p-2 text-center border">Parcela</th>
+        <th className="p-2 text-center border">Editar</th>
+      </tr>
+    </thead>
 
-              <tbody>
-                {(!dados.transacoes || dados.transacoes.length === 0) && (
-                  <tr>
-                    <td colSpan="5" className="text-center p-4">
-                      Nenhuma transação encontrada.
-                    </td>
-                  </tr>
-                )}
+    <tbody>
+      {/* Nenhuma transação */}
+      {(!dados.transacoes || dados.transacoes.length === 0) && (
+        <tr>
+          <td colSpan="5" className="text-center p-4">
+            Nenhuma transação encontrada.
+          </td>
+        </tr>
+      )}
 
-                  {dados.transacoes?.map((t, i) => (
-                        <tr
-                          key={t.id}
-                          className={
-                            i % 2 === 0
-                              ? "bg-[#f2f2f2] text-base"
-                              : "bg-[#e6e6e6] text-base"
-                          }
-                        >
+      {/* Linhas */}
+      {dados.transacoes?.map((t, i) => (
+        <tr
+          key={t.id}
+          className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
+        >
+          <td className="p-2 border">{t.data_parcela}</td>
 
-                    <td className="p-2">{t.data_parcela}</td>
-                    <td className="p-2">{t.descricao}</td>
-                    <td className="p-2 text-right">
-                      {Number(t.valor).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </td>
-                    <td className="p-2 text-center">
-                      {t.parcela_num}/{t.parcela_total}
-                    </td>
-                    <td className="p-2 text-center">
-                      <button
-                        onClick={() => editar(t.id)}
-                        className="text-blue-600 underline"
-                      >
-                        Editar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <td className="p-2 border font-medium">{t.descricao}</td>
+
+          <td className="p-2 text-right border text-blue-800 font-bold">
+            {Number(t.valor).toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </td>
+
+          <td className="p-2 text-center border">
+            {t.parcela_num}/{t.parcela_total}
+          </td>
+
+          <td className="p-2 text-center border">
+            <button
+              onClick={() => editar(t.id)}
+              className="text-blue-600 underline font-semibold"
+            >
+              Editar
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+                </div>
         </>
       )}
     </div>

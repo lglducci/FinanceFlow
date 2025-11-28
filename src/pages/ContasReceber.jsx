@@ -17,6 +17,7 @@ export default function ContasReceber() {
   const [dataFim, setDataFim] = useState("");
   const [loading, setLoading] = useState(false);
  const [totalPeriodo, setTotalPeriodo] = useState(0);
+ const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false);
   //------------------------------------------------------------------
   // 1) CARREGAR FORNECEDORES
   //------------------------------------------------------------------
@@ -197,7 +198,7 @@ useEffect(() => {
   }, []);
 
 
- 
+  
 
   //------------------------------------------------------------------
 
@@ -347,10 +348,18 @@ useEffect(() => {
     <button onClick={() => navigate("/nova-conta-receber")} className="bg-green-600 text-white px-5 py-2 rounded font-semibold">
       Novo
     </button>
-  </div>
- 
+  
+   <button
+  onClick={() => navigate("/excluir-parcelamento-receber")}
+  className="bg-red-600 text-white px-5 py-2 rounded font-semibold"
+>
+  Excluir Parcelamento
+</button>
 
+   
 
+ </div>
+  
 
 </div>
    <div className="bg-white rounded-xl shadow p-5 border-l-4 border-red-500 w-64 mb-4">
@@ -428,7 +437,8 @@ useEffect(() => {
                     className="text-red-600 underline"
                   >
                     Excluir
-                  </button>
+                  </button> 
+                  
                 </td>
               </tr>
             ))}
