@@ -18,8 +18,12 @@ export default function Sidebar() {
     { id: "settings",       label: "Configurações", path: "/settings" },
     { id: "fornecedores",   label: "Fornecedores / Clientes", path: "/providers-clients" },
     { id: "contas_pagar", label: "Contas a Pagar", path: "/contas-pagar" },
-     { id: "contas_receber", label: "Contas a Receber", path: "/contas-receber" },
+    { id: "contas_receber", label: "Contas a Receber", path: "/contas-receber" },
+    { id: "contas_gerenciais", label: "Contas Gerenciais", path: "/contasgerenciais" },
 
+  
+
+ 
 
   ];
 
