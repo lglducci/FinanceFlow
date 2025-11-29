@@ -101,12 +101,14 @@ const editarConta = (conta) => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Saldos por Conta</h2>
-
-      <div className="bg-white p-4 rounded shadow mb-6 border border-blue-300">
-        <p className="font-semibold text-gray-700 mb-2">Períodos</p>
-        <div className="flex gap-6 mb-4">
+     
+      <div className="bg-gray-200 p-6 rounded shadow mb-6 border border-gray-200">
+        <p className="font-bold text-base gray-700 mb-2">Períodos</p>
+        <div className="flex gap-6 text-base  font-bold  mb-4">
+           <div className="flex gap-4 text-base font-bold flex-wrap"></div>
+           
           {["mes", "15", "semana", "hoje"].map((tipo) => (
-            <label key={tipo} className="flex items-center gap-2">
+            <label key={tipo} className="flex text-base items-center gap-2">
               <input
                 type="checkbox"
                 checked={periodo === tipo}
@@ -116,10 +118,10 @@ const editarConta = (conta) => {
             </label>
           ))}
         </div>
-
-        <div className="flex gap-4">
+       
+        <div className="flex gap-4 bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
           <div className="flex flex-col">
-            <span className="text-sm text-gray-600 mb-1">Data início</span>
+            <label className="text-base font-bold">Data início</label>
             <input
               type="date"
               value={inicio}
@@ -129,7 +131,7 @@ const editarConta = (conta) => {
           </div>
 
           <div className="flex flex-col">
-            <span className="text-sm text-gray-600 mb-1">Data fim</span>
+             <label className="text-base font-bold">Data Fim</label>
             <input
               type="date"
               value={fim}

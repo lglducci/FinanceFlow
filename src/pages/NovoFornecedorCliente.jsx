@@ -6,6 +6,31 @@ export default function NovoFornecedorCliente() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
 
+
+  /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
+const THEME = {
+  pageBg: "#0e2a3a",                 // fundo da página (escuro)
+  panelBg: "#1e40af",                // fundos auxiliares (se precisar) panelBg: "#4a88a9ff",   
+  panelBorder: "rgba(255,159,67,0.30)",
+
+  cardBg: "#254759",                 // bloco interno mais claro
+  cardBorder: "rgba(255,159,67,0.35)",
+  cardShadow: "0 6px 20px rgba(0,0,0,0.25)",
+
+  title: "#ff9f43",
+  text: "#e8eef2",
+  textMuted: "#bac7cf",
+
+  fieldBg: "#1f3b4d",                // inputs (um tom acima do card)
+  fieldBorder: "rgba(255,159,67,0.25)",
+  focusRing: "#ff9f43",
+
+  btnPrimary: "#ff9f43",
+  btnPrimaryText: "#1b1e25",
+  btnSecondary: "#ef4444",
+  btnSecondaryText: "#ffffff",
+};
+
   const [form, setForm] = useState({
     tipo: "fornecedor",
     nome: "",
@@ -64,8 +89,15 @@ export default function NovoFornecedorCliente() {
   }
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Novo Fornecedor / Cliente</h2>
+        <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
+      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
+
+        <h1
+        className="text-2xl md:text-3xl font-bold mb-6 text-center"
+        style={{ color: THEME.title }}
+      >
+        ✏️ Novo Fornecedor / Cliente
+      </h1>
 
       <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-4">
 
@@ -223,7 +255,7 @@ export default function NovoFornecedorCliente() {
             Cancelar
           </button>
         </div>
-
+        </div>
       </div>
     </div>
   );

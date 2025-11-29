@@ -20,186 +20,194 @@ export default function NovoLancamento() {
 
   const [categorias, setCategorias] = useState([]);
   const [contas, setContas] = useState([]);
-  const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
-  carregarCategorias();
-}, [form.tipo, empresa_id]);  // <-- AGORA ATUALIZA QUANDO TIPO MUDA
+    carregarCategorias();
+  }, [form.tipo, empresa_id]);
 
-useEffect(() => {
-  carregarContas();
-}, [empresa_id]);
+  useEffect(() => {
+    carregarContas();
+  }, [empresa_id]);
 
-async function carregarCategorias() {
-  try {
-    const url = buildWebhookUrl("listacategorias", { 
-      empresa_id, 
-      tipo: form.tipo 
-    });
-
-    const resp = await fetch(url);
-    const data = await resp.json();
-    setCategorias(data);
-  } catch (error) {
-    console.error("Erro ao carregar categorias:", error);
-  }
-}
-
-async function carregarContas() {
-  try {
-    const url = buildWebhookUrl("listacontas", { empresa_id });
-    const resp = await fetch(url);
-    const data = await resp.json();
-    setContas(data);
-  } catch (error) {
-    console.error("Erro ao carregar contas:", error);
-  }
-}
-
-
- 
-
- const handleChange = (e) => {
-  const { name, value } = e.target;
-  setForm((prev) => ({ ...prev, [name]: value }));
-};
-
-
-
- const handleSalvar = async () => {
-  if (!form.empresa_id) {
-    alert("Empresa não carregada.");
-    return;
+  async function carregarCategorias() {
+    try {
+      const url = buildWebhookUrl("listacategorias", { empresa_id, tipo: form.tipo });
+      const resp = await fetch(url);
+      const data = await resp.json();
+      setCategorias(data);
+    } catch (error) {}
   }
 
-   const payload = {
-  id_empresa: form.empresa_id,
-  tipo: form.tipo,
-  conta: form.conta_id,        // <-- CORRIGIDO
-  categoria: form.categoria_id, // <-- CORRIGIDO
-  valor: form.valor,
-  descricao: form.descricao,
-  data: form.data,
-};
+  async function carregarContas() {
+    try {
+      const url = buildWebhookUrl("listacontas", { empresa_id });
+      const resp = await fetch(url);
+      const data = await resp.json();
+      setContas(data);
+    } catch (error) {}
+  }
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-  try {
-    const url = buildWebhookUrl("novolancamento"); // ✅ AQUI estava o erro
-    console.log("URL gerada:", url);
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+  const handleSalvar = async () => {
+    const payload = {
+      id_empresa: form.empresa_id,
+      tipo: form.tipo,
+      conta: form.conta_id,
+      categoria: form.categoria_id,
+      valor: form.valor,
+      descricao: form.descricao,
+      data: form.data,
+    };
 
-    if (resp.ok) {
-      alert("Lançamento salvo com sucesso!");
-      navigate(-1); // Volta para a tela anterior
-    } else {
-      const erro = await resp.text();
-      console.error("❌ Erro ao salvar:", erro);
-      alert("Erro ao salvar o lançamento.");
+    try {
+      const url = buildWebhookUrl("novolancamento");
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (resp.ok) {
+        alert("Lançamento salvo!");
+        navigate(-1);
+      } else {
+        alert("Erro ao salvar.");
+      }
+    } catch (e) {
+      alert("Erro de requisição.");
     }
-  } catch (e) {
-    console.error("❌ Erro na requisição:", e);
-    alert("Erro na requisição.");
-  }
-
-
-
-
-};
- 
+  };
 
   return (
+    <div className="min-h-screen py-6 px-4 bg-bgSoft">
 
-    
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow">
-      <h2 className="text-xl font-bold mb-4">Novo Lançamento</h2>
+      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">
 
-      <div className="mb-4">
-        <label className="block text-sm font-semibold mb-1">Tipo</label>
-        <select
-          value={form.tipo}
-          onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-          className="w-full border rounded-lg px-3 py-2"
+        {/* TÍTULO IGUAL AO EDITAR */}
+        <h1
+          className="text-2xl md:text-3xl font-bold mb-6 text-center"
+          style={{ color: "#ff9f43" }}
         >
-          <option value="entrada">Entrada</option>
-          <option value="saida">Saída</option>
-        </select>
+          ✏️ Novo Lançamento
+        </h1>
+
+        <div className="flex flex-col space-y-4">
+
+          {/* Tipo */}
+          <label className="block text-base font-bold">Tipo</label>
+          <select
+            name="tipo"
+            value={form.tipo}
+            onChange={handleChange}
+            className="input-base w-48 h-10"
+          >
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+          </select>
+
+          {/* Categoria */}
+          <label className="block text-base font-bold">Categoria</label>
+          <select
+            name="categoria_id"
+            value={form.categoria_id}
+            onChange={handleChange}
+            className="input-base w-72 h-10"
+          >
+            <option value="">Selecione</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
+
+          {/* GRID IGUAL AO EDITAR */}
+          <div className="grid grid-cols-2 gap-4">
+
+            <div>
+              <label className="block text-base font-bold">Conta</label>
+              <select
+                name="conta_id"
+                value={form.conta_id}
+                onChange={handleChange}
+                className="input-base w-64 h-10"
+              >
+                <option value="">Selecione</option>
+                {contas.map((c) => (
+                  <option key={c.id} value={c.id}>{c.nome}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-base font-bold">Valor</label>
+              <input
+                type="number"
+                name="valor"
+                value={form.valor}
+                onChange={handleChange}
+                className="input-base w-52 h-10"
+              />
+            </div>
+
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-base font-bold">Data</label>
+              <input
+                type="date"
+                name="data"
+                value={form.data}
+                onChange={handleChange}
+                className="input-base w-48 h-10"
+              />
+            </div>
+
+            <div>
+              <label className="block text-base font-bold">Origem</label>
+              <input
+                type="text"
+                name="origem"
+                value={form.origem}
+                onChange={handleChange}
+                className="input-base w-48 h-10"
+              />
+            </div>
+          </div>
+
+          {/* Descrição */}
+          <label className="block text-base font-bold">Descrição</label>
+          <input
+            type="text"
+            name="descricao"
+            value={form.descricao}
+            onChange={handleChange}
+            className="input-base w-full h-10"
+          />
+
+          {/* Botões */}
+          <div className="flex gap-4 pt-4">
+            <button
+              onClick={handleSalvar}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold"
+            >
+              Salvar
+            </button>
+
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+            >
+              Voltar
+            </button>
+          </div>
+
+        </div>
+
       </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-semibold mb-1">Categoria</label>
-        <select
-          value={form.categoria_id}
-          onChange={(e) => setForm({ ...form, categoria_id: e.target.value })}
-          className="w-full border rounded-lg px-3 py-2"
-        >
-          <option value="">Selecione</option>
-          {categorias.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.nome}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-semibold mb-1">Conta</label>
-        <select
-          value={form.conta_id}
-          onChange={(e) => setForm({ ...form, conta_id: e.target.value })}
-          className="w-full border rounded-lg px-3 py-2"
-        >
-          <option value="">Selecione</option>
-          {contas.map((conta) => (
-            <option key={conta.id} value={conta.id}>
-              {conta.nome}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-semibold mb-1">Valor</label>
-        <input
-          type="number"
-          value={form.valor}
-          onChange={(e) => setForm({ ...form, valor: e.target.value })}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-semibold mb-1">Data</label>
-        <input
-          type="date"
-          value={form.data}
-          onChange={(e) => setForm({ ...form, data: e.target.value })}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-semibold mb-1">Descrição</label>
-        <input
-          type="text"
-          value={form.descricao}
-          onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-          className="w-full border rounded-lg px-3 py-2"
-        />
-      </div>
-
-      <button
-          onClick={handleSalvar}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32 text-center"
-        >
-          Salvar
-        </button>
-
-      
     </div>
   );
 }

@@ -27,6 +27,30 @@ export default function EditarLancamento() {
     origem: "",
   });
 
+  /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
+const THEME = {
+  pageBg: "#0e2a3a",                 // fundo da página (escuro)
+  panelBg: "#1e40af",                // fundos auxiliares (se precisar) panelBg: "#4a88a9ff",   
+  panelBorder: "rgba(255,159,67,0.30)",
+
+  cardBg: "#254759",                 // bloco interno mais claro
+  cardBorder: "rgba(255,159,67,0.35)",
+  cardShadow: "0 6px 20px rgba(0,0,0,0.25)",
+
+  title: "#ff9f43",
+  text: "#e8eef2",
+  textMuted: "#bac7cf",
+
+  fieldBg: "#1f3b4d",                // inputs (um tom acima do card)
+  fieldBorder: "rgba(255,159,67,0.25)",
+  focusRing: "#ff9f43",
+
+  btnPrimary: "#ff9f43",
+  btnPrimaryText: "#1b1e25",
+  btnSecondary: "#ef4444",
+  btnSecondaryText: "#ffffff",
+};
+
   // 🔵 CARREGAR DADOS DO LANÇAMENTO
   useEffect(() => {
     if (!id || !id_empresa) {
@@ -140,112 +164,143 @@ useEffect(() => {
     return <p className="p-4 text-gray-700">Carregando...</p>;
   }
 
-  return (
-    <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow">
-      <h2 className="text-2xl font-bold mb-4">Editar Lançamento</h2>
+ return (
+  <div className="min-h-screen py-6 px-4 bg-bgSoft">
 
-      {/* Descrição */}
-      <label className="block mb-2 font-semibold text-sm">Descrição</label>
-      <input
-        type="text"
-        name="descricao"
-        value={form.descricao}
-        onChange={onChange}
-        className="border rounded-lg px-3 py-2 w-full mb-4"
-      />
+    <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">
 
-      {/* Categoria */}
-      <label className="block mb-2 font-semibold text-sm">Categoria</label>
-      <select
-        name="categoria_id"
-        value={form.categoria_id}
-        onChange={onChange}
-        className="border rounded-lg px-3 py-2 w-full mb-4"
+      {/* Título */}
+      <h1
+        className="text-2xl md:text-3xl font-bold mb-6 text-center"
+        style={{ color: THEME.title }}
       >
-        <option value="">Selecione</option>
-        {categorias.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.nome}
-          </option>
-        ))}
-      </select>
+        ✏️ Editar Lançamento
+      </h1>
 
-      {/* Conta */}
-      <label className="block mb-2 font-semibold text-sm">Conta</label>
-      <select
-        name="conta_id"
-        value={form.conta_id}
-        onChange={onChange}
-        className="border rounded-lg px-3 py-2 w-full mb-4"
-      >
-        <option value="">Selecione</option>
-        {contas.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.nome}
-          </option>
-        ))}
-      </select>
+      <div className="flex flex-col space-y-4">
 
-      {/* Valor */}
-      <label className="block mb-2 font-semibold text-sm">Valor</label>
-      <input
-        type="number"
-        name="valor"
-        value={form.valor}
-        onChange={onChange}
-        className="border rounded-lg px-3 py-2 w-full mb-4"
-      />
+        {/* 1 — Tipo */}
+        <div>
+          <label className="block text-base font-bold">Tipo</label>
+          <select
+            name="tipo"
+            value={form.tipo}
+            onChange={onChange}
+            className="input-base w-48 h-10"
+          >
+            <option value="">Selecione</option>
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+          </select>
+        </div>
 
-      {/* Data */}
-      <label className="block mb-2 font-semibold text-sm">Data</label>
-      <input
-        type="date"
-        name="data_movimento"
-        value={form.data_movimento}
-        onChange={onChange}
-        className="border rounded-lg px-3 py-2 w-full mb-4"
-      />
+        {/* 2 — Categoria */}
+        <div>
+          <label className="block text-base font-bold">Categoria</label>
+          <select
+            name="categoria_id"
+            value={form.categoria_id}
+            onChange={onChange}
+            className="input-base w-72 h-10"
+          >
+            <option value="">Selecione</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
+        </div>
 
-      {/* Tipo */} 
+        {/* 3 — Conta + Valor */}
+        <div className="grid grid-cols-2 gap-4">
+          
+          <div>
+            <label className="block text-base font-bold">Conta</label>
+            <select
+              name="conta_id"
+              value={form.conta_id}
+              onChange={onChange}
+              className="input-base w-64 h-10"
+            >
+              <option value="">Selecione</option>
+              {contas.map((c) => (
+                <option key={c.id} value={c.id}>{c.nome}</option>
+              ))}
+            </select>
+          </div>
 
-      <label className="block mb-2 font-semibold text-sm">Tipo</label>
-      <select
-        name="tipo"
-        value={form.tipo}
-        onChange={onChange} 
-        className="border rounded-lg px-3 py-2 w-full mb-4"
-      >
-        <option value="">Selecione</option>
-        <option value="entrada">Entrada</option>
-        <option value="saida">Saída</option>
-      </select>
+          <div>
+            <label className="block text-base font-bold">Valor</label>
+            <input
+              type="number"
+              name="valor"
+              value={form.valor}
+              onChange={onChange}
+              className="input-base w-52 h-10"
+            />
+          </div>
 
-      {/* Origem */}
-      <label className="block mb-2 font-semibold text-sm">Origem</label>
-      <input
-        type="text"
-        name="origem"
-        value={form.origem}
-        onChange={onChange}
-        className="border rounded-lg px-3 py-2 w-full mb-6"
-      />
+        </div>
 
-      {/* BOTÕES */}
-      <div className="flex gap-4">
-        <button
-          onClick={salvar}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold"
-        >
-          {salvando ? "Salvando..." : "Salvar"}
-        </button>
+        {/* 4 — Data + Origem */}
+        <div className="grid grid-cols-2 gap-4">
 
-        <button
-          onClick={() => navigate("/lancamentos")}
-          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
-        >
-          Voltar
-        </button>
+          <div>
+            <label className="block text-base font-bold">Data</label>
+            <input
+              type="date"
+              name="data_movimento"
+              value={form.data_movimento}
+              onChange={onChange}
+              className="input-base w-48 h-10"
+            />
+          </div>
+
+          <div>
+            <label className="block text-base font-bold">Origem</label>
+            <input
+              type="text"
+              name="origem"
+              value={form.origem}
+              onChange={onChange}
+              className="input-base w-48 h-10"
+            />
+          </div>
+
+        </div>
+
+        {/* 5 — Descrição */}
+        <div>
+          <label className="block text-base font-bold">Descrição</label>
+          <input
+            type="text"
+            name="descricao"
+            value={form.descricao}
+            onChange={onChange}
+            className="input-base w-full h-10"
+          />
+        </div>
+
+        {/* Botões */}
+        <div className="flex gap-4 pt-4">
+          <button
+            onClick={salvar}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold"
+          >
+            {salvando ? "Salvando..." : "Salvar"}
+          </button>
+
+          <button
+            onClick={() => navigate("/lancamentos")}
+            className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+          >
+            Voltar
+          </button>
+        </div>
+
       </div>
+
     </div>
-  );
+  </div>
+);
+
 }

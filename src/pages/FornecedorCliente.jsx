@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 
@@ -7,12 +7,9 @@ export default function FornecedorCliente() {
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
 
   const [lista, setLista] = useState([]);
-  const [tipo, setTipo] = useState("fornecedor"); // fornecedor | cliente | ambos
+  const [tipo, setTipo] = useState("fornecedor");
   const [carregando, setCarregando] = useState(false);
 
-  // =============================
-  // CARREGAR LISTA
-  // =============================
   async function carregar() {
     try {
       setCarregando(true);
@@ -22,11 +19,10 @@ export default function FornecedorCliente() {
         tipo,
       });
 
-      const resp = await fetch(url, { method: "GET" });
-
+      const resp = await fetch(url);
       const texto = await resp.text();
-      let json = [];
 
+      let json = [];
       try {
         json = JSON.parse(texto);
       } catch {
@@ -36,7 +32,6 @@ export default function FornecedorCliente() {
 
       setLista(Array.isArray(json) ? json : []);
     } catch (e) {
-      console.error("Erro ao carregar fornecedor/cliente:", e);
       alert("Erro ao carregar dados.");
     } finally {
       setCarregando(false);
@@ -44,8 +39,8 @@ export default function FornecedorCliente() {
   }
 
   useEffect(() => {
-  carregar();
-}, [tipo]);
+    carregar();
+  }, [tipo]);
 
   function novo() {
     navigate("/new-provider-client");
@@ -55,77 +50,48 @@ export default function FornecedorCliente() {
     navigate(`/edit-fornecedorcliente/${id}`);
   }
 
-
   async function excluirFornecedorCliente(id) {
-  if (!confirm("Tem certeza que deseja excluir este fornecedor/cliente?")) return;
-
-  try {
-    const url = buildWebhookUrl("excluirfornecedorcliente");
-
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: Number(id),
-        empresa_id: Number(empresa_id),
-      }),
-    });
-
-    const texto = await resp.text();
-    let json = {};
+    if (!confirm("Deseja excluir este registro?")) return;
 
     try {
-      json = texto ? JSON.parse(texto) : {};
+      const url = buildWebhookUrl("excluirfornecedorcliente");
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, empresa_id }),
+      });
+
+      const texto = await resp.text();
+      let json = {};
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      if (texto.includes("foreign") || texto.includes("violates")) {
+        alert("Não é possível excluir: possui movimentações.");
+        return;
+      }
+
+      alert(json.message || "Excluído com sucesso!");
+
+      setLista((p) => p.filter((x) => x.id !== id));
+      carregar();
     } catch (e) {
-      console.log("Resposta não JSON:", texto);
+      alert("Erro ao excluir.");
     }
-
-    // =============================
-    // ⚠️ TRATAMENTO DE FK (igual cartão)
-    // =============================
-    if (
-      texto.includes("foreign key") ||
-      texto.includes("violates") ||
-      texto.toLowerCase().includes("não é possível") ||
-      texto.toLowerCase().includes("movimenta") ||
-      json?.message?.toLowerCase?.().includes("não é possível excluir")
-    ) {
-      alert("Não é possível excluir: este registro possui lançamentos/movimentações.");
-      return;
-    }
-
-    // =============================
-    // SUCESSO
-    // =============================
-    alert(json?.message || "Registro excluído com sucesso!");
-
-    // Remove da tela imediatamente
-    setLista(prev => prev.filter(item => item.id !== id));
-
-    // Recarrega via webhook
-    carregar();
-
-  } catch (e) {
-    console.error("Erro excluir fornecedor/cliente:", e);
-    alert("Erro ao excluir registro.");
   }
-}
-
-
-
-
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Fornecedores / Clientes</h2>
 
-      {/* FILTROS */}
-      <div className="bg-white p-5 rounded-xl shadow flex items-end gap-6 mb-6 max-w-[80%]"> 
-      
+      {/* FILTRO */}
+      <div className="bg-gray-200 p-5 rounded-xl shadow border border flex items-end gap-6 mb-10 max-w-[80%]">
         <div>
-          <label className="text-sm font-semibold block mb-1">Tipo</label>
+          <label className="text-base font-bold block mb-1">Tipo</label>
           <select
-            className="border rounded-lg px-3 py-2 w-48 text-base"
+            className="border font-bold rounded-lg px-3 py-2 w-48 text-base"
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
           >
@@ -137,89 +103,76 @@ export default function FornecedorCliente() {
 
         <button
           onClick={carregar}
-          className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold text-sm"
+          className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold text-base"
         >
           {carregando ? "Carregando..." : "Pesquisar"}
         </button>
 
         <button
           onClick={novo}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm"
+          className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-base"
         >
           Novo
         </button>
       </div>
 
-      {/* DASHBOARD */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        {lista.length === 0 ? (
-          <p className="text-gray-600 text-sm col-span-3">
-            Nenhum registro encontrado.
-          </p>
-        ) : (
-          lista.map((c, i) => (
-                        <div
-                key={c.id}
-                className="
-                  rounded-xl 
-                  shadow 
-                  p-5 
-                  border 
-                  border-[#3862b7] 
-                  border-l-4
-                  bg-[#f5f8ff]
-                  max-w-xl
-                "
-              >
+      {/* LISTAGEM EM TABELA (FIGURA 2) */}
+      <div className="bg-white shadow rounded-lg overflow-hidden mt-6">
+        <table className="w-full text-base border-collapse">
+          <thead>
+            <tr className="bg-blue-300 text-left font-bold text-lg">
+              <th className="p-2 border">Nome</th>
+              <th className="p-2 border">Tipo</th>
+              <th className="p-2 border">Documento</th>
+              <th className="p-2 border">Telefone</th>
+              <th className="p-2 border text-center">Ações</th>
+            </tr>
+          </thead>
 
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="font-bold text-lg text-gray-800">
-                  {c.nome}
-                </h3>
+          <tbody>
+            {lista.map((c, i) => {
+              const tipoColor =
+                c.tipo?.toLowerCase() === "fornecedor"
+                  ? "text-red-700 font-bold"
+                  : "text-green-700 font-bold";
 
-                <button
-                  onClick={() => editar(c.id)}
-                  className="text-blue-600 text-sm font-semibold"
+              return (
+                <tr
+                  key={c.id}
+                  className={i % 2 === 0 ? "bg-white" : "bg-gray-100"}
                 >
-                  Editar
-                </button>
-              </div>
+                  <td className="p-2 border font-semibold">{c.nome}</td>
 
-              <div className="text-right mt-3">
-                <button
-                  onClick={() => excluirFornecedorCliente(c.id)}
-                  className="text-red-600 text-sm font-semibold hover:underline"
-                >
-                  Excluir
-                </button>
-              </div>
+                  <td className={`p-2 border ${tipoColor}`}>
+                    {c.tipo.charAt(0).toUpperCase() + c.tipo.slice(1)}
+                  </td>
 
+                  <td className="p-2 border">{c.cpf_cnpj}</td>
 
+                  <td className="p-2 border">{c.telefone}</td>
 
+                  <td className="p-4 border text-center">
+                  <div className="flex justify-center items-center gap-6">
+                    <button
+                      onClick={() => editar(c.id)}
+                      className="text-blue-700 font-bold"
+                    >
+                      Editar
+                    </button>
 
-              <div className="text-sm text-gray-700 leading-6">
-                <p><strong>Tipo:</strong> {c.tipo}</p>
-
-                {c.cpf_cnpj && (
-                  <p><strong>CPF/CNPJ:</strong> {c.cpf_cnpj}</p>
-                )}
-
-                {c.telefone && (
-                  <p><strong>Telefone:</strong> {c.telefone}</p>
-                )}
-
-                {c.whatsapp && (
-                  <p><strong>WhatsApp:</strong> {c.whatsapp}</p>
-                )}
-
-                {c.email && (
-                  <p><strong>Email:</strong> {c.email}</p>
-                )}
-              </div>
-            </div>
-          ))
-        )}
+                    <button
+                      onClick={() => excluirFornecedorCliente(c.id)}
+                      className="text-red-700 font-bold"
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

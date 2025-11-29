@@ -15,6 +15,32 @@ export default function NovaConta() {
     padrao: false
   });
 
+/* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
+const THEME = {
+  pageBg: "#0e2a3a",                 // fundo da página (escuro)
+  panelBg: "#1e40af",                // fundos auxiliares (se precisar) panelBg: "#4a88a9ff",   
+  panelBorder: "rgba(255,159,67,0.30)",
+
+  cardBg: "#254759",                 // bloco interno mais claro
+  cardBorder: "rgba(255,159,67,0.35)",
+  cardShadow: "0 6px 20px rgba(0,0,0,0.25)",
+
+  title: "#ff9f43",
+  text: "#e8eef2",
+  textMuted: "#bac7cf",
+
+  fieldBg: "#1f3b4d",                // inputs (um tom acima do card)
+  fieldBorder: "rgba(255,159,67,0.25)",
+  focusRing: "#ff9f43",
+
+  btnPrimary: "#ff9f43",
+  btnPrimaryText: "#1b1e25",
+  btnSecondary: "#ef4444",
+  btnSecondaryText: "#ffffff",
+};
+
+
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -88,105 +114,175 @@ export default function NovaConta() {
     }
   };
 
+
+
+  
+  const fieldCls =
+    "w-full px-3 py-2 rounded-xl focus:outline-none transition-shadow";
+  const fieldStyle = {
+    background: THEME.fieldBg,
+    color: THEME.text,
+    border: `1px solid ${THEME.fieldBorder}`,
+    boxShadow: "none",
+  };
+  const fieldFocus = { boxShadow: `0 0 0 2px ${THEME.focusRing}55` };
+
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white shadow rounded">
-      <h2 className="text-2xl font-bold mb-6">Nova Conta Financeira</h2>
+  <div className="min-h-screen py-10 px-4" style={{ background: THEME.text }}>
+   <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white"> 
+    <div
+      className="w-full max-w-4xl mx-auto rounded-2xl p-8 shadow-2xl"
+      style={{
+        background: THEME.panelBg,
+        borderColor: THEME.cardBorder,
+        boxShadow: THEME.cardShadow,
+      }}
+    >
+      <h1
+        className="text-2xl md:text-3xl font-bold mb-8 text-center"
+        style={{ color: THEME.title }}
+      >
+        ✏️ Nova Conta Financeira
+      </h1>
 
-      <div className="flex flex-col gap-4">
-        <input
-          name="nome"
-          placeholder="Nome da Conta"
-          className="border p-2 rounded"
-          value={form.nome}
-          onChange={handleChange}
-        />
+      <div className="flex flex-col gap-6">
 
-        <input
-          name="banco"
-          placeholder="Banco"
-          className="border p-2 rounded"
-          value={form.banco}
-          onChange={handleChange}
-        />
-
-        <input
-          name="tipo"
-          placeholder="Tipo (corrente / poupança / carteira)"
-          className="border p-2 rounded"
-          value={form.tipo}
-          onChange={handleChange}
-        />
-
-        <input
-          name="saldo_inicial"
-          placeholder="Saldo inicial"
-          className="border p-2 rounded"
-          value={form.saldo_inicial}
-          onChange={handleChange}
-        />
-
-        <input
-          name="nro_banco"
-          placeholder="Número do Banco"
-          className="border p-2 rounded"
-          value={form.nro_banco}
-          onChange={handleChange}
-        />
-
-        <input
-          name="agencia"
-          placeholder="Agência"
-          className="border p-2 rounded"
-          value={form.agencia}
-          onChange={handleChange}
-        />
-
-        <input
-          name="conta"
-          placeholder="Número da Conta"
-          className="border p-2 rounded"
-          value={form.conta}
-          onChange={handleChange}
-        />
-
-        <label className="flex items-center gap-2">
+        {/* Nome */}
+        <div>
+          <label className="block font-bold mb-1">Nome da Conta</label>
           <input
-            type="checkbox"
-            name="conjunta"
-            checked={form.conjunta}
+            name="nome" 
+            value={form.nome}
             onChange={handleChange}
+             className="input-base w-full h-10"
+             placeholder="Nome da sua conta para identificação"
           />
-          Conjunta
-        </label>
+        </div>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="juridica"
-            checked={form.juridica}
-            onChange={handleChange}
-          />
-          Jurídica
-        </label>
+        {/* Banco + Número do Banco */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block font-bold mb-1">Banco</label>
+            <input
+              name="banco"
+              className="input-base w-64 h-10"
+              value={form.banco}
+              onChange={handleChange}
+                 placeholder="Nome do Banco"
+            />
+          </div>
 
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="padrao"
-            checked={form.padrao}
-            onChange={handleChange}
-          />
-          Conta padrão?
-        </label>
+          <div>
+            <label className="block font-bold mb-1">Número do Banco</label>
+            <input
+              name="nro_banco"
+                 className="input-base w-64 h-10"
+              value={form.nro_banco}
+              onChange={handleChange}
+                 placeholder="0341"
+            />
+          </div>
+        </div>
 
+        {/* Conta + Agência + Número Conta */}
+       
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block font-bold mb-1">Agência</label>
+            <input
+              name="agencia"
+               className="input-base w-48 h-10"
+              value={form.agencia}
+              onChange={handleChange}
+               placeholder="0001"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold mb-1">Número da Conta</label>
+            <input
+              name="conta"
+               className="input-base w-48 h-10"
+              value={form.conta}
+              onChange={handleChange}
+                placeholder="00458-8"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block font-bold mb-1">Tipo</label>
+            <input
+              name="tipo"
+                className="input-base w-48 h-10"
+              value={form.tipo}
+              onChange={handleChange}
+              placeholder="Conta Corrente"
+            />
+          </div>
+
+
+        </div>
+
+        {/* Tipo + Saldo Inicial */}
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6"> 
+          <div>
+            <label className="block font-bold mb-1">Saldo Inicial</label>
+            <input
+              name="saldo_inicial"
+              className="input-base w-72 h-10"
+              value={form.saldo_inicial}
+              onChange={handleChange}
+              placeholder="0,00"
+            />
+          </div>
+        </div></div>
+
+        {/* Checkboxes */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="conjunta"
+              checked={form.conjunta}
+              onChange={handleChange}
+            />
+            Conjunta
+          </label>
+
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="juridica"
+              checked={form.juridica}
+              onChange={handleChange}
+            />
+            Jurídica
+          </label>
+
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="padrao"
+              checked={form.padrao}
+              onChange={handleChange}
+            />
+            Padrão
+          </label>
+        </div>
+
+        {/* Botão */}
         <button
           onClick={salvar}
           disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded mt-4 disabled:opacity-60"
+          className="bg-blue-600 text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
         >
           {loading ? "Salvando..." : "Salvar"}
         </button>
+     </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }

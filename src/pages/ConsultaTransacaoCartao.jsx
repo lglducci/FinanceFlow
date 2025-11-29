@@ -94,15 +94,16 @@ export default function ConsultaTransacaoCartao() {
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Transações de Cartão</h2>
 
-      {/* FILTROS */}
+      {/* FILTROS  */}
 
-        <div className="bg-gray-200 p-2.5 rounded-xl shadow"> 
-      <div className="bg-gray-200 p-2.5 rounded-lg mb-4 flex flex-col md:flex-row md:items-end gap-4">
+        <div className="bg-gray-200 p-2.5 rounded-xl shadow-xl border border mb-10">  
+      
+      <div className="bg-gray-200 p-2.5 rounded-lg mb-10 flex flex-col md:flex-row md:items-end gap-4">
 
         <div className="flex flex-col">
-          <label className="font-semibold mb-1">Cartão</label>
+          <label className="font-bold mb-1">Cartão</label>
           <select
-            className="border px-3 py-1.5 rounded w-52"
+            className="border font-bold px-3 py-1.5 rounded w-52 h-10"
             value={cartao}
             onChange={(e) => setCartao(e.target.value)}
           >
@@ -120,10 +121,10 @@ export default function ConsultaTransacaoCartao() {
         
 
         <div className="flex flex-col">
-          <label className="font-semibold mb-1">Mês referência</label>
+          <label className="font-bold mb-1">Mês referência</label>
           <input
             type="month"
-            className="border px-3 py-1.5 rounded w-52"
+            className="border font-bold  px-3 py-1.5 rounded w-52 h-10"
             value={referencia}
             onChange={(e) => setReferencia(e.target.value)}
           />
@@ -167,7 +168,7 @@ export default function ConsultaTransacaoCartao() {
 
             <div className="grid grid-cols-2 gap-4 text-gray-700">
               <div className="p-3 bg-gray-100 rounded">
-                <span className="font-semibold block text-sm text-gray-600">
+                <span className="font-bold block text-sm rounded-xl shadow-xl border border  text-gray-600">
                   Mês referência
                 </span>
                 <span className="text-lg font-bold">
@@ -182,13 +183,13 @@ export default function ConsultaTransacaoCartao() {
                 <span className="font-semibold block text-sm text-gray-600">
                   Status
                 </span>
-                <span className="text-lg font-bold capitalize">
+                <span className="text-lg font-bold  capitalize">
                   {dados.fatura.status}
                 </span>
               </div>
 
               <div className="p-3 bg-gray-100 rounded">
-                <span className="font-semibold block text-sm text-gray-600">
+                <span className="font-semibold block rounded-xl shadow-xl border border text-sm text-gray-600">
                   Total da Fatura
                 </span>
                 <span className="text-lg font-bold text-blue-700">
@@ -200,7 +201,7 @@ export default function ConsultaTransacaoCartao() {
               </div>
 
               <div className="p-3 bg-gray-100 rounded">
-                <span className="font-semibold block text-sm text-gray-600">
+                <span className="font-semibold block rounded-xl shadow-xl border border  text-sm text-gray-600">
                   Soma Transações
                 </span>
                 <span className="text-lg font-bold text-green-700">

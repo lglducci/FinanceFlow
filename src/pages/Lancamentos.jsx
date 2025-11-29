@@ -228,7 +228,7 @@ const [loading, setLoading] = useState(false);
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col">
             <span className="text-base font-bold mb-1">Períodos</span>
-            <div className="flex gap-4 text-sm font-bold flex-wrap">
+            <div className="flex gap-4 text-base font-bold flex-wrap">
               {["mes", "15", "semana", "hoje"].map((tipo) => (
                 <label key={tipo}>
                   <input

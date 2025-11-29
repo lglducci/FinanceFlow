@@ -95,16 +95,19 @@ export default function Visaogeral() {
 {/* FILTROS */}
 {/*<div className="bg- blue p-6 rounded-xl shadow mb-10 flex flex-col gap-2">*/}
 
- <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600"> 
-        
-  <div className="bg-gray-200 p-6 rounded-xl shadow mb-8 flex flex-col gap-2">
+  
 
-  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+  
+  <div className="bg-gray 100 p-8 rounded-2xl shadow-xl border border-gray-300 mb-10">
+
+  <div className="bg-gray-200 p-6 rounded-xl shadow mb-8 flex flex-col gap-2"> 
+ 
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
     
     <div className="flex flex-col">
       
-      <span className="text-base font-semibold mb-1">Períodos</span>
-      <div className="flex gap-4 text-sm flex-wrap">
+      <span className="text-base font-bold mb-1">Períodos</span>
+      <div className="flex gap-4 text-base flex-wrap">
         {["mes", "15", "semana", "hoje"].map((tipo) => (
           <button
             key={tipo}
@@ -137,7 +140,7 @@ export default function Visaogeral() {
    <table className="w-full text-sm border-collapse">*/}
 
   <div className="bg-gray-300 p-4 rounded-xl shadow">
-  <table className="w-full text-sm border-collapse">
+  <table className="w-full text-base border-collapse">
   <thead>
     <tr className="bg-blue-300 font-black text-lg">
       <th className="p-2 text-left border">Banco</th>

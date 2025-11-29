@@ -97,20 +97,20 @@ return (
   <div className="p-6">
 
     {/* Título + Botão */}
-    <div className="flex justify-between items-center mb-6">
+    <div className="flex justify-between items-center mb-10">
       <h2 className="text-2xl font-bold">Cartões</h2>
 
        
     </div>
 
     {/* FILTROS */}
-     <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600"> 
-    <div className="bg-white p-5 rounded-xl shadow flex items-end gap-6 mb-6">
+     <div className="bg-gray-100 p-5 shadow rounded-lg p-4 border-l-4 border-gray-500 mb-10"> 
+    <div className="bg-gray-200 p-5 rounded-xl shadow flex items-end gap-6 mb-10">
 
       <div>
-        <label className="text-base font-semibold block mb-1">Status</label>
+        <label className="text-base font-bold block mb-1">Status</label>
         <select
-          className="border rounded-lg px-3 py-2 w-44 text-base"
+          className="border rounded-lg font-bold px-3 py-2 w-44 text-base"
           value={statusFiltro}
           onChange={(e) => setStatusFiltro(e.target.value)}
         >

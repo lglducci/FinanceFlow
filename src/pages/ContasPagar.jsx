@@ -204,17 +204,19 @@ useEffect(() => {
 
   return (
     <div>
+      
       <h2 className="text-xl font-bold mb-4">Contas a Pagar</h2>
       {/* FILTROS */}
-<div className="bg-white rounded-xl shadow p-5 border border-[#3862b7] mb-6">
+<div className="bg-gray-200 rounded-xl shadow p-5 border border-gray-400 mb-4 w-[1850px]">
 
-  <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+    
 
     {/* PERÍODO */}
     <div className="col-span-1">
-      <label className="font-semibold text-base block mb-1">Período</label>
-      <div className="flex flex-col gap-1 text-sm">
-         <label className="flex items-center gap-2 text-[15px] font-semibold cursor-pointer">
+      <label className="font-semibold text-base block mb-3">Período</label>
+      <div className="flex flex-col gap-1 text-base">
+         <label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
   <input
     type="radio"
     className="w-4 h-4"
@@ -224,7 +226,7 @@ useEffect(() => {
   Hoje
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-semibold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
   <input
     type="radio"
     className="w-4 h-4"
@@ -234,7 +236,7 @@ useEffect(() => {
   Próxima Semana
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-semibold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
   <input
     type="radio"
     className="w-4 h-4"
@@ -244,7 +246,7 @@ useEffect(() => {
   Próximos 15 dias
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-semibold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
   <input
     type="radio"
     className="w-4 h-4"
@@ -254,7 +256,7 @@ useEffect(() => {
   Próximo Mês
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-semibold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
   <input
     type="radio"
     className="w-4 h-4"
@@ -264,7 +266,7 @@ useEffect(() => {
   Próximo Bimestre
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-semibold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
   <input
     type="radio"
     className="w-4 h-4"
@@ -274,7 +276,7 @@ useEffect(() => {
   Próximo Trimestre
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-semibold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
   <input
     type="radio"
     className="w-4 h-4"
@@ -286,50 +288,58 @@ useEffect(() => {
 
       </div>
     </div>
+ 
+
+  <div className="bg-gray-380 rounded-xl shadow p-5 border border-gray-200 mb-8 w-[700px]"> 
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-4 items-start w-[550px]">
+
+
 
     {/* DATA INI */}
     <div>
-      <label className="font-semibold text-sm block mb-1">Data início</label>
+      <label className="font-bold text-base block mb-1">Data início</label>
       <input
         type="date"
         value={dataIni}
         onChange={e => setDataIni(e.target.value)}
-        className="border rounded px-3 py-2 w-full"
+        className="border font-bold text-base rounded px-2 py-1 w-38 mb-4"
       />
     </div>
-
+  
     {/* DATA FIM */}
     <div>
-      <label className="font-semibold text-sm block mb-1">Data fim</label>
+      <label className="font-bold text-base block mb-1">Data fim</label>
       <input
         type="date"
         value={dataFim}
         onChange={e => setDataFim(e.target.value)}
-        className="border rounded px-3 py-2 w-full"
+        className="border font-bold text-base rounded px-2 py-1 w-38 mb-4"
       />
     </div>
+    </div>
 
+     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start w-[355px]"> 
     {/* STATUS */}
     <div>
-      <label className="font-semibold text-sm block mb-1">Status</label>
+      <label className="font-bold text-base block mb-2">Status</label>
       <select
         value={status}
         onChange={e => setStatus(e.target.value)}
-        className="border rounded px-3 py-2 w-full"
+        className="border font-bold rounded px-3 py-2 w-42 mb-4"
       >
         <option value="aberto">Aberto</option>
         <option value="pago">Pago</option>
         <option value="">Todos</option>
       </select>
-    </div>
+    </div> 
 
     {/* FORNECEDOR */}
     <div>
-      <label className="font-semibold text-sm block mb-1">Fornecedor</label>
+      <label className="font-bold text-base block mb-2">Fornecedor</label>
       <select
         value={fornecedor_id}
         onChange={e => setFornecedorId(Number(e.target.value))}
-        className="border rounded px-3 py-2 w-full"
+        className="border font-bold rounded px-3 py-2 w-42 mb-4"
       >
         <option value={0}>Todos</option>
         {fornecedores.map(f => (
@@ -337,11 +347,11 @@ useEffect(() => {
         ))}
       </select>
     </div>
-
   </div>
+ 
 
   {/* BOTÕES */}
-  <div className="flex justify-end gap-4 mt-6">
+  <div className="flex justify-left gap-2 mt-2">
     <button onClick={pesquisar} className="bg-blue-600 text-white px-5 py-2 rounded font-semibold">
       Pesquisar
     </button>
@@ -354,42 +364,38 @@ useEffect(() => {
   className="bg-red-600 text-white px-5 py-2 rounded font-semibold"
 >
   Excluir Parcelamento
-</button>
-
-   
-
+</button>  
  </div>
-  
+    </div>
+   </div>
 
 </div>
-   <div className="bg-white rounded-xl shadow p-5 border-l-4 border-red-500 w-64 mb-4">
-  <p className="text-sm text-gray-600">Total do Período</p>
+   <div className="bg-gray-100 rounded-xl shadow p-5 border-l-4 border-red-500 w-64 mb-4">
+  <p className="text-base text-gray-600">Total do Período</p>
   <p className="text-2xl font-bold">
     {totalPeriodo.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL"
     })}
   </p>
-</div>
-
-
+</div> 
       {/* LISTA EM TABELA / EXTRATO */}
       {loading && <p>Carregando...</p>}
 
-      <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-blue-200">
+      <div className="bg-gray-300 rounded-xl shadow border border-gray-200 overflow-x-auto">
+        <table className="w-full text-base">
+          <thead className="bg-blue-300">
             <tr>
-              <th className="px-3 py-2 text-left">ID</th>
-              <th className="px-3 py-2 text-left">Descrição</th> 
-              <th className="px-3 py-2 text-center">Vencimento</th>
-              <th className="px-3 py-2 text-left">Categoria</th>
-              <th className="px-3 py-2 text-left">Fornecedor</th> 
-              <th className="px-3 py-2 text-center">Parcelas</th>
-              <th className="px-3 py-2 text-center">Nº Parcela</th>
-              <th className="px-3 py-2 text-center">Status</th>
-              <th className="px-3 py-2 text-right">Valor</th>
-              <th className="px-3 py-2 text-center">Ações</th>
+              <th className="px-3 py-2 text-left font-bold">ID</th>
+              <th className="px-3 py-2 text-left font-bold">Descrição</th> 
+              <th className="px-3 py-2 text-center font-bold">Vencimento</th>
+              <th className="px-3 py-2 text-left font-bold">Categoria</th>
+              <th className="px-3 py-2 text-left font-bold">Fornecedor</th> 
+              <th className="px-3 py-2 text-center font-bold">Parcelas</th>
+              <th className="px-3 py-2 text-center font-bold">Nº Parcela</th>
+              <th className="px-3 py-2 text-center font-bold">Status</th>
+              <th className="px-3 py-2 text-right font-bold">Valor</th>
+              <th className="px-3 py-2 text-center font-bold">Ações</th>
             </tr>
           </thead>
 
@@ -408,18 +414,18 @@ useEffect(() => {
                 className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
               >
                 <td className="px-3 py-2">{c.id}</td>
-                <td className="px-3 py-2">{c.descricao}</td> 
+                <td className="px-3 py-2 font-bold">{c.descricao}</td> 
 
-                <td className="px-3 py-2 text-center">
+                <td className="px-3 py-2 text-center font-bold">
                 {c.vencimento ? new Date(c.vencimento).toLocaleDateString("pt-BR") : ""}
               </td>
 
-                <td className="px-3 py-2">{c.categoria}</td>
-                <td className="px-3 py-2">{c.fornecedor}</td> 
-                <td className="px-3 py-2 text-center">{c.parcelas}</td>
-                <td className="px-3 py-2 text-center">{c.parcela_num}</td>
-                <td className="px-3 py-2 text-center">{c.status}</td>
-                <td className="px-3 py-2 text-right">
+                <td className="px-3 py-2 font-bold">{c.categoria}</td>
+                <td className="px-3 py-2 font-bold">{c.fornecedor}</td> 
+                <td className="px-3 py-2 text-center font-bold">{c.parcelas}</td>
+                <td className="px-3 py-2 text-center font-bold">{c.parcela_num}</td>
+                <td className="px-3 py-2 text-center font-bold">{c.status}</td>
+                <td className="px-3 py-2 text-right font-bold">
                   {Number(c.valor).toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",

@@ -98,35 +98,41 @@ export default function ContasGerenciais() {
       </div>
 
       {/* FILTRO */}
-      <div className="flex gap-4 mb-4">
-        <select
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value)}
-          className="border px-3 py-2 rounded"
-        >
-          <option value="">Todos</option>
-          <option value="entrada">Entrada</option>
-          <option value="saida">Saída</option>
-        </select>
+      
+      <div className="bg-gray-200 rounded-xl shadow p-1 border border-gray-200 mb-4 w-[1850px] flex items-center gap-6">
 
-        <button
-          onClick={carregar}
-          className="bg-blue-600 text-white px-5 py-2 rounded font-bold"
-        >
-          Buscar
-        </button>
-      </div>
+            <select
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value)}
+              className="border px-5 py-2 rounded w-46"
+            >
+              <option value="">Todos</option>
+              <option value="entrada">Entrada</option>
+              <option value="saida">Saída</option>
+            </select>
+
+            <button
+              onClick={carregar}
+              className="bg-blue-600 text-white px-5 py-2 rounded font-bold w-48"
+            >
+              Buscar
+            </button>
+
+          </div>
+
+    
 
       {loading && <p>Carregando…</p>}
 
       {/* TABELA */}
+       <div className="bg-gray-300 p-8 rounded-xl shadow"> 
       <table className="w-full border">
         <thead className="bg-blue-600 text-white">
           <tr>
-            <th className="p-2 border">ID</th>
-            <th className="p-2 border">Nome</th>
-            <th className="p-2 border">Tipo</th>
-            <th className="p-2 border">Ações</th>
+            <th className="p-1 border">ID</th>
+            <th className="p-1 border">Nome</th>
+            <th className="p-1 border">Tipo</th>
+            <th className="p-1 border">Ações</th>
           </tr>
         </thead>
 
@@ -136,16 +142,13 @@ export default function ContasGerenciais() {
               key={l.id}
               className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
             >
-              <td className="p-2 border">{l.id}</td>
-              <td className="p-2 border">{l.nome}</td>
-              <td className="p-2 border">{l.tipo}</td>
+              <td className="p-1 border">{l.id}</td>
+              <td className="p-1 border">{l.nome}</td>
+              <td className="p-1 border">{l.tipo}</td>
 
-              <td className="p-2 border flex gap-2">
-
-
-
-
-                <td className="px-4 py-2 text-blue-600 underline cursor-pointer"
+              <td className="p-1 border flex gap-2">
+ 
+                <td className="px-4 py-1 text-blue-600 underline cursor-pointer"
                     onClick={() =>
                       navigate("/contasgerenciais/editar", { state: l })
                     }>
@@ -153,7 +156,7 @@ export default function ContasGerenciais() {
                 </td>
 
                 <td
-                  className="px-4 py-2 text-red-600 underline cursor-pointer"
+                  className="px-4 py-1 text-red-600 underline cursor-pointer"
                   onClick={() => excluir(l.id)}
                 >
                   Excluir
@@ -186,7 +189,7 @@ export default function ContasGerenciais() {
           ))}
         </tbody>
       </table>
-
+      </div>
       {!loading && lista.length === 0 && (
         <p className="text-gray-600 mt-4">Nenhuma conta encontrada.</p>
       )}

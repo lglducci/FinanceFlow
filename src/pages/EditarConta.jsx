@@ -25,7 +25,29 @@ export default function EditarConta() {
     padrao: false,
   });
 
- 
+ /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
+const THEME = {
+  pageBg: "#0e2a3a",                 // fundo da página (escuro)
+  panelBg: "#1e40af",                // fundos auxiliares (se precisar) panelBg: "#4a88a9ff",   
+  panelBorder: "rgba(255,159,67,0.30)",
+
+  cardBg: "#254759",                 // bloco interno mais claro
+  cardBorder: "rgba(255,159,67,0.35)",
+  cardShadow: "0 6px 20px rgba(0,0,0,0.25)",
+
+  title: "#ff9f43",
+  text: "#e8eef2",
+  textMuted: "#bac7cf",
+
+  fieldBg: "#1f3b4d",                // inputs (um tom acima do card)
+  fieldBorder: "rgba(255,159,67,0.25)",
+  focusRing: "#ff9f43",
+
+  btnPrimary: "#ff9f43",
+  btnPrimaryText: "#1b1e25",
+  btnSecondary: "#ef4444",
+  btnSecondaryText: "#ffffff",
+};
  
 
   // 🔵 1) RETRIEVE — BUSCA NO BANCO
@@ -141,51 +163,95 @@ export default function EditarConta() {
   }
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white shadow rounded">
-      <h2 className="text-2xl font-bold mb-6">Editar Conta</h2>
+     <div
+      className="min-h-screen py-10 px-4"
+      style={{ background: THEME.text, color: THEME.text }}
+    >
+      <div
+        className="w-full max-w-4xl mx-auto rounded-2xl p-8 border shadow-2xl"
+        style={{
+          background: THEME. panelBg,            // << mais claro
+          borderColor: THEME.cardBorder,
+          boxShadow: THEME.cardShadow,
+        }}
+      > 
+       
+       
+      <h1
+        className="text-2xl md:text-3xl font-bold mb-8 text-center"
+        style={{ color: THEME.title }}
+      >
+        ✏️ Editar Conta
+      </h1>
+ 
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
+        <div> 
+         <label className="block text-base font-bold mb-1">Nome da Conta</label> 
         <input name="nome" placeholder="Nome da Conta"
-          className="border p-2 rounded"
+          className="input-base w-full h-10"
           value={form.nome}
           onChange={handleChange}
         />
-
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div> 
+        <label className="block text-base font-bold mb-1">Banco</label> 
         <input name="banco" placeholder="Banco"
-          className="border p-2 rounded"
+            className="input-base w-64 h-10"
           value={form.banco}
           onChange={handleChange}
         />
+        </div>
 
-        <input name="tipo" placeholder="Tipo"
-          className="border p-2 rounded"
-          value={form.tipo}
-          onChange={handleChange}
-        />
-
-        <input name="saldo_inicial" placeholder="Saldo inicial"
-          className="border p-2 rounded"
-          value={form.saldo_inicial}
-          onChange={handleChange}
-        />
-
+         <div> 
+         <label className="block text-base font-bold mb-1">Número do Banco</label> 
         <input name="nro_banco" placeholder="Número do Banco"
-          className="border p-2 rounded"
+            className="input-base w-64 h-10"
           value={form.nro_banco}
           onChange={handleChange}
         />
+        </div>
+        </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div> 
+       <label className="block text-base font-bold mb-1">Agência</label> 
         <input name="agencia" placeholder="Agência"
-          className="border p-2 rounded"
+          className="input-base w-48 h-10"
           value={form.agencia}
           onChange={handleChange}
         />
-
+        </div>
+        <div>
+         <label className="block text-base font-bold mb-1">Número Conta</label> 
         <input name="conta" placeholder="Número da Conta"
-          className="border p-2 rounded"
+         className="input-base w-48 h-10"
           value={form.conta}
           onChange={handleChange}
         />
+        </div>
+        </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div>
+         <label className="block text-base font-bold mb-1">Tipo</label> 
+        <input name="tipo" placeholder="Tipo"
+            className="input-base w-48 h-10"
+          value={form.tipo}
+          onChange={handleChange}
+        /> </div>
+           <div> 
+          
+
+         <label className="block text-base font-bold mb-1">Saldo Inicial</label> 
+        <input name="saldo_inicial" placeholder="Saldo inicial"
+          className="input-base w-72 h-10"
+          value={form.saldo_inicial}
+          onChange={handleChange}
+        /> </div>
+        </div>
 
         <label className="flex items-center gap-2">
           <input type="checkbox" name="conjunta"
@@ -219,6 +285,7 @@ export default function EditarConta() {
           {loading ? "Salvando..." : "Salvar Alterações"}
         </button>
       </div>
+    </div>
     </div>
   );
 }
