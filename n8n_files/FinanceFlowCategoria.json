@@ -1,0 +1,671 @@
+{
+  "name": "FinanceFlowCategoria",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        480,
+        208
+      ],
+      "id": "3241c222-5c97-4eee-a18f-76f382f28914",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from   contas_financeiras where empresa_id = \n  {{ $json.id_empresa }}  ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        288,
+        208
+      ],
+      "id": "bb5d91b2-c97b-41aa-88f1-ce2d9eb2c87f",
+      "name": "ListaContas",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        512,
+        32
+      ],
+      "id": "2196e7ac-2fcb-4515-b795-1d0b0e89f51b",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "path": "listacontas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        208
+      ],
+      "id": "cb9a1bba-9eb8-41f2-a945-23e5659525e5",
+      "name": "ListaContas2",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "path": "listacategorias",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        32
+      ],
+      "id": "768b397e-8903-4209-be9e-a0e45804f003",
+      "name": "ListaCategoria",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT *\nFROM categorias_gerenciais\nWHERE empresa_id = {{ $json.id_empresa }}\n  AND (\n        '{{ $json.tipo }}' IS NULL\n        OR  '{{ $json.tipo }}'  = ''\n        OR tipo =  '{{ $json.tipo }}' \n      ) order by id asc;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        288,
+        32
+      ],
+      "id": "26308ac8-dfef-4de6-8361-b9b3610b3392",
+      "name": "categorias_gerenciais",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "9760a669-db8f-4f88-9e81-5242f0e6736c",
+              "name": "tipo",
+              "value": "={{ $json.query.tipo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        32
+      ],
+      "id": "83b3fd29-76cf-4b72-a1a0-36509a8931df",
+      "name": "categoriaEdit"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        208
+      ],
+      "id": "eeb287d7-8415-4d51-bba7-0c55aee13996",
+      "name": "ListaEdit"
+    },
+    {
+      "parameters": {
+        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
+        "height": 1068,
+        "width": 1280,
+        "color": 5
+      },
+      "id": "f3228151-2c66-4bc3-b8df-cf26e58c5dbc",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        528,
+        400
+      ],
+      "id": "4ddc139b-14fc-4f3f-98d7-3abd76e0906d",
+      "name": "Respond to Webhook47"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novacategoriagerencial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        400
+      ],
+      "id": "4b6959dc-95b5-4478-8780-34d7707ef699",
+      "name": "NovaCategoria",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "b97f031a-5075-4f75-a5a7-7b46fe82da37",
+              "name": "nome",
+              "value": "={{ $json.body.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "9fc2c42a-e239-4164-a4be-17228f780432",
+              "name": "tipo",
+              "value": "={{ $json.body.tipo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        400
+      ],
+      "id": "9eb4c0fc-6789-4ff7-b445-7c1bba49fdbf",
+      "name": "EditCategoria"
+    },
+    {
+      "parameters": {
+        "tableId": "categorias_gerenciais",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "={{ $json.empresa_id }}"
+            },
+            {
+              "fieldId": "tipo",
+              "fieldValue": "={{ $json.tipo }}"
+            },
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $json.nome }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        304,
+        400
+      ],
+      "id": "1bcd7ec8-5854-4043-b570-b42772e2b7c8",
+      "name": "InsertCategoria",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        512,
+        592
+      ],
+      "id": "7484843f-c084-496b-ba29-cad8db577bef",
+      "name": "Respond to Webhook48"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "b97f031a-5075-4f75-a5a7-7b46fe82da37",
+              "name": "nome",
+              "value": "={{ $json.body.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "9fc2c42a-e239-4164-a4be-17228f780432",
+              "name": "tipo",
+              "value": "={{ $json.body.tipo}}",
+              "type": "string"
+            },
+            {
+              "id": "ec18828a-aaac-49cf-8221-7b911808b4fc",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        592
+      ],
+      "id": "5c78feda-19e9-465f-b4ba-35bd079b47b3",
+      "name": "EditSalvaCategoria"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "categorias_gerenciais",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "empresa_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.empresa_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "={{ $json.empresa_id }}"
+            },
+            {
+              "fieldId": "tipo",
+              "fieldValue": "={{ $json.tipo }}"
+            },
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $json.nome }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        288,
+        592
+      ],
+      "id": "808b2fb2-9cf9-4da2-af06-c6c618f8b559",
+      "name": "SalvaCategoria",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "SalvaCatetoria",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        592
+      ],
+      "id": "2fbba66d-9785-4aea-a44e-0969f3bedb3f",
+      "name": "SalvaCategoria1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        512,
+        768
+      ],
+      "id": "7f0ff526-acec-4b4f-bf95-f194dcb9cc61",
+      "name": "Respond to Webhook49"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "delete from   categorias_gerenciais   where empresa_id = \n  {{ $json.empresa_id }} and id =  {{ $json.id }}  ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        272,
+        768
+      ],
+      "id": "4b440b0d-d76e-4396-81e8-c70027d23e51",
+      "name": "ListaContas1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "e7da97e7-0b74-40d7-9c04-2c23d167b4c8",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        48,
+        768
+      ],
+      "id": "3158ddf5-a58c-49d4-86a2-b70a3ae74e36",
+      "name": "ListaEdit1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "excluicontagerencial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        768
+      ],
+      "id": "15130a62-569f-4860-920b-8ba189c2b297",
+      "name": "ExcluiContaGerencial",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "ListaContas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaContas2": {
+      "main": [
+        [
+          {
+            "node": "ListaEdit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaCategoria": {
+      "main": [
+        [
+          {
+            "node": "categoriaEdit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "categorias_gerenciais": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "categoriaEdit": {
+      "main": [
+        [
+          {
+            "node": "categorias_gerenciais",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaEdit": {
+      "main": [
+        [
+          {
+            "node": "ListaContas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NovaCategoria": {
+      "main": [
+        [
+          {
+            "node": "EditCategoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditCategoria": {
+      "main": [
+        [
+          {
+            "node": "InsertCategoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InsertCategoria": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook47",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditSalvaCategoria": {
+      "main": [
+        [
+          {
+            "node": "SalvaCategoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaCategoria": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook48",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaCategoria1": {
+      "main": [
+        [
+          {
+            "node": "EditSalvaCategoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaContas1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook49",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaEdit1": {
+      "main": [
+        [
+          {
+            "node": "ListaContas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiContaGerencial": {
+      "main": [
+        [
+          {
+            "node": "ListaEdit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f5990107-b73c-439b-99ab-607de16ddcfd",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "AWG1yhVg95wlS3cf",
+  "tags": []
+}

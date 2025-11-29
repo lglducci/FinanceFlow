@@ -1,0 +1,1494 @@
+{
+  "name": "FinanceFlowContaPagar",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        656,
+        160
+      ],
+      "id": "4e2283e7-74e4-489e-a1ee-7ba198560256",
+      "name": "Respond to Webhook31"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        848,
+        -16
+      ],
+      "id": "7106394d-715f-4416-9b00-0ff8cc4cfb23",
+      "name": "Respond to Webhook33"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        672,
+        336
+      ],
+      "id": "5dda86e2-de54-4f86-a4c3-3de9ee2c0bff",
+      "name": "Respond to Webhook34"
+    },
+    {
+      "parameters": {
+        "content": "##  Modulo Contas a Pagar\n Controla Contas a pagar do sistema Financeflow",
+        "height": 1468,
+        "width": 1328,
+        "color": 6
+      },
+      "id": "eb8d533a-7cb8-4eec-9f95-87c45d4f0512",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -192
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novacontapagar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        -16
+      ],
+      "id": "3f0489e3-0453-4ac8-833d-33dcf6d3a28c",
+      "name": "InsereContapagar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "5f3336f9-247a-4886-8eb8-3d7b4986eea8",
+              "name": "descricao",
+              "value": "={{ $json.body.descricao}}",
+              "type": "string"
+            },
+            {
+              "id": "0fbd6cd2-d457-4746-b457-c45b73fef4ec",
+              "name": "valor",
+              "value": "={{ $json.body.valor}}",
+              "type": "string"
+            },
+            {
+              "id": "0f4e66fc-7279-4e4b-8fee-c9a2f2923c0c",
+              "name": "vencimento",
+              "value": "={{ $json.body.vencimento}}",
+              "type": "string"
+            },
+            {
+              "id": "15e950e4-e251-498f-b953-fc28eb8abe62",
+              "name": "descricao",
+              "value": "={{ $json.body.descricao}}",
+              "type": "string"
+            },
+            {
+              "id": "2644f0d8-d165-4a3d-b186-4f2e72da2a8b",
+              "name": "categoria_id",
+              "value": "={{ $json.body.categoria_id}}",
+              "type": "string"
+            },
+            {
+              "id": "de393231-6bc4-46b1-a9fb-fa878f154e3a",
+              "name": "parcelas",
+              "value": "={{ $json.body.parcelas}}",
+              "type": "string"
+            },
+            {
+              "id": "71ad2246-2fab-44df-984a-c8967ab724a3",
+              "name": "fornecedor_id",
+              "value": "={{ $json.body.fornecedor_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        -16
+      ],
+      "id": "640b2760-6e2f-470b-9abc-fde15db56837",
+      "name": "EditaaContapagar"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from contas_a_pagar \n  where id = {{ $json.ff_registrar_conta_pagar_com_parcelas }}\n  and empresa_id = {{ $('EditaaContapagar').item.json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        640,
+        -16
+      ],
+      "id": "337e32a8-0eae-4f4d-8a4c-0e2ff0495605",
+      "name": "ResultConta_pagar",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select *\nfrom ff_consultar_contas_pagar(\n  {{ $json.id_empresa }},\n  '{{ $json.status }}',\n  '{{ $json.data_ini}}', \n  '{{ $json.data_fim}}',\n   {{ $json.fornecedor_id }}\n)\n\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        160
+      ],
+      "id": "7f97f1e1-04ec-4734-836c-54a2f8678b4f",
+      "name": "ff_consultar_contas_pagar",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "status",
+              "value": "={{ $json.query.status}}",
+              "type": "string"
+            },
+            {
+              "id": "dd1713ed-c8bf-488e-bf5f-64f5aee16daa",
+              "name": "data_ini",
+              "value": "={{ $json.query.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "dc098c67-1af5-44ef-ae1d-3992855f7fde",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "80e0ae6a-d205-478d-bb01-118324bbe421",
+              "name": "fornecedor_id",
+              "value": "={{ $json.query.fornecedor_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        160
+      ],
+      "id": "b2f20217-d372-4d74-a3b0-c7e984ec8f74",
+      "name": "transcontapg"
+    },
+    {
+      "parameters": {
+        "path": "consultarcontapagar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        160
+      ],
+      "id": "47246909-fcdb-4f14-8d94-39d8f421f23d",
+      "name": "ConsultarContaPagar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} \n)\n  \n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        -16
+      ],
+      "id": "2937eefd-020f-444b-87da-de5e9bd52d21",
+      "name": "ff_registrar_conta_pagar_com_parcelas",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        688,
+        528
+      ],
+      "id": "5afe5257-f004-4e74-807c-2a4ef97c3a4e",
+      "name": "Respond to Webhook37"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "contas_a_pagar",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "empresa_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.empresa_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "={{ $json.empresa_id }}"
+            },
+            {
+              "fieldId": "descricao",
+              "fieldValue": "={{ $json.descricao }}"
+            },
+            {
+              "fieldId": "valor",
+              "fieldValue": "={{ $json.valor }}"
+            },
+            {
+              "fieldId": "vencimento",
+              "fieldValue": "={{ $json.vencimento }}"
+            },
+            {
+              "fieldId": "categoria_id",
+              "fieldValue": "={{ $json.categoria_id }}"
+            },
+            {
+              "fieldId": "fornecedor_id",
+              "fieldValue": "={{ $json.fornecedor_id }}"
+            },
+            {
+              "fieldId": "parcelas",
+              "fieldValue": "={{ $json.parcelas }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        464,
+        528
+      ],
+      "id": "b164eeb7-3074-4dd9-befc-c3271c6b1db3",
+      "name": "SalvaForneceClien1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "5f3336f9-247a-4886-8eb8-3d7b4986eea8",
+              "name": "descricao",
+              "value": "={{ $json.body.descricao}}",
+              "type": "string"
+            },
+            {
+              "id": "0fbd6cd2-d457-4746-b457-c45b73fef4ec",
+              "name": "valor",
+              "value": "={{ $json.body.valor}}",
+              "type": "string"
+            },
+            {
+              "id": "0f4e66fc-7279-4e4b-8fee-c9a2f2923c0c",
+              "name": "vencimento",
+              "value": "={{ $json.body.vencimento}}",
+              "type": "string"
+            },
+            {
+              "id": "15e950e4-e251-498f-b953-fc28eb8abe62",
+              "name": "descricao",
+              "value": "={{ $json.body.descricao}}",
+              "type": "string"
+            },
+            {
+              "id": "2644f0d8-d165-4a3d-b186-4f2e72da2a8b",
+              "name": "categoria_id",
+              "value": "={{ $json.body.categoria_id}}",
+              "type": "string"
+            },
+            {
+              "id": "de393231-6bc4-46b1-a9fb-fa878f154e3a",
+              "name": "parcelas",
+              "value": "={{ $json.body.parcelas}}",
+              "type": "string"
+            },
+            {
+              "id": "71ad2246-2fab-44df-984a-c8967ab724a3",
+              "name": "fornecedor_id",
+              "value": "={{ $json.body.fornecedor_id}}",
+              "type": "string"
+            },
+            {
+              "id": "b97f031a-5075-4f75-a5a7-7b46fe82da37",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        528
+      ],
+      "id": "c89e286d-0a18-4836-b41c-ce354e3df113",
+      "name": "EditaaContapagar1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "salvarcontapagar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        528
+      ],
+      "id": "944e3349-8355-4779-9891-8a027e724c4b",
+      "name": "SalvaContaPagar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "exclui_conta_pagar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        336
+      ],
+      "id": "9fb66ba9-5289-4b2d-a63d-1f91c435a037",
+      "name": "ExcluiContaPagar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "delete \nFROM  contas_a_pagar   \n  where empresa_id =  {{ $json.id_empresa }}  \n  and    id = {{ $json.id }} ;\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        336
+      ],
+      "id": "4e20de56-2383-4970-8813-c2f32f161455",
+      "name": "ExcluiConta_a_pagar",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        688,
+        720
+      ],
+      "id": "5bb975ad-d4c3-4b83-999a-67f01eaf25d4",
+      "name": "Respond to Webhook40"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        336
+      ],
+      "id": "c727ff1f-7481-4474-8098-395f89ea2097",
+      "name": "ExcluircontaPagar"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "id",
+              "value": "={{ $json.query.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        720
+      ],
+      "id": "6f9e1e7a-4200-42ce-93ff-f46508ad4345",
+      "name": "EditarContaPagar"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * \nFROM  contas_a_pagar   \n  where empresa_id =  {{ $json.id_empresa }}  \n  and    id = {{ $json.id }} ;\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        464,
+        720
+      ],
+      "id": "a67f1179-50df-40e8-8378-358340f5e62f",
+      "name": "ExcluiConta_a_pagar1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "conta_pagar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        16,
+        720
+      ],
+      "id": "b47919ac-0115-4d3e-85bb-56a075940eb8",
+      "name": "ContaPagar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        704,
+        912
+      ],
+      "id": "9676a3c0-574b-46bc-8c50-1dfbbebe02d8",
+      "name": "Respond to Webhook45"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "lote_id",
+              "value": "={{ $json.query.lote_id}}",
+              "type": "string"
+            },
+            {
+              "id": "e79af6bd-1ef9-45c4-a838-9edb25beedc4",
+              "name": "categoria_id",
+              "value": "={{ $json.query.categoria_id}}",
+              "type": "string"
+            },
+            {
+              "id": "7b59b655-0aa7-4bf1-a3d5-f054ebdbbfca",
+              "name": "fornecedor_id",
+              "value": "={{ $json.query.fornecedor_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        912
+      ],
+      "id": "4b8985ad-c779-4e1a-b2cf-774c18bdf6e1",
+      "name": "EditarContaPagar1"
+    },
+    {
+      "parameters": {
+        "path": "conta_pagar_parcelado",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        912
+      ],
+      "id": "04abe9ef-c825-4fc1-9b9f-414fcc813d63",
+      "name": "ContaPagar1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT \n    cp.lote_id,\n    cp.descricao,\n    p.nome AS fornecedor_nome,\n    c.nome AS categoria_nome,\n    cp.parcelas,\n    cp.status,\n    SUM(cp.valor) AS valor_total\nFROM contas_a_pagar cp\nLEFT JOIN pessoa p \n       ON p.id = cp.fornecedor_id\nLEFT JOIN categorias_gerenciais c \n       ON c.id = cp.categoria_id\nWHERE cp.empresa_id =  {{ $json.empresa_id }}\n  AND ( {{ $json.lote_id }} =0   OR cp.lote_id IS NULL OR cp.lote_id = {{ $json.lote_id }}  )\n  AND (cp.fornecedor_id = {{ $json.fornecedor_id }} OR {{ $json.fornecedor_id }} = 0)\n  AND (cp.categoria_id = {{ $json.categoria_id }} OR {{ $json.categoria_id }} = 0)\n  AND  cp.parcelas > 1  \nGROUP BY \n    cp.lote_id,\n    cp.descricao,\n    p.nome,\n    c.nome,\n    cp.parcelas,\n    cp.status\nORDER BY cp.lote_id;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        480,
+        912
+      ],
+      "id": "72f89965-3233-42b5-b30d-1eab7086b04a",
+      "name": "Parcelamento",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        672,
+        1088
+      ],
+      "id": "8a5b1b62-fd8e-4b38-be02-9ee2ac192dcd",
+      "name": "Respond to Webhook46"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "delete \nFROM  contas_a_pagar   \n  where empresa_id =  {{ $json.id_empresa }}  \n  and    lote_id = {{ $json.lote_id }} ;\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        1088
+      ],
+      "id": "82bf6a3e-ce8f-4b32-87ed-7828cc80e9e7",
+      "name": "ExcluiConta_a_pagar2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "lote_id",
+              "value": "={{ $json.body.lote_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        1088
+      ],
+      "id": "043ddc83-c439-4510-898c-2d884be40d54",
+      "name": "ExcluircontaPagar1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "excluirparcelaspagar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        1088
+      ],
+      "id": "ee0cdb38-c505-401a-9f7f-5652bbe0e835",
+      "name": "ExcluiParcelaPagar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        688,
+        1504
+      ],
+      "id": "aef84299-4a5f-4a19-ac07-6a7bb47359bb",
+      "name": "Respond to Webhook9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "373fba2f-5a95-41d7-8881-ed39611774b5",
+              "name": "nome",
+              "value": "={{ $json.body.body.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "19aafbb0-761d-43c4-980f-49672742fd58",
+              "name": "banco",
+              "value": "={{ $json.body.body.banco}}",
+              "type": "string"
+            },
+            {
+              "id": "a916646f-f4f1-40ea-9da4-7850cbcb06ff",
+              "name": "nro_banco",
+              "value": "={{ $json.body.body.nro_banco}}",
+              "type": "string"
+            },
+            {
+              "id": "aa28cde5-d733-4af3-bd3b-ff764742760b",
+              "name": " agencia",
+              "value": "={{ $json.body.body.agencia}}",
+              "type": "string"
+            },
+            {
+              "id": "b63c260a-d832-4644-84cd-ee94df4ccec7",
+              "name": "conta",
+              "value": "={{ $json.body.body.conta}}",
+              "type": "string"
+            },
+            {
+              "id": "bb6b3121-a463-48b0-94ee-46ffafccbcc1",
+              "name": "conjunta",
+              "value": "={{ $json.body.body.conjunta}}",
+              "type": "string"
+            },
+            {
+              "id": "f5d0b333-c217-450f-9173-7de4ae0dd30f",
+              "name": " juridica",
+              "value": "={{ $json.body.body.juridica}}",
+              "type": "string"
+            },
+            {
+              "id": "a11ed980-2c89-461d-8601-ddad5c3ecfca",
+              "name": " padrao",
+              "value": "={{ $json.body.body.padrao}}",
+              "type": "string"
+            },
+            {
+              "id": "e3e822e3-c0ee-4753-b8d3-0db50bd74a5a",
+              "name": "tipo",
+              "value": "={{ $json.body.body.tipo}}",
+              "type": "string"
+            },
+            {
+              "id": "bba3955d-1794-41c2-b7bd-988fced0b3fb",
+              "name": "saldo_inicial",
+              "value": "={{ $json.body.body.saldo_inicial}}",
+              "type": "string"
+            },
+            {
+              "id": "6f11c960-89ba-41b5-8ba5-80d0bafbf6b9",
+              "name": "agencia",
+              "value": "={{ $json.body.body.agencia}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        1504
+      ],
+      "id": "10d74cec-0098-4a3f-af8e-aa2f6784a427",
+      "name": "SaldoEdit1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novacontafinanceira",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        1504
+      ],
+      "id": "ed7b44ea-3a6f-4447-bfc4-3439ca131b8d",
+      "name": "ContaFinanceira",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "tableId": "contas_financeiras",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "={{ $json.id_empresa}} "
+            },
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $json.nome}}"
+            },
+            {
+              "fieldId": "banco",
+              "fieldValue": "={{ $json.banco}}"
+            },
+            {
+              "fieldId": "tipo",
+              "fieldValue": "={{ $json.tipo}}"
+            },
+            {
+              "fieldId": "saldo_inicial",
+              "fieldValue": "={{ $json.saldo_inicial}}"
+            },
+            {
+              "fieldId": "nro_banco",
+              "fieldValue": "={{ $json.nro_banco}}"
+            },
+            {
+              "fieldId": "agencia",
+              "fieldValue": "={{ $json.agencia}}"
+            },
+            {
+              "fieldId": "conta",
+              "fieldValue": "={{ $json.conta}}"
+            },
+            {
+              "fieldId": "conjunta",
+              "fieldValue": "={{ $json.conjunta}}"
+            },
+            {
+              "fieldId": "juridica",
+              "fieldValue": "={{ $json[' juridica'] }}"
+            },
+            {
+              "fieldId": "padrao",
+              "fieldValue": "={{ $json[' padrao'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        496,
+        1504
+      ],
+      "id": "ec621039-46e8-45cc-bf9b-eb7796455818",
+      "name": "CriaConta",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        704,
+        1312
+      ],
+      "id": "fe0db31b-9b6a-4b67-a559-c3ab53c6f39e",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "373fba2f-5a95-41d7-8881-ed39611774b5",
+              "name": "nome",
+              "value": "={{ $json.body.body.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "19aafbb0-761d-43c4-980f-49672742fd58",
+              "name": "banco",
+              "value": "={{ $json.body.body.banco}}",
+              "type": "string"
+            },
+            {
+              "id": "a916646f-f4f1-40ea-9da4-7850cbcb06ff",
+              "name": "nro_banco",
+              "value": "={{ $json.body.body.nro_banco}}",
+              "type": "string"
+            },
+            {
+              "id": "aa28cde5-d733-4af3-bd3b-ff764742760b",
+              "name": " agencia",
+              "value": "={{ $json.body.body.agencia}}",
+              "type": "string"
+            },
+            {
+              "id": "b63c260a-d832-4644-84cd-ee94df4ccec7",
+              "name": "conta",
+              "value": "={{ $json.body.body.conta}}",
+              "type": "string"
+            },
+            {
+              "id": "bb6b3121-a463-48b0-94ee-46ffafccbcc1",
+              "name": "conjunta",
+              "value": "={{ $json.body.body.conjunta}}",
+              "type": "string"
+            },
+            {
+              "id": "f5d0b333-c217-450f-9173-7de4ae0dd30f",
+              "name": " juridica",
+              "value": "={{ $json.body.body.juridica}}",
+              "type": "string"
+            },
+            {
+              "id": "a11ed980-2c89-461d-8601-ddad5c3ecfca",
+              "name": " padrao",
+              "value": "={{ $json.body.body.padrao}}",
+              "type": "string"
+            },
+            {
+              "id": "e3e822e3-c0ee-4753-b8d3-0db50bd74a5a",
+              "name": "tipo",
+              "value": "={{ $json.body.body.tipo}}",
+              "type": "string"
+            },
+            {
+              "id": "bba3955d-1794-41c2-b7bd-988fced0b3fb",
+              "name": "saldo_inicial",
+              "value": "={{ $json.body.body.saldo_inicial}}",
+              "type": "string"
+            },
+            {
+              "id": "6f11c960-89ba-41b5-8ba5-80d0bafbf6b9",
+              "name": "agencia",
+              "value": "={{ $json.body.body.agencia}}",
+              "type": "string"
+            },
+            {
+              "id": "df442724-bf40-472c-8dec-7478bc410e58",
+              "name": "id",
+              "value": "={{ $json.body.body.id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        1312
+      ],
+      "id": "4afd809c-143f-4a29-bad1-60ea44b44b07",
+      "name": "SaldoEdit2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "updatecontafinanceira",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        1312
+      ],
+      "id": "4127963a-a959-47b5-b5e0-e806f47a6b58",
+      "name": "UpdateContaFinanceira",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "contas_financeiras",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id}} "
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "={{ $json.id_empresa}} "
+            },
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $json.nome}}"
+            },
+            {
+              "fieldId": "banco",
+              "fieldValue": "={{ $json.banco}}"
+            },
+            {
+              "fieldId": "tipo",
+              "fieldValue": "={{ $json.tipo}}"
+            },
+            {
+              "fieldId": "saldo_inicial",
+              "fieldValue": "={{ $json.saldo_inicial}}"
+            },
+            {
+              "fieldId": "nro_banco",
+              "fieldValue": "={{ $json.nro_banco}}"
+            },
+            {
+              "fieldId": "agencia",
+              "fieldValue": "={{ $json.agencia}}"
+            },
+            {
+              "fieldId": "conta",
+              "fieldValue": "={{ $json.conta}}"
+            },
+            {
+              "fieldId": "conjunta",
+              "fieldValue": "={{ $json.conjunta}}"
+            },
+            {
+              "fieldId": "juridica",
+              "fieldValue": "={{ $json[' juridica'] }}"
+            },
+            {
+              "fieldId": "padrao",
+              "fieldValue": "={{ $json[' padrao'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        496,
+        1312
+      ],
+      "id": "3bb06151-85ec-42e7-b6a8-3b318a92edf2",
+      "name": "UpdateConta",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "InsereContapagar": {
+      "main": [
+        [
+          {
+            "node": "EditaaContapagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaaContapagar": {
+      "main": [
+        [
+          {
+            "node": "ff_registrar_conta_pagar_com_parcelas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ResultConta_pagar": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook33",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_consultar_contas_pagar": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook31",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "transcontapg": {
+      "main": [
+        [
+          {
+            "node": "ff_consultar_contas_pagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultarContaPagar": {
+      "main": [
+        [
+          {
+            "node": "transcontapg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_registrar_conta_pagar_com_parcelas": {
+      "main": [
+        [
+          {
+            "node": "ResultConta_pagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaForneceClien1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook37",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaaContapagar1": {
+      "main": [
+        [
+          {
+            "node": "SalvaForneceClien1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaContaPagar": {
+      "main": [
+        [
+          {
+            "node": "EditaaContapagar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiContaPagar": {
+      "main": [
+        [
+          {
+            "node": "ExcluircontaPagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiConta_a_pagar": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook34",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluircontaPagar": {
+      "main": [
+        [
+          {
+            "node": "ExcluiConta_a_pagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarContaPagar": {
+      "main": [
+        [
+          {
+            "node": "ExcluiConta_a_pagar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiConta_a_pagar1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook40",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContaPagar": {
+      "main": [
+        [
+          {
+            "node": "EditarContaPagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarContaPagar1": {
+      "main": [
+        [
+          {
+            "node": "Parcelamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContaPagar1": {
+      "main": [
+        [
+          {
+            "node": "EditarContaPagar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parcelamento": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook45",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiConta_a_pagar2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook46",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluircontaPagar1": {
+      "main": [
+        [
+          {
+            "node": "ExcluiConta_a_pagar2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiParcelaPagar": {
+      "main": [
+        [
+          {
+            "node": "ExcluircontaPagar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaldoEdit1": {
+      "main": [
+        [
+          {
+            "node": "CriaConta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContaFinanceira": {
+      "main": [
+        [
+          {
+            "node": "SaldoEdit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CriaConta": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaldoEdit2": {
+      "main": [
+        [
+          {
+            "node": "UpdateConta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateContaFinanceira": {
+      "main": [
+        [
+          {
+            "node": "SaldoEdit2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UpdateConta": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f577b5aa-b3f6-41f4-a00d-f07f6808f295",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "t8wTDqNu58cetd6W",
+  "tags": []
+}

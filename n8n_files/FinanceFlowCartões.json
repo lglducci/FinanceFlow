@@ -1,0 +1,1288 @@
+{
+  "name": "FinanceFlowCartões",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        608,
+        432
+      ],
+      "id": "60fcb500-8320-4d12-87c5-cbe7c2d14a64",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "= 1",
+              "type": "number"
+            },
+            {
+              "id": "24afd85d-d5a2-48b2-be90-942470e0438f",
+              "name": "nomecartao",
+              "value": "=Nubank",
+              "type": "string"
+            },
+            {
+              "id": "230b6c3d-f5c9-4757-b5af-a3b0958c839d",
+              "name": "descricao",
+              "value": "Compra no posto do Carlin gasolina aditivada",
+              "type": "string"
+            },
+            {
+              "id": "5a635fe2-ab7b-4d45-9dc5-e5f2f4eea1c9",
+              "name": "valor",
+              "value": 150,
+              "type": "number"
+            },
+            {
+              "id": "f30f2fa4-b62e-4b2c-89dd-2af16c86bab4",
+              "name": "parcelas",
+              "value": 1,
+              "type": "number"
+            },
+            {
+              "id": "aa3b2e2e-a468-4dae-9cf8-67e4dcef888e",
+              "name": "data_compra",
+              "value": "20251116",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        432
+      ],
+      "id": "1f6a70f6-e1a6-45d4-825a-cbd7d24b3177",
+      "name": "CartãoTransacaoEdit1"
+    },
+    {
+      "parameters": {
+        "path": "novatransacaocartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        432
+      ],
+      "id": "f7c43685-9d40-45b7-811d-221d0faeb2b4",
+      "name": "InseretransacaoCartão",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from cartoes_transacoes\n     where empresa_id = {{ $('CartãoTransacaoEdit1').item.json.id_empresa }}\n     and   id =  {{ $json.ff_registrar_compra_credito }};",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        400,
+        432
+      ],
+      "id": "bb3e4986-3d32-4afb-8940-955255c89737",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { success: true, message: 'usuario ok' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -608
+      ],
+      "id": "568c2edf-0e69-469c-9ebb-c22b63a80d40",
+      "name": "Sim"
+    },
+    {
+      "parameters": {
+        "jsCode": "  return [{ json: { success: false, message: 'usuario invalido' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        -352
+      ],
+      "id": "ad3241f2-00d6-4184-9115-4678c282dab9",
+      "name": "Não"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "usuarios",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "keyValue": "={{$json.email}}"
+            },
+            {
+              "keyName": "senha_hash",
+              "keyValue": "={{ $json.password }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -496
+      ],
+      "id": "c037e117-f71d-49a4-95ab-c761b7c3da41",
+      "name": "DadosUsuario",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n * \n  FROM usuario_empresa ue\nJOIN usuarios u ON u.id = ue.usuario_id \n  WHERE u.email= '{{ $('DadosUsuario').item.json.email }}' AND \n  u.senha_hash = '{{ $('DadosUsuario').item.json.senha_hash }}' and escolha= true;\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        800,
+        -512
+      ],
+      "id": "7380120d-6e07-417f-b9df-639a451fe46a",
+      "name": "DadosEmpresa",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "login",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        -496
+      ],
+      "id": "555f0462-7588-4a4a-b0b2-a817abbca3d4",
+      "name": "Login",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "059b3d30-905f-4038-b8c1-9582bae19867",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "91d4813d-55f8-40af-a588-cc77a7b30153",
+              "leftValue": "= {{ $('Usuario').item.json.password }}",
+              "rightValue": "={{ $json.senha_hash }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        -496
+      ],
+      "id": "b40eea51-dfcc-4bf7-af26-466a5bf973f2",
+      "name": "If2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        528,
+        -512
+      ],
+      "id": "9f327108-013f-4fe8-96f0-6881b944a298",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1024,
+        -512
+      ],
+      "id": "69a7d027-4f56-4331-8346-57735b55e288",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "807e4143-d55c-420c-b026-90bb242e057f",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "password",
+              "value": "={{ $json.body.senha}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        -496
+      ],
+      "id": "4d6ca530-266f-4340-bc25-d295134192cc",
+      "name": "Usuario"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        448,
+        640
+      ],
+      "id": "e0ecf47c-55a1-4eb8-8890-f3a2194b4c70",
+      "name": "Respond to Webhook20"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novo_cartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        640
+      ],
+      "id": "cb329046-057a-461b-b3c2-1b6d0a1c09a4",
+      "name": "NovoCartao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "   select * from ff_registrar_compra_credito(\n   {{ $json.id_empresa }} ,\n  '{{ $json.nomecartao }}',\n   '{{ $json.descricao }}', \n    {{ $json.valor }},\n   {{ $json.parcelas }} ,\n   '{{ $json.data_compra }}' \n ) \n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        432
+      ],
+      "id": "1482cc1d-1b18-45a7-a1c3-cb7ace00ec6a",
+      "name": "ff_registrar_compra_credito",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
+        "height": 1148,
+        "width": 1312
+      },
+      "id": "8af1b9c6-f8e5-426c-b3f5-1650f5eb3181",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "path": "cartoes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        240
+      ],
+      "id": "66e05941-4c3b-4c4d-b52f-f36cdcc9a0cf",
+      "name": "ListaCartões",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from   cartoes  where empresa_id = {{ $json.id_empresa }} ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        240
+      ],
+      "id": "58724447-05ca-4b47-b41e-9790677a47f0",
+      "name": "Cartoes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.id_empresa}} ",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        240
+      ],
+      "id": "ace3a0cc-c2a0-4687-8645-9cf2adb75526",
+      "name": "cartoesEdit"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        240
+      ],
+      "id": "51f60de7-6b89-4e92-bb25-030d470140cc",
+      "name": "Respond to Webhook8"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        80
+      ],
+      "id": "a9d55796-54dd-42ea-a3da-6a507553bc2c",
+      "name": "Respond to Webhook21"
+    },
+    {
+      "parameters": {
+        "path": "editarcartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        80
+      ],
+      "id": "d2dbe83b-890d-4d7a-98b7-7d655a525323",
+      "name": "EditarCartões",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}} ",
+              "type": "number"
+            },
+            {
+              "id": "51324e38-48c6-4999-a5e0-07f88de5777e",
+              "name": "id",
+              "value": "={{ $json.query.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        80
+      ],
+      "id": "c54f6607-8909-4246-8af4-d906aac162e5",
+      "name": "EditarCartões1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from   cartoes  \n  where empresa_id = {{ $json.id_empresa }}\n and id = {{ $json.id }};",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        80
+      ],
+      "id": "8ff53d49-bc3a-4e0b-8995-d0a70dd37b25",
+      "name": "EditarCartão",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        416,
+        816
+      ],
+      "id": "2d734df0-f09b-4aa5-9b93-0eec87362c31",
+      "name": "Respond to Webhook22"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "373fba2f-5a95-41d7-8881-ed39611774b5",
+              "name": "nome_cartao",
+              "value": "={{ $json.body.NomeCartao}}",
+              "type": "string"
+            },
+            {
+              "id": "19aafbb0-761d-43c4-980f-49672742fd58",
+              "name": "bandeira",
+              "value": "={{ $json.body.bandeira}}",
+              "type": "string"
+            },
+            {
+              "id": "a916646f-f4f1-40ea-9da4-7850cbcb06ff",
+              "name": "numero",
+              "value": "={{ $json.body.numero}}",
+              "type": "string"
+            },
+            {
+              "id": "b63c260a-d832-4644-84cd-ee94df4ccec7",
+              "name": "fechamento_dia",
+              "value": "={{ $json.body.fechamento_dia}}",
+              "type": "string"
+            },
+            {
+              "id": "bb6b3121-a463-48b0-94ee-46ffafccbcc1",
+              "name": "vencimento",
+              "value": "={{ $json.body.vencimento}}",
+              "type": "string"
+            },
+            {
+              "id": "f5d0b333-c217-450f-9173-7de4ae0dd30f",
+              "name": "status",
+              "value": "={{ $json.body.status}}",
+              "type": "string"
+            },
+            {
+              "id": "234342fb-06fa-46a9-98f3-995fbf4f6116",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            },
+            {
+              "id": "63e47d45-ebcb-402b-92d6-2039f46950c3",
+              "name": "limite",
+              "value": "={{ $json.body.limite}}",
+              "type": "string"
+            },
+            {
+              "id": "c6d9460b-7809-4633-aa86-e0a2e2c25dda",
+              "name": "vencimento_dia",
+              "value": "={{ $json.body.vencimento_dia}}",
+              "type": "string"
+            },
+            {
+              "id": "2f89b1e2-c7c7-4bce-9edf-3a24a74a76db",
+              "name": "limite_total",
+              "value": "={{ $json.body.limite_total}}",
+              "type": "string"
+            },
+            {
+              "id": "da7d9e41-6981-4818-a621-d1b1d282f37c",
+              "name": "nome",
+              "value": "={{ $json.body.nome}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        816
+      ],
+      "id": "dc7185f1-70d3-4717-9b02-ee595d5ba33e",
+      "name": "EditNewCartao1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "cartoes",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "empresa_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id_empresa }}"
+            },
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "={{ $json.id_empresa}} "
+            },
+            {
+              "fieldId": "NomeCartão",
+              "fieldValue": "= {{ $json.nome_cartao }}"
+            },
+            {
+              "fieldId": "bandeira",
+              "fieldValue": "={{ $json.bandeira}}"
+            },
+            {
+              "fieldId": "limite_total",
+              "fieldValue": "={{ $json.limite_total }}"
+            },
+            {
+              "fieldId": "fechamento_dia",
+              "fieldValue": "= {{ $json.fechamento_dia }}"
+            },
+            {
+              "fieldId": "vencimento_dia",
+              "fieldValue": "={{ $json.vencimento_dia }}"
+            },
+            {
+              "fieldId": "numero",
+              "fieldValue": "={{ $json.numero }}"
+            },
+            {
+              "fieldId": "Vencimento",
+              "fieldValue": "={{ $json.vencimento}}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status}}"
+            },
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $json.nome }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        192,
+        816
+      ],
+      "id": "abcb8627-2053-4a27-8be3-ede3f18b05f5",
+      "name": "SalvaCartao",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "salvacartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        816
+      ],
+      "id": "d35cb7c6-eb9f-4bb8-af74-37c07f9bd1d2",
+      "name": "SalvaCartao1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.id_empresa}}",
+              "type": "number"
+            },
+            {
+              "id": "373fba2f-5a95-41d7-8881-ed39611774b5",
+              "name": "nome_cartao",
+              "value": "={{ $json.body.NomeCartao}}",
+              "type": "string"
+            },
+            {
+              "id": "19aafbb0-761d-43c4-980f-49672742fd58",
+              "name": "bandeira",
+              "value": "={{ $json.body.bandeira}}",
+              "type": "string"
+            },
+            {
+              "id": "a916646f-f4f1-40ea-9da4-7850cbcb06ff",
+              "name": "numero",
+              "value": "={{ $json.body.numero}}",
+              "type": "string"
+            },
+            {
+              "id": "b63c260a-d832-4644-84cd-ee94df4ccec7",
+              "name": "fechamento_dia",
+              "value": "={{ $json.body.fechamento_dia}}",
+              "type": "string"
+            },
+            {
+              "id": "bb6b3121-a463-48b0-94ee-46ffafccbcc1",
+              "name": "vencimento",
+              "value": "={{ $json.body.vencimento}}",
+              "type": "string"
+            },
+            {
+              "id": "f5d0b333-c217-450f-9173-7de4ae0dd30f",
+              "name": "status",
+              "value": "={{ $json.body.status}}",
+              "type": "string"
+            },
+            {
+              "id": "c6d9460b-7809-4633-aa86-e0a2e2c25dda",
+              "name": "vencimento_dia",
+              "value": "={{ $json.body.vencimento_dia}}",
+              "type": "string"
+            },
+            {
+              "id": "2f89b1e2-c7c7-4bce-9edf-3a24a74a76db",
+              "name": "limite_total",
+              "value": "={{ $json.body.limite_total}}",
+              "type": "string"
+            },
+            {
+              "id": "3c55f15c-6281-446c-9a90-71428d00afee",
+              "name": "nome",
+              "value": "={{ $json.body.nome}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        640
+      ],
+      "id": "967c867b-480c-4e05-8ba5-f1c22d8d8caa",
+      "name": "EditNewCartao"
+    },
+    {
+      "parameters": {
+        "tableId": "cartoes",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "={{ $json.id_empresa}} "
+            },
+            {
+              "fieldId": "NomeCartão",
+              "fieldValue": "= {{ $json.nome_cartao }}"
+            },
+            {
+              "fieldId": "bandeira",
+              "fieldValue": "={{ $json.bandeira}}"
+            },
+            {
+              "fieldId": "limite_total",
+              "fieldValue": "={{ $json.limite_total }}"
+            },
+            {
+              "fieldId": "fechamento_dia",
+              "fieldValue": "= {{ $json.fechamento_dia }}"
+            },
+            {
+              "fieldId": "vencimento_dia",
+              "fieldValue": "={{ $json.vencimento_dia }}"
+            },
+            {
+              "fieldId": "numero",
+              "fieldValue": "={{ $json.numero }}"
+            },
+            {
+              "fieldId": "Vencimento",
+              "fieldValue": "={{ $json.vencimento}}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status}}"
+            },
+            {
+              "fieldId": "nome",
+              "fieldValue": "={{ $json.nome }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        640
+      ],
+      "id": "b7a7f768-a1f5-4656-9e2a-e470186a547a",
+      "name": "SalvaCartao2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HoBl47G6kDDDNQ29",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        992
+      ],
+      "id": "2323c2ad-9cd1-420b-8484-6b1c078214d4",
+      "name": "Respond to Webhook23"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " delete \nFROM cartoes\nWHERE empresa_id = {{ $json.id_empresa }}\n  AND id = {{ $json.id }} \n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        992
+      ],
+      "id": "cba42baa-e637-4318-a055-b4320e055f25",
+      "name": "DelCartões",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.id_empresa}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        992
+      ],
+      "id": "5ac05972-5be9-42fb-8535-15de76b93f8a",
+      "name": "Delcartoes"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "excluircartoes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        992
+      ],
+      "id": "99c6d7e7-66ed-49c6-bfb5-8904d7900926",
+      "name": "DelCard",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "CartãoTransacaoEdit1": {
+      "main": [
+        [
+          {
+            "node": "ff_registrar_compra_credito",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InseretransacaoCartão": {
+      "main": [
+        [
+          {
+            "node": "CartãoTransacaoEdit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sim": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Não": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "DadosUsuario": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DadosEmpresa": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login": {
+      "main": [
+        [
+          {
+            "node": "Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Sim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Não",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "DadosEmpresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usuario": {
+      "main": [
+        [
+          {
+            "node": "DadosUsuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NovoCartao": {
+      "main": [
+        [
+          {
+            "node": "EditNewCartao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_registrar_compra_credito": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaCartões": {
+      "main": [
+        [
+          {
+            "node": "cartoesEdit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cartoesEdit": {
+      "main": [
+        [
+          {
+            "node": "Cartoes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cartoes": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarCartões": {
+      "main": [
+        [
+          {
+            "node": "EditarCartões1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarCartões1": {
+      "main": [
+        [
+          {
+            "node": "EditarCartão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarCartão": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditNewCartao1": {
+      "main": [
+        [
+          {
+            "node": "SalvaCartao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaCartao": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaCartao1": {
+      "main": [
+        [
+          {
+            "node": "EditNewCartao1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditNewCartao": {
+      "main": [
+        [
+          {
+            "node": "SalvaCartao2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaCartao2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DelCartões": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook23",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delcartoes": {
+      "main": [
+        [
+          {
+            "node": "DelCartões",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DelCard": {
+      "main": [
+        [
+          {
+            "node": "Delcartoes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "72ecc18f-b1ef-4db1-8fb2-1de170296ca4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "uuQBOxRbnXcFHvee",
+  "tags": []
+}

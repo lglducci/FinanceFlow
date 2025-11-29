@@ -1,0 +1,328 @@
+{
+  "name": "FlowTransacao",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.id_empresa}}",
+              "type": "string"
+            },
+            {
+              "id": "03e9c46a-0444-41d9-97af-93245605fe79",
+              "name": "tipo",
+              "value": "={{ $json.body.tipo}}",
+              "type": "string"
+            },
+            {
+              "id": "a60a91bf-26b8-4a5e-89f3-9b9a88261afe",
+              "name": "conta",
+              "value": "={{ $json.body.conta}}",
+              "type": "string"
+            },
+            {
+              "id": "089dd36c-f804-400a-9ad4-6bdb0e824caf",
+              "name": "categoria",
+              "value": "={{ $json.body.categoria}}",
+              "type": "string"
+            },
+            {
+              "id": "d1d7d5e0-4756-4001-a87b-b026c482568e",
+              "name": "valor",
+              "value": "={{ $json.body.valor}}",
+              "type": "string"
+            },
+            {
+              "id": "99d8e470-89a7-4ca9-851d-e660846a6f8f",
+              "name": "descricao",
+              "value": "={{ $json.body.descricao}}",
+              "type": "string"
+            },
+            {
+              "id": "1785aef6-9777-492f-a1c4-bbf34872bd03",
+              "name": "data",
+              "value": "={{ $json.body.data}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        32
+      ],
+      "id": "69410749-767c-420c-87d6-886db6f368a1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f1dd2b61-d8dc-477c-97e5-0eda8863c8e6",
+              "leftValue": "={{ $('Edit Fields').item.json.tipo }}",
+              "rightValue": "saida",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        32
+      ],
+      "id": "6af66e88-6941-4527-a6bc-4ca0f3ccf62f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novolancamento",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        32
+      ],
+      "id": "88e13d4c-13ba-462e-ae1e-494e799d635d",
+      "name": "NovoLancamento",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' \n   \n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        384,
+        -48
+      ],
+      "id": "523e7406-7663-4d73-aa18-07a4bd8e5add",
+      "name": "registrar_despesa",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' \n   \n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        384,
+        144
+      ],
+      "id": "7066c451-6279-44d8-b85f-3da5d864170f",
+      "name": "registrar_receita",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from transacoes where empresa_id =  {{ $('Edit Fields').item.json.id_empresa }} and id = {{ $json.ff_registrar_despesa }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        592,
+        -48
+      ],
+      "id": "f7fb1657-cdad-4bdc-a771-2d57b4d9a004",
+      "name": "BuscaTransacao",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        848,
+        16
+      ],
+      "id": "6442f7e7-d120-4ab6-b166-1703f8e398b1",
+      "name": "Respond to Webhook13"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from transacoes where empresa_id =  {{ $('Edit Fields').item.json.id_empresa }} and id = {{ $json.ff_registrar_receita }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        592,
+        144
+      ],
+      "id": "b41bc35d-ab4d-49cc-8e2c-a5f734222030",
+      "name": "BuscaTransacao1",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
+        "height": 732,
+        "width": 1472,
+        "color": 5
+      },
+      "id": "12200dd1-4405-4397-8e08-514a5e8ea156",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -288
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "registrar_despesa",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "registrar_receita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NovoLancamento": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "registrar_despesa": {
+      "main": [
+        [
+          {
+            "node": "BuscaTransacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "registrar_receita": {
+      "main": [
+        [
+          {
+            "node": "BuscaTransacao1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaTransacao": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaTransacao1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec5f26df-10d1-4d0e-8d5a-69e1057fc5ad",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "v0a96gvbqRXx8tDB",
+  "tags": []
+}
