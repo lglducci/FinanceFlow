@@ -336,8 +336,8 @@
               "fieldValue": "={{ $json.fornecedor_id }}"
             },
             {
-              "fieldId": "parcelas",
-              "fieldValue": "={{ $json.parcelas }}"
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status}}"
             }
           ]
         }
@@ -398,12 +398,6 @@
               "type": "string"
             },
             {
-              "id": "de393231-6bc4-46b1-a9fb-fa878f154e3a",
-              "name": "parcelas",
-              "value": "={{ $json.body.parcelas}}",
-              "type": "string"
-            },
-            {
               "id": "71ad2246-2fab-44df-984a-c8967ab724a3",
               "name": "fornecedor_id",
               "value": "={{ $json.body.fornecedor_id}}",
@@ -413,6 +407,12 @@
               "id": "b97f031a-5075-4f75-a5a7-7b46fe82da37",
               "name": "id",
               "value": "={{ $json.body.id}}",
+              "type": "string"
+            },
+            {
+              "id": "16a8fa8e-0609-4ab5-9cde-1de81e4fb232",
+              "name": "status",
+              "value": "={{$json.body.status}}",
               "type": "string"
             }
           ]
@@ -1485,7 +1485,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f577b5aa-b3f6-41f4-a00d-f07f6808f295",
+  "versionId": "8cd3c06b-1727-46d7-9d0d-78bd4c0422aa",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
