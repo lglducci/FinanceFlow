@@ -118,62 +118,72 @@ export default function EditCardTransaction() {
 
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white shadow rounded">
-      <h2 className="text-2xl font-bold mb-6">Editar Transação</h2>
+      <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
+      <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
+    
+    
+     <h2
+          className="text-2xl md:text-3xl font-bold mb-6 text-center"
+          style={{ color: "#ff9f43" }}
+        >
+          ✏️  Editar Transação de Cartão
+        </h2>
+
+       <div className="bg-gray-100 flex flex-col  gap-2  space-y-4 px-6"> 
 
       {/* CARTÃO */}
       <div className="mb-4">
-        <label className="text-sm font-semibold text-gray-600">Cartão</label>
+        <label className="text-sm font-semibold text-gray-600 text-[#1e40af]">Cartão</label>
         <div className="font-semibold">{form.cartao_nome || "-"}</div>
         {form.cartao_bandeira && (
-          <div className="text-xs text-gray-500">{form.cartao_bandeira}</div>
+          <div className="border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300">{form.cartao_bandeira}</div>
         )}
-      </div>
+      </div> 
 
       {/* CAMPOS SOMENTE LEITURA */}
       <div className="mb-4">
-        <label className="font-semibold block mb-1">Data da Parcela</label>
+        <label className="font-semibold block mb-1 text-[#1e40af]">Data da Parcela</label>
         <input
           type="text"
           value={form.data_parcela}
           readOnly
-          className="border p-2 rounded w-full bg-gray-200 text-gray-600"
+          className="border p-2 rounded w-[280px] bg-gray-200 w-[280px] text-gray-600 border-gray-300"
         />
       </div>
 
       <div className="mb-4">
-        <label className="font-semibold block mb-1">Valor</label>
+        <label className="font-semibold block mb-1 w-[280px] text-[#1e40af]">Valor</label>
         <input
           type="text"
           value={form.valor}
           readOnly
-          className="border p-2 rounded w-full bg-gray-200 text-gray-600"
+          className="border p-2 rounded  w-[280px]  bg-gray-200 text-gray-600 border-gray-300"
         />
       </div>
 
       <div className="mb-4">
-        <label className="font-semibold block mb-1">Parcela</label>
+        <label className="font-semibold block mb-1  w-[280px] text-[#1e40af]">Parcela</label>
         <input
           type="text"
           value={`${form.parcela_num}/${form.parcela_total}`}
           readOnly
-          className="border p-2 rounded w-full bg-gray-200 text-gray-600"
+          className="border p-2 rounded w-[280px] bg-gray-200 text-gray-600 border-gray-300"
         />
       </div>
 
       {/* DESCRIÇÃO — único editável */}
       <div className="mb-6">
-        <label className="font-semibold block mb-1">Descrição</label>
+        <label className="font-semibold block mb-1 text-[#1e40af]">Descrição</label>
         <input
           type="text"
           value={form.descricao}
           onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-          className="border p-2 rounded w-full"
+          className="border p-2 rounded w-[680px] border-gray-300"
         />
       </div>
 
       {/* BOTÕES */}
-      <div className="flex gap-4 mt-4">
+       <div className="flex gap-6 pt-8 pb-8 pl-1">   
         <button
           onClick={salvar}
           disabled={loading}
@@ -190,5 +200,7 @@ export default function EditCardTransaction() {
         </button>
       </div>
     </div>
+    </div>
+      </div>
   );
 }

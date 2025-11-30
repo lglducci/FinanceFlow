@@ -83,9 +83,8 @@ export default function NovoLancamento() {
   };
 
   return (
-    <div className="min-h-screen py-6 px-4 bg-bgSoft">
-
-      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">
+         <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
+         <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
 
         {/* TÍTULO IGUAL AO EDITAR */}
         <h1
@@ -94,45 +93,53 @@ export default function NovoLancamento() {
         >
           ✏️ Novo Lançamento
         </h1>
+ 
 
-        <div className="flex flex-col space-y-4">
+        <div className="bg-gray-100 flex flex-col  gap-2  space-y-4 px-6">
 
           {/* Tipo */}
-          <label className="block text-base font-bold">Tipo</label>
+          <label className="block text-base font-bold text-[#1e40af]">Tipo</label>
+           <div className="w-1/5"> 
           <select
             name="tipo"
             value={form.tipo}
             onChange={handleChange}
-            className="input-base w-48 h-10"
+             placeholder="Tipo"
+            className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300"
           >
             <option value="entrada">Entrada</option>
             <option value="saida">Saída</option>
           </select>
+          </div>
 
           {/* Categoria */}
-          <label className="block text-base font-bold">Categoria</label>
+          <label className="block text-base font-bold text-[#1e40af]">Categoria</label>
+          <div className="w-2/3"> 
           <select
             name="categoria_id"
             value={form.categoria_id}
             onChange={handleChange}
-            className="input-base w-72 h-10"
+               placeholder="Categoria"
+              className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
           >
             <option value="">Selecione</option>
             {categorias.map((c) => (
               <option key={c.id} value={c.id}>{c.nome}</option>
             ))}
           </select>
+           </div>
 
           {/* GRID IGUAL AO EDITAR */}
           <div className="grid grid-cols-2 gap-4">
 
             <div>
-              <label className="block text-base font-bold">Conta</label>
+              <label className="block text-base font-bold text-[#1e40af]">Conta</label>
               <select
                 name="conta_id"
                 value={form.conta_id}
                 onChange={handleChange}
-                className="input-base w-64 h-10"
+                    placeholder="Conta Gerencial"
+                 className= "border font-bold rounded px-2 py-2  w-[380px]  mb-2 border-gray-300"
               >
                 <option value="">Selecione</option>
                 {contas.map((c) => (
@@ -142,13 +149,14 @@ export default function NovoLancamento() {
             </div>
 
             <div>
-              <label className="block text-base font-bold">Valor</label>
+              <label className="block text-base font-bold text-[#1e40af]">Valor</label>
               <input
                 type="number"
                 name="valor"
                 value={form.valor}
                 onChange={handleChange}
-                className="input-base w-52 h-10"
+                  placeholder="00,00"
+                 className= "border font-bold rounded px-2 py-2 w-52 mb-2 border-gray-300"
               />
             </div>
 
@@ -156,55 +164,63 @@ export default function NovoLancamento() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-base font-bold">Data</label>
+              <label className="block text-base font-bold text-[#1e40af]">Data</label>
               <input
                 type="date"
                 name="data"
                 value={form.data}
                 onChange={handleChange}
-                className="input-base w-48 h-10"
+                 className= "border font-bold rounded px-2 py-2 w-52 mb-2 border-gray-300"
               />
             </div>
 
             <div>
-              <label className="block text-base font-bold">Origem</label>
+              <label className="block text-base font-bold text-[#1e40af]">Origem</label>
+              
               <input
                 type="text"
                 name="origem"
                 value={form.origem}
                 onChange={handleChange}
-                className="input-base w-48 h-10"
+                 placeholder="conta corrente"
+                 className= "border font-bold rounded px-2 py-2 w-72 mb-4  border-gray-300"
               />
+            
             </div>
           </div>
 
           {/* Descrição */}
-          <label className="block text-base font-bold">Descrição</label>
+          <label className="block text-base font-bold text-[#1e40af]">Descrição</label>
+         
           <input
             type="text"
             name="descricao"
             value={form.descricao}
             onChange={handleChange}
-            className="input-base w-full h-10"
-          />
+            placeholder="Descricao"
+            rows="2"
+             className= "border font-bold rounded px-2 py-2 w-[680px] mb-4 border-gray-300"
+          /> 
 
           {/* Botões */}
-          <div className="flex gap-4 pt-4">
+          
+          <div className="flex gap-6 pt-8 pb-8 pl-1">
+
+
             <button
               onClick={handleSalvar}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold"
+              className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold"
             >
               Salvar
             </button>
 
             <button
               onClick={() => navigate(-1)}
-              className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+              className="flex-1 bg-gray-400 text-white px-4 py-3  rounded-lg font-semibold"
             >
               Voltar
             </button>
-          </div>
-
+          </div> 
         </div>
 
       </div>

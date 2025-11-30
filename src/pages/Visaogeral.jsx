@@ -96,17 +96,16 @@ export default function Visaogeral() {
 {/*<div className="bg- blue p-6 rounded-xl shadow mb-10 flex flex-col gap-2">*/}
 
   
+         <div className="bg-gray-100 rounded-xl shadow p-5  border-[12px] border-blue-800 mb-10 w-[1850px] flex items-center"> 
+ 
 
-  
-  <div className="bg-gray 100 p-8 rounded-2xl shadow-xl border border-gray-300 mb-10">
-
-  <div className="bg-gray-200 p-6 rounded-xl shadow mb-8 flex flex-col gap-2"> 
+  <div className="bg-gray-100 p-6 rounded-xl shadow mb-8 flex flex-col gap-2"> 
  
   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
     
     <div className="flex flex-col">
       
-      <span className="text-base font-bold mb-1">Períodos</span>
+      <span className="text-base font-bold mb-1 text-[#1e40af]">Períodos</span>
       <div className="flex gap-4 text-base flex-wrap">
         {["mes", "15", "semana", "hoje"].map((tipo) => (
           <button

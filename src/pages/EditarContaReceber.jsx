@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
-export default function EditarReceber() {
+export default function EditarContaReceber() {
   const navigate = useNavigate();
   const { id } = useParams();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
@@ -26,6 +26,35 @@ export default function EditarReceber() {
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
+
+
+  /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
+const THEME = {
+  pageBg: "#0e2a3a",                 // fundo da página (escuro)
+  panelBg: "#1e40af",                // fundos auxiliares (se precisar) panelBg: "#4a88a9ff",   
+  panelBorder: "rgba(255,159,67,0.30)",
+
+  cardBg: "#254759",                 // bloco interno mais claro
+  cardBorder: "rgba(255,159,67,0.35)",
+  cardShadow: "0 6px 20px rgba(0,0,0,0.25)",
+
+  title: "#ff9f43",
+  text: "#e8eef2",
+  textMuted: "#bac7cf",
+
+  fieldBg: "#1f3b4d",                // inputs (um tom acima do card)
+  fieldBorder: "rgba(255,159,67,0.25)",
+  focusRing: "#ff9f43",
+
+  btnPrimary: "#ff9f43",
+  btnPrimaryText: "#1b1e25",
+  btnSecondary: "#ef4444",
+  btnSecondaryText: "#ffffff",
+};
+
+
+
+
 
   //------------------------------------------------------------------
   // CARREGAR FORNECEDORES
@@ -56,7 +85,7 @@ export default function EditarReceber() {
   //------------------------------------------------------------------
   async function carregarCategorias() {
     try {
-      const url = buildWebhookUrl("listacategorias", { empresa_id,tipo:'entrada'  });
+      const url = buildWebhookUrl("listacategorias", { empresa_id, tipo:'saida' });
 
       const resp = await fetch(url);
       const texto = await resp.text();
@@ -140,7 +169,8 @@ async function carregar() {
           vencimento: form.vencimento,
           categoria_id: Number(form.categoria_id) || null,
           fornecedor_id: Number(form.fornecedor_id) || null,
-          status: form.status,
+          status: form.status 
+          
         }),
       });
 
@@ -186,54 +216,46 @@ async function carregar() {
   // LAYOUT
   //------------------------------------------------------------------
   return (
-    <div className="max-w-xl mx-auto bg-white p-6 rounded-xl shadow border border-blue-300">
-      <h2 className="text-xl font-bold mb-4">Editar Conta a Receber</h2>
+ 
 
-      <div className="flex flex-col gap-4">
+    <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
+      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
+
+        <h1
+        className="text-2xl md:text-3xl font-bold mb-6 text-center"
+        style={{ color: THEME.title }}
+      >
+        ✏️ Editar Conta a Receber
+      </h1>
+
+      <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-4"> 
+
+ 
 
         {/* DESCRIÇÃO */}
         <div>
-          <label className="font-semibold text-sm">Descrição</label>
+          <label className="font-bold text-[#1e40af]">Descrição</label>
           <input
             name="descricao"
-            className="w-full border rounded px-3 py-2"
+          
             value={form.descricao}
             onChange={handleChange}
-          />
-        </div>
+            className="input-premium"
+            placeholder="descricao "
 
-        {/* VALOR */}
-        <div>
-          <label className="font-semibold text-sm">Valor</label>
-          <input
-            type="number"
-            name="valor"
-            className="w-full border rounded px-3 py-2"
-            value={form.valor}
-            onChange={handleChange}
           />
-        </div>
-
-        {/* VENCIMENTO */}
-        <div>
-          <label className="font-semibold text-sm">Vencimento</label>
-          <input
-            type="date"
-            name="vencimento"
-            className="w-full border rounded px-3 py-2"
-            value={form.vencimento}
-            onChange={handleChange}
-          />
-        </div>
-
+        </div> 
+        
         {/* CATEGORIA */}
         <div>
-          <label className="font-semibold text-sm">Categoria</label>
+          <div className="w-2/3"> 
+          <label className="font-bold text-[#1e40af]">Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+             className="input-premium"
+            placeholder="categoria"
           >
             <option value="">Selecione</option>
             {categorias.map((c) => (
@@ -241,15 +263,17 @@ async function carregar() {
             ))}
           </select>
         </div>
-
+         </div>
         {/* FORNECEDOR */}
         <div>
-          <label className="font-semibold text-sm">Fornecedor</label>
+            <div className="w-2/3"> 
+          <label className="ffont-bold text-[#1e40af]">Fornecedor</label>
           <select
             name="fornecedor_id"
             value={form.fornecedor_id}
             onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
+             className="input-premium"
+            placeholder="fornecedor"
           >
             <option value="">Selecione</option>
             {fornecedores.map((f) => (
@@ -257,34 +281,68 @@ async function carregar() {
             ))}
           </select>
         </div>
+            </div>
+
+         {/* VALOR */}
+        <div>
+              <div className="w-1/3"> 
+          <label className="font-bold text-[#1e40af]">Valor</label>
+          <input
+            type="number"
+            name="valor" 
+            value={form.valor}
+            onChange={handleChange}
+            className="input-premium"
+            placeholder="valor"
+          />
+        </div>
+          </div>
+
+        {/* VENCIMENTO */}
+        <div>
+            <div className="w-1/3"> 
+          <label className="font-bold text-[#1e40af]">Vencimento</label>
+          <input
+            type="date"
+            name="vencimento"  
+            value={form.vencimento}
+            onChange={handleChange}
+            className="input-premium"
+            placeholder="vencimento"
+          />
+        </div>
+            </div>
 
         {/* STATUS */}
         <div>
-          <label className="font-semibold text-sm">Status</label>
+            <div className="w-1/3"> 
+          <label className="font-bold text-[#1e40af]">Status</label>
           <select
-            name="status"
-            className="w-full border rounded px-3 py-2"
+            name="status" 
             value={form.status}
             onChange={handleChange}
+              className="input-premium"
+            placeholder="status"
           >
             <option value="aberto">Aberto</option>
             <option value="pago">Pago</option>
           </select>
         </div>
+        </div>
 
         {/* BOTÕES */}
-        <div className="flex gap-3 mt-4">
+             <div className="flex gap-6 pt-8 pb-8 pl-1">
           <button
             onClick={salvar}
             disabled={salvando}
-            className="bg-blue-600 text-white px-5 py-2 rounded font-semibold"
+            className="flex-1  bg-blue-600 text-white px-4 py-3 rounded font-semibold"
           >
             {salvando ? "Salvando..." : "Salvar"}
           </button>
 
           <button
             onClick={() => navigate("/contas-receber")}
-            className="bg-gray-400 text-white px-5 py-2 rounded font-semibold"
+            className="flex-1  bg-gray-400 text-white px-4 py-3 rounded font-semibold"
           >
             Cancelar
           </button>
@@ -292,5 +350,6 @@ async function carregar() {
 
       </div>
     </div>
+     </div>
   );
 }

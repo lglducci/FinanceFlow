@@ -87,11 +87,12 @@ export default function FornecedorCliente() {
       <h2 className="text-2xl font-bold mb-4">Fornecedores / Clientes</h2>
 
       {/* FILTRO */}
-      <div className="bg-gray-200 p-5 rounded-xl shadow border border flex items-end gap-6 mb-10 max-w-[80%]">
+       
+       <div className="bg-gray-50 p-5 rounded-xl shadow border border flex items-end border-[10px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
         <div>
-          <label className="text-base font-bold block mb-1">Tipo</label>
+          <label className="text-base font-bold block mb-1 text-[#1e40af]">Tipo</label>
           <select
-            className="border font-bold rounded-lg px-3 py-2 w-48 text-base"
+            className="border font-bold rounded-lg px-3 py-2 w-48 text-base border-yellow-500"
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
           >

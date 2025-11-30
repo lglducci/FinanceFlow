@@ -89,22 +89,17 @@ export default function ContasGerenciais() {
       <div className="flex justify-between mb-5">
         <h1 className="text-2xl font-bold text-blue-600">Contas Gerenciais</h1>
 
-        <button
-          onClick={() => navigate("/contasgerenciais/novo")}
-          className="bg-green-600 text-white px-5 py-2 rounded font-bold shadow"
-        >
-          Novo
-        </button>
+        
       </div>
 
       {/* FILTRO */}
       
-      <div className="bg-gray-200 rounded-xl shadow p-1 border border-gray-200 mb-4 w-[1850px] flex items-center gap-6">
-
-            <select
+      <div className="bg-gray-100 rounded-xl shadow p-8  border-[24px] border-blue-800 mb-8 w-[1850px] flex items-center gap-6">
+             <label className="font-bold text-[#1e40af]">Descrição</label>
+            <select 
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
-              className="border px-5 py-2 rounded w-46"
+              className="border px-5 py-2 rounded w-46 border-yellow-500 w-32"
             >
               <option value="">Todos</option>
               <option value="entrada">Entrada</option>
@@ -113,10 +108,18 @@ export default function ContasGerenciais() {
 
             <button
               onClick={carregar}
-              className="bg-blue-600 text-white px-5 py-2 rounded font-bold w-48"
+              className="bg-blue-600 text-white px-5 py-2 rounded font-bold w-32"
             >
-              Buscar
+              Pesquisar
             </button>
+
+
+             <button
+                onClick={() => navigate("/contasgerenciais/novo")}
+                className="bg-green-600 text-white px-5 py-2 rounded font-bold shadow"
+              >
+                Novo
+              </button>
 
           </div>
 

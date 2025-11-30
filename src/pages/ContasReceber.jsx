@@ -25,7 +25,7 @@ export default function ContasReceber() {
     try {
       const url = buildWebhookUrl("fornecedorcliente", {
         empresa_id,
-        tipo: "fornecedor",
+        tipo: "cliente",
       });
 
       const resp = await fetch(url);
@@ -207,16 +207,18 @@ useEffect(() => {
       
       <h2 className="text-xl font-bold mb-4">Contas a Receber</h2>
       {/* FILTROS */}
-<div className="bg-gray-200 rounded-xl shadow p-5 border border-gray-400 mb-4 w-[1850px]">
+ 
+  <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-6 border-[10px] border-blue-800 mb-6">
+
 
   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
     
 
     {/* PERÍODO */}
     <div className="col-span-1">
-      <label className="font-semibold text-base block mb-3">Período</label>
+      <label className="font-semibold text-base block mb-3 text-[#1e40af]">Período</label>
       <div className="flex flex-col gap-1 text-base">
-         <label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
+         <label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer text-[#1e40af]">
   <input
     type="radio"
     className="w-4 h-4"
@@ -226,17 +228,17 @@ useEffect(() => {
   Hoje
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer text-[#1e40af]">
   <input
     type="radio"
-    className="w-4 h-4"
+    className="w-4 h-4 border-yellow-500"
     checked={periodo==="semana"}
     onChange={()=>setPeriodo("semana")}
   />
   Próxima Semana
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer text-[#1e40af]">
   <input
     type="radio"
     className="w-4 h-4"
@@ -246,7 +248,7 @@ useEffect(() => {
   Próximos 15 dias
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer text-[#1e40af]">
   <input
     type="radio"
     className="w-4 h-4"
@@ -256,7 +258,7 @@ useEffect(() => {
   Próximo Mês
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer text-[#1e40af]">
   <input
     type="radio"
     className="w-4 h-4"
@@ -266,7 +268,7 @@ useEffect(() => {
   Próximo Bimestre
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer text-[#1e40af]">
   <input
     type="radio"
     className="w-4 h-4"
@@ -276,7 +278,7 @@ useEffect(() => {
   Próximo Trimestre
 </label>
 
-<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer">
+<label className="flex items-center gap-2 text-[15px] font-bold cursor-pointer text-[#1e40af]">
   <input
     type="radio"
     className="w-4 h-4"
@@ -297,35 +299,35 @@ useEffect(() => {
 
     {/* DATA INI */}
     <div>
-      <label className="font-bold text-base block mb-1">Data início</label>
+      <label className="font-bold text-base block mb-1 text-[#1e40af]">Data início</label>
       <input
         type="date"
         value={dataIni}
         onChange={e => setDataIni(e.target.value)}
-        className="border font-bold text-base rounded px-2 py-1 w-38 mb-4"
+        className="border font-bold text-base rounded px-2 py-1 w-38 mb-4 border-yellow-500"
       />
     </div>
   
     {/* DATA FIM */}
     <div>
-      <label className="font-bold text-base block mb-1">Data fim</label>
+      <label className="font-bold text-base block mb-1 text-[#1e40af]">Data fim</label>
       <input
         type="date"
         value={dataFim}
         onChange={e => setDataFim(e.target.value)}
-        className="border font-bold text-base rounded px-2 py-1 w-38 mb-4"
+        className="border font-bold text-base rounded px-2 py-1 w-38 mb-4 border-yellow-500"
       />
     </div>
     </div>
 
-     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start w-[355px]"> 
+     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start w-[355px] text-[#1e40af]"> 
     {/* STATUS */}
     <div>
       <label className="font-bold text-base block mb-2">Status</label>
       <select
         value={status}
         onChange={e => setStatus(e.target.value)}
-        className="border font-bold rounded px-3 py-2 w-42 mb-4"
+        className="border font-bold rounded px-3 py-2 w-42 mb-4 border-yellow-500"
       >
         <option value="aberto">Aberto</option>
         <option value="pago">Pago</option>
@@ -339,7 +341,7 @@ useEffect(() => {
       <select
         value={fornecedor_id}
         onChange={e => setFornecedorId(Number(e.target.value))}
-        className="border font-bold rounded px-3 py-2 w-42 mb-4"
+        className="border font-bold rounded px-3 py-2 w-42 mb-4 border-yellow-500"
       >
         <option value={0}>Todos</option>
         {fornecedores.map(f => (
@@ -356,11 +358,11 @@ useEffect(() => {
       Pesquisar
     </button>
     <button onClick={() => navigate("/nova-conta-receber")} className="bg-green-600 text-white px-5 py-2 rounded font-semibold">
-      Novo
+      Novo Conta
     </button>
   
    <button
-  onClick={() => navigate("/excluir-parcelamento-receber")}
+  onClick={() => navigate("/excluir-parcelamento-receber")} 
   className="bg-red-600 text-white px-5 py-2 rounded font-semibold"
 >
   Excluir Parcelamento

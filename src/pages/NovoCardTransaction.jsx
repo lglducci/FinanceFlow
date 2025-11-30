@@ -88,16 +88,27 @@ export default function NovoCardTransaction() {
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
+     <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
+      <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
+ 
+     <h2
+          className="text-2xl md:text-3xl font-bold mb-6 text-center"
+          style={{ color: "#ff9f43" }}
+        >
+          ✏️  Nova Transação de Cartão
+        </h2>
 
-      <h2 className="text-2xl font-bold mb-4">Nova Transação de Cartão</h2>
+
+     <div className="bg-gray-100 flex flex-col  gap-2  space-y-4 px-6"> 
+      
 
       {/* Cartão */}
-      <label className="block mb-1 text-sm font-semibold">Cartão</label>
+      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Cartão</label>
       <select
-        className="w-full px-3 py-2 rounded bg-gray-200 mb-4"
+          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
         value={cartaoSelecionado}
         onChange={(e) => setCartaoSelecionado(e.target.value)}
+         placeholder="Nome do Cartão"
       >
         <option value="">Selecione...</option>
         {listaCartoes.map((c) => (
@@ -107,63 +118,77 @@ export default function NovoCardTransaction() {
         ))}
       </select>
 
-      {/* Descrição */}
-      <label className="block mb-1 text-sm font-semibold">Descrição</label>
+       {/* Data */}
+      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Data da Compra</label>
       <input
-        type="text"
-        name="descricao"
-        value={form.descricao}
+        type="date"
+        name="data_parcela"
+        value={form.data_parcela}
         onChange={handleChange}
-        className="w-full px-3 py-2 rounded border mb-4"
+             placeholder="data compra"
+          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2  border-gray-300"
       />
 
-      {/* Valor */}
-      <label className="block mb-1 text-sm font-semibold">Valor</label>
-      <input
-        type="number"
-        name="valor"
-        value={form.valor}
-        onChange={handleChange}
-        className="w-full px-3 py-2 rounded border mb-4"
-      />
-
+      
       {/* Parcelas */}
-      <label className="block mb-1 text-sm font-semibold">Parcelas</label>
+      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Parcelas</label>
       <input
         type="number"
         name="parcelas"
         min="1"
         value={form.parcelas}
         onChange={handleChange}
-        className="w-full px-3 py-2 rounded border mb-4"
+          placeholder="parcela"
+          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
       />
 
-      {/* Data */}
-      <label className="block mb-1 text-sm font-semibold">Data da Compra</label>
+      {/* Valor */}
+      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Valor</label>
       <input
-        type="date"
-        name="data_parcela"
-        value={form.data_parcela}
+        type="number"
+        name="valor"
+        value={form.valor}
         onChange={handleChange}
-        className="w-full px-3 py-2 rounded border mb-6"
+          placeholder="valor"
+          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
       />
+ 
+
+      
+
+
+      {/* Descrição */}
+      <label className="block mb-1 text-base  font-bold  text-[#1e40af]">Descrição</label>
+      <input
+        type="text"
+        name="descricao"
+        value={form.descricao}
+        onChange={handleChange}
+        placeholder="descricao"
+          className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300"
+      />
+
 
       {/* Botões */}
-      <div className="flex justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="px-4 py-2 bg-gray-400 text-white rounded"
-        >
-          Voltar
-        </button>
 
+         <div className="flex gap-6 pt-8 pb-8 pl-1">   
         <button
-          onClick={salvar}
-          className="px-4 py-2 bg-green-600 text-white rounded"
-        >
-          Salvar
-        </button>
+            onClick={salvar}
+            className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg font-bold"
+          >
+            Salvar
+          </button>
+  
+          <button
+            onClick={() => navigate(-1)}
+            className="flex-1 bg-gray-400 text-white px-4 py-3 rounded-lg font-bold"
+          >
+            Voltar
+        </button>  
+      </div> 
+
       </div>
-    </div>
+     </div>
+     </div>
   );
 }

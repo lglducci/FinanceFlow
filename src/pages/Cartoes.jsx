@@ -104,13 +104,16 @@ return (
     </div>
 
     {/* FILTROS */}
-     <div className="bg-gray-100 p-5 shadow rounded-lg p-4 border-l-4 border-gray-500 mb-10"> 
-    <div className="bg-gray-200 p-5 rounded-xl shadow flex items-end gap-6 mb-10">
+     
+      <div className="bg-gray-100 rounded-xl shadow p-5  border-[12px] border-blue-800 mb-10 w-[1850px] flex items-center">
+ 
+ 
+    <div className="bg-gray-100 p-5 rounded-xl shadow flex items-end gap-6 mb-10  w-[1050px]  border-[2px]  border-gray-200">
 
       <div>
-        <label className="text-base font-bold block mb-1">Status</label>
+        <label className="text-base font-bold block mb-1 font-bold text-[#1e40af]">Status</label>
         <select
-          className="border rounded-lg font-bold px-3 py-2 w-44 text-base"
+          className=   "border font-bold rounded px-4 py-3 w-[380px] mb-4 border-gray-300"
           value={statusFiltro}
           onChange={(e) => setStatusFiltro(e.target.value)}
         >
@@ -119,21 +122,21 @@ return (
           <option value="todos">Todos</option>
         </select>
       </div>
-
-      <button
-        onClick={carregar}
-        className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold text-sm"
-      >
-        {carregando ? "Carregando..." : "Pesquisar"}
-      </button>
-      
-      <button
-        onClick={novoCartao}
-        className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm"
-      >
-        Novo cartão
-      </button>
-
+         <div className="flex gap-8 pt-8 pb-8 pl-1"> 
+            <button
+              onClick={carregar}
+              className="flex-1 bg-blue-600  w-[200px] text-white px-5 py-3 rounded-lg font-bold "
+            >
+              {carregando ? "Carregando..." : "Pesquisar"}
+            </button>
+            
+            <button
+              onClick={novoCartao}
+              className="flex-1  bg-green-600   w-[200px] text-white px-5 py-3 rounded-lg font-bold"
+            >
+              Novo cartão
+            </button>
+          </div>
         
       </div>
     </div>

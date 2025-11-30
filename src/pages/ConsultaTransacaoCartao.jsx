@@ -96,14 +96,14 @@ export default function ConsultaTransacaoCartao() {
 
       {/* FILTROS  */}
 
-        <div className="bg-gray-200 p-2.5 rounded-xl shadow-xl border border mb-10">  
+        <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl border border mb-10 border-[12px] border-blue-800">  
       
-      <div className="bg-gray-200 p-2.5 rounded-lg mb-10 flex flex-col md:flex-row md:items-end gap-4">
+      <div className="bg-gray-100 p-2.5 rounded-lg mb-10 flex flex-col md:flex-row md:items-end gap-4">
 
         <div className="flex flex-col">
-          <label className="font-bold mb-1">Cartão</label>
+          <label className="font-bold mb-1 text-[#1e40af]">Cartão</label>
           <select
-            className="border font-bold px-3 py-1.5 rounded w-52 h-10"
+            className="border font-bold px-3 py-1.5 rounded w-52 h-10  border-yellow-500"
             value={cartao}
             onChange={(e) => setCartao(e.target.value)}
           >
@@ -121,10 +121,10 @@ export default function ConsultaTransacaoCartao() {
         
 
         <div className="flex flex-col">
-          <label className="font-bold mb-1">Mês referência</label>
+          <label className="font-bold mb-1 text-[#1e40af]">Mês referência</label>
           <input
             type="month"
-            className="border font-bold  px-3 py-1.5 rounded w-52 h-10"
+            className="border font-bold  px-3 py-1.5 rounded w-52 h-10 border-yellow-500"
             value={referencia}
             onChange={(e) => setReferencia(e.target.value)}
           />

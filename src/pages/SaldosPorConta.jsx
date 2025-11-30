@@ -102,13 +102,13 @@ const editarConta = (conta) => {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Saldos por Conta</h2>
      
-      <div className="bg-gray-200 p-6 rounded shadow mb-6 border border-gray-200">
-        <p className="font-bold text-base gray-700 mb-2">Períodos</p>
+      <div className="bg-gray-100 p-6 rounded shadow mb-6  border-[12px] border-blue-800">
+        <p className="font-bold text-base gray-700 mb-2  text-[#1e40af]">Períodos</p>
         <div className="flex gap-6 text-base  font-bold  mb-4">
            <div className="flex gap-4 text-base font-bold flex-wrap"></div>
            
           {["mes", "15", "semana", "hoje"].map((tipo) => (
-            <label key={tipo} className="flex text-base items-center gap-2">
+            <label key={tipo} className="flex text-base items-center gap-2  text-[#1e40af]">
               <input
                 type="checkbox"
                 checked={periodo === tipo}
@@ -121,22 +121,22 @@ const editarConta = (conta) => {
        
         <div className="flex gap-4 bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
           <div className="flex flex-col">
-            <label className="text-base font-bold">Data início</label>
+            <label className="text-base font-bold  text-[#1e40af] ">Data início</label>
             <input
               type="date"
               value={inicio}
               onChange={(e) => setInicio(e.target.value)}
-              className="border p-2 rounded w-44"
+              className="border p-2 rounded w-44 font-bold  border-yellow-500"
             />
           </div>
 
           <div className="flex flex-col">
-             <label className="text-base font-bold">Data Fim</label>
+             <label className="text-base font-bold  text-[#1e40af]">Data Fim</label>
             <input
               type="date"
               value={fim}
               onChange={(e) => setFim(e.target.value)}
-              className="border p-2 rounded w-44"
+              className="border p-2 rounded w-44 font-bold  border-yellow-500"
             />
           </div>
 

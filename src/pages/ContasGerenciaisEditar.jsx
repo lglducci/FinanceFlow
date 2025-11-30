@@ -14,7 +14,32 @@ export default function ContasGerenciaisEditar() {
     tipo: state.tipo,
   });
 
- 
+  /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
+const THEME = {
+  pageBg: "#0e2a3a",                 // fundo da página (escuro)
+  panelBg: "#1e40af",                // fundos auxiliares (se precisar) panelBg: "#4a88a9ff",   
+  panelBorder: "rgba(255,159,67,0.30)",
+
+  cardBg: "#254759",                 // bloco interno mais claro
+  cardBorder: "rgba(255,159,67,0.35)",
+  cardShadow: "0 6px 20px rgba(0,0,0,0.25)",
+
+  title: "#ff9f43",
+  text: "#e8eef2",
+  textMuted: "#bac7cf",
+
+  fieldBg: "#1f3b4d",                // inputs (um tom acima do card)
+  fieldBorder: "rgba(255,159,67,0.25)",
+  focusRing: "#ff9f43",
+
+  btnPrimary: "#ff9f43",
+  btnPrimaryText: "#1b1e25",
+  btnSecondary: "#ef4444",
+  btnSecondaryText: "#ffffff",
+};
+
+
+
 async function salvar() {
   const url = buildWebhookUrl("SalvaCatetoria");
 
@@ -44,23 +69,29 @@ async function salvar() {
 }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-blue-600 mb-4">
-        Editar Conta
-      </h1>
+ 
+     
+     <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
+      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white"> 
+      
+        <h1
+        className="text-2xl md:text-3xl font-bold mb-6 text-left"
+        style={{ color: THEME.title }}
+      >
+        ✏️ Editar Conta</h1>
 
-      <div className="bg-white p-4 border rounded shadow max-w-md">
+       <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
 
-        <label>Nome</label>
+        <label className="font-bold text-[#1e40af]">Nome</label>
         <input
-          className="border px-3 py-2 rounded w-full mb-3"
+          className="input-premium"
           value={form.nome}
           onChange={(e) => setForm({ ...form, nome: e.target.value })}
         />
 
-        <label>Tipo</label>
+          <label className="font-bold text-[#1e40af]">Tipo</label>
         <select
-          className="border px-3 py-2 rounded w-full mb-4"
+          className="input-premium"
           value={form.tipo}
           onChange={(e) => setForm({ ...form, tipo: e.target.value })}
         >
@@ -74,6 +105,7 @@ async function salvar() {
         >
           Salvar
         </button>
+      </div>
       </div>
     </div>
   );

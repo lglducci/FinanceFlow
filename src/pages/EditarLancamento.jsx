@@ -165,28 +165,27 @@ useEffect(() => {
   }
 
  return (
-  <div className="min-h-screen py-6 px-4 bg-bgSoft">
-
-    <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">
-
+  <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
+       <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
       {/* Título */}
       <h1
         className="text-2xl md:text-3xl font-bold mb-6 text-center"
         style={{ color: THEME.title }}
       >
         ✏️ Editar Lançamento
-      </h1>
+      </h1> 
+   
 
-      <div className="flex flex-col space-y-4">
+         <div className="bg-gray-100 flex flex-col  gap-2  space-y-6 px-6">
 
         {/* 1 — Tipo */}
         <div>
-          <label className="block text-base font-bold">Tipo</label>
+          <label className="block text-base font-bold  text-[#1e40af]">Tipo</label>
           <select
             name="tipo"
             value={form.tipo}
             onChange={onChange}
-            className="input-base w-48 h-10"
+             className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300"
           >
             <option value="">Selecione</option>
             <option value="entrada">Entrada</option>
@@ -196,12 +195,12 @@ useEffect(() => {
 
         {/* 2 — Categoria */}
         <div>
-          <label className="block text-base font-bold">Categoria</label>
+          <label className="block text-base font-bold text-[#1e40af] ">Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
             onChange={onChange}
-            className="input-base w-72 h-10"
+             className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
           >
             <option value="">Selecione</option>
             {categorias.map((c) => (
@@ -214,12 +213,12 @@ useEffect(() => {
         <div className="grid grid-cols-2 gap-4">
           
           <div>
-            <label className="block text-base font-bold">Conta</label>
+            <label className="block text-base font-bold text-[#1e40af]">Conta</label>
             <select
               name="conta_id"
               value={form.conta_id}
               onChange={onChange}
-              className="input-base w-64 h-10"
+               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
             >
               <option value="">Selecione</option>
               {contas.map((c) => (
@@ -229,13 +228,13 @@ useEffect(() => {
           </div>
 
           <div>
-            <label className="block text-base font-bold">Valor</label>
+            <label className="block text-base font-bold text-[#1e40af]">Valor</label>
             <input
               type="number"
               name="valor"
               value={form.valor}
               onChange={onChange}
-              className="input-base w-52 h-10"
+               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
             />
           </div>
 
@@ -245,24 +244,24 @@ useEffect(() => {
         <div className="grid grid-cols-2 gap-4">
 
           <div>
-            <label className="block text-base font-bold">Data</label>
+            <label className="block text-base font-bold text-[#1e40af]">Data</label>
             <input
               type="date"
               name="data_movimento"
               value={form.data_movimento}
               onChange={onChange}
-              className="input-base w-48 h-10"
+               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
             />
           </div>
 
           <div>
-            <label className="block text-base font-bold">Origem</label>
+            <label className="block text-base font-bold text-[#1e40af]">Origem</label>
             <input
               type="text"
               name="origem"
               value={form.origem}
               onChange={onChange}
-              className="input-base w-48 h-10"
+               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
             />
           </div>
 
@@ -270,28 +269,31 @@ useEffect(() => {
 
         {/* 5 — Descrição */}
         <div>
-          <label className="block text-base font-bold">Descrição</label>
+          <label className="block text-base font-bold text-[#1e40af]">Descrição</label>
           <input
             type="text"
             name="descricao"
             value={form.descricao}
             onChange={onChange}
-            className="input-base w-full h-10"
+             className= "border font-bold rounded px-2 py-2  w-[680px] mb-2 border-gray-300"
           />
         </div>
 
         {/* Botões */}
-        <div className="flex gap-4 pt-4">
+            
+          <div className="flex gap-6 pt-8 pb-8 pl-1">
+
+           
           <button
             onClick={salvar}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold"
+            className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold"
           >
             {salvando ? "Salvando..." : "Salvar"}
           </button>
 
           <button
             onClick={() => navigate("/lancamentos")}
-            className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+            className="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
           >
             Voltar
           </button>

@@ -223,12 +223,12 @@ const [loading, setLoading] = useState(false);
 
       {/* FILTROS  
       <div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-6">*/}
-      <div className="bg-gray-200 p-6 rounded-xl shadow mb-8 flex flex-col gap-2"> 
+      <div className="bg-gray-100 p-6 rounded-xl shadow mb-8  border-[12px] border-blue-800 flex flex-col gap-2"> 
         {/* linha 1 - períodos */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col">
-            <span className="text-base font-bold mb-1">Períodos</span>
-            <div className="flex gap-4 text-base font-bold flex-wrap">
+            <span className="text-base font-bold mb-1 font-bold text-[#1e40af] ">Períodos</span>
+            <div className="flex gap-4 text-base font-bold flex-wrap text-[#1e40af]">
               {["mes", "15", "semana", "hoje"].map((tipo) => (
                 <label key={tipo}>
                   <input
@@ -252,37 +252,37 @@ const [loading, setLoading] = useState(false);
 
         {/* linha 2 */}
 
-         <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600"> 
+         <div className="bg-gray-100 shadow rounded-lg p-4 border-l-4 border-gray-300"> 
         
         <div className="flex flex-wrap items-end gap-4"> 
             <div className="flex flex-col">
-              <label className="text-base font-bold">Data início</label>
+              <label className="text-base font-bold text-[#1e40af]">Data início</label>
               <input
                 type="date"
                 value={dataIni}
                 onChange={(e) => setDataIni(e.target.value)}
-                className="border rounded-lg px-3 py-2 w-40 mt-1"
+                className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
               />
             </div> 
 
           <div className="flex flex-col">
-            <label className="text-base font-bold">Data fim</label>
+            <label className="text-base font-bold text-[#1e40af]">Data fim</label>
             <input
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-40 mt-1"
+              className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
             />
           </div>
 
 
          <div className="flex flex-col">
-            <label className="text- base font-bold">Conta</label>
+            <label className="text- base font-bold text-[#1e40af]">Conta</label>
 
             <select
               value={contaId}
               onChange={(e) => setContaId(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-40 mt-1"
+              className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
             >
               {/* DEFAULT */}
               <option value="" disabled>Selecione</option>
@@ -318,7 +318,7 @@ const [loading, setLoading] = useState(false);
 </div>
       
   
-       <div className="bg-gray-200 rounded-xl shadow p-4">
+       <div className="bg-gray-100 rounded-xl shadow p-4">
   
           {/* TOTAIS EM 3 COLUNAS */}
           <div className="mb-4 grid grid-cols-1 sm:grid-cols-5 gap-4">
