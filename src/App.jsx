@@ -30,7 +30,7 @@ import EditarContaPagar from "./pages/EditarContaPagar";
 import ContasReceber from "./pages/ContasReceber";
 import NovaContaReceber from "./pages/NovaContaReceber";
 import EditarContaReceber from "./pages/EditarContaReceber";
- 
+import FaturasCartao from "./pages/FaturasCartao";
 
 // ❌ REMOVE ISSO – NÃO EXISTE
 // import ContasPagar from "./pages/ContasPagar";
@@ -107,6 +107,7 @@ export default function App() {
 <Route path="/contasgerenciais" element={<ContasGerenciais />} />
 <Route path="/contasgerenciais/novo" element={<ContasGerenciaisNovo />} />
 <Route path="/contasgerenciais/editar" element={<ContasGerenciaisEditar />} /> 
+<Route path="/faturas-cartao" element={<FaturasCartao />} />
 
 </Routes>
 
