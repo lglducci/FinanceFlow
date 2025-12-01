@@ -512,18 +512,23 @@ async function pagarSelecionadas() {
               </td>
 
               <td className="px-3 py-2 text-center">
+                  {c.status === "aberto" && (
                 <button
                   onClick={() => navigate(`/edit-conta-pagar/${c.id}`)}
                   className="text-blue-600 mr-3 underline"
                 >
                   Editar
                 </button>
+                  )}
+
+                 {c.status === "aberto" && (
                 <button
                   onClick={() => excluir(c.id)}
                   className="text-red-600 underline"
                 >
                   Excluir
                 </button>
+                  )}
               </td>
 
             </tr>

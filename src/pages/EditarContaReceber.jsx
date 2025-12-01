@@ -63,7 +63,7 @@ const THEME = {
     try {
       const url = buildWebhookUrl("fornecedorcliente", {
         empresa_id,
-        tipo: "fornecedor",
+        tipo: "cliente",
       });
 
       const resp = await fetch(url);
@@ -85,7 +85,7 @@ const THEME = {
   //------------------------------------------------------------------
   async function carregarCategorias() {
     try {
-      const url = buildWebhookUrl("listacategorias", { empresa_id, tipo:'saida' });
+      const url = buildWebhookUrl("listacategorias", { empresa_id, tipo:'entrada' });
 
       const resp = await fetch(url);
       const texto = await resp.text();
@@ -321,7 +321,9 @@ async function carregar() {
             name="status" 
             value={form.status}
             onChange={handleChange}
-              className="input-premium"
+            className="input-premium"
+            readOnly
+            disabled
             placeholder="status"
           >
             <option value="aberto">Aberto</option>
