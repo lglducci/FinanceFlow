@@ -58,36 +58,61 @@ export default function EditCardTransaction() {
       alert("Erro ao carregar transação.");
     }
   };
+ 
+const salvar = async () => {
+  // valida descrição
+  if (!form.descricao || !form.descricao.trim()) {
+    alert("A descrição não pode estar vazia.");
+    return;
+  }
 
-  const salvar = async () => {
-    if (!form.descricao.trim()) {
-      alert("A descrição não pode estar vazia.");
+  // aqui eu assumo que id_transacao e empresa_id existem no escopo
+  // se o id da transação estiver dentro do form (ex: form.id), você pode trocar depois
+  const payload = {
+    id_transacao,          // ou form.id, se for o caso
+    id_empresa: empresa_id,
+    descricao: form.descricao.trim(),
+  };
+
+  // DEBUG: vê no console se está indo algo null já daqui
+  console.log("payload updatetranscartao =>", payload);
+
+  try {
+    setLoading(true);
+    const url = buildWebhookUrl("updatetranscartao");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",   // sem isso o n8n/supabase não parseia JSON direito
+      },
+      body: JSON.stringify(payload),
+    });
+
+    // se seu webhook devolve JSON
+    let data;
+    try {
+      data = await resp.json();
+    } catch {
+      data = null;
+    }
+
+    if (!resp.ok) {
+      console.error("Resposta erro:", data);
+      alert("Erro ao salvar (resposta inválida do servidor).");
       return;
     }
 
-    try {
-      setLoading(true);
-      const url = buildWebhookUrl("updatetranscartao", {});
+    alert("Descrição atualizada!");
+    navigate(-1);
 
-      await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          id_transacao,
-          id_empresa: empresa_id,
-          descricao: form.descricao,
-        }),
-      });
-
-      alert("Descrição atualizada!");
-      navigate(-1);
-
-    } catch (err) {
-      console.error(err);
-      alert("Erro ao salvar.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    console.error("ERRO salvar updatetranscartao:", err);
+    alert("Erro ao salvar.");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   const excluir = async () => {

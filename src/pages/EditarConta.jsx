@@ -163,18 +163,10 @@ const THEME = {
   }
 
   return (
-     <div
-      className="min-h-screen py-10 px-4"
-      style={{ background: THEME.text, color: THEME.text }}
-    >
-      <div
-        className="w-full max-w-4xl mx-auto rounded-2xl p-8 border shadow-2xl"
-        style={{
-          background: THEME. panelBg,            // << mais claro
-          borderColor: THEME.cardBorder,
-          boxShadow: THEME.cardShadow,
-        }}
-      > 
+     <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
+      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
+  
+    
        
        
       <h1
@@ -183,11 +175,11 @@ const THEME = {
       >
         ✏️ Editar Conta
       </h1>
- 
+    <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
 
-      <div className="flex flex-col gap-6">
+       
         <div> 
-         <label className="block text-base font-bold mb-1">Nome da Conta</label> 
+         <label className="block text-base font-bold mb-1 text-[#1e40af]">Nome da Conta</label> 
         <input name="nome" placeholder="Nome da Conta"
           className="input-base w-full h-10"
           value={form.nome}
@@ -196,7 +188,7 @@ const THEME = {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div> 
-        <label className="block text-base font-bold mb-1">Banco</label> 
+        <label className="block text-base font-bold mb-1 text-[#1e40af]">Banco</label> 
         <input name="banco" placeholder="Banco"
             className="input-base w-64 h-10"
           value={form.banco}
@@ -205,7 +197,7 @@ const THEME = {
         </div>
 
          <div> 
-         <label className="block text-base font-bold mb-1">Número do Banco</label> 
+         <label className="block text-base font-bold mb-1 text-[#1e40af]">Número do Banco</label> 
         <input name="nro_banco" placeholder="Número do Banco"
             className="input-base w-64 h-10"
           value={form.nro_banco}
@@ -216,7 +208,7 @@ const THEME = {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div> 
-       <label className="block text-base font-bold mb-1">Agência</label> 
+       <label className="block text-base font-bold mb-1 text-[#1e40af]">Agência</label> 
         <input name="agencia" placeholder="Agência"
           className="input-base w-48 h-10"
           value={form.agencia}
@@ -224,7 +216,7 @@ const THEME = {
         />
         </div>
         <div>
-         <label className="block text-base font-bold mb-1">Número Conta</label> 
+         <label className="block text-base font-bold mb-1 text-[#1e40af]">Número Conta</label> 
         <input name="conta" placeholder="Número da Conta"
          className="input-base w-48 h-10"
           value={form.conta}
@@ -236,7 +228,7 @@ const THEME = {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
       <div>
-         <label className="block text-base font-bold mb-1">Tipo</label> 
+         <label className="block text-base font-bold mb-1 text-[#1e40af]">Tipo</label> 
         <input name="tipo" placeholder="Tipo"
             className="input-base w-48 h-10"
           value={form.tipo}
@@ -245,7 +237,7 @@ const THEME = {
            <div> 
           
 
-         <label className="block text-base font-bold mb-1">Saldo Inicial</label> 
+         <label className="block text-base font-bold mb-1 text-[#1e40af]">Saldo Inicial</label> 
         <input name="saldo_inicial" placeholder="Saldo inicial"
           className="input-base w-72 h-10"
           value={form.saldo_inicial}
@@ -253,7 +245,7 @@ const THEME = {
         /> </div>
         </div>
 
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-2 text-[#1e40af]">
           <input type="checkbox" name="conjunta"
             checked={form.conjunta}
             onChange={handleChange}
@@ -261,7 +253,7 @@ const THEME = {
           Conjunta
         </label>
 
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-2 text-[#1e40af]">
           <input type="checkbox" name="juridica"
             checked={form.juridica}
             onChange={handleChange}
@@ -269,21 +261,33 @@ const THEME = {
           Jurídica
         </label>
 
-        <label className="flex items-center gap-2">
+        <label className="flex items-center gap-2 text-[#1e40af]">
           <input type="checkbox" name="padrao"
             checked={form.padrao}
             onChange={handleChange}
           />
           Conta padrão?
         </label>
+            
+
+        <div className="flex gap-6 pt-8 pb-8 pl-1">
 
         <button
           onClick={salvar}
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded mt-4 disabled:opacity-60"
+          disabled={loading} 
+          className="flex-1 bg-blue-600 text-white px-4 py-3 rounded font-bold"
         >
-          {loading ? "Salvando..." : "Salvar Alterações"}
+          {loading ? "Salvando..." : "Salvar"}
         </button>
+
+           <button
+            onClick={() => navigate("/saldos")}
+            className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
+          >
+            Cancelar
+          </button>
+        </div>
+
       </div>
     </div>
     </div>

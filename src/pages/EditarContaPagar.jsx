@@ -336,14 +336,14 @@ async function carregar() {
           <button
             onClick={salvar}
             disabled={salvando}
-            className="flex-1 bg-blue-600 text-white px-4 py-3 rounded font-semibold"
+            className="flex-1 bg-blue-600 text-white px-4 py-3 rounded font-bold"
           >
             {salvando ? "Salvando..." : "Salvar"}
           </button>
 
           <button
             onClick={() => navigate("/contas-pagar")}
-            className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-semibold"
+            className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
           >
             Cancelar
           </button>

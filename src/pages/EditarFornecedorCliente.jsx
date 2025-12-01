@@ -327,17 +327,18 @@ const THEME = {
           />
         </div>
 
-        <div className="flex gap-3 mt-4">
+           
+          <div className="flex gap-6 pt-8 pb-8 pl-1">
           <button
             onClick={salvar}
-            className="bg-blue-600 text-white px-5 py-2 rounded font-semibold"
+            className="flex-1 bg-blue-600 text-white px-5 py-2 rounded font-semibold"
           >
             Salvar
           </button>
 
           <button
             onClick={() => navigate("/fornecedorcliente")}
-            className="bg-gray-400 text-white px-5 py-2 rounded font-semibold"
+            className="flex-1 bg-gray-400 text-white px-5 py-2 rounded font-semibold"
           >
             Cancelar
           </button>

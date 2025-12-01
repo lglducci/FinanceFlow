@@ -305,7 +305,7 @@ const THEME = {
             placeholder="status"
           >
             <option value="aberto">Aberto</option>
-            <option value="pago">Pago</option>
+            <option value="recebido">Recebido</option>
           </select>
         </div>
         </div>

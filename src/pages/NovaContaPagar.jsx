@@ -327,7 +327,7 @@ const THEME = {
             Cancelar
           </button>
         </div>
-           </div>
+      </div>
       </div>
     </div>
   );

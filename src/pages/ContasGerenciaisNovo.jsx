@@ -71,7 +71,7 @@ export default function ContasGerenciaisNovo() {
         ✏️ Nova Conta</h1>
        <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
 
-        <label className="font-bold text-[#1e40af]">Nome</label>
+        <label className="bg-gray-100 font-bold text-[#1e40af]">Nome</label>
         <input
            className="input-premium"
           value={form.nome}

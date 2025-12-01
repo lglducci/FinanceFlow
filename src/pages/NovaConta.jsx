@@ -128,28 +128,22 @@ const THEME = {
   const fieldFocus = { boxShadow: `0 0 0 2px ${THEME.focusRing}55` };
 
   return (
-  <div className="min-h-screen py-10 px-4" style={{ background: THEME.text }}>
-   <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white"> 
-    <div
-      className="w-full max-w-4xl mx-auto rounded-2xl p-8 shadow-2xl"
-      style={{
-        background: THEME.panelBg,
-        borderColor: THEME.cardBorder,
-        boxShadow: THEME.cardShadow,
-      }}
-    >
+        <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
+      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
+  
+    
       <h1
-        className="text-2xl md:text-3xl font-bold mb-8 text-center"
+       
+         className="text-2xl md:text-3xl font-bold mb-6 text-center"
         style={{ color: THEME.title }}
       >
         ✏️ Nova Conta Financeira
       </h1>
-
-      <div className="flex flex-col gap-6">
+      <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
 
         {/* Nome */}
         <div>
-          <label className="block font-bold mb-1">Nome da Conta</label>
+          <label className="block font-bold mb-1 text-[#1e40af]">Nome da Conta</label>
           <input
             name="nome" 
             value={form.nome}
@@ -162,7 +156,7 @@ const THEME = {
         {/* Banco + Número do Banco */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block font-bold mb-1">Banco</label>
+            <label className="block font-bold mb-1 text-[#1e40af]">Banco</label>
             <input
               name="banco"
               className="input-base w-64 h-10"
@@ -173,7 +167,7 @@ const THEME = {
           </div>
 
           <div>
-            <label className="block font-bold mb-1">Número do Banco</label>
+            <label className="block font-bold mb-1 text-[#1e40af]">Número do Banco</label>
             <input
               name="nro_banco"
                  className="input-base w-64 h-10"
@@ -188,7 +182,7 @@ const THEME = {
        
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block font-bold mb-1">Agência</label>
+            <label className="block font-bold mb-1 text-[#1e40af]">Agência</label>
             <input
               name="agencia"
                className="input-base w-48 h-10"
@@ -199,7 +193,7 @@ const THEME = {
           </div>
 
           <div>
-            <label className="block font-bold mb-1">Número da Conta</label>
+            <label className="block font-bold mb-1 text-[#1e40af]">Número da Conta</label>
             <input
               name="conta"
                className="input-base w-48 h-10"
@@ -211,7 +205,7 @@ const THEME = {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block font-bold mb-1">Tipo</label>
+            <label className="block font-bold mb-1 text-[#1e40af]">Tipo</label>
             <input
               name="tipo"
                 className="input-base w-48 h-10"
@@ -227,7 +221,7 @@ const THEME = {
         {/* Tipo + Saldo Inicial */}
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6"> 
           <div>
-            <label className="block font-bold mb-1">Saldo Inicial</label>
+            <label className="block font-bold mb-1 text-[#1e40af]">Saldo Inicial</label>
             <input
               name="saldo_inicial"
               className="input-base w-72 h-10"
@@ -239,7 +233,7 @@ const THEME = {
         </div></div>
 
         {/* Checkboxes */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+        <div className="font-bold grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-[#1e40af]">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -282,7 +276,7 @@ const THEME = {
      </div>
       </div>
     </div>
-  </div>
+   
 );
 
 }

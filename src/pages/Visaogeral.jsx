@@ -154,7 +154,9 @@ export default function Visaogeral() {
     {dados.map((c, i) => (
       <tr
         key={i}
-        className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+ 
+
+         className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
       >
         <td className="p-2 font-bold">{c.banco}</td>
 
