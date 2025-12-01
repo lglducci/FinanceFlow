@@ -20,7 +20,7 @@ export default function Sidebar() {
     { id: "contas_pagar", label: "Contas a Pagar", path: "/contas-pagar" },
     { id: "contas_receber", label: "Contas a Receber", path: "/contas-receber" },
     { id: "contas_gerenciais", label: "Contas Gerenciais", path: "/contasgerenciais" },
-
+     { id: "fatura_cartao", label: "Fatura Cartão", path: "/faturas-cartao" },
   
 
  
