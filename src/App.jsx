@@ -40,7 +40,7 @@ import EditarContaReceber from "./pages/EditarContaReceber";
 import SaldosPorConta from "./pages/SaldosPorConta";
 import ConsultaTransacaoCartao from "./pages/ConsultaTransacaoCartao";
  import ExcluirParcelamentoPagar from "./pages/ExcluirParcelamentoPagar.jsx";
- 
+  import ExcluirParcelamentoReceber from "./pages/ExcluirParcelamentoReceber.jsx";
 import ContasGerenciais from "./pages/ContasGerenciais";
 import ContasGerenciaisNovo from "./pages/ContasGerenciaisNovo";
 import ContasGerenciaisEditar from "./pages/ContasGerenciaisEditar";
@@ -101,6 +101,7 @@ export default function App() {
 <Route path="/nova-conta-receber" element={<NovaContaReceber />} />
 <Route path="/edit-conta-receber/:id" element={<EditarContaReceber />} />
 <Route path="/excluir-parcelamento-pagar" element={<ExcluirParcelamentoPagar />} />
+<Route path="/excluir-parcelamento-receber" element={<ExcluirParcelamentoReceber />} />
  
   
 <Route path="/contasgerenciais" element={<ContasGerenciais />} />
