@@ -174,19 +174,20 @@ export default function NovoLancamento() {
               />
             </div>
 
-            <div>
+          {/*}  <div>
               <label className="block text-base font-bold text-[#1e40af]">Origem</label>
               
               <input
                 type="text"
                 name="origem"
                 value={form.origem}
+                
                 onChange={handleChange}
                  placeholder="conta corrente"
                  className= "border font-bold rounded px-2 py-2 w-72 mb-4  border-gray-300"
               />
             
-            </div>
+            </div>*/}
           </div>
 
           {/* Descrição */}

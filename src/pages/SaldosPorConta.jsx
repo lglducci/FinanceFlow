@@ -1,10 +1,13 @@
  import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
+
 
 export default function SaldosPorConta() {
   const navigate = useNavigate();
-  const hoje = new Date().toISOString().split("T")[0];
+  //const hoje = new Date().toISOString().split("T")[0];
+  const hoje = hojeLocal();
 
   const [dados, setDados] = useState([]);
   const [inicio, setInicio] = useState(hoje);
@@ -38,12 +41,12 @@ export default function SaldosPorConta() {
 
 
   useEffect(() => {
-    carregar();
+   
   }, []);
 
   const selecionarPeriodo = (tipo) => {
     setPeriodo(tipo);
-    const d = new Date();
+    const d = new Date( hojeLocal() );
 
     if (tipo === "mes") {
       const ano = d.getFullYear();
@@ -89,10 +92,7 @@ const editarConta = (conta) => {
   });
 };
 
-
-
-
-
+ 
 
   const novaConta = () => {
     navigate("/nova-conta");

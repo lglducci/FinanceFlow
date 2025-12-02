@@ -156,7 +156,7 @@ export default function FaturasCartao() {
                   className="border font-bold p-2 rounded w-full border-yellow-500"
                 >
                   <option value="aberta">Aberta</option>
-                  <option value="fechada">Fechada</option>
+                  <option value="paga">Paga</option>
                   <option value="">Todos</option>
                 </select>
             </div>

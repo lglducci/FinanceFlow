@@ -2,6 +2,12 @@
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 
+ 
+ import { hojeLocal, dataLocal } from "../utils/dataLocal";
+
+ 
+
+
 export default function ContasPagar() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
@@ -73,7 +79,8 @@ useEffect(() => {
 // 2) CALCULAR PERÍODO AUTOMÁTICO (APENAS FUTURO)
 //------------------------------------------------------------------
 useEffect(() => {
-  const hoje = new Date();
+   const hoje = new Date(hojeLocal() );
+  
 
      if (periodo === "semestre") {
     // Próximos 180 dias

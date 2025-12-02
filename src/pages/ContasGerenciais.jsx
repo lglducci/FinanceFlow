@@ -94,7 +94,7 @@ export default function ContasGerenciais() {
 
       {/* FILTRO */}
       
-      <div className="bg-gray-100 rounded-xl shadow p-8  border-[24px] border-blue-800 mb-8 w-[1850px] flex items-center gap-6">
+      <div className="bg-gray-100 rounded-xl shadow p-8  border-[12px] border-blue-800 mb-8 w-[1850px] flex items-center gap-6">
              <label className="font-bold text-[#1e40af]">Descrição</label>
             <select 
               value={tipo}

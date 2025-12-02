@@ -2,6 +2,9 @@
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
+ 
+
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");
@@ -31,23 +34,23 @@ const [loading, setLoading] = useState(false);
 
 
   function aplicarPeriodo(tipo) {
-    const hoje = new Date();
+    const hoje = new Date( hojeLocal() );;
     let ini, fim;
 
     if (tipo === "mes") {
       ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-      fim = new Date();
+      fim = new Date( hojeLocal() );
     } else if (tipo === "15") {
-      ini = new Date();
+      ini = new Date( hojeLocal() );
       ini.setDate(hoje.getDate() - 15);
-      fim = new Date();
+      fim = new Date( hojeLocal() );
     } else if (tipo === "semana") {
-      ini = new Date();
+      ini = new Date( hojeLocal() );
       ini.setDate(hoje.getDate() - 7);
-      fim = new Date();
+      fim = new Date( hojeLocal() );
     } else if (tipo === "hoje") {
-      ini = new Date();
-      fim = new Date();
+      ini = new Date( hojeLocal() );
+      fim = new Date( hojeLocal() );
     } else {
       setDataIni("");
       setDataFim("");
@@ -72,11 +75,12 @@ const [loading, setLoading] = useState(false);
    
  const carregar = async () => {
   try {
+      const idConta = contaId === "" ? 0 : Number(contaId);
     const url = buildWebhookUrl("consultasaldo", { 
       inicio: dataIni,
       fim: dataFim,
       empresa_id:empresa_id,
-      conta_id:contaId,
+      conta_id:idConta,
     });
 
     const resp = await fetch(url, { method: "GET" });
@@ -104,12 +108,13 @@ const [loading, setLoading] = useState(false);
   }
 };
 
-// 👉 ADICIONE SÓ ISSO
+{/*} 👉 ADICIONE SÓ ISSO
  useEffect(() => {
   if (dataIni && dataFim) {
     carregar();
+    pesquisar();     // lançamentos
   }
-}, [dataIni, dataFim, contaId]);
+}, [dataIni, dataFim, contaId]);*/}
 
 
 
@@ -147,7 +152,7 @@ const [loading, setLoading] = useState(false);
       alert("Informe o período.");
       return;
     }
-
+     await carregar(); // <-- Atualiza SALDO aqui e somente aqui
     setCarregando(true);
     try {
       const url = buildWebhookUrl('listalancamentos', {
@@ -248,7 +253,7 @@ const [loading, setLoading] = useState(false);
               ))}
             </div>
           </div>
-        </div>
+        </div>  
 
         {/* linha 2 */}
 
@@ -278,27 +283,27 @@ const [loading, setLoading] = useState(false);
 
          <div className="flex flex-col">
             <label className="text- base font-bold text-[#1e40af]">Conta</label>
+ 
+ 
+          <select
+            value={contaId}
+            onChange={(e) => setContaId(Number(e.target.value))}
+            className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
+          >
+            {/* OPÇÃO DEFAULT QUE ENVIA 0 */}
+            <option value={0}>Todas</option>
 
-            <select
-              value={contaId}
-              onChange={(e) => setContaId(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
-            >
-              {/* DEFAULT */}
-              <option value="" disabled>Selecione</option>
+            {/* LISTA DE CONTAS */}
+            {contas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select> 
 
-              {/* LISTA DE CONTAS */}
-              {contas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nome}
-                </option>
-              ))}
-            </select>
+
           </div>
-
-
-
-
+  
           <button
             onClick={pesquisar}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32 text-center"
@@ -347,15 +352,7 @@ const [loading, setLoading] = useState(false);
               </div>
             </div> 
 
-             {/* SALDO FINAL */}
-                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-800">
-                  <div className="text- base font-bold text-gray-600">Saldo Atual</div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </div>
-                </div>
-
-                 {/* RESULTADO LÍQUIDO */}
+                  {/* RESULTADO LÍQUIDO */}
               <div className={`bg-white shadow rounded-lg p-4 border-l-4
                 ${ (totalEntrada - totalSaida) >= 0 ? "border-green-600" : "border-red-600" }
               `}>
@@ -368,7 +365,19 @@ const [loading, setLoading] = useState(false);
                     currency: "BRL" 
                   })}
                 </div>
-          </div>  
+             </div>  
+
+
+
+             {/* SALDO FINAL */}
+                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-800">
+                  <div className="text- base font-bold text-gray-600">Saldo Atual</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </div>
+                </div>
+
+               
           </div> 
 
 

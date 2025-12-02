@@ -1,9 +1,12 @@
  import React, { useEffect, useState } from "react";
 import { buildWebhookUrl } from '../config/globals.js'; // import corrigido
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
+ 
+ 
+
 
 export default function Visaogeral() {
-  const hoje = new Date().toISOString().split("T")[0];
-
+   const hoje = new Date().toISOString().split("T")[0];
   const [dados, setDados] = useState([]);
   const [inicio, setInicio] = useState("");
   const [fim, setFim] = useState("");
