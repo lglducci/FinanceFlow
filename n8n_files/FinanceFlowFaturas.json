@@ -1,0 +1,161 @@
+{
+  "name": "FinanceFlowFaturas",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
+        "height": 1148,
+        "width": 1312
+      },
+      "id": "87a996dd-d834-4a58-9090-5d6593e27e4d",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        656,
+        -48
+      ],
+      "id": "322f00c3-e25a-48d2-984f-ba8495732c18",
+      "name": "Respond to Webhook21"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}} ",
+              "type": "number"
+            },
+            {
+              "id": "51324e38-48c6-4999-a5e0-07f88de5777e",
+              "name": "id",
+              "value": "={{ $json.query.id}}",
+              "type": "string"
+            },
+            {
+              "id": "60aeaf9d-8685-48ca-ae92-6d16d7cb8769",
+              "name": "status",
+              "value": "={{ $json.query.status}}",
+              "type": "string"
+            },
+            {
+              "id": "c132ce68-96f3-4749-97fa-4856702377bc",
+              "name": "mes_referencia",
+              "value": "={{ $json.query.mes_referencia}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -48
+      ],
+      "id": "90dfe941-935d-4c64-ad3b-2ac160189b22",
+      "name": "EditarCartões1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nselect * from   cartoes_faturas\n  where empresa_id = {{ $json.id_empresa }}\n and ( cartao_id = {{ $json.id }} or {{ $json.id }} = 0 )\nand  ( status =  '{{ $json.status}}' or  '{{ $json.status}}' = '') \n  AND  TO_CHAR(mes_referencia, 'YYYY-MM-DD') = '{{ $json.mes_referencia }}';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "30298fa5-131f-4806-8607-8a0d96ef6377",
+      "name": "ListaFaturas",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "listasfaturas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -48
+      ],
+      "id": "87fa8fdc-f1ad-4849-a31f-815c94cc0e30",
+      "name": "ListaFaturas1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "EditarCartões1": {
+      "main": [
+        [
+          {
+            "node": "ListaFaturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaFaturas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ListaFaturas1": {
+      "main": [
+        [
+          {
+            "node": "EditarCartões1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6a22619b-3d18-4769-b366-bd966fcee474",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "7Blt6yh0IK3deZJu",
+  "tags": []
+}

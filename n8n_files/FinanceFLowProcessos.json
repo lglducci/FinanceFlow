@@ -99,8 +99,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        608,
-        144
+        640,
+        160
       ],
       "id": "a47e3e85-3baf-4521-9833-5a5fdd3761ce",
       "name": "Respond to Webhook"
@@ -134,8 +134,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        144
+        32,
+        160
       ],
       "id": "84f2707f-278f-499f-8db3-0e5a32c57885",
       "name": "Edtranscartao1"
@@ -167,8 +167,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -224,
-        144
+        -192,
+        160
       ],
       "id": "63cc8995-756e-43a7-a25e-3c5e0bcfe413",
       "name": "RecebeContaReceber",
@@ -183,8 +183,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        416,
-        144
+        448,
+        160
       ],
       "id": "0308937a-05e3-47ad-addf-e3b129eae7bd",
       "name": "ff_receber_contas",
@@ -202,8 +202,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        144
+        240,
+        160
       ],
       "id": "1a580006-495f-4c37-b445-ce6d1c53728b",
       "name": "CodeReceber"
@@ -220,6 +220,121 @@
       ],
       "id": "c5d14c23-0c83-4757-b1b4-2062900ef5df",
       "name": "CodePagar"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        672,
+        352
+      ],
+      "id": "bd1b17ae-a920-4875-ba9b-8c4ae1773304",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "jsCode": " return [\n  {\n    empresa_id: $json.empresa_id,\n    contas_json: JSON.stringify( $input.first().json.faturas).replace(/\\\\/g, '').replace(/^\"|\"$/g, ''),\n    conta_id: $input.first().json.conta_id \n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        224
+      ],
+      "id": "159b9f0d-4f52-4626-b6c2-56d4171473ed",
+      "name": "CodeReceber1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pagar_faturas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        352
+      ],
+      "id": "3eb414c6-99f5-46f4-963d-fe5a76bd125a",
+      "name": "PagarFaturas",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "faturas",
+              "value": "={{ $json.body.faturas}}",
+              "type": "string"
+            },
+            {
+              "id": "6b48dd9f-af2a-414f-80e7-c21216ab10a8",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        16,
+        352
+      ],
+      "id": "58c97005-855b-4da8-b736-412a533597cb",
+      "name": "Edit_PagarFatura"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT ff_registrar_pagamento_faturas(\n  {{ $json.empresa_id }},\n   {{ $json.conta_id }},\n   '{{ $json.faturas }}'::json \n);\n\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        464,
+        352
+      ],
+      "id": "c7969e38-b719-41b3-aa40-1bce714c9566",
+      "name": "ff_registrar_pagamento_faturas",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": " return [\n  {\n    empresa_id: $json.empresa_id,\n    faturas: JSON.stringify( $input.first().json.faturas).replace(/\\\\/g, '').replace(/^\"|\"$/g, ''),\n    conta_id: $input.first().json.conta_id\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        352
+      ],
+      "id": "8aa92892-2f29-481e-ae56-51dde4fc8cb1",
+      "name": "CodeReceber2"
     }
   ],
   "pinData": {},
@@ -311,13 +426,62 @@
           }
         ]
       ]
+    },
+    "CodeReceber1": {
+      "main": [
+        []
+      ]
+    },
+    "PagarFaturas": {
+      "main": [
+        [
+          {
+            "node": "Edit_PagarFatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_PagarFatura": {
+      "main": [
+        [
+          {
+            "node": "CodeReceber2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_registrar_pagamento_faturas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CodeReceber2": {
+      "main": [
+        [
+          {
+            "node": "ff_registrar_pagamento_faturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f07af959-d382-4ebd-86a9-ac1b46d0a79b",
+  "versionId": "3d0dad7f-5ca2-4006-b58f-ab191a35bfa6",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
