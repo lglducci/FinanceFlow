@@ -24,7 +24,7 @@
             {
               "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
               "name": "id_empresa",
-              "value": "= 1",
+              "value": "={{ $json.query.empresa_id}} ",
               "type": "number"
             },
             {
@@ -664,7 +664,7 @@
               "fieldValue": "={{ $json.id_empresa}} "
             },
             {
-              "fieldId": "NomeCartão",
+              "fieldId": "nomecartao",
               "fieldValue": "= {{ $json.nome_cartao }}"
             },
             {
@@ -821,7 +821,7 @@
               "fieldValue": "={{ $json.id_empresa}} "
             },
             {
-              "fieldId": "NomeCartão",
+              "fieldId": "nomecartao",
               "fieldValue": "= {{ $json.nome_cartao }}"
             },
             {
@@ -1278,7 +1278,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "72ecc18f-b1ef-4db1-8fb2-1de170296ca4",
+  "versionId": "5924da44-2460-4f41-b058-966dc42985ad",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

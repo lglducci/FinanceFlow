@@ -27,7 +27,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        848,
+        880,
         -16
       ],
       "id": "7106394d-715f-4416-9b00-0ff8cc4cfb23",
@@ -1485,7 +1485,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8cd3c06b-1727-46d7-9d0d-78bd4c0422aa",
+  "versionId": "c15a42d8-2029-4623-a603-cab1f05f7389",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },

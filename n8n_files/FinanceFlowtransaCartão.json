@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        480,
-        384
+        464,
+        288
       ],
       "id": "36127d3f-e5d4-4bc7-a8ba-3694b3c24e91",
       "name": "Respond to Webhook16"
@@ -26,8 +26,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -128,
-        384
+        -144,
+        288
       ],
       "id": "362c8bb5-e329-4023-bc70-36e70260a9a4",
       "name": "TransacaoCartao",
@@ -36,14 +36,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select *\nfrom ff_transacoes_fatura_cartao(\n  {{ $json.id_empresa }},\n  '{{ $json.nome }}',\n  '{{ $json.data }}'\n)\n",
+        "query": " select *\nfrom ff_transacoes_fatura_cartao(\n  {{ $json.id_empresa }},\n  {{ $json.id }} ,\n  '{{ $json.data }}'\n)\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        288,
-        384
+        272,
+        288
       ],
       "id": "b714a563-bdef-4580-9fcf-8299a9f327cc",
       "name": "TransaCartão",
@@ -65,8 +65,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        544,
-        560
+        528,
+        464
       ],
       "id": "4d2a1d31-0288-45b0-a24b-b8631e40b851",
       "name": "Respond to Webhook17"
@@ -74,14 +74,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  \nSELECT \n    t.*,\n    c.nome AS cartao_nome,\n    c.bandeira AS cartao_bandeira\nFROM cartoes_transacoes t\nJOIN cartoes_faturas f \n      ON f.id = t.fatura_id\n     AND f.empresa_id = t.empresa_id\nJOIN cartoes c\n      ON c.id = f.cartao_id\n     AND c.empresa_id = t.empresa_id\nWHERE t.id = {{ $json.id }}\n  AND t.empresa_id = {{ $json.id_empresa }};\n",
+        "query": " \n\nSELECT \n    t.*,\n    c.nome AS cartao_nome,\n    c.bandeira AS cartao_bandeira\nFROM cartoes_transacoes t\nJOIN cartoes_faturas f \n      ON f.id = t.fatura_id\n     AND f.empresa_id = t.empresa_id\nJOIN cartoes c\n      ON c.id = f.cartao_id\n     AND c.empresa_id = t.empresa_id\nWHERE t.id = {{ $json.id }}\n  AND t.empresa_id = {{ $json.id_empresa }};\n\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        304,
-        560
+        288,
+        464
       ],
       "id": "dc7748b3-ec58-481b-b2f5-8154074e20eb",
       "name": "TransaCartão1",
@@ -92,22 +92,6 @@
           "name": "Financeflow"
         }
       }
-    },
-    {
-      "parameters": {
-        "path": "retrivetranscaocartao",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -128,
-        560
-      ],
-      "id": "61ddb570-d188-47b9-a30a-08441e91a034",
-      "name": "Edittranscartao",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
@@ -132,8 +116,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        560
+        80,
+        464
       ],
       "id": "63c8cca5-e383-48f8-be11-55cdd5a779cc",
       "name": "EditarTranscartao"
@@ -148,8 +132,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        672,
-        208
+        688,
+        112
       ],
       "id": "20143bd1-99ea-4e18-bbaf-6e2823dc7862",
       "name": "Respond to Webhook19"
@@ -164,8 +148,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -128,
-        208
+        -144,
+        112
       ],
       "id": "7670f92f-1f5c-4c55-a918-165b52f8daeb",
       "name": "InsereTransCartão",
@@ -174,14 +158,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select * from cartoes_transacoes where id = {{ $json.ff_registrar_compra_credito }} and empresa_id = {{ $('Edtranscartao').item.json.id_empresa }}",
+        "query": "select * from cartoes_transacoes where id = {{ $json.ff_registrar_compra_credito }} and empresa_id =   {{ $('Edtranscartao').item.json.empresa_id }}",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        480,
-        208
+        464,
+        112
       ],
       "id": "0eac66cb-1ba8-41d4-b51b-95e9ba0bcfe8",
       "name": "Execute a SQL query1",
@@ -191,6 +175,268 @@
           "name": "Financeflow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        512,
+        656
+      ],
+      "id": "5e407d47-2012-4218-8dc2-8e99e5d77c51",
+      "name": "Respond to Webhook18"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.id_empresa}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "id",
+              "value": "={{ $json.body.id_transacao}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        656
+      ],
+      "id": "f37b5cfc-a0dc-4e12-9f8a-549c2e1e0bae",
+      "name": "EditarTranscartao1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "exclitranscartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        656
+      ],
+      "id": "a84848f1-70e6-4c05-aa00-55da70d610f6",
+      "name": "Excluinscartao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT *\n      \nFROM  ff_excluir_transacao_cartao( {{ $json.id_empresa }},   {{ $json.id }}) ;\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        288,
+        656
+      ],
+      "id": "df97460b-a233-421a-989f-043b26f4867c",
+      "name": "ff_excluir_transacao_cartao",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select  * from ff_registrar_compra_credito(\n  {{ $json.empresa_id }} ,\n  '{{ $json.cartao_nome }}',\n '{{ $json.descricao }}' ,\n {{ $json.valor }}  ,\n  {{ $json.parcela_num }},\n '{{ $json.data_parcela }}'  \n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        272,
+        112
+      ],
+      "id": "94a2a537-3b28-4752-896e-7bbe27fec26e",
+      "name": "ff_registrar_compra_credito1",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.id_empresa}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "id",
+              "value": "={{ $json.query.id}}",
+              "type": "string"
+            },
+            {
+              "id": "dd1713ed-c8bf-488e-bf5f-64f5aee16daa",
+              "name": "data",
+              "value": "={{ $json.query.referencia}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        288
+      ],
+      "id": "50faad38-a90b-43f1-b282-3002b06a618e",
+      "name": "transcartao"
+    },
+    {
+      "parameters": {
+        "path": "retrivetranscaocartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        464
+      ],
+      "id": "61ddb570-d188-47b9-a30a-08441e91a034",
+      "name": "Consultatrasacao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        528,
+        816
+      ],
+      "id": "77a3feb5-51d7-4f4d-90fb-f4faf6df96d5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n  update \n cartoes_transacoes \n  set descricao =  '{{ $json.descricao }}'\n   WHERE id = {{ $json.id }}\n  AND empresa_id = {{ $json.id_empresa }};\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        288,
+        816
+      ],
+      "id": "c4689b4a-f73a-4e42-88cd-e44035bd81df",
+      "name": "TransaCartão2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "updatetranscartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        816
+      ],
+      "id": "1de29154-ef7c-4da6-b61b-bff6dfc24cfa",
+      "name": "EditarTransacao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "=id_empresa",
+              "value": "={{ $json.body.id_empresa}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "id",
+              "value": "={{ $json.body.id_transacao}}",
+              "type": "string"
+            },
+            {
+              "id": "92f67d27-59cf-439d-ae66-b8237fa6fa01",
+              "name": "descricao",
+              "value": "={{ $json.body.descricao}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        816
+      ],
+      "id": "b740fe5c-036e-4d9c-869b-25b81ae4ee2c",
+      "name": "EditarSalvaTrans"
+    },
+    {
+      "parameters": {
+        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
+        "height": 1004,
+        "width": 1328,
+        "color": 4
+      },
+      "id": "9d2edf4d-10f3-433e-87f1-17b30473a710",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        0
+      ]
     },
     {
       "parameters": {
@@ -246,166 +492,10 @@
       "typeVersion": 3.4,
       "position": [
         80,
-        208
+        112
       ],
       "id": "73a5b9a9-db6e-4aa3-8781-1467706bec8d",
       "name": "Edtranscartao"
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {
-          "responseCode": 200
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        528,
-        752
-      ],
-      "id": "5e407d47-2012-4218-8dc2-8e99e5d77c51",
-      "name": "Respond to Webhook18"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
-              "name": "id_empresa",
-              "value": "={{ $json.body.id_empresa}}",
-              "type": "number"
-            },
-            {
-              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
-              "name": "id",
-              "value": "={{ $json.body.id_transacao}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        80,
-        752
-      ],
-      "id": "f37b5cfc-a0dc-4e12-9f8a-549c2e1e0bae",
-      "name": "EditarTranscartao1"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "exclitranscartao",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -112,
-        752
-      ],
-      "id": "a84848f1-70e6-4c05-aa00-55da70d610f6",
-      "name": "Excluinscartao",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " SELECT *\n      \nFROM  ff_excluir_transacao_cartao( {{ $json.id_empresa }},   {{ $json.id }}) ;\n ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        304,
-        752
-      ],
-      "id": "df97460b-a233-421a-989f-043b26f4867c",
-      "name": "ff_excluir_transacao_cartao",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " select  * from ff_registrar_compra_credito(\n  {{ $json.empresa_id }} ,\n  '{{ $json.cartao_nome }}',\n '{{ $json.descricao }}' ,\n {{ $json.valor }}  ,\n  {{ $json.parcela_num }},\n '{{ $json.data_parcela }}'  \n)",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        288,
-        208
-      ],
-      "id": "94a2a537-3b28-4752-896e-7bbe27fec26e",
-      "name": "ff_registrar_compra_credito1",
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
-        "height": 1004,
-        "width": 1328,
-        "color": 4
-      },
-      "id": "9d2edf4d-10f3-433e-87f1-17b30473a710",
-      "name": "Sticky Note",
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        -288,
-        0
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
-              "name": "id_empresa",
-              "value": "={{ $json.query.id_empresa}}",
-              "type": "number"
-            },
-            {
-              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
-              "name": "nome",
-              "value": "={{ $json.query.cartao}}",
-              "type": "string"
-            },
-            {
-              "id": "dd1713ed-c8bf-488e-bf5f-64f5aee16daa",
-              "name": "data",
-              "value": "={{ $json.query.referencia}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        96,
-        384
-      ],
-      "id": "50faad38-a90b-43f1-b282-3002b06a618e",
-      "name": "transcartao"
     }
   ],
   "pinData": {},
@@ -443,17 +533,6 @@
         ]
       ]
     },
-    "Edittranscartao": {
-      "main": [
-        [
-          {
-            "node": "EditarTranscartao",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "EditarTranscartao": {
       "main": [
         [
@@ -481,17 +560,6 @@
         [
           {
             "node": "Respond to Webhook19",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edtranscartao": {
-      "main": [
-        [
-          {
-            "node": "ff_registrar_compra_credito1",
             "type": "main",
             "index": 0
           }
@@ -552,13 +620,68 @@
           }
         ]
       ]
+    },
+    "Consultatrasacao": {
+      "main": [
+        [
+          {
+            "node": "EditarTranscartao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TransaCartão2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarTransacao": {
+      "main": [
+        [
+          {
+            "node": "EditarSalvaTrans",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarSalvaTrans": {
+      "main": [
+        [
+          {
+            "node": "TransaCartão2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edtranscartao": {
+      "main": [
+        [
+          {
+            "node": "ff_registrar_compra_credito1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a53ae8d6-fbd5-4c62-a160-2a9587a933a7",
+  "versionId": "6a6b81d2-13cb-407f-83bf-0a41e7be4835",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
