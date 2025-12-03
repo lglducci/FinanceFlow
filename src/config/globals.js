@@ -2,6 +2,7 @@
 
 // Domínio base do webhook
 export const DOMINIO = 'https://webhook.lglducci.com.br/webhook/';
+ 
                        
 /**
  * Função helper para gerar URLs completas de webhooks
