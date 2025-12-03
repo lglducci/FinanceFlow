@@ -20,7 +20,7 @@ export default function EditarContaReceber() {
     fornecedor_id: "",
     parcelas: 1,
     parcela_num: 1,
-    status: "aberto",
+    status: "aberta",
   });
 
   function handleChange(e) {

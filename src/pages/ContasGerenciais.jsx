@@ -132,10 +132,10 @@ export default function ContasGerenciais() {
       <table className="w-full border">
         <thead className="bg-blue-600 text-white">
           <tr>
-            <th className="p-1 border">ID</th>
-            <th className="p-1 border">Nome</th>
-            <th className="p-1 border">Tipo</th>
-            <th className="p-1 border">Ações</th>
+            <th className="p-1 border text-right border">ID</th>
+            <th className="p-1 border text-left border">Nome</th>
+            <th className="p-1 border text-left border">Tipo</th>
+            <th className="p-1 border text-left border">Ações</th>
           </tr>
         </thead>
 
@@ -145,13 +145,13 @@ export default function ContasGerenciais() {
               key={l.id}
               className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
             >
-              <td className="p-1 border">{l.id}</td>
-              <td className="p-1 border">{l.nome}</td>
-              <td className="p-1 border">{l.tipo}</td>
+              <td className="p-1 border font-bold shadow">{l.id}</td>
+              <td className="p-1 border font-bold shadow">{l.nome}</td>
+              <td className="p-1 border font-bold shadow">{l.tipo}</td>
 
               <td className="p-1 border flex gap-2">
  
-                <td className="px-4 py-1 text-blue-600 underline cursor-pointer"
+                <td className="px-4 py-1 text-blue-600 underline font-bold cursor-pointer"
                     onClick={() =>
                       navigate("/contasgerenciais/editar", { state: l })
                     }>
@@ -159,7 +159,7 @@ export default function ContasGerenciais() {
                 </td>
 
                 <td
-                  className="px-4 py-1 text-red-600 underline cursor-pointer"
+                  className="px-4 py-1 text-red-600 underline font-bold cursor-pointer"
                   onClick={() => excluir(l.id)}
                 >
                   Excluir

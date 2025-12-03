@@ -1,7 +1,7 @@
  import React, { useEffect, useState } from "react";
 import { buildWebhookUrl } from '../config/globals.js'; // import corrigido
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
- 
+import { calcularPeriodo, hojeLocalISO } from "../utils/datas";
  
 
 
@@ -16,18 +16,12 @@ export default function Visaogeral() {
 
 
   const calcularDatas = (tipo) => {
-    const d = new Date();
-    let ini = new Date();
+     const hoje = hojeLocalISO();
+     const { inicio, fim } = calcularPeriodo(tipo, hoje);
 
-    if (tipo === "mes") ini = new Date(d.getFullYear(), d.getMonth(), 1);
-    else if (tipo === "15") ini.setDate(d.getDate() - 15);
-    else if (tipo === "semana") ini.setDate(d.getDate() - 7);
-    else if (tipo === "hoje") ini = d;
-    else ini.setDate(d.getDate() - 30);
-
-    setInicio(ini.toISOString().split("T")[0]);
-    setFim(hoje);
-    setPeriodo(tipo);
+      setPeriodo(tipo);
+      setInicio(inicio);
+      setFim(fim);
   };
 
    const carregar = async () => {

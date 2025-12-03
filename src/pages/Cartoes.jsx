@@ -172,29 +172,21 @@ return (
       </div>
 
       {/* Conteúdo do cartão */}
-      <div className="text- base text-gray-500 leading-6">
-
-        <p><strong>Bandeira:</strong> {c.bandeira}</p>
-
+      <div className="text- base text-gray-500 leading-6"> 
+        <p><strong>Bandeira:</strong> {c.bandeira}</p> 
         <p>
           <strong>Limite:</strong>{" "}
           {Number(c.limite_total).toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL",
           })}
-        </p>
-
-        <p><strong>Fechamento:</strong> {c.fechamento_dia}</p>
-
-        <p><strong>Vencimento dia:</strong> {c.vencimento_dia}</p>
-
+        </p> 
+        <p><strong>Fechamento:</strong> {c.fechamento_dia}</p> 
+        <p><strong>Vencimento dia:</strong> {c.vencimento_dia}</p> 
         {/* NOVOS CAMPOS — AGORA CORRETOS */}
-        <p><strong>Número do Cartão:</strong> {c.numero || "-"}</p>
-
-        <p><strong>Nome no Cartão:</strong> {c["NomeCartão"] || "-"}</p>
-
-        <p><strong>Vencimento (MM/AA):</strong> {c.Vencimento || "-"}</p>
-
+        <p><strong>Número do Cartão:</strong> {c.numero || "-"}</p> 
+        <p><strong>Nome no Cartão:</strong> {c.nomecartao || "-"}</p> 
+        <p><strong>Vencimento (MM/AA):</strong> {c.Vencimento || "-"}</p> 
         {/* Status */}
         <p
           className={`font-bold mt-2 ${

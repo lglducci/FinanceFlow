@@ -186,7 +186,7 @@ if (ok) {
           <label className="font-bold text-[#1e40af]">Nome no Cartão</label>
           <input
             name="NomeCartao"
-            value={form.NomeCartao}
+            value={form.nomecartao}
             onChange={handleChange}
              className="input-premium"
                 placeholder="Nome do Cartão"

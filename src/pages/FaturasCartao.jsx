@@ -215,28 +215,28 @@ export default function FaturasCartao() {
     </div>
 
 
-    {/* ===================== COLUNA 2 ===================== */}
-    <div className="bg-white rounded-xl shadow p-5 border w-full">
-        {dadosConta && (
-            <div className="bg-white rounded-xl shadow p-4 border-l-4 border-blue-700 w-full">
-                <h3 className="font-bold text-lg text-blue-700 mb-2">
-                    🏦 {dadosConta.conta_nome}
-                </h3>
+            {/* ===================== COLUNA 2 ===================== */}
+            <div className="bg-white rounded-xl shadow p-5 border w-full">
+                {dadosConta && (
+                    <div className="bg-white rounded-xl shadow p-4 border-l-4 border-blue-700 w-full">
+                        <h3 className="font-bold text-lg text-blue-700 mb-2">
+                            🏦 {dadosConta.conta_nome}
+                        </h3>
 
-                <p><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-                <p><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-                <p><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p>
-                <p><strong>Conjunta:</strong> {dadosConta.conjunta ? "Sim" : "Não"}</p>
-                <p><strong>Jurídica:</strong> {dadosConta.juridica ? "Sim" : "Não"}</p>
+                        <p><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
+                        <p><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
+                        <p><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p>
+                        <p><strong>Conjunta:</strong> {dadosConta.conjunta ? "Sim" : "Não"}</p>
+                        <p><strong>Jurídica:</strong> {dadosConta.juridica ? "Sim" : "Não"}</p>
 
-                <p className="text-green-700 font-bold text-lg mt-3">
-                    Saldo final: R$ {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-                </p>
+                        <p className="text-green-700 font-bold text-lg mt-3">
+                            Saldo final: R$ {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
+                        </p>
+                    </div>
+                )}
             </div>
-        )}
-    </div>
 
-</div>
+          </div>
 
       {/* ==================== LISTAGEM DAS FATURAS ==================== */}
       <div className="bg-white rounded-xl shadow border p-4">
@@ -245,7 +245,12 @@ export default function FaturasCartao() {
             <tr>
               <th className="px-3 py-2 text-center font-bold">Sel</th>
               <th className="px-3 py-2 text-left font-bold">ID</th>
-              <th className="px-3 py-2 text-left font-bold">Cartão</th>
+               <th className="px-3 py-2 text-left font-bold">Nome</th>
+              <th className="px-3 py-2 text-left font-bold">Bandeira</th>
+                 <th className="px-3 py-2 text-left font-bold">Número</th>
+               <th className="px-3 py-2 text-left font-bold">Limite</th> 
+              <th className="px-3 py-2 text-left font-bold">Dia Fech.</th>
+               <th className="px-3 py-2 text-left font-bold">Dia Vencto.</th>
               <th className="px-3 py-2 text-left font-bold">Referência</th>
               <th className="px-3 py-2 text-left font-bold">Valor</th>
               <th className="px-3 py-2 text-left font-bold">Status</th>
@@ -271,12 +276,19 @@ export default function FaturasCartao() {
                     type="checkbox"
                     checked={selecionadas.includes(f.id)}
                     onChange={() => toggleSelecionada(f.id)}
+                    disabled={f.status === "paga"}
+                    className={f.status === "pag" ? "opacity-40 cursor-not-allowed" : ""}
                   />
                 </td>
 
-                <td className="px-3 py-2">{f.id}</td>
-                <td className="px-3 py-2">{f.cartao_id}</td>
-                <td className="px-3 py-2">
+                <td className="px-3 py-2 font-bold">{f.id}</td> 
+                 <td className="px-3 py-2 font-bold">{f.nome}</td>
+                 <td className="px-3 py-2 font-bold">{f.bandeira}</td>
+                 <td className="px-3 py-2 font-bold">{f.numero}</td>
+                 <td className="px-3 py-2 font-bold">{f.limite_total}</td> 
+                 <td className="px-3 py-2 font-bold">{f.fechamento_dia}</td>
+                 <td className="px-3 py-2 font-bold">{f.vencimento_dia}</td>
+                <td className="px-3 py-2 font-bold">
                   {new Date(f.mes_referencia).toLocaleDateString("pt-BR", {
                     month: "long",
                     year: "numeric",

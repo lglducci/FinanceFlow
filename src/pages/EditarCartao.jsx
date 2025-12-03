@@ -17,8 +17,8 @@ export default function EditarCartao() {
   status: "ativo",
   vencimento: "",
   numero: "",
-  NomeCartão: "" 
-});
+  nomecartao: "" 
+})
 
 
   /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
@@ -86,7 +86,7 @@ const THEME = {
 
         vencimento: cartao.Vencimento || "",   // CORRIGIDO
         numero: cartao.numero || "",
-        NomeCartao: cartao.NomeCartão || ""    // CORRIGIDO
+        nomecartao: cartao.nomecartao || ""    // CORRIGIDO
       });
 
 
@@ -235,7 +235,7 @@ if (sucesso) {
           <label className="font-bold text-[#1e40af]">Nome no Cartão</label>
           <input
             name="NomeCartao"
-            value={form.NomeCartao}
+            value={form.nomecartao}
             onChange={handleChange}
             className="input-premium"
           />

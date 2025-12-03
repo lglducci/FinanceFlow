@@ -18,7 +18,8 @@ const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
 const [saldoInicial, setSaldoInicial] = useState(0);
 const [saldoFinal, setSaldoFinal] = useState(0);
- 
+
+
  
 const [contas, setContas] = useState([]);
 const [loading, setLoading] = useState(false);
@@ -27,25 +28,6 @@ const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [contaId, setContaId] = useState("");
-  const [dadosConta, setDadosConta] = useState(null);
-
-  // ------------------- CARREGAR SALDO DA CONTA -------------------
-  async function carregarSaldoConta(id_conta) {
-    const hoje = new Date().toISOString().split("T")[0];
-
-    const url = buildWebhookUrl("consultasaldo", {
-      inicio: hoje,
-      fim: hoje,
-      empresa_id,
-      conta_id: id_conta,
-    });
-
-    const resp = await fetch(url);
-    const json = await resp.json();
-    setDadosConta(json[0]);
-  }
-
-
 
 
 
@@ -102,7 +84,7 @@ const [loading, setLoading] = useState(false);
     let ini, fim;
 
     if (tipo === "mes") {
-      ini = new Date(hoje.getFullYear(), hoje.getMonth()-1, hoje.getDay());
+      ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
       fim = new Date( hojeLocal() );
     } else if (tipo === "15") {
       ini = new Date( hojeLocal() );
@@ -206,13 +188,6 @@ const [loading, setLoading] = useState(false);
       }, [contas]);
 
 
-      useEffect(() => {
-  if (contaId) {
-    carregarSaldoConta(contaId);
-  }
-}, [contaId]);
-
-
   useEffect(() => {
     setPeriodo("mes");
     aplicarPeriodo("mes");
@@ -299,20 +274,11 @@ const [loading, setLoading] = useState(false);
 
       {/* FILTROS  
       <div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-6">*/}
-
-
-      <div className="mb-4 grid grid-cols-1 lg:grid-cols-1 gap-4"> 
       <div className="bg-gray-100 p-6 rounded-xl shadow mb-8  border-[12px] border-blue-800 flex flex-col gap-2"> 
-       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-
-    {/* COLUNA 1 - FILTROS */}
-    <div className="bg-gray-100 p-6 rounded-xl shadow border-[1px] border-gray-300">
-
         {/* linha 1 - períodos */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex flex-col">
-            <span className="text-base font-bold mb-1 text-[#1e40af]">Períodos</span>
-
+            <span className="text-base font-bold mb-1 font-bold text-[#1e40af] ">Períodos</span>
             <div className="flex gap-4 text-base font-bold flex-wrap text-[#1e40af]">
               {["mes", "15", "semana", "hoje"].map((tipo) => (
                 <label key={tipo}>
@@ -332,159 +298,139 @@ const [loading, setLoading] = useState(false);
                 </label>
               ))}
             </div>
-
           </div>
-        </div>
+        </div>  
 
         {/* linha 2 */}
-        <div className="bg-gray-100 shadow rounded-lg p-4 border-l-4 border-gray-300 mt-4">
 
-            <div className="flex flex-wrap items-end gap-4">
+         <div className="bg-gray-100 shadow rounded-lg p-4 border-l-4 border-gray-300"> 
+        
+        <div className="flex flex-wrap items-end gap-4"> 
+            <div className="flex flex-col">
+              <label className="text-base font-bold text-[#1e40af]">Data início</label>
+              <input
+                type="date"
+                value={dataIni}
+                onChange={(e) => setDataIni(e.target.value)}
+                className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
+              />
+            </div> 
 
-                <div className="flex flex-col">
-                    <label className="text-base font-bold text-[#1e40af]">Data início</label>
-                    <input
-                      type="date"
-                      value={dataIni}
-                      onChange={(e) => setDataIni(e.target.value)}
-                      className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
-                    />
-                </div>
+          <div className="flex flex-col">
+            <label className="text-base font-bold text-[#1e40af]">Data fim</label>
+            <input
+              type="date"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+              className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
+            />
+          </div>
 
-                <div className="flex flex-col">
-                    <label className="text-base font-bold text-[#1e40af]">Data fim</label>
-                    <input
-                      type="date"
-                      value={dataFim}
-                      onChange={(e) => setDataFim(e.target.value)}
-                      className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
-                    />
-                </div>
 
-                <div className="flex flex-col">
-                    <label className="text-base font-bold text-[#1e40af]">Conta</label>
-                    <select
-                      value={contaId}
-                      onChange={(e) => setContaId(Number(e.target.value))}
-                      className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
-                    >
-                      <option value={0}>Todas</option>
-                      {contas.map((c) => (
-                        <option key={c.id} value={c.id}>{c.nome}</option>
-                      ))}
-                    </select>
-                </div>
+         <div className="flex flex-col">
+            <label className="text- base font-bold text-[#1e40af]">Conta</label>
+ 
+ 
+          <select
+            value={contaId}
+            onChange={(e) => setContaId(Number(e.target.value))}
+            className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
+          >
+            {/* OPÇÃO DEFAULT QUE ENVIA 0 */}
+            <option value={0}>Todas</option>
 
-                <button
-                  onClick={pesquisar}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32"
-                >
-                  {carregando ? "Carregando..." : "Pesquisar"}
-                </button>
+            {/* LISTA DE CONTAS */}
+            {contas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select> 
 
-                <button
-                  onClick={abrirNovoLancamento}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32"
-                >
-                  Novo
-                </button>
 
-            </div>
+          </div>
+  
+          <button
+            onClick={pesquisar}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32 text-center"
+          >
+            {carregando ? "Carregando..." : "Pesquisar"}
+          </button>
+
+          <button
+            onClick={abrirNovoLancamento}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32 text-center"
+          >
+            Novo
+          </button>
         </div>
+      </div>
 
-    </div>
-
-    {/* COLUNA 2 - DADOS DA CONTA */}
-    <div className="bg-white rounded-xl shadow p-4 border-l-4 border-blue-700 h-fit">
-
-        {dadosConta && (
-          <>
-            <h3 className="font-bold text-lg text-blue-700 mb-2">
-              🏦 {dadosConta.conta_nome}
-            </h3>
-
-            <p><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-            <p><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-            <p><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p>
-            <p><strong>Conjunta:</strong> {dadosConta.conjunta ? "Sim" : "Não"}</p>
-            <p><strong>Jurídica:</strong> {dadosConta.juridica ? "Sim" : "Não"}</p>
-
-            <p className="text-green-700 font-bold text-lg mt-3">
-              Saldo final: R$
-              {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-            </p>
-          </>
-        )}
-
-    </div>
 </div>
-</div>
-</div>
-
+      
   
        <div className="bg-gray-100 rounded-xl shadow p-4">
   
           {/* TOTAIS EM 3 COLUNAS */}
-          
-<div className="mb-4 grid grid-cols-1 lg:grid-cols-6 gap-4">
+          <div className="mb-4 grid grid-cols-1 sm:grid-cols-5 gap-4">
 
-  {/* 5 colunas de totais */}
-  <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-5 gap-4">
+                     {/* SALDO INICIAL */}
+                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
+                  <div className="text-base font-bold text-gray-600">Saldo Inicial</div>
+                  <div className="text-2xl font-bold text-gray-800">
+                    {saldoInicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </div>
+                </div>
 
-    {/* SALDO INICIAL */}
-    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
-      <div className="text-base font-bold text-gray-600">Saldo Inicial</div>
-      <div className="text-2xl font-bold text-gray-800">
-        {saldoInicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
+            {/* ENTRADAS */}
+            <div className="bg-white shadow rounded-lg p-4 border-l-4 border-green-600">
+              <div className="text- base font-bold text-gray-600">Total Entradas</div>
+              <div className="text-2xl font-bold text-green-700">
+                {totalEntrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </div>
+            </div>
 
-    {/* ENTRADAS */}
-    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-green-600">
-      <div className="text-base font-bold text-gray-600">Total Entradas</div>
-      <div className="text-2xl font-bold text-green-700">
-        {totalEntrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
+            {/* SAÍDAS */}
+            <div className="bg-white shadow rounded-lg p-4 border-l-4 border-red-600">
+              <div className="text-base font-bold text-gray-600">Total Saídas</div>
+              <div className="text-2xl font-bold text-red-700">
+                {totalSaida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </div>
+            </div> 
 
-    {/* SAÍDAS */}
-    <div className="bg-white shadow rounded-lg p-4 border-l-4 border-red-600">
-      <div className="text-base font-bold text-gray-600">Total Saídas</div>
-      <div className="text-2xl font-bold text-red-700">
-        {totalSaida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
+                  {/* RESULTADO LÍQUIDO */}
+              <div className={`bg-white shadow rounded-lg p-4 border-l-4
+                ${ (totalEntrada - totalSaida) >= 0 ? "border-green-600" : "border-red-600" }
+              `}>
+                <div className="text-sm font-semibold text-gray-600">Resultado Líquido</div>
+                <div className={`text-2xl font-bold 
+                  ${ (totalEntrada - totalSaida) >= 0 ? "text-green-700" : "text-red-700" }
+                `}>
+                  {(totalEntrada - totalSaida).toLocaleString("pt-BR", { 
+                    style: "currency", 
+                    currency: "BRL" 
+                  })}
+                </div>
+             </div>  
 
-      {/* SALDO FINAL */}
-      <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-800">
-        <div className="text- base font-bold text-gray-600">Saldo Atual</div>
-        <div className="text-2xl font-bold text-gray-900">
-          {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-        </div>
-      </div>
 
-    {/* RESULTADO */}
-    <div className={`bg-white shadow rounded-lg p-4 border-l-4
-        ${(totalEntrada - totalSaida) >= 0 ? "border-green-600" : "border-red-600"}
-    `}>
-      <div className="text-sm font-semibold text-gray-600">Resultado Líquido</div>
-      <div className={`text-2xl font-bold 
-          ${(totalEntrada - totalSaida) >= 0 ? "text-green-700" : "text-red-700"}
-      `}>
-        {(totalEntrada - totalSaida).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
 
-  </div>
+             {/* SALDO FINAL */}
+                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-800">
+                  <div className="text- base font-bold text-gray-600">Saldo Atual</div>
+                  <div className="text-2xl font-bold text-gray-900">
+                    {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </div>
+                </div>
 
-  
-
-</div>
+               
+          </div> 
 
 
   {/* TABELA */} 
   <table className="w-full text-sm">
-  
+   
+    ...
   </table>
 </div>
  

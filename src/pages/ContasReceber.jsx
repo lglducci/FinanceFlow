@@ -334,7 +334,7 @@ async function receberSelecionadas() {
               >
                 <option value="aberto">Aberto</option>
                 <option value="recebido">Recebido</option>
-                <option value="">Todos</option>
+                <option value="0">Todos</option>
               </select>
             </div>
 
@@ -495,13 +495,15 @@ async function receberSelecionadas() {
           {lista.map((c, i) => (
             <tr key={c.id} className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
 
-              <td className="px-3 py-2 text-center">
+                 <td className="px-3 py-2 text-center">
                 <input
                   type="checkbox"
                   checked={selecionadas.includes(c.id)}
                   onChange={() => toggleSelecionada(c.id)}
+                 disabled={c.status === "recebido"}
+                  className={c.status === "recebido" ? "opacity-140 bg-black" : ""}
                 />
-              </td>
+              </td> 
 
               <td className="px-3 py-2">{c.id}</td>
               <td className="px-3 py-2 font-bold">{c.descricao}</td>

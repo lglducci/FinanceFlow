@@ -332,7 +332,7 @@ async function pagarSelecionadas() {
               >
                 <option value="aberto">Aberto</option>
                 <option value="pago">Pago</option>
-                <option value="">Todos</option>
+                <option value="0">Todos</option>
               </select>
             </div>
 
@@ -474,9 +474,9 @@ async function pagarSelecionadas() {
             <th className="px-3 py-2 text-left font-bold">Categoria</th>
             <th className="px-3 py-2 text-left font-bold">Fornecedor</th>
             <th className="px-3 py-2 text-center font-bold">Parcelas</th>
-            <th className="px-3 py-2 text-center font-bold">Nº Parcela</th>
-            <th className="px-3 py-2 text-center font-bold">Status</th>
+            <th className="px-3 py-2 text-center font-bold">Nº Parcela</th> 
             <th className="px-3 py-2 text-right font-bold">Valor</th>
+             <th className="px-3 py-2 text-center font-bold">Status</th>
             <th className="px-3 py-2 text-center font-bold">Ações</th>
           </tr>
         </thead>
@@ -493,13 +493,17 @@ async function pagarSelecionadas() {
           {lista.map((c, i) => (
             <tr key={c.id} className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
 
+               
               <td className="px-3 py-2 text-center">
                 <input
                   type="checkbox"
                   checked={selecionadas.includes(c.id)}
                   onChange={() => toggleSelecionada(c.id)}
+                  disabled={c.status === "pago"}
+                 className={c.status === "pago" ? "opacity-140 bg-black" : ""}
                 />
               </td>
+
 
               <td className="px-3 py-2">{c.id}</td>
               <td className="px-3 py-2 font-bold">{c.descricao}</td>
@@ -509,15 +513,14 @@ async function pagarSelecionadas() {
               <td className="px-3 py-2 font-bold">{c.categoria}</td>
               <td className="px-3 py-2 font-bold">{c.fornecedor}</td>
               <td className="px-3 py-2 text-center font-bold">{c.parcelas}</td>
-              <td className="px-3 py-2 text-center font-bold">{c.parcela_num}</td>
-              <td className="px-3 py-2 text-center font-bold">{c.status}</td>
+              <td className="px-3 py-2 text-center font-bold">{c.parcela_num}</td>  
               <td className="px-3 py-2 text-right font-bold">
                 {Number(c.valor).toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
               </td>
-
+               <td className="px-3 py-2 text-center font-bold">{c.status}</td>
               <td className="px-3 py-2 text-center">
                   {c.status === "aberto" && (
                 <button
