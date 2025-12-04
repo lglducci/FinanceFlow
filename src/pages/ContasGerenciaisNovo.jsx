@@ -90,13 +90,24 @@ export default function ContasGerenciaisNovo() {
           <option value="entrada">Entrada</option>
           <option value="saida">Saída</option>
         </select>
+        
+          <div className="flex gap-6 pt-8 pb-8 pl-1">
 
-        <button
-          onClick={salvar}
-          className="bg-green-600 text-white px-5 py-2 rounded font-bold"
-        >
-          Salvar
-        </button>
+              <button
+                onClick={salvar}
+                className="flex-1 bg-green-600 text-white px-5 py-2 rounded font-bold"
+              >
+                Salvar
+              </button>
+
+              <button
+                  type="button"
+                  onClick={() => navigate("/contasgerenciais")}
+                  className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
+                >
+                  Cancelar
+                </button>
+           </div>
       </div>
       </div>
     </div>

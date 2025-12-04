@@ -1,6 +1,7 @@
  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 export default function NovoLancamento() {
   const navigate = useNavigate();   
@@ -13,9 +14,10 @@ export default function NovoLancamento() {
     categoria_id: "",
     conta_id: "",
     valor: "",
-    data: new Date().toISOString().split("T")[0],
+    data:  hojeLocal()  ,
     descricao: "",
     tipo: "saida",
+    origem: "Web",
   });
 
   const [categorias, setCategorias] = useState([]);
@@ -52,35 +54,64 @@ export default function NovoLancamento() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSalvar = async () => {
-    const payload = {
-      id_empresa: form.empresa_id,
-      tipo: form.tipo,
-      conta: form.conta_id,
-      categoria: form.categoria_id,
-      valor: form.valor,
-      descricao: form.descricao,
-      data: form.data,
-    };
+ const handleSalvar = async () => {
+  // VALIDACOES SIMPLES
+  if (!form.categoria_id) return alert("Selecione uma categoria.");
+  if (!form.conta_id) return alert("Selecione uma conta.");
+  if (!form.valor || Number(form.valor) <= 0) return alert("Informe um valor válido.");
+  if (!form.descricao.trim()) return alert("Informe uma descrição.");
+  if (!form.tipo) return alert("Selecione o tipo.");
+
+  const payload = {
+    id_empresa: form.empresa_id,
+    tipo: form.tipo,
+    conta: form.conta_id,
+    categoria: form.categoria_id,
+    valor: form.valor,
+    descricao: form.descricao,
+    data: form.data,
+    origem: "WebApp",
+  };
+
+  try {
+    const url = buildWebhookUrl("novolancamento");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const texto = await resp.text();
+    let json = null;
 
     try {
-      const url = buildWebhookUrl("novolancamento");
-      const resp = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (resp.ok) {
-        alert("Lançamento salvo!");
-        navigate(-1);
-      } else {
-        alert("Erro ao salvar.");
-      }
+      json = JSON.parse(texto);
     } catch (e) {
-      alert("Erro de requisição.");
+      console.log("JSON inválido:", texto);
+      alert("Erro inesperado no servidor.");
+      return;
     }
-  };
+
+    // json É UM ARRAY — SEMPRE PEGAMOS O PRIMEIRO ITEM
+    const item = Array.isArray(json) ? json[0] : json;
+
+    // SE OK == FALSE, MOSTRA A MENSAGEM DO BACKEND
+    if (item?.ok === false) {
+      alert(item.message || "Erro ao salvar.");
+      return;
+    }
+
+    // SE CHEGOU AQUI, DEU CERTO
+    alert("Lançamento salvo!");
+    navigate(-1);
+
+  } catch (e) {
+    console.log("ERRO REQUEST:", e);
+    alert("Erro de comunicação com o servidor.");
+  }
+};
+
 
   return (
          <div className="min-h-screen py-8 px-4 bg-bgSoft"> 

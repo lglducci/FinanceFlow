@@ -217,12 +217,14 @@ const salvar = async () => {
           Salvar
         </button>
 
-        <button
-          onClick={excluir}
-          className="flex-1 bg-red-600 text-white px-4 py-3 rounded font-bold"
-        >
-          Excluir
-        </button>
+        
+          <button
+            onClick={() => navigate("/cards")}
+            className="flex-1 bg-gray-400 text-white px-5 py-2 rounded font-semibold"
+          >
+            Cancelar
+          </button>
+          
       </div>
     </div>
     </div>

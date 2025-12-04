@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
+
 
 export default function NovoCardTransaction() {
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ export default function NovoCardTransaction() {
     descricao: "",
     valor: "",
     parcelas: 1,
-    data_parcela: new Date().toISOString().split("T")[0],
+    data_parcela: hojeLocal(),
   });
 
   // --------------------------
@@ -178,12 +180,12 @@ export default function NovoCardTransaction() {
           >
             Salvar
           </button>
-  
+    
           <button
-            onClick={() => navigate(-1)}
+             onClick={() => navigate("/cartao-transacoes")}
             className="flex-1 bg-gray-400 text-white px-4 py-3 rounded-lg font-bold"
           >
-            Voltar
+            Cancelar
         </button>  
       </div> 
 

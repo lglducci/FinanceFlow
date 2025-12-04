@@ -135,35 +135,62 @@ useEffect(() => {
     setForm((ant) => ({ ...ant, [name]: value }));
   }
 
-  // 🔵 SALVAR ALTERAÇÕES
-  const salvar = async () => {
-    setSalvando(true);
+// 🔵 SALVAR ALTERAÇÕES
+const salvar = async () => {
+  // ---- VALIDAÇÕES ----
+  const valorNum = Number(form.valor);
 
-    try {
-      const url = buildWebhookUrl("updatelancto");
-
-      const resp = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const ret = await resp.json();
-
-      alert("Lançamento atualizado com sucesso!");
-      navigate("/transactions");
-    } catch (e) {
-      console.error(e);
-      alert("Erro ao atualizar lançamento.");
-    }
-
-    setSalvando(false);
-  };
-
-  if (carregando) {
-    return <p className="p-4 text-gray-700">Carregando...</p>;
+  if (!form.categoria_id) {
+    alert("Selecione uma categoria.");
+    return;
   }
 
+  if (!form.conta_id) {
+    alert("Selecione uma conta.");
+    return;
+  }
+
+  if (!form.valor || isNaN(valorNum) || valorNum <= 0) {
+    alert("Informe um valor válido.");
+    return;
+  }
+
+  if (!form.descricao || !form.descricao.trim()) {
+    alert("Informe uma descrição.");
+    return;
+  }
+
+  if (!form.tipo) {
+    alert("Selecione o tipo (entrada ou saída).");
+    return;
+  }
+  // ---------------------
+
+  setSalvando(true);
+
+  try {
+    const url = buildWebhookUrl("updatelancto");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const ret = await resp.json();
+
+    alert("Lançamento atualizado com sucesso!");
+    navigate("/transactions");
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao atualizar lançamento.");
+  }
+
+  setSalvando(false);
+};
+
+
+ 
  return (
   <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
        <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
@@ -181,16 +208,16 @@ useEffect(() => {
         {/* 1 — Tipo */}
         <div>
           <label className="block text-base font-bold  text-[#1e40af]">Tipo</label>
-          <select
-            name="tipo"
-            value={form.tipo}
-            onChange={onChange}
-             className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300"
-          >
-            <option value="">Selecione</option>
-            <option value="entrada">Entrada</option>
-            <option value="saida">Saída</option>
-          </select>
+           <select
+              name="tipo"
+              value={form.tipo}
+              disabled
+              className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300 bg-gray-200 text-gray-600 cursor-not-allowed"
+            >
+              <option value="entrada">Entrada</option>
+              <option value="saida">Saída</option>
+            </select>
+
         </div>
 
         {/* 2 — Categoria */}
@@ -261,7 +288,8 @@ useEffect(() => {
               name="origem"
               value={form.origem}
               onChange={onChange}
-               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+                  disabled
+              className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300 bg-gray-200 text-gray-600 cursor-not-allowed"
             />
           </div>
 

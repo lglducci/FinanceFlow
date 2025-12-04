@@ -98,13 +98,22 @@ async function salvar() {
           <option value="entrada">Entrada</option>
           <option value="saida">Saída</option>
         </select>
-
+      
+      
+       <div className="flex gap-6 pt-8 pb-8 pl-1"> 
         <button
           onClick={salvar}
-          className="bg-blue-600 text-white px-5 py-2 rounded font-bold"
+          className="flex-1 bg-blue-600 text-white px-5 py-2 rounded font-bold"
         >
           Salvar
-        </button>
+        </button>  
+          <button
+            onClick={() => navigate("/contasgerenciais")}
+            className="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+          >
+            Voltar
+          </button>
+       </div>
       </div>
       </div>
     </div>

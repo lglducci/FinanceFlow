@@ -48,44 +48,82 @@ const THEME = {
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
+async function salvar() {
+  // 🔎 VALIDAÇÕES
+  const {
+    nome,
+    bandeira,
+    limite_total,
+    fechamento_dia,
+    vencimento_dia,
+    vencimento,
+    status,
+  } = form;
 
-  async function salvar() {
-    if (!form.nome || !form.bandeira) {
-      alert("Preencha nome e bandeira.");
-      return;
-    }
+  if (!nome || !nome.trim()) {
+    alert("Informe o nome do cartão.");
+    return;
+  }
 
-    const url = buildWebhookUrl("novo_cartao");
+  if (!bandeira || !bandeira.trim()) {
+    alert("Informe a bandeira do cartão.");
+    return;
+  }
 
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id_empresa:  empresa_id ,
-        ...form
-      })
-    });
+  const limiteNum = Number(limite_total);
+  if (!limite_total || isNaN(limiteNum) || limiteNum <= 0) {
+    alert("Informe um limite total válido (> 0).");
+    return;
+  }
 
-    const json = await resp.json();
- 
+  const fechamentoNum = Number(fechamento_dia);
+  if (!fechamento_dia || isNaN(fechamentoNum) || fechamentoNum < 1 || fechamentoNum > 31) {
+    alert("Informe um dia de fechamento entre 1 e 31.");
+    return;
+  }
 
-// CORRETO PARA O RETORNO REAL DO SEU WEBHOOK
-const ok = Array.isArray(json) && json.length > 0 && json[0].id;
+  const vencimentoNum = Number(vencimento_dia);
+  if (!vencimento_dia || isNaN(vencimentoNum) || vencimentoNum < 1 || vencimentoNum > 31) {
+    alert("Informe um dia de vencimento entre 1 e 31.");
+    return;
+  }
 
-if (ok) {
-  alert("Cartão criado com sucesso!");
-  navigate("/cards");
-} else {
-  console.log("RETORNO INVALIDO:", json);
-  alert("Erro ao criar cartão.");
+  if (!status) {
+    alert("Informe o status do cartão.");
+    return;
+  }
+
+  // vencimento (MM/AA) opcional, mas se preencher, valida formato
+  if (vencimento && !/^\d{2}\/\d{2}$/.test(vencimento)) {
+    alert("Informe o vencimento no formato MM/AA (ex: 08/29).");
+    return;
+  }
+
+  const url = buildWebhookUrl("novo_cartao");
+
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id_empresa: empresa_id,
+      ...form,
+    }),
+  });
+
+  const json = await resp.json();
+
+  const ok = Array.isArray(json) && json.length > 0 && json[0].id;
+
+  if (ok) {
+    alert("Cartão criado com sucesso!");
+    navigate("/cards");
+  } else {
+    console.log("RETORNO INVALIDO:", json);
+    alert("Erro ao criar cartão.");
+  }
 }
 
-
-
-
-
-
-  }
+ 
 
   return (
      <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
@@ -221,7 +259,7 @@ if (ok) {
             onClick={() => navigate( "/cards")}
             className="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
           >
-            Voltar
+            Cancelar
           </button>
      </div>
 

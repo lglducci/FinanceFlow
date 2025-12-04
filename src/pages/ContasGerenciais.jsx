@@ -147,7 +147,12 @@ export default function ContasGerenciais() {
             >
               <td className="p-1 border font-bold shadow">{l.id}</td>
               <td className="p-1 border font-bold shadow">{l.nome}</td>
-              <td className="p-1 border font-bold shadow">{l.tipo}</td>
+             
+                 <td className={"px-1 font-bold " +
+                      (l.tipo === "entrada" ? "text-green-600" : "text-red-600")
+                    }
+                  > {l.tipo}
+                  </td>
 
               <td className="p-1 border flex gap-2">
  

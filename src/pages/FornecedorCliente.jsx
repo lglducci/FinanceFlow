@@ -10,6 +10,8 @@ export default function FornecedorCliente() {
   const [tipo, setTipo] = useState("fornecedor");
   const [carregando, setCarregando] = useState(false);
 
+ 
+  
   async function carregar() {
     try {
       setCarregando(true);
@@ -95,10 +97,10 @@ export default function FornecedorCliente() {
             className="border font-bold rounded-lg px-3 py-2 w-48 text-base border-yellow-500"
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
-          >
+          >   
             <option value="fornecedor">Fornecedor</option>
-            <option value="cliente">Cliente</option>
-            <option value="ambos">Ambos</option>
+            <option value="cliente">Cliente</option> 
+             <option value="ambos">Ambos</option>
           </select>
         </div>
 

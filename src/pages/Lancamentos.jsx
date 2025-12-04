@@ -44,12 +44,7 @@ const [loading, setLoading] = useState(false);
     const json = await resp.json();
     setDadosConta(json[0]);
   }
-
-
-
-
-
-
+  
   async function Estornar(id) {
    if (!confirm("Tem certeza que deseja estornar este lancamento?")) return;
 
@@ -80,10 +75,13 @@ const [loading, setLoading] = useState(false);
 
       // remove visualmente da tela ANTES de recarregar do backend
         setLista((prev) => prev.filter((x) => x.id !== id));
-
+      
         // depois recarrega real do webhook
         setTimeout(() => carregarLista(), 150);
      {/*} carregarLista();  // atualiza tabela*/}
+           carregarSaldoConta(contaId);  // 🔥 Atualiza dados da conta
+          pesquisar();   // <-- AQUI!!!
+
       return;
     }
 

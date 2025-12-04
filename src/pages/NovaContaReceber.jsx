@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
+
 
 export default function NovaContaReceber() {
   const navigate = useNavigate();
@@ -9,7 +11,7 @@ export default function NovaContaReceber() {
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
-    vencimento:   new Date().toISOString().split("T")[0], // 👈 DEFAULT HOJE,
+    vencimento: hojeLocal(),
     categoria_id: "",
     fornecedor_id: "",
     parcelas: 1,

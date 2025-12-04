@@ -1,4 +1,6 @@
  import React, { useState } from "react";
+ import { hojeLocal, dataLocal } from "../utils/dataLocal";
+
 
 export default function NovaConta() {
   const [form, setForm] = useState({
@@ -129,9 +131,8 @@ const THEME = {
 
   return (
         <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
-  
-    
+   
+     <div className="w-full max-w-3xl mx-auto rounded-2xl p-4 shadow-xl bg-[#1e40af] text-white mt-4 mb-10">   
       <h1
        
          className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -206,15 +207,19 @@ const THEME = {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block font-bold mb-1 text-[#1e40af]">Tipo</label>
-            <input
+            <select
               name="tipo"
-                className="input-base w-48 h-10"
               value={form.tipo}
               onChange={handleChange}
-              placeholder="Conta Corrente"
-            />
+              className="input-base w-48 h-10 border rounded px-2 font-bold text-gray-700"
+            >
+              <option value="">Selecione...</option>
+              <option value="corrente">Corrente</option>
+              <option value="poupanca">Poupança</option>
+              <option value="carteira">Carteira</option>
+              <option value="caixa">Caixa</option>
+            </select>
           </div>
-
 
         </div>
 
@@ -264,16 +269,29 @@ const THEME = {
             Padrão
           </label>
         </div>
+       
+       
+      
+
+      <div className="flex gap-6 pt-8 pb-8 pl-1">
 
         {/* Botão */}
         <button
           onClick={salvar}
           disabled={loading}
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
+          className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
         >
           {loading ? "Salvando..." : "Salvar"}
         </button>
-     </div>
+         <button
+            type="button"
+            onClick={() => navigate("/saldos")}
+            className="flex-1 bg-gray-400 text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
+          >
+            Cancelar
+          </button>
+       </div>
+       </div>
       </div>
     </div>
    
