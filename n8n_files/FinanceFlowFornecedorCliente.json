@@ -142,7 +142,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select *\nfrom pessoa where empresa_id = \n  {{ $json.id_empresa }} and tipo = \n  '{{ $json.tipo }}' or '{{ $json.tipo }}' ='ambos';\n\n\n ",
+        "query": " select *\nfrom pessoa where empresa_id = \n  {{ $json.id_empresa }}  \nand ( tipo = \n  '{{ $json.tipo }}' or '{{ $json.tipo }}' ='ambos');\n\n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -888,13 +888,18 @@
           }
         ]
       ]
+    },
+    "Respond to Webhook35": {
+      "main": [
+        []
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "23306d72-0794-4046-baeb-eecc569aef08",
+  "versionId": "f9606dc5-d97c-4588-9154-e46e1ec6a608",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },

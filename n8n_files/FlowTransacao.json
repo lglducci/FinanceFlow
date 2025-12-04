@@ -46,6 +46,12 @@
               "name": "data",
               "value": "={{ $json.body.data}}",
               "type": "string"
+            },
+            {
+              "id": "b41051f0-d6e3-408b-8a63-bf3debcce6b2",
+              "name": "origem",
+              "value": "={{ $json.body.origem}}",
+              "type": "string"
             }
           ]
         },
@@ -114,28 +120,31 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' \n   \n)",
+        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}'\n   \n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         384,
-        -48
+        -128
       ],
       "id": "523e7406-7663-4d73-aa18-07a4bd8e5add",
       "name": "registrar_despesa",
+      "alwaysOutputData": true,
+      "retryOnFail": false,
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
           "name": "Financeflow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' \n   \n)",
+        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}'\n   \n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -146,70 +155,30 @@
       ],
       "id": "7066c451-6279-44d8-b85f-3da5d864170f",
       "name": "registrar_receita",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
           "name": "Financeflow"
         }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "select * from transacoes where empresa_id =  {{ $('Edit Fields').item.json.id_empresa }} and id = {{ $json.ff_registrar_despesa }}",
-        "options": {}
       },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        592,
-        -48
-      ],
-      "id": "f7fb1657-cdad-4bdc-a771-2d57b4d9a004",
-      "name": "BuscaTransacao",
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      }
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        848,
-        16
+        816,
+        -32
       ],
       "id": "6442f7e7-d120-4ab6-b166-1703f8e398b1",
       "name": "Respond to Webhook13"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "select * from transacoes where empresa_id =  {{ $('Edit Fields').item.json.id_empresa }} and id = {{ $json.ff_registrar_receita }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        592,
-        144
-      ],
-      "id": "b41bc35d-ab4d-49cc-8e2c-a5f734222030",
-      "name": "BuscaTransacao1",
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      }
     },
     {
       "parameters": {
@@ -223,9 +192,35 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -288,
-        -288
+        -352,
+        -272
       ]
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -128
+      ],
+      "id": "ad67ea14-59ac-4d96-8769-9c671d42a368",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        144
+      ],
+      "id": "7cfd95ef-bae1-498f-9846-f509d5627bed",
+      "name": "Code in JavaScript"
     }
   ],
   "pinData": {},
@@ -274,25 +269,27 @@
       "main": [
         [
           {
-            "node": "BuscaTransacao",
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
-        ]
+        ],
+        []
       ]
     },
     "registrar_receita": {
       "main": [
         [
           {
-            "node": "BuscaTransacao1",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
-        ]
+        ],
+        []
       ]
     },
-    "BuscaTransacao": {
+    "Code in JavaScript1": {
       "main": [
         [
           {
@@ -303,7 +300,7 @@
         ]
       ]
     },
-    "BuscaTransacao1": {
+    "Code in JavaScript": {
       "main": [
         [
           {
@@ -319,7 +316,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ec5f26df-10d1-4d0e-8d5a-69e1057fc5ad",
+  "versionId": "7cab3f25-a17d-4d87-bd4f-a32db2ffc4d1",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
