@@ -62,6 +62,7 @@ export default function ConsultaTransacaoCartao() {
 
     try {
       setLoading(true);
+      setDados(null);
 
       const url = buildWebhookUrl("transcaocartao", {
         id_empresa: empresa_id,
@@ -182,12 +183,24 @@ export default function ConsultaTransacaoCartao() {
                       Mês referência
                     </span>
                     <span className="text-lg font-bold">
-                      {new Date(
-                        dados.fatura.mes_referencia
-                      ).toLocaleDateString("pt-BR", {
-                        month: "long",
-                        year: "numeric",
-                      })}
+                     {(() => {
+                          if (!dados?.fatura?.mes_referencia) return "-";
+
+                          // mes_referencia = "2025-12-01"
+                          const [ano, mes] = dados.fatura.mes_referencia.split("-");
+
+                          const dataFormatada = new Date(
+                            Number(ano),
+                            Number(mes) - 1,
+                            1
+                          ).toLocaleDateString("pt-BR", {
+                            month: "long",
+                            year: "numeric",
+                          });
+
+                          return dataFormatada;
+                        })()}
+
                     </span>
                   </div>
 
