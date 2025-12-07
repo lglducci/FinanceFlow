@@ -1,0 +1,900 @@
+{
+  "name": "ContabilFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        -176
+      ],
+      "id": "67f84cfe-c060-408e-b0ce-808e45cce522",
+      "name": "Respond to Webhook19"
+    },
+    {
+      "parameters": {
+        "content": "## Contabil",
+        "height": 1452,
+        "width": 1280,
+        "color": 5
+      },
+      "id": "c4790859-24e0-41cb-b9c8-8d6c52405c9c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -272
+      ]
+    },
+    {
+      "parameters": {
+        "path": "modelos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        -176
+      ],
+      "id": "fd36e56b-52c4-4b26-9535-643464529d60",
+      "name": "modelos",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n SELECT  * from contab.modelos where empresa_id = \n  {{ $json.empresa_id }}\n;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        144,
+        -176
+      ],
+      "id": "3ec70b7e-8eec-4665-954a-30bc5a3a7b2f",
+      "name": "Modelos",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        -176
+      ],
+      "id": "04c7951a-fd58-4d6c-9111-7556ba4a1f90",
+      "name": "EditModelos"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        48
+      ],
+      "id": "665bd1b4-e936-4f2a-bacf-ab06772d123e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "modelos_linhas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        48
+      ],
+      "id": "c745590c-72f8-42ec-89a9-608e6071a02d",
+      "name": "modelo_linha",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "79d8e8b2-2754-4ad5-ac0e-787b2cd6bbe3",
+              "name": "modelo_id",
+              "value": "={{ $json.query.modelo_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        48
+      ],
+      "id": "5da24f20-7ea6-437a-b720-a76a16291cf5",
+      "name": "EditModeloslinha"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select  ml.id,  conta_id,  ml.dc ,  c.codigo, c.nome, c.tipo, c.natureza  , modelo_id \nfrom contab.modelos_linhas as ml \nleft join contab.contas as c\n on \nc.id =ml.conta_id   AND\nc.empresa_id =ml.empresa_id    \n where ml.modelo_id = {{ $json.modelo_id }} and \n  c.empresa_id = \n  {{ $json.empresa_id }}\n;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        48
+      ],
+      "id": "24bda693-7e96-4fd9-ae3e-8c78e09db56d",
+      "name": "ModelosLinha",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        368,
+        240
+      ],
+      "id": "7ffa8dcb-84a4-4de2-b083-68f2820a9e4f",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "79d8e8b2-2754-4ad5-ac0e-787b2cd6bbe3",
+              "name": "buscar_nome",
+              "value": "={{ $json.query.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "56d32e07-028f-443d-a949-6b4ecbaed16e",
+              "name": "dc",
+              "value": "={{ $json.query.dc}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        240
+      ],
+      "id": "f0cc5554-6bd9-4321-9b17-cae3c9909487",
+      "name": "EditModeloslinha1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza  \nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND (\n        unaccent(lower(nome))   LIKE unaccent(lower('%{{ $json.buscar_nome}}%'))\n     OR unaccent(lower(codigo)) LIKE unaccent(lower('%{{ $json.buscar_nome}}%'))\n  )  and natureza = '{{ $json.dc }}'\nORDER BY codigo\nLIMIT 20;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        144,
+        240
+      ],
+      "id": "ca48e06d-7c27-4330-8e69-098028045139",
+      "name": "BuscarContas",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "buscar_contas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        240
+      ],
+      "id": "cc2b69b8-526a-4e45-972c-7082b9a126c9",
+      "name": "Contas",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        496,
+        464
+      ],
+      "id": "4d255d21-7238-4bf8-82a7-89f66a141a88",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "modelo_id",
+              "value": "={{ $json.query.modelo_id}}",
+              "type": "string"
+            },
+            {
+              "id": "6b48dd9f-af2a-414f-80e7-c21216ab10a8",
+              "name": "body",
+              "value": "={{ $json.body}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        464
+      ],
+      "id": "5b16f693-ee2c-4be1-b3a5-39f6f88a2357",
+      "name": "Edit_PagarFatura"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " UPDATE contab.modelos_linhas\nSET conta_id = {{ $json.conta_id }}\nWHERE id = {{ $json.id }}\n  AND modelo_id = {{ $json.modelo_id }};\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        288,
+        464
+      ],
+      "id": "450e3cdb-f3b6-4892-a91f-3667be75e663",
+      "name": "AutalizaModelLinha",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "salvar_mapeamento",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        464
+      ],
+      "id": "1de0b79e-2747-4fd8-a41a-01c8f45fca47",
+      "name": "SalvaMapeamento",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "jsCode": " let body = $input.first().json.body  ;\n \n// SE vier como string, converte:\nif (typeof body === \"string\") {\n  body = JSON.parse(body);\n}\n\n// Se vier dentro de um campo (às vezes n8n coloca em json.body)\nif (typeof body.body === \"string\") {\n  body = JSON.parse(body.body);\n}\n\nreturn body;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        464
+      ],
+      "id": "c1e980b0-8c38-46a1-af30-f6bd5bb0618e",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        368,
+        704
+      ],
+      "id": "3c7d5fa0-3b8f-458b-9ffa-e0e06e46b23a",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "57739ea8-d745-4d52-bdb2-5af3bf155218",
+              "name": "id",
+              "value": "={{ $json.query.id}}",
+              "type": "string"
+            },
+            {
+              "id": "2ce5e70a-456b-4017-a201-9132cc0ab50a",
+              "name": "dc",
+              "value": "={{ $json.query.dc}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        704
+      ],
+      "id": "099163b0-5ddc-4aae-9bc5-114db44ec943",
+      "name": "EditModeloslinha2"
+    },
+    {
+      "parameters": {
+        "path": "contascontabeis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        704
+      ],
+      "id": "a9d08859-7bf7-4e10-a8a5-8c1b92bd4700",
+      "name": "ContasContabeis",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        336,
+        912
+      ],
+      "id": "87c76416-1785-4cdb-b884-48994aef2cac",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "codigo",
+              "value": "={{ $json.query.codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "6b48dd9f-af2a-414f-80e7-c21216ab10a8",
+              "name": "nome",
+              "value": "={{ $json.query.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "021aa349-a10b-4a79-a77e-e07ab6e57f0c",
+              "name": "natureza",
+              "value": "={{ $json.query.natureza}}",
+              "type": "string"
+            },
+            {
+              "id": "895c8bc9-5cda-4d95-95f3-64ba84801751",
+              "name": "nivel",
+              "value": "={{ $json.query.nivel}}",
+              "type": "string"
+            },
+            {
+              "id": "d3ca6286-f7ad-4dc0-ad96-005a511cd64d",
+              "name": "tipo",
+              "value": "={{ $json.query.tipo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        912
+      ],
+      "id": "4aff1251-ac1c-4bc3-9dfd-eefcce51f54c",
+      "name": "Edit_PagarFatura1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novacontacontabil",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        912
+      ],
+      "id": "ee3f81bc-18a0-4d6e-a969-1534b17431e4",
+      "name": "NovaContaCtb",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "contab",
+          "mode": "list",
+          "cachedResultName": "contab"
+        },
+        "table": {
+          "__rl": true,
+          "value": "contas",
+          "mode": "list",
+          "cachedResultName": "contas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "analitica": false,
+            "codigo": "={{ $json.codigo }}",
+            "empresa_id": "={{ $json.empresa_id }}",
+            "nome": "={{ $json.nome }}",
+            "natureza": "={{ $json.natureza }}",
+            "nivel": "={{ $json.nivel }}",
+            "tipo": "={{ $json.tipo }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa_id",
+              "displayName": "empresa_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "natureza",
+              "displayName": "natureza",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nivel",
+              "displayName": "nivel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conta_pai_id",
+              "displayName": "conta_pai_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "analitica",
+              "displayName": "analitica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        112,
+        912
+      ],
+      "id": "010fc098-1917-470f-9bc5-6731e54afa1a",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza,\n    nivel\nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND ( {{ $json.id }} IS NULL OR {{ $json.id }} = 0 OR id = {{ $json.id }} )\n  AND ( '{{ $json.dc }}' IS NULL OR '{{ $json.dc }}' = '' OR natureza = '{{ $json.dc }}' )\nORDER BY codigo;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        144,
+        704
+      ],
+      "id": "2ffde0cc-958d-4f07-92bd-09c41a6f7e4f",
+      "name": "ContasContabeis1",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "modelos": {
+      "main": [
+        [
+          {
+            "node": "EditModelos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditModelos": {
+      "main": [
+        [
+          {
+            "node": "Modelos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "modelo_linha": {
+      "main": [
+        [
+          {
+            "node": "EditModeloslinha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditModeloslinha": {
+      "main": [
+        [
+          {
+            "node": "ModelosLinha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ModelosLinha": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditModeloslinha1": {
+      "main": [
+        [
+          {
+            "node": "BuscarContas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscarContas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contas": {
+      "main": [
+        [
+          {
+            "node": "EditModeloslinha1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_PagarFatura": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AutalizaModelLinha": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaMapeamento": {
+      "main": [
+        [
+          {
+            "node": "Edit_PagarFatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AutalizaModelLinha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditModeloslinha2": {
+      "main": [
+        [
+          {
+            "node": "ContasContabeis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContasContabeis": {
+      "main": [
+        [
+          {
+            "node": "EditModeloslinha2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_PagarFatura1": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NovaContaCtb": {
+      "main": [
+        [
+          {
+            "node": "Edit_PagarFatura1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContasContabeis1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0e52a523-42c5-4159-9b46-9a73c007af6b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "BNzypC9r8Tpv2rG9",
+  "tags": []
+}
