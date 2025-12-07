@@ -21,9 +21,10 @@ export default function Sidebar() {
     { id: "contas_receber", label: "Contas a Receber", path: "/contas-receber" },
     { id: "contas_gerenciais", label: "Contas Gerenciais", path: "/contasgerenciais" },
      { id: "fatura_cartao", label: "Fatura Cartão", path: "/faturas-cartao" },
-  
+      
+    { id: "mapeamentocontabil", label: "Mapeamento Contábil", path: "/mapeamento-contabil" },
+    { id: "contascontabeis", label: "Contas Contábeis", path: "/contascontabeis" }
 
- 
 
   ];
 
