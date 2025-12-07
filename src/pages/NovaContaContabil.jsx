@@ -1,0 +1,188 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { buildWebhookUrl } from "../config/globals";
+
+export default function NovaContaContabil() {
+  const navigate = useNavigate();
+  const empresa_id = localStorage.getItem("empresa_id") || "1";
+
+  const [form, setForm] = useState({
+    codigo: "",
+    nome: "",
+    tipo: "",
+    natureza: "",
+    nivel: "",
+  });
+
+  async function salvar() {
+    try {
+      const url = buildWebhookUrl("novacontacontabil", {
+        empresa_id,
+        codigo: form.codigo,
+        nome: form.nome,
+        tipo: form.tipo,
+        natureza: form.natureza,
+        nivel: form.nivel,
+      });
+
+      await fetch(url, { method: "POST" });
+
+      alert("Conta cadastrada com sucesso!");
+      navigate("/contascontabeis");
+    } catch (e) {
+      console.log("ERRO SALVAR:", e);
+      alert("Erro ao salvar a conta!");
+    }
+  }
+
+  return (
+    <div
+      style={{
+        margin: "0 auto",
+        marginTop: 40,
+        width: "450px",
+        background: "#003ba2",
+        padding: 20,
+        borderRadius: 12,
+        color: "white",
+      }}
+    >
+      <h2 style={{ textAlign: "center", marginBottom: 20 }}>
+        📘 Nova Conta Contábil
+      </h2>
+
+      <div
+        style={{
+          background: "white",
+          padding: 20,
+          borderRadius: 10,
+          color: "black",
+        }}
+      >
+        {/* Código */}
+        <label>Código</label>
+        <input
+          value={form.codigo}
+          onChange={(e) => setForm({ ...form, codigo: e.target.value })}
+          placeholder="1.1.1.01"
+          style={{
+            width: "100%",
+            padding: 8,
+            marginBottom: 12,
+            border: "1px solid #ccc",
+            borderRadius: 6,
+          }}
+        />
+
+        {/* Nome */}
+        <label>Nome</label>
+        <input
+          value={form.nome}
+          onChange={(e) => setForm({ ...form, nome: e.target.value })}
+          placeholder="Nome da conta"
+          style={{
+            width: "100%",
+            padding: 8,
+            marginBottom: 12,
+            border: "1px solid #ccc",
+            borderRadius: 6,
+          }}
+        />
+
+        {/* Tipo */}
+        <label>Tipo</label>
+        <select
+          value={form.tipo}
+          onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+          style={{
+            width: "100%",
+            padding: 8,
+            marginBottom: 12,
+            border: "1px solid #ccc",
+            borderRadius: 6,
+          }}
+        >
+          <option value="">Selecione...</option>
+          <option value="ATIVO">ATIVO</option>
+          <option value="PASSIVO">PASSIVO</option>
+          <option value="RECEITA">RECEITA</option>
+          <option value="DESPESA">DESPESA</option>
+          <option value="PL">PATRIMÔNIO LÍQUIDO</option>
+        </select>
+
+        {/* Natureza */}
+        <label>Natureza</label>
+        <select
+          value={form.natureza}
+          onChange={(e) => setForm({ ...form, natureza: e.target.value })}
+          style={{
+            width: "100%",
+            padding: 8,
+            marginBottom: 12,
+            border: "1px solid #ccc",
+            borderRadius: 6,
+          }}
+        >
+          <option value="">Selecione...</option>
+          <option value="D">D – Devedora</option>
+          <option value="C">C – Credora</option>
+        </select>
+
+        {/* Nível */}
+        <label>Nível</label>
+        <input
+          type="number"
+          value={form.nivel}
+          onChange={(e) => setForm({ ...form, nivel: e.target.value })}
+          placeholder="3"
+          style={{
+            width: "100%",
+            padding: 8,
+            marginBottom: 12,
+            border: "1px solid #ccc",
+            borderRadius: 6,
+          }}
+        />
+
+        {/* BOTÕES */}
+        <div
+          style={{
+            marginTop: 20,
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <button
+            onClick={salvar}
+            style={{
+              width: "48%",
+              background: "#003ba2",
+              color: "white",
+              padding: 10,
+              borderRadius: 6,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Salvar
+          </button>
+
+          <button
+            onClick={() => navigate("/contascontabeis")}
+            style={{
+              width: "48%",
+              background: "#b0b0b0",
+              color: "black",
+              padding: 10,
+              borderRadius: 6,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
