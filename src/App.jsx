@@ -44,6 +44,20 @@ import ConsultaTransacaoCartao from "./pages/ConsultaTransacaoCartao";
 import ContasGerenciais from "./pages/ContasGerenciais";
 import ContasGerenciaisNovo from "./pages/ContasGerenciaisNovo";
 import ContasGerenciaisEditar from "./pages/ContasGerenciaisEditar";
+import MapeamentoContabil from "./pages/MapeamentoContabil";
+
+import EditaMapeamento from "./pages/EditaMapeamento"; 
+import ContasContabeis from "./pages/ContasContabeis";
+import NovaContaContabil from "./pages/NovaContaContabil";
+import EditarContaContabil from "./pages/EditarContaContabil";
+import NovaModeloContabil from "./pages/NovaModeloContabil";
+
+ import Diario from "./pages/Diario";
+import NovoDiario from "./pages/NovoDiario";
+ 
+
+
+
 
 
 export default function App() {
@@ -95,6 +109,7 @@ export default function App() {
 <Route path="/contas-pagar" element={<ContasPagar />} /> 
 <Route path="/nova-conta-pagar" element={<NovaContaPagar />} />
 <Route path="/edit-conta-pagar/:id" element={<EditarContaPagar />} />
+<Route path="/contascontabeis" element={<ContasContabeis />} />
 {/* Contas a receber */}
 
 <Route path="/contas-receber" element={<ContasReceber />} /> 
@@ -108,7 +123,14 @@ export default function App() {
 <Route path="/contasgerenciais/novo" element={<ContasGerenciaisNovo />} />
 <Route path="/contasgerenciais/editar" element={<ContasGerenciaisEditar />} /> 
 <Route path="/faturas-cartao" element={<FaturasCartao />} />
+<Route path="/mapeamento-contabil" element={<MapeamentoContabil />} />
 
+ <Route path="/editar-mapeamento" element={<EditaMapeamento />} />
+ <Route path="/nova-conta-contabil" element={<NovaContaContabil />} />
+ <Route path="/editar-conta-contabil" element={<EditarContaContabil />} />
+ <Route path="/novo-modelo" element={<NovaModeloContabil />} />
+ <Route path="/diario" element={<Diario />} />
+  <Route path="/novo-diario" element={<NovoDiario />} />
 </Routes>
 
 

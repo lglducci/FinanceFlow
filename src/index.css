@@ -72,3 +72,31 @@ body {
 }
 
 
+.tabela-mapeamento {
+  font-size: 14px;       /* tamanho padrão */
+  font-weight: 700;      /* meio bold */
+}
+
+.tabela-mapeamento th {
+  font-size: 15px;
+  font-weight: bold;
+  background: #1b317f;
+  color: white;
+  padding: 6px;
+   text-align: left;
+}
+
+.tabela-mapeamento td {
+  padding: 10px;
+    text-align: left;
+
+}
+
+.tabela-mapeamento tr:nth-child(even) {
+  background: #ffffff;
+  padding: 10px;
+}
+
+.tabela-mapeamento tr:nth-child(odd) {
+  background: #d5defaff;
+}
