@@ -35,6 +35,34 @@ export default function ContasContabeis() {
       c.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
+
+
+
+ async function excluirConta(id) {
+  if (!window.confirm("Tem certeza que deseja excluir esta conta?")) return;
+
+  try {
+    const url = buildWebhookUrl("contascontabeis_excluir", {
+      empresa_id,
+      id
+    });
+
+    const resp = await fetch(url, { method: "POST" });
+
+    // (Opcional) Checar retorno
+    // const r = await resp.json();
+
+    // Atualiza lista
+    carregar();
+
+  } catch (e) {
+    console.log("ERRO AO EXCLUIR:", e);
+    alert("Erro ao excluir conta.");
+  }
+}
+
+
+
   return (
     <div
       style={{
@@ -157,7 +185,7 @@ export default function ContasContabeis() {
                     </span>
 
                     <span
-                      onClick={() => console.log("Excluir conta", c.id)}
+                      onClick={() => excluirConta(c.id)}
                       style={{
                         color: "#c62828",
                         cursor: "pointer",
@@ -167,6 +195,7 @@ export default function ContasContabeis() {
                     >
                       Excluir
                     </span>
+
                   </td>
 
               </tr>

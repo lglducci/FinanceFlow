@@ -57,7 +57,7 @@ export default function EditarContaContabil() {
 
       await fetch(url, { method: "POST" });
       alert("Conta atualizada!");
-      navigate("/contas-contabeis");
+      navigate("/contascontabeis");
     } catch (e) {
       alert("Erro ao salvar!");
     }
@@ -141,20 +141,37 @@ export default function EditarContaContabil() {
             style={{
               marginTop: 25,
               display: "flex",
-              justifyContent: "center",
+              justifyContent: "space-between",
               gap: 15,
             }}
           >
-            <button style={btnSalvar} onClick={salvar}>
+          
+            <button   onClick={salvar} style={{
+              width: "48%",
+              background: "#003ba2",
+              color: "white",
+              padding: 10,
+              borderRadius: 6,
+              border: "none",
+              cursor: "pointer",
+            }}>
               Salvar
             </button>
 
             <button
-              style={btnCancelar}
-              onClick={() => navigate("/contas-contabeis")}
-            >
-              Cancelar
-            </button>
+            onClick={() => navigate("/contascontabeis")}
+            style={{
+              width: "48%",
+              background: "#b0b0b0",
+              color: "black",
+              padding: 10,
+              borderRadius: 6,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            Cancelar
+          </button>
           </div>
         </div>
       </div>

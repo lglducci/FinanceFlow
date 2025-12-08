@@ -185,10 +185,10 @@ export default function EditaMapeamento() {
         </tbody>
       </table>
          <div style={{ display: "flex", gap: 20, marginTop: 20 }}>
-  <button
+  <button 
     style={{
       padding: "10px 20px",
-      background: "#1b5e20",
+       background: "#003ba2",
       color: "white",
       border: "none",
       borderRadius: 8,
@@ -208,6 +208,7 @@ export default function EditaMapeamento() {
         });
 
         alert("Mapeamento salvo!");
+        navigate("/mapeamento-contabil");  // ⭐ AQUI VOLTA PRA TELA
       } catch (e) {
         alert("Erro ao salvar!");
       }
@@ -219,7 +220,7 @@ export default function EditaMapeamento() {
   <button
     style={{
       padding: "10px 20px",
-      background: "#b71c1c",
+      background: "#6b6b6b71",
       color: "white",
       border: "none",
       borderRadius: 8,
@@ -230,7 +231,7 @@ export default function EditaMapeamento() {
   >
     Cancelar
   </button>
-</div>
+</div> 
 
     </div>
   );
