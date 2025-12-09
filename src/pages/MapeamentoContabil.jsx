@@ -97,12 +97,7 @@ export default function MapeamentoContabil() {
 
 
 
-
-
-
-
-
-
+ 
 
 
  function editar(m) {
@@ -207,7 +202,7 @@ export default function MapeamentoContabil() {
 
         {/* TABELA DE LINHAS DENTRO DO BLOCO AZUL */}
         {linhas.length > 0 && (
-          <table  className="tabela tabela-mapeamento">
+          <table  className="tabela tabela-mapeamento" style={{ width: "60%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
                 <th>Conta ID</th>
@@ -245,7 +240,7 @@ export default function MapeamentoContabil() {
       {/* ============================================= */}
       <h2>Mapeamento Contábil</h2>
 
-      <table  className="tabela tabela-mapeamento">
+      <table  className="tabela tabela-mapeamento" style={{ width: "80%", borderCollapse: "collapse" }} >
         <thead>
           <tr>
             <th>ID</th>
@@ -284,6 +279,7 @@ export default function MapeamentoContabil() {
               >
                 Editar
               </button> 
+              
                 <button
                  className="tabela tabela-mapeamento"
                   onClick={() => visualizar(m.id)}

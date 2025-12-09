@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
-export default function NovoDiario() {
+export default function EditarDiario() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const empresa_id = localStorage.getItem("empresa_id") || "1";
 
+  const id = state?.id;
+
   const [form, setForm] = useState({
-    data_mov: new Date().toISOString().split("T")[0],
+    data_mov: "",
     modelo_codigo: "",
     historico: "",
     doc_ref: "",
@@ -26,18 +29,22 @@ export default function NovoDiario() {
 
 
   function capitalizeWords(str) {
-  return str
-    .toLowerCase()
-    .replace(/_/g, " ") // troca underline por espaço
-    .replace(/\b\w/g, (l) => l.toUpperCase()); // primeira letra de cada palavra maiúscula
-}
+    return str
+      .toLowerCase()
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (l) => l.toUpperCase());
+  }
 
+  function maskValor(v) {
+    v = v.replace(/\D/g, "");
+    v = (v / 100).toFixed(2) + "";
+    v = v.replace(".", ",");
+    return v;
+  }
 
-
-
-  // =============================
-  // CARREGA LISTA DE TOKENS
-  // =============================
+  // ===========================================================
+  // LOAD MODELOS
+  // ===========================================================
   async function carregarModelos() {
     const url = buildWebhookUrl("modelos", { empresa_id });
     const r = await fetch(url);
@@ -45,19 +52,19 @@ export default function NovoDiario() {
     setModelos(j);
   }
 
-  // =============================
-  // CARREGA PARCEIROS
-  // =============================
+  // ===========================================================
+  // LOAD PESSOAS
+  // ===========================================================
   async function carregarPessoas() {
-    const url = buildWebhookUrl("fornecedorcliente", { empresa_id , tipo: "fornecedor"});
+    const url = buildWebhookUrl("fornecedorcliente", { empresa_id, tipo: "fornecedor" });
     const r = await fetch(url);
     const j = await r.json();
     setPessoas(j);
   }
 
-  // =============================
-  // SELECIONA MODELO / MOSTRA LINHAS
-  // =============================
+  // ===========================================================
+  // CARREGAR LINHAS DO MODELO
+  // ===========================================================
   async function selecionarModelo(token) {
     setForm((f) => ({ ...f, modelo_codigo: token }));
 
@@ -76,25 +83,51 @@ export default function NovoDiario() {
     setLinhas(dados);
   }
 
-  // =============================
-  // MÁSCARAS DE VALOR
-  // =============================
-  function maskValor(v) {
-    v = v.replace(/\D/g, "");
-    v = (v / 100).toFixed(2) + "";
-    v = v.replace(".", ",");
-    return v;
+  // ===========================================================
+  // RETRIEVE — CARREGA OS DADOS DO DIÁRIO
+  // ===========================================================
+ async function carregarDiario() {
+  const url = buildWebhookUrl("diario_retrieve", { empresa_id, id });
+
+  const r = await fetch(url);
+  const djson = await r.json();
+
+  // SE vier array → pega o primeiro item
+  const d = Array.isArray(djson) ? djson[0] : djson;
+
+  if (!d || !d.id) {
+    alert("Lançamento não encontrado!");
+    navigate("/diario");
+    return;
   }
 
-  // =============================
-  // SALVAR
-  // =============================
+  setForm({
+    data_mov: d.data_mov?.split("T")[0] || "",
+    modelo_codigo: d.modelo_codigo || "",
+    historico: d.historico || "",
+    doc_ref: d.doc_ref || "",
+    parceiro_id: d.parceiro_id || "",
+    data_vencto: d.data_vencto?.split("T")[0] || "",
+    valor_total: String(d.valor_total).replace(".", ","),
+    valor_custo: String(d.valor_custo).replace(".", ","),
+    valor_imposto: String(d.valor_imposto).replace(".", ","),
+    desconto: String(d.desconto).replace(".", ","),
+  });
+
+  selecionarModelo(d.modelo_codigo);
+}
+
+
+  // ===========================================================
+  // SALVAR ALTERAÇÕES
+  // ===========================================================
   async function salvar() {
     try {
-      const url = buildWebhookUrl("inserediario");
+      const url = buildWebhookUrl("salvar_diario");
 
       const payload = {
         empresa_id,
+        id,
         ...form,
         valor_total: form.valor_total.replace(".", "").replace(",", "."),
         valor_custo: form.valor_custo.replace(".", "").replace(",", "."),
@@ -118,14 +151,12 @@ export default function NovoDiario() {
         return;
       }
 
-      const item = Array.isArray(json) ? json[0] : json;
-
-      if (item?.ok === false) {
-        alert(item.message || "Erro ao salvar.");
+      if (json?.ok === false) {
+        alert(json.message || "Erro ao salvar alterações.");
         return;
       }
 
-      alert("Lançamento salvo!");
+      alert("Alterações salvas!");
       navigate("/diario");
 
     } catch (e) {
@@ -134,27 +165,30 @@ export default function NovoDiario() {
     }
   }
 
+  // ===========================================================
+  // LOAD INICIAL
+  // ===========================================================
   useEffect(() => {
     carregarModelos();
     carregarPessoas();
+    carregarDiario();
   }, []);
 
-  // -----------------------------------------------------
-  //  TELA
-  // -----------------------------------------------------
-
+  // ===========================================================
+  // TELA
+  // ===========================================================
   return (
     <div style={{ padding: 20, display: "flex", justifyContent: "center" }}>
       <div style={{ width: 600, background: "#003ba2", padding: 20, borderRadius: 12 }}>
-        
+
         <div style={{ textAlign: "center", color: "white", marginBottom: 15 }}>
-          <h2>📝 Novo Lançamento  Diário</h2>
+          <h2>📝 Editar Lançamento do Diário</h2>
         </div>
 
         <div style={{ background: "white", padding: 20, borderRadius: 10 }}>
 
           {/* ================= TOKEN ================= */}
-          <label className="font-bold text-[#1e40af]" >Token do Modelo</label>
+          <label className="font-bold text-[#1e40af]"> Token do Modelo</label>
           <input
             list="listaTokens"
             value={form.modelo_codigo}
@@ -180,14 +214,14 @@ export default function NovoDiario() {
                   borderRadius: 6,
                 }}
               >
-                 
-                <b className="font-bold text-[#003ba2]"> Nome:</b > {modeloSelecionado.nome}
+              
+                <b  className="font-bold text-[#003ba2]" >Nome:</b> {modeloSelecionado.nome}
               </div>
 
-              <table   className="tabela tabela-mapeamento" style={{ width: "80%", borderCollapse: "collapse" }} >
+              <table className="tabela tabela-mapeamento" style={{ width: "80%", borderCollapse: "collapse" }} >
                 <thead>
-                  <tr style={{ background: "#09090aff" }}>
-                    <th className="font-bold text-[#1e40af text-align: left]">ID</th>
+                  <tr   style={{ background: "#09090aff" }}>
+                    <th  className="font-bold text-[#1e40af text-align: left]">ID</th>
                     <th className="font-bold text-[#1e40af text-align: left]">Conta</th>
                     <th className="font-bold text-[#1e40af text-align: left]">Nome</th>
                     <th className="font-bold text-[#1e40af text-align: left]">Tipo</th>
@@ -211,8 +245,8 @@ export default function NovoDiario() {
             </div>
           )}
 
-          {/* ================= CAMPOS DIÁRIO ================= */}
-          <label  className="font-bold text-[#1e40af]">Histórico</label>
+          {/* ================= CAMPOS ================= */}
+          <label className="font-bold text-[#1e40af]">Histórico</label>
           <input
             value={form.historico}
             className="input-premium"
@@ -220,7 +254,7 @@ export default function NovoDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label  className="font-bold text-[#1e40af]">Data Movimento</label>
+          <label className="font-bold text-[#1e40af]">Data Movimento</label>
           <input
             type="date"
             value={form.data_mov}
@@ -229,7 +263,7 @@ export default function NovoDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label  className="font-bold text-[#1e40af]">Documento</label>
+          <label className="font-bold text-[#1e40af]">Documento</label>
           <input
             value={form.doc_ref}
             className="input-premium"
@@ -237,7 +271,7 @@ export default function NovoDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label  className="font-bold text-[#1e40af]"> Parceiro</label>
+          <label className="font-bold text-[#1e40af]">Parceiro</label>
           <select
             value={form.parceiro_id}
             className="input-premium"
@@ -252,7 +286,7 @@ export default function NovoDiario() {
             ))}
           </select>
 
-          <label  className="font-bold text-[#1e40af]" > Data Vencimento</label>
+          <label className="font-bold text-[#1e40af]">Data Vencimento</label>
           <input
             type="date"
             value={form.data_vencto}
@@ -261,30 +295,29 @@ export default function NovoDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-           {/* VALORES */}
-                {["valor_total", "valor_custo", "valor_imposto"].map((campo) => (
-                  <div key={campo}>
-                    <label className="font-bold text-[#1e40af]">
-                      {capitalizeWords(campo)}
-                    </label>
+          {/* VALORES */}
+          {["valor_total", "valor_custo", "valor_imposto"].map((campo) => (
+            <div key={campo}>
+              <label className="font-bold text-[#1e40af]">
+                {capitalizeWords(campo)}
+              </label>
 
-                    <input
-                      value={form[campo]}
-                      className="input-premium"
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, [campo]: maskValor(e.target.value) }))
-                      }
-                      style={{ width: "100%", padding: 10, marginBottom: 15 }}
-                    />
-                  </div>
-                ))}
-
+              <input
+                value={form[campo]}
+                className="input-premium"
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, [campo]: maskValor(e.target.value) }))
+                }
+                style={{ width: "100%", padding: 10, marginBottom: 15 }}
+              />
+            </div>
+          ))}
 
           {/* BOTÕES */}
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <button
               onClick={salvar}
-                style={{
+                 style={{
               width: "48%",
               background: "#003ba2",
               color: "white",
