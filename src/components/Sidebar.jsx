@@ -23,7 +23,8 @@ export default function Sidebar() {
      { id: "fatura_cartao", label: "Fatura Cartão", path: "/faturas-cartao" },
      { id: "contascontabeis", label: "Contas Contábeis", path: "/contascontabeis" },
     { id: "mapeamentocontabil", label: "Mapeamento Contábil", path: "/mapeamento-contabil" },
-    { id: "diario", label: "Diário Contábil", path: "/diario" }
+    { id: "diario", label: "Diário Contábil", path: "/diario" },
+    { id: "importar-diario", label: "Importação Diario", path: "/importar-diario" }
 
 
 
