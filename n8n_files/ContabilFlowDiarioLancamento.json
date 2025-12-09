@@ -1,0 +1,1343 @@
+{
+  "name": "ContabilFlowDiarioLancamento",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        -48
+      ],
+      "id": "52688fd2-d7a7-48f7-9b30-ffb0130caece",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "79d8e8b2-2754-4ad5-ac0e-787b2cd6bbe3",
+              "name": "buscar_nome",
+              "value": "={{ $json.query.busca}}",
+              "type": "string"
+            },
+            {
+              "id": "56d32e07-028f-443d-a949-6b4ecbaed16e",
+              "name": "data_ini",
+              "value": "={{ $json.query.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "39f892b8-5228-43e3-ad65-527dc1f25443",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "28aeb5f3-c70b-4b7c-9125-fa6a628eae2d",
+              "name": "codigo",
+              "value": "={{ $json.query.modelo_codigo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        -48
+      ],
+      "id": "6173274c-b3b6-4616-b747-c21c2cc2654c",
+      "name": "EditModeloslinha3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from    contab.ff_diario_listar(\n   {{ $json.empresa_id }},\n   '{{ $json.data_ini}}',\n    '{{ $json.data_fim}}',\n   '{{ $json.codigo}}',\n    '{{ $json.buscar_nome }}'\n)\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        336,
+        -48
+      ],
+      "id": "c9007714-a7a8-44fd-8796-f28b6fed8cbf",
+      "name": "ff_diario_listar",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Diário",
+        "height": 876,
+        "width": 1280,
+        "color": 2
+      },
+      "id": "9a3988d1-963a-404c-9ae3-3d74e28b3832",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "path": "consulta_diario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        -48
+      ],
+      "id": "8caa682e-b69f-45a2-82ad-e61d6240c891",
+      "name": "ConsultaDiario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        528,
+        160
+      ],
+      "id": "4e624e44-a4ee-4d27-81ce-b7a4e996feed",
+      "name": "Respond to Webhook8"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "contab",
+          "mode": "list",
+          "cachedResultName": "contab"
+        },
+        "table": {
+          "__rl": true,
+          "value": "diario",
+          "mode": "list",
+          "cachedResultName": "diario"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "empresa_id": "={{ $json.empresa_id }}",
+            "parceiro_id": "={{ $json.parceiro_id}}",
+            "valor_total": "={{ $json.valor_total}}",
+            "data_mov": "={{ $json.data_mov }}",
+            "modelo_codigo": "={{ $json.modelo_codigo }}",
+            "historico": "={{ $json.historico}}",
+            "doc_ref": "={{ $json['doc_ref '] }}",
+            "data_vencto": "={{ $json.parceiro_id}}",
+            "valor_custo": "={{ $json.valor_custo}}",
+            "valor_imposto": "={{ $json.valor_imposto}}",
+            "desconto": 0
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "empresa_id",
+              "displayName": "empresa_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data_mov",
+              "displayName": "data_mov",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modelo_codigo",
+              "displayName": "modelo_codigo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "historico",
+              "displayName": "historico",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc_ref",
+              "displayName": "doc_ref",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "parceiro_id",
+              "displayName": "parceiro_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data_vencto",
+              "displayName": "data_vencto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "valor_total",
+              "displayName": "valor_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "valor_custo",
+              "displayName": "valor_custo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "valor_imposto",
+              "displayName": "valor_imposto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "desconto",
+              "displayName": "desconto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "outros",
+              "displayName": "outros",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        304,
+        160
+      ],
+      "id": "304d5cd1-c647-42e8-9e4f-9673325db403",
+      "name": "InsertConta2",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inserediario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        160
+      ],
+      "id": "51eb068d-8ada-441a-a604-41db24cd6e0e",
+      "name": "InsereDiario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "data_mov",
+              "value": "={{ $json.body.data_mov}}",
+              "type": "string"
+            },
+            {
+              "id": "6b48dd9f-af2a-414f-80e7-c21216ab10a8",
+              "name": "modelo_codigo",
+              "value": "={{$json.body.modelo_codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "021aa349-a10b-4a79-a77e-e07ab6e57f0c",
+              "name": "historico",
+              "value": "={{ $json.body.historico}}",
+              "type": "string"
+            },
+            {
+              "id": "895c8bc9-5cda-4d95-95f3-64ba84801751",
+              "name": "doc_ref ",
+              "value": "={{$json.body.doc_ref}}",
+              "type": "string"
+            },
+            {
+              "id": "d3ca6286-f7ad-4dc0-ad96-005a511cd64d",
+              "name": "parceiro_id",
+              "value": "={{$json.body.parceiro_id}}",
+              "type": "string"
+            },
+            {
+              "id": "40e2e8b7-100b-4de8-9e2f-696536529281",
+              "name": "data_vencto",
+              "value": "={{$json.body.data_vencto}}",
+              "type": "string"
+            },
+            {
+              "id": "f1bf555c-26e2-41ef-9250-64f6febe9baa",
+              "name": "valor_total",
+              "value": "={{$json.body.valor_total}}",
+              "type": "string"
+            },
+            {
+              "id": "5590aafc-201d-442a-be2e-b907b8921e4a",
+              "name": "valor_custo",
+              "value": "={{$json.body.valor_custo}}",
+              "type": "string"
+            },
+            {
+              "id": "e81727bc-02d6-4554-9523-95a9eae8e4f2",
+              "name": "valor_imposto",
+              "value": "={{$json.body.valor_imposto}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        160
+      ],
+      "id": "1bc57b87-1fbf-4ce4-8076-f2e1cf2ab883",
+      "name": "EditInsertDiario"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        544,
+        368
+      ],
+      "id": "5a5c0586-fdd3-4b9c-98d4-aa75ae4f76ee",
+      "name": "Respond to Webhook9"
+    },
+    {
+      "parameters": {
+        "path": "diario_retrieve",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        368
+      ],
+      "id": "01e00e09-b506-417e-86f6-5be1e80fd973",
+      "name": "EditaDiario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "61d62aae-91f3-4dbb-8921-edd17e44a0b7",
+              "name": "id",
+              "value": "={{ $json.query.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        112,
+        368
+      ],
+      "id": "38ddc0b9-1fca-4575-8280-83ae11f0d669",
+      "name": "EditDiarioRetrieve"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from contab.diario\n   where empresa_id =  {{ $json.empresa_id }} \n      and id =  {{ $json.id }}\n\n\n \n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        320,
+        368
+      ],
+      "id": "c085fcef-e915-4771-bebd-5c2dc648acec",
+      "name": "DiarioRetrieve",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        528,
+        576
+      ],
+      "id": "bb2fa802-3dec-44fc-87b7-21e066eaf8f3",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "value": "contab",
+          "mode": "list",
+          "cachedResultName": "contab"
+        },
+        "table": {
+          "__rl": true,
+          "value": "diario",
+          "mode": "list",
+          "cachedResultName": "diario"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "empresa_id": "={{ $json.empresa_id }}",
+            "id": "={{ $json.id }}",
+            "data_mov": "={{ $json.data_mov }}",
+            "modelo_codigo": "={{ $json.modelo_codigo }}",
+            "historico": "={{ $json.historico }}",
+            "doc_ref": "={{ $json['doc_ref '] }}",
+            "parceiro_id": "={{ $json.parceiro_id }}",
+            "data_vencto": "={{ $json.data_vencto }}",
+            "valor_total": "={{ $json.valor_total }}",
+            "valor_custo": "={{ $json.valor_custo }}",
+            "valor_imposto": "={{ $json.valor_imposto }}"
+          },
+          "matchingColumns": [
+            "id",
+            "empresa_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "empresa_id",
+              "displayName": "empresa_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data_mov",
+              "displayName": "data_mov",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modelo_codigo",
+              "displayName": "modelo_codigo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "historico",
+              "displayName": "historico",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc_ref",
+              "displayName": "doc_ref",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "parceiro_id",
+              "displayName": "parceiro_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data_vencto",
+              "displayName": "data_vencto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor_total",
+              "displayName": "valor_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor_custo",
+              "displayName": "valor_custo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor_imposto",
+              "displayName": "valor_imposto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "desconto",
+              "displayName": "desconto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "outros",
+              "displayName": "outros",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        304,
+        576
+      ],
+      "id": "d7274965-5d54-41a7-a5ed-c2c2d4ed1e39",
+      "name": "InsertConta3",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "data_mov",
+              "value": "={{ $json.body.data_mov}}",
+              "type": "string"
+            },
+            {
+              "id": "6b48dd9f-af2a-414f-80e7-c21216ab10a8",
+              "name": "modelo_codigo",
+              "value": "={{$json.body.modelo_codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "021aa349-a10b-4a79-a77e-e07ab6e57f0c",
+              "name": "historico",
+              "value": "={{ $json.body.historico}}",
+              "type": "string"
+            },
+            {
+              "id": "895c8bc9-5cda-4d95-95f3-64ba84801751",
+              "name": "doc_ref ",
+              "value": "={{$json.body.doc_ref}}",
+              "type": "string"
+            },
+            {
+              "id": "d3ca6286-f7ad-4dc0-ad96-005a511cd64d",
+              "name": "parceiro_id",
+              "value": "={{$json.body.parceiro_id}}",
+              "type": "string"
+            },
+            {
+              "id": "40e2e8b7-100b-4de8-9e2f-696536529281",
+              "name": "data_vencto",
+              "value": "={{$json.body.data_vencto}}",
+              "type": "string"
+            },
+            {
+              "id": "f1bf555c-26e2-41ef-9250-64f6febe9baa",
+              "name": "valor_total",
+              "value": "={{$json.body.valor_total}}",
+              "type": "string"
+            },
+            {
+              "id": "5590aafc-201d-442a-be2e-b907b8921e4a",
+              "name": "valor_custo",
+              "value": "={{$json.body.valor_custo}}",
+              "type": "string"
+            },
+            {
+              "id": "e81727bc-02d6-4554-9523-95a9eae8e4f2",
+              "name": "valor_imposto",
+              "value": "={{$json.body.valor_imposto}}",
+              "type": "string"
+            },
+            {
+              "id": "fbb44cbc-10ca-46a1-be7f-12f06cb0b857",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        576
+      ],
+      "id": "d2a21003-f61a-4bce-a022-7bf1a3ebda3a",
+      "name": "EditInsertDiario1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "salvar_diario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        576
+      ],
+      "id": "df7fb2f1-db2d-4309-8fee-824b3f307ce3",
+      "name": "SalvarDiario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -672,
+        320
+      ],
+      "id": "918eec6a-f321-4357-85c2-78e955534f29",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "contab",
+          "mode": "list",
+          "cachedResultName": "contab"
+        },
+        "table": {
+          "__rl": true,
+          "value": "diario",
+          "mode": "list",
+          "cachedResultName": "diario"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "empresa_id": "={{ $json.empresa_id }}",
+            "data_mov": "={{ $json.data_mov }}",
+            "modelo_codigo": "={{ $json.modelo_codigo }}",
+            "historico": "={{ $json.historico }}",
+            "doc_ref": "={{ $json.doc_ref}}",
+            "parceiro_id": "={{ $json.parceiro_id }}",
+            "data_vencto": "={{ $json.data_vencto }}",
+            "valor_total": "={{ $json.valor_total }}",
+            "valor_custo": "={{ $json.valor_custo }}",
+            "valor_imposto": "={{ $json.valor_imposto }}"
+          },
+          "matchingColumns": [
+            "id",
+            "empresa_id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "empresa_id",
+              "displayName": "empresa_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "data_mov",
+              "displayName": "data_mov",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modelo_codigo",
+              "displayName": "modelo_codigo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "historico",
+              "displayName": "historico",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc_ref",
+              "displayName": "doc_ref",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "parceiro_id",
+              "displayName": "parceiro_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data_vencto",
+              "displayName": "data_vencto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor_total",
+              "displayName": "valor_total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor_custo",
+              "displayName": "valor_custo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor_imposto",
+              "displayName": "valor_imposto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "desconto",
+              "displayName": "desconto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "outros",
+              "displayName": "outros",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -864,
+        320
+      ],
+      "id": "004206bb-91b9-42c7-8fc3-d590c0a48cc3",
+      "name": "InsertConta",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "data_mov",
+              "value": "={{ $json.body.data_mov}}",
+              "type": "string"
+            },
+            {
+              "id": "6b48dd9f-af2a-414f-80e7-c21216ab10a8",
+              "name": "modelo_codigo",
+              "value": "={{$json.body.modelo_codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "021aa349-a10b-4a79-a77e-e07ab6e57f0c",
+              "name": "historico",
+              "value": "={{ $json.body.historico}}",
+              "type": "string"
+            },
+            {
+              "id": "895c8bc9-5cda-4d95-95f3-64ba84801751",
+              "name": "doc_ref ",
+              "value": "={{$json.body.doc_ref}}",
+              "type": "string"
+            },
+            {
+              "id": "d3ca6286-f7ad-4dc0-ad96-005a511cd64d",
+              "name": "parceiro_id",
+              "value": "={{$json.body.parceiro_id}}",
+              "type": "string"
+            },
+            {
+              "id": "40e2e8b7-100b-4de8-9e2f-696536529281",
+              "name": "data_vencto",
+              "value": "={{$json.body.data_vencto}}",
+              "type": "string"
+            },
+            {
+              "id": "f1bf555c-26e2-41ef-9250-64f6febe9baa",
+              "name": "valor_total",
+              "value": "={{$json.body.valor_total}}",
+              "type": "string"
+            },
+            {
+              "id": "5590aafc-201d-442a-be2e-b907b8921e4a",
+              "name": "valor_custo",
+              "value": "={{$json.body.valor_custo}}",
+              "type": "string"
+            },
+            {
+              "id": "e81727bc-02d6-4554-9523-95a9eae8e4f2",
+              "name": "valor_imposto",
+              "value": "={{$json.body.valor_imposto}}",
+              "type": "string"
+            },
+            {
+              "id": "fbb44cbc-10ca-46a1-be7f-12f06cb0b857",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1168,
+        -96
+      ],
+      "id": "10058848-8710-4f65-9547-f73b48754ca4",
+      "name": "EditInsertDiario2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "importar_diario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1584,
+        320
+      ],
+      "id": "3aacfb4d-1d0a-4325-8dc6-348cc6092f19",
+      "name": "ImportarDiario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "jsCode": " // =======================================================\n// 1) ENTRADA DO ARQUIVO\n// =======================================================\nconst incoming = items[0];\nconst dataField = \"file\"; // nome do binário de entrada\n\nif (!incoming.binary || !incoming.binary[dataField]) {\n  throw new Error(\"Nenhum arquivo recebido no campo 'file'.\");\n}\n\nconst binary = incoming.binary[dataField];\n\n// Buffer do arquivo\nconst buffer = Buffer.from(binary.data, \"base64\");\n\n// Converte para texto (CSV)\nconst text = buffer.toString(\"utf8\");\n\n\n// =======================================================\n// 2) PARSER CSV UNIVERSAL (, ; | Excel Brasileiro)\n// =======================================================\nfunction parseCSV(text) {\n  const linhas = text\n    .split(/\\r?\\n/)\n    .map(l => l.trim())\n    .filter(l => l.length > 0);\n\n  if (linhas.length === 0) return [];\n\n  const primeiraLinha = linhas[0];\n\n  // Detecta separador automático\n  const separador =\n    primeiraLinha.includes(\";\") ? \";\" :\n    primeiraLinha.includes(\",\") ? \",\" :\n    \";\"; // fallback Excel BR\n\n  const header = primeiraLinha.split(separador).map(h => h.trim());\n\n  const registros = linhas.slice(1).map(line => {\n    const cols = line.split(separador);\n    const obj = {};\n\n    header.forEach((h, i) => {\n      obj[h] = (cols[i] || \"\").trim();\n    });\n\n    return obj;\n  });\n\n  return registros;\n}\n\n\n// =======================================================\n// 3) GERAR JSON FINAL\n// =======================================================\nconst registros = parseCSV(text);\n\n// Retorno no formato do n8n\nreturn registros.map(r => ({ json: r }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1376,
+        320
+      ],
+      "id": "0a30e9eb-b67f-48f9-aea1-2d33dd890c1b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": " const incoming = items[0];\n\n// 1) Nome do campo binário\nconst dataField = \"file\";\n\n// 2) Pega o binário\nconst binary = incoming.binary[dataField];\nif (!binary) {\n  throw new Error(\"Nenhum arquivo recebido no campo 'file'.\");\n}\n\n// 3) Converte binário → Buffer\nconst buffer = Buffer.from(binary.data, 'base64');\n\n// 4) Se for CSV\nif (binary.mimeType.includes(\"csv\")) {\n  const text = buffer.toString(\"utf8\");\n\n  const rows = text\n    .split(\"\\n\")\n    .map(r => r.trim())\n    .filter(r => r.length > 0);\n\n  const header = rows[0].split(\",\").map(h => h.trim());\n\n  const json = rows.slice(1).map(line => {\n    const cols = line.split(\",\");\n    const obj = {};\n    header.forEach((h, i) => (obj[h] = cols[i] || \"\"));\n    return obj;\n  });\n\n  return json.map(j => ({ json: j }));\n}\n\n// 5) Se for XLSX\nif (binary.mimeType.includes(\"sheet\") || binary.fileExtension === \"xlsx\") {\n  const xlsx = require(\"xlsx\"); // n8n já tem!\n\n  const workbook = xlsx.read(buffer, { type: \"buffer\" });\n\n  // pega a primeira aba automaticamente\n  const sheet = workbook.Sheets[workbook.SheetNames[0]];\n\n  const json = xlsx.utils.sheet_to_json(sheet, { defval: \"\" });\n\n  return json.map(j => ({ json: j }));\n}\n\nthrow new Error(\"Tipo de arquivo não suportado.\");\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        64
+      ],
+      "id": "a6c11ff6-aa7d-43f5-b876-b35d437468d3",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =======================================================\n// FUNÇÃO: converte \"DD/MM/AAAA\" → \"AAAA-MM-DD\"\n// =======================================================\nfunction brToIso(dateStr) {\n  if (!dateStr) return null;\n\n  // Se já estiver no formato ISO, não mexe\n  if (dateStr.includes(\"-\")) return dateStr;\n\n  const [dia, mes, ano] = dateStr.split(\"/\");\n  return `${ano}-${mes.padStart(2, \"0\")}-${dia.padStart(2, \"0\")}`;\n}\n\n\n// =======================================================\n// PROCESSA O CSV PARSEADO → AJUSTA DATAS\n// =======================================================\nreturn items.map(item => {\n  const j = item.json;\n\n  return {\n    json: {\n      ...j,\n      data_mov: brToIso(j.data_mov),\n      data_vencto: brToIso(j.data_vencto)\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1120,
+        320
+      ],
+      "id": "8c26f7de-5f41-488f-9fe7-f57558ab2c1c",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "EditModeloslinha3": {
+      "main": [
+        [
+          {
+            "node": "ff_diario_listar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_diario_listar": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultaDiario": {
+      "main": [
+        [
+          {
+            "node": "EditModeloslinha3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InsertConta2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InsereDiario": {
+      "main": [
+        [
+          {
+            "node": "EditInsertDiario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditInsertDiario": {
+      "main": [
+        [
+          {
+            "node": "InsertConta2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaDiario": {
+      "main": [
+        [
+          {
+            "node": "EditDiarioRetrieve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditDiarioRetrieve": {
+      "main": [
+        [
+          {
+            "node": "DiarioRetrieve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DiarioRetrieve": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InsertConta3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditInsertDiario1": {
+      "main": [
+        [
+          {
+            "node": "InsertConta3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvarDiario": {
+      "main": [
+        [
+          {
+            "node": "EditInsertDiario1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InsertConta": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditInsertDiario2": {
+      "main": [
+        []
+      ]
+    },
+    "ImportarDiario": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "InsertConta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d28bfc8-c5fc-48bb-9328-2358663fef0d",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "2Uvs3h6H44YFOXu0",
+  "tags": []
+}
