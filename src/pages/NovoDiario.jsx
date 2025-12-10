@@ -156,7 +156,7 @@ export default function NovoDiario() {
           {/* ================= TOKEN ================= */}
           <label className="font-bold text-[#1e40af]" >Token do Modelo</label>
           <input
-            list="listaTokens"
+            list="listaTokens" 
             value={form.modelo_codigo}
             className="input-premium"
             onChange={(e) => selecionarModelo(e.target.value)}

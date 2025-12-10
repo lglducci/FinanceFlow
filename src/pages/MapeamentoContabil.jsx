@@ -261,8 +261,9 @@ export default function MapeamentoContabil() {
               <td>{m.id}</td>
               <td>{m.codigo}</td>
               <td>{m.nome}</td>
+             
 
-              <td style={{ display: "flex", gap: 12 }}>
+              <td style={{ display: "flex", gap: "28px"}}>
                <button
                 onClick={() =>
                   navigate("/editar-mapeamento", {
@@ -283,7 +284,7 @@ export default function MapeamentoContabil() {
                 <button
                  className="tabela tabela-mapeamento"
                   onClick={() => visualizar(m.id)}
-                  style={{ color: "#14953bff" }}
+                  style={{ color: "#14953bff" , gap: "32px" }}
                 >
                   Visualizar
                 </button>
@@ -291,7 +292,7 @@ export default function MapeamentoContabil() {
                 <button
                  className="tabela tabela-mapeamento"
                   onClick={() => Excluir(m.id)}
-                  style={{ color: "#c02525ff" }}
+                  style={{ color: "#c02525ff", gap: "32px" }}
                 >
                   Excluir
                 </button>

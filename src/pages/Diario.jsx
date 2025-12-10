@@ -209,7 +209,7 @@ export default function Diario() {
                 <td>{l.historico}</td>
                 <td>{l.doc_ref}</td>
                 <td>{Number(l.valor_total).toFixed(2)}</td>
-                <td>
+                <td style={{ display: "flex", gap: "28px" }} >
                   <button
                     onClick={() => 
                       navigate("/editar-diario", { state: { id: l.id } })
@@ -219,7 +219,10 @@ export default function Diario() {
                     Editar
                   </button>
 
-                  <button style={{ color: "red" }}>Excluir</button>
+                  <button style={{ color: "red" }}
+                  >Excluir
+                  </button>
+
                 </td>
               </tr>
             ))}
