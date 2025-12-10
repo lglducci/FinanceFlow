@@ -10,6 +10,7 @@ export default function EditaMapeamento() {
   const empresa_id = state?.empresa_id;
   const token = state?.token;
   const nome = state?.nome;
+    const tipo = state?.tipo;
 
   const [linhas, setLinhas] = useState([]);
   const [busca, setBusca] = useState(""); // texto digitado
@@ -87,13 +88,16 @@ export default function EditaMapeamento() {
   //  TELA
   // ================================
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 10,
+                  background: "#cdd5dfff",
+                    border: "2px solid #0c079fff",
+                }}>
       <h2>Editar Mapeamento</h2>
 
                     {/* CABEÇALHO DO MODELO */}
                  <div
                     style={{
-                        background: "#0909ceff",
+                        background: "#0a0a7aff",
                         padding: 15,
                         border: "2px solid #f7f1f5ff",
                         borderRadius: 8,
@@ -102,17 +106,27 @@ export default function EditaMapeamento() {
                     >
                     <h3  className="text-1xl font-bold mb-4 text-white" style={{ margin: 0 }}>
                        
-                        <b>Token: </b> {token}
+                        <b> Token: </b> {token}
                     </h3>
 
                     <h3 className="text-1xl font-bold mb-4 text-white" style={{ marginTop: 5 }}>
-                        <b>Nome:</b> {nome}
+                        <b> Nome:</b> {nome}
                     </h3>
+
+                    
+                    <h3 className="text-1xl font-bold mb-4 text-white" style={{ marginTop: 5 }}>
+                        <b className="text-1xl font-bold mb-4 text-white" >Tipo:</b> {tipo}
+                    </h3>
+
                     </div>
 
 
 
-      <table className="tabela tabela-mapeamento">
+      <table className="tabela tabela-mapeamento"   style={{
+            width: "90%",
+            borderCollapse: "collapse",
+            fontSize: 14,
+          }} >
         <thead>
           <tr>
             <th>Buscar Conta</th>

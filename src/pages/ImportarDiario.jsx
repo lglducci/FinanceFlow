@@ -1,15 +1,17 @@
  import { useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
- 
 
 export default function ImportarDiario() {
   const empresa_id = localStorage.getItem("empresa_id") || "1";
 
   const [arquivo, setArquivo] = useState(null);
   const [lotes, setLotes] = useState([]);
-  const [filtroOk, setFiltroOk] = useState("");
-  const [filtroErro, setFiltroErro] = useState("");
+  const [filtro, setFiltro] = useState("todos");
+  const [msg, setMsg] = useState("");
+  const [showHelp, setShowHelp] = useState(false); // 👈 NOVO
 
+  // ---------------------------------------
+  // ENVIO
   async function enviar() {
     if (!arquivo) {
       alert("Selecione um arquivo");
@@ -22,187 +24,360 @@ export default function ImportarDiario() {
 
     const url = buildWebhookUrl("importar_diario");
 
-    const r = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
+    const r = await fetch(url, { method: "POST", body: formData });
+    const data = await r.json();
 
-    const data = await r.json(); // AGORA VAI VIR JSON REAL
     setLotes(data);
+    setMsg("Importação concluída. Revise as linhas abaixo.");
   }
 
- 
+  // ---------------------------------------
+  // EXCLUIR LOTE
   async function excluirLote() {
-  try {
-    if (!window.confirm("Deseja realmente excluir o lote pendente?")) return;
-
-    const url = buildWebhookUrl("excluir_lote");
-
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id }),
-    });
-
-    const texto = await resp.text();
-    let json;
-
     try {
-      json = JSON.parse(texto);
-    } catch (e) {
-      console.error("JSON inválido:", texto);
-      alert("Erro inesperado no servidor.");
-      return;
+      if (!window.confirm("Deseja realmente excluir o lote pendente?")) return;
+
+      const resp = await fetch(buildWebhookUrl("excluir_lote"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa_id }),
+      });
+
+      const texto = await resp.text();
+      let json = null;
+
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      const item = Array.isArray(json) ? json[0] : json;
+
+      if (!resp.ok || item?.ok === false || texto.includes("ERROR")) {
+        alert("❌ Falha ao excluir lote:\n\n" + (item?.message || texto));
+        return;
+      }
+
+      alert(item?.message || "✔ Lote excluído com sucesso!");
+      setLotes([]);
+      setArquivo(null);
+      setFiltro("todos");
+      setMsg("Lote excluído com sucesso.");
+    } catch {
+      alert("❌ Erro de comunicação com o servidor.");
     }
-
-    const item = Array.isArray(json) ? json[0] : json;
-
-    if (item?.ok === false) {
-      alert(item.message || "Erro ao excluir lote.");
-      return;
-    }
-
-    alert(item?.message || "Lote excluído!");
-
-    // Atualiza a tabela de lotes se necessário
-    if (item?.lotes) setLotes(item.lotes);
-
-  } catch (e) {
-    console.error("ERRO AO EXCLUIR LOTE:", e);
-    alert("Erro de comunicação com o servidor.");
   }
-}
 
+  // ---------------------------------------
+  // CONFIRMAR LOTE
+  async function confirmarLote() {
+    try {
+      if (!window.confirm("Deseja realmente confirmar o lote?")) return;
 
- 
+      const resp = await fetch(buildWebhookUrl("confirmar_lote"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa_id }),
+      });
 
-  // ----------------------------------------------------------
-  // FILTROS
-  // ----------------------------------------------------------
+      const texto = await resp.text();
+      let json = null;
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      if (!resp.ok || json?.error || texto.includes("ERROR")) {
+        alert("❌ Falha ao consolidar lote:\n\n" + (json?.message || texto));
+        return;
+      }
+
+      alert("✔ Lote consolidado com sucesso!");
+      setLotes([]);
+      setArquivo(null);
+      setFiltro("todos");
+      setMsg("Lote consolidado com sucesso.");
+    } catch {
+      alert("❌ Erro de comunicação com o servidor.");
+    }
+  }
+
+  // ---------------------------------------
+  // FILTRO
   const itensFiltrados = lotes.filter((l) => {
-    if (filtroOk && l.status === "concluido" && l.lote_id !== filtroOk)
-      return false;
-
-    if (filtroErro && l.status === "erro" && l.lote_id !== filtroErro)
-      return false;
-
+    if (filtro === "ok" && l.status !== "ok") return false;
+    if (filtro === "erro" && l.status !== "erro") return false;
     return true;
   });
 
-  return (
-    <div style={{ padding: 20 }}>
+  const totalLinhas = lotes.length;
+  const totalOk = lotes.filter((x) => x.status === "ok").length;
+  const totalErro = lotes.filter((x) => x.status === "erro").length;
 
-      <h2 style={{ marginBottom: 20 }}>📥 Importação Diário</h2>
+  const somaOk = lotes
+    .filter((x) => x.status === "ok")
+    .reduce((s, x) => s + Number(x.valor_total || 0), 0);
 
+  const somaErro = lotes
+    .filter((x) => x.status === "erro")
+    .reduce((s, x) => s + Number(x.valor_total || 0), 0);
+
+  const estilosBtn = {
+    padding: "10px 16px",
+    borderRadius: 6,
+    border: "none",
+    cursor: "pointer",
+    fontWeight: "bold",
+  };
+
+  // -----------------------------
+  // MODAL DE AJUDA (HTML Simples)
+  const helpModal = (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(0,0,0,0.45)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999,
+      }}
+    >
       <div
         style={{
+          width: "70%",
+          maxHeight: "80%",
+          overflowY: "auto",
           background: "white",
           padding: 20,
           borderRadius: 10,
-          border: "4px solid #003ba2",
+          border: "3px solid #003ba2",
         }}
       >
-        <label style={{ fontWeight: "bold", fontSize: 14 }}>
-          Arquivo Diário
-        </label>
+        <h2>📘 Ajuda – Importação do Diário</h2>
+        <p style={{ marginTop: 10 }}>
+          Aqui estão as regras e estrutura para importar o arquivo do diário.
+        </p>
 
-        <input
-          type="file"
-          accept=".csv,.xlsx,.txt"
-          onChange={(e) => setArquivo(e.target.files[0])}
-          style={{ width: "100%", marginTop: 10, marginBottom: 20 }}
-        />
-           <div style={{ display: "flex", justifyContent: "space-between" }}> 
+        <h3>📌 Estrutura do Arquivo</h3>
+        <pre style={{ background: "#f1f1f1", padding: 10 }}>
+        1) empresa_id – inteiro – tamanho 8  
+        2) data_mov – data – formato DD/MM/AAAA  
+        3) modelo_codigo – texto – identifica o modelo de lançamento  
+        4) historico – texto livre  
+        5) documento – texto  
+        6) valor – número decimal  
+        7) cnpj – numérico – válido ou vazio  
+        </pre>
+
+        <h3>✔ Critérios de Aceite</h3>
+        <ul>
+          <li>Linha com data válida</li>
+          <li>Modelo existente</li>
+          <li>Valor numérico</li>
+          <li>CNPJ válido (opcional)</li>
+        </ul>
+
+        <h3>❌ Critérios de Rejeição</h3>
+        <ul>
+          <li>Data inválida</li>
+          <li>Modelo inexistente</li>
+          <li>Valor zerado ou inválido</li>
+        </ul>
+
+        <h3>📄 Exemplo de Linha Válida</h3>
+        <pre style={{ background: "#f1f1f1", padding: 10 }}>
+1; 12/08/2025; 301; Compra de Mercadoria; NF123; 1290.55; 12345678000199
+        </pre>
+
         <button
-          onClick={enviar}
+          onClick={() => setShowHelp(false)}
           style={{
+            marginTop: 20,
+            padding: "10px 18px",
             background: "#003ba2",
             color: "white",
-            padding: "14px 12px",
-            borderRadius: 8,
             border: "none",
-            cursor: "pointer" ,  gap: "10px"
+            borderRadius: 6,
           }}
         >
-          Importar Arquivo
-        </button> 
-
-         <button
-          onClick={excluirLote}
-          style={{
-            background: "#ea1814ff",
-            color: "white",
-            padding: "14px 12px",
-            borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Excluir Lote
+          Fechar
         </button>
-        
+      </div>
+    </div>
+  );
+
+  // ---------------------------------------
+  // RENDER
+  return (
+    <div style={{ padding: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h2>📥 Importação Diário</h2>
+        <button
+          onClick={() => setShowHelp(true)}
+          style={{
+            ...estilosBtn,
+            background: "#ffa500",
+            color: "black",
+            border: "2px solid #cc7a00",
+          }}
+        >
+          ❔ Ajuda
+        </button>
+      </div>
+            {/* ------------------ TOPO DA IMPORTAÇÃO ------------------ */}
+<div
+  style={{
+    background: "white",
+    padding: 20,
+    borderRadius: 10,
+    border: "4px solid #003ba2",
+    marginBottom: 20,
+  }}
+>
+  {/* LINHA SUPERIOR: TÍTULO + AJUDA */}
+  <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <label style={{ fontWeight: "bold", fontSize: 15 }}>Selecionar Arquivo</label>
+
+    <button
+      onClick={() => setShowHelp(true)}
+      style={{
+        padding: "8px 14px",
+        borderRadius: 6,
+        border: "2px solid #cc7a00",
+        background: "#ffc045",
+        cursor: "pointer",
+        fontWeight: "bold",
+      }}
+    >
+      ❔ Ajuda
+    </button>
+  </div>
+
+  {/* ÁREA REDUZIDA DE UPLOAD */}
+  <div
+    style={{
+      marginTop: 10,
+      padding: 15,
+      border: "2px dashed #003ba2",
+      borderRadius: 6,
+      background: "#f7f9ff",
+      textAlign: "center",
+      width: "40%",      
+    }}
+  >
+    <input
+      type="file"
+      accept=".csv,.xlsx,.txt"
+      onChange={(e) => setArquivo(e.target.files[0])}
+    />
+
+    {arquivo ? (
+      <p style={{ marginTop: 10, fontWeight: "bold" }}>
+        Arquivo selecionado: {arquivo.name}
+      </p>
+    ) : (
+      <p style={{ marginTop: 10, opacity: 0.7 }}>
+        Clique para escolher o arquivo
+      </p>
+    )}
+  </div>
+
+  {/* BOTÕES */}
+  <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
+    <button
+      onClick={enviar}
+      style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
+    >
+      Importar Arquivo
+    </button>
+
+    <button
+      onClick={excluirLote}
+      style={{ ...estilosBtn, background: "#cc0000", color: "white" }}
+    >
+      Excluir Lote
+    </button>
+
+    <button
+      onClick={confirmarLote}
+      style={{ ...estilosBtn, background: "#0a8e32", color: "white" }}
+    >
+      Confirmar Lote
+    </button>
+  </div>
+
+  {/* INDICADORES */}
+  {lotes.length > 0 && (
+    <div
+      style={{
+        marginTop: 20,
+        display: "flex",
+        alignItems: "center",
+        gap: 20,
+        padding: 10,
+        background: "#eef4ff",
+        borderRadius: 6,
+        fontWeight: "bold",
+      }}
+    >
+      <span>📄 Total de linhas: {totalLinhas}</span>
+
+      <span style={{ color: "#0a8e32" }}>
+        ✔ Válidas: {totalOk} (R$ {somaOk.toFixed(2)})
+      </span>
+
+      <span style={{ color: "#cc0000" }}>
+        ✖ Com erro: {totalErro} (R$ {somaErro.toFixed(2)})
+      </span>
+
+      {/* BOTÕES DE FILTRO */}
+      <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+        <button
+          onClick={() => setFiltro("ok")}
+          style={{ ...estilosBtn, background: "#19d357", color: "white" }}
+        >
+          ✔ Linhas OK
+        </button>
 
         <button
-          onClick={excluirLote}
-          style={{
-            background: "#029538ff",
-            color: "white",
-            padding: "14px 12px",
-            borderRadius: 8,
-            border: "none",
-            cursor: "pointer",
-          }}
+          onClick={() => setFiltro("erro")}
+          style={{ ...estilosBtn, background: "#f64949", color: "white" }}
         >
-         Confirma Lote
+          ✖ Linhas com Erro
         </button>
-        </div>   
 
-
-
-
-        {/* FILTROS ------------------- */}
-        <div
-          style={{
-            marginTop: 25,
-            display: "flex",
-            gap: 30,
-            alignItems: "center",
-          }}
+        <button
+          onClick={() => setFiltro("todos")}
+          style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
         >
-          <div>
-            <label style={{ fontWeight: "bold" }}>Filtro Lote Diário (OK)</label>
-            <input
-              value={filtroOk}
-              onChange={(e) => setFiltroOk(e.target.value)}
-              style={{
-                marginTop: 5,
-                width: 180,
-                padding: 5,
-                border: "2px solid black",
-                borderRadius: 3,
-              }}
-            />
-          </div>
-
-          <div>
-            <label style={{ fontWeight: "bold" }}>Lotes Rejeitados</label>
-            <input
-              value={filtroErro}
-              onChange={(e) => setFiltroErro(e.target.value)}
-              style={{
-                marginTop: 5,
-                width: 180,
-                padding: 5,
-                border: "2px solid black",
-                borderRadius: 3,
-              }}
-            />
-          </div>
-        </div>
+          Mostrar Todos
+        </button>
       </div>
-       
+    </div>
+  )}
 
-      {/* TABELA ---------------------- */}
+  {msg && (
+    <div
+      style={{
+        marginTop: 15,
+        padding: 10,
+        background: "#e8f1ff",
+        borderRadius: 6,
+        color: "#003ba2",
+        fontWeight: "bold",
+      }}
+    >
+      {msg}
+    </div>
+  )}
+</div>
+
+  
+
+      {/* tabela */}
       <div
         style={{
           marginTop: 30,
@@ -213,29 +388,25 @@ export default function ImportarDiario() {
         }}
       >
         <table
+          className="tabela tabela-mapeamento"
           style={{
             width: "100%",
             borderCollapse: "collapse",
             fontSize: 14,
-          }}   className="tabela tabela-mapeamento"
+          }}
         >
           <thead>
-            <tr
-              style={{
-                background: "#002b80",
-                color: "white",
-                height: 40,
-              }}
-            >
-              <th className="font-bold text-[#1e40af text-align: left]">Linha</th>
-              <th className="font-bold text-[#1e40af text-align: left]">Data</th>
-              <th className="font-bold text-[#1e40af text-align: left]">Token</th>
-              <th className="font-bold text-[#1e40af text-align: left]">Histórico</th>
-              <th className="font-bold text-[#1e40af text-align: left]" >Doc</th>
-              <th className="font-bold text-[#1e40af text-align: left]">Valor</th>
-              <th className="font-bold text-[#1e40af text-align: left]">CNPF</th>
-              <th className="font-bold text-[#1e40af text-align: left]">Validação</th>
-              <th className="font-bold text-[#1e40af text-align: left]">Status</th>
+            <tr style={{ background: "#002b80", color: "white", height: 40 }}>
+              <th>Linha</th>
+              <th>Data</th>
+              <th>Token</th>
+              <th>Histórico</th>
+              <th>Doc</th>
+              <th>Valor</th>
+              <th>CNPJ</th>
+              <th>Validação</th>
+              <th>Status</th>
+              <th>Lote</th>
             </tr>
           </thead>
 
@@ -248,29 +419,30 @@ export default function ImportarDiario() {
                   borderBottom: "1px solid rgba(187, 187, 204, 1)",
                 }}
               >
-                <td className="font-bold text-[#1e40af text-align: left]">{l.linha}</td>
-                <td className="font-bold text-[#1e40af text-align: left]">{l.data_mov?.substring(0, 10)}</td>
-                <td className="font-bold text-[#1e40af text-align: left]">{l.lote_id}</td>
-                <td className="font-bold text-[#1e40af text-align: left]">{l.historico}</td>
-                <td className="font-bold text-[#1e40af text-align: left]">{l.doc_ref}</td> 
-                <td className="font-bold text-[#1e40af text-align: left]">{l.valor_total}</td>
-                <td className="font-bold text-[#1e40af text-align: left]">{l.cnpj}</td>
-                 <td className="font-bold text-[#1e40af text-align: left]">
-                        {l.validacao}
-                      </td>
-
-                 <td className="font-bold text-[#1e40af text-align: left]">{l.status}</td>
+                <td>{l.linha}</td>
+                <td>{l.data_mov?.substring(0, 10)}</td>
+                <td>{l.modelo_codigo}</td>
+                <td>{l.historico}</td>
+                <td>{l.doc_ref}</td>
+                <td>{l.valor_total}</td>
+                <td>{l.cnpj}</td>
+                <td>{l.validacao}</td>
+                <td>{l.status}</td>
+                <td>{l.lote_id}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
         {itensFiltrados.length === 0 && (
-          <div style={{ padding: 20, color: "#cdc5c5ff", textAlign: "center" }}>
+          <div style={{ padding: 20, textAlign: "center", opacity: 0.5 }}>
             Nenhum registro encontrado.
           </div>
         )}
       </div>
+
+      {/* modal de ajuda */}
+      {showHelp && helpModal}
     </div>
   );
 }

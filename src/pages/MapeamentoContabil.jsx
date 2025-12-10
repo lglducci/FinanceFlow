@@ -39,6 +39,7 @@ export default function MapeamentoContabil() {
     setSelecionado({
       codigo: modeloInfo?.codigo || "",
       nome: modeloInfo?.nome || "",
+      tipo: modeloInfo?.tipo_automacao || "",
     });
 
     setLinhas(dados);
@@ -175,6 +176,11 @@ export default function MapeamentoContabil() {
       <h3 style={{ marginTop: 8 , fontWeight: "bold", background: "##1414d2ff" }}>
         <b>Nome do Modelo:</b> {selecionado?.nome}
       </h3>
+
+       <h3 style={{ marginTop: 16 , fontWeight: "bold", background: "##1414d2ff" }}>
+        <b>Tipo Automação:</b> {selecionado?.tipo}
+      </h3>
+
     </div>
 
     {/* BOTÃO NOVO MODELO */}
@@ -202,7 +208,7 @@ export default function MapeamentoContabil() {
 
         {/* TABELA DE LINHAS DENTRO DO BLOCO AZUL */}
         {linhas.length > 0 && (
-          <table  className="tabela tabela-mapeamento" style={{ width: "60%", borderCollapse: "collapse" }}>
+          <table  className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
                 <th>Conta ID</th>
@@ -240,13 +246,20 @@ export default function MapeamentoContabil() {
       {/* ============================================= */}
       <h2>Mapeamento Contábil</h2>
 
-      <table  className="tabela tabela-mapeamento" style={{ width: "80%", borderCollapse: "collapse" }} >
+      <table  className="tabela tabela-mapeamento" 
+      
+            style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            fontSize: 14,
+          }} >
         <thead>
           <tr>
             <th>ID</th>
             <th>Token</th>
             <th>Descrição</th>
-            <th>     Ações </th>
+             <th>Tipo Automação</th>
+            <th>  Ações </th>
           </tr>
         </thead>
 
@@ -261,6 +274,7 @@ export default function MapeamentoContabil() {
               <td>{m.id}</td>
               <td>{m.codigo}</td>
               <td>{m.nome}</td>
+               <td>{m.tipo_automacao}</td>
              
 
               <td style={{ display: "flex", gap: "28px"}}>
@@ -271,7 +285,8 @@ export default function MapeamentoContabil() {
                       modelo_id: m.id,
                       empresa_id: empresa_id,
                       token: m.codigo,
-                      nome: m.nome
+                      nome: m.nome,
+                      tipo:m.tipo_automacao
                     }  
                   })
                 }

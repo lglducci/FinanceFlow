@@ -22,6 +22,7 @@ export default function NovaModeloContabil() {
         empresa_id: empresa_id,
         codigo: form.codigo,
         nome: form.nome,
+        tipo: form.tipo_automacao,
         dc: ""
       }),
     });
@@ -133,6 +134,25 @@ export default function NovaModeloContabil() {
               border: "1px solid #ccc",
             }}
           />
+
+          {/* TIPO */}
+          <label>Tipo Automação</label>
+          <input
+            type="text"
+            value={form.tipo_automacao}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, tipo_automacao: e.target.value }))
+            }
+            placeholder="Ex: ESTORNO_PAGATO OU PAGAMENTO_CONTA"
+            style={{
+              width: "100%",
+              padding: 10,
+              marginBottom: 15,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
+          />
+
 
           {/* BOTÕES */}
           <div
