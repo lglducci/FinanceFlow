@@ -179,7 +179,7 @@ const THEME = {
             className="input-premium"
             placeholder="tipo"
           >
-            <option value="fornecedor">Fornecedor</option>
+            <option value="fornecedor">Fornecedor/Cliente</option>
             <option value="cliente">Cliente</option>
             <option value="ambos">Ambos</option>
           </select>

@@ -135,6 +135,7 @@ export default function ContasGerenciais() {
             <th className="p-1 border text-right border">ID</th>
             <th className="p-1 border text-left border">Nome</th>
             <th className="p-1 border text-left border">Tipo</th>
+            <th className="p-1 border text-left border">Grupo Contábil</th>
             <th className="p-1 border text-left border">Ações</th>
           </tr>
         </thead>
@@ -153,6 +154,8 @@ export default function ContasGerenciais() {
                     }
                   > {l.tipo}
                   </td>
+
+              <td className="p-1 border font-bold shadow">{l.grupo_contabil}</td>
 
               <td className="p-1 border flex gap-2">
  

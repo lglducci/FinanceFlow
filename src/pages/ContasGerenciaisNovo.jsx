@@ -1,114 +1,222 @@
-import React, { useState } from "react";
+ import React, { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 
- /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
+/* 🎨 Tema azul coerente */
 const THEME = {
-  pageBg: "#0e2a3a",                 // fundo da página (escuro)
-  panelBg: "#1e40af",                // fundos auxiliares (se precisar) panelBg: "#4a88a9ff",   
-  panelBorder: "rgba(255,159,67,0.30)",
-
-  cardBg: "#254759",                 // bloco interno mais claro
-  cardBorder: "rgba(255,159,67,0.35)",
-  cardShadow: "0 6px 20px rgba(0,0,0,0.25)",
-
   title: "#ff9f43",
-  text: "#e8eef2",
-  textMuted: "#bac7cf",
-
-  fieldBg: "#1f3b4d",                // inputs (um tom acima do card)
-  fieldBorder: "rgba(255,159,67,0.25)",
-  focusRing: "#ff9f43",
-
-  btnPrimary: "#ff9f43",
-  btnPrimaryText: "#1b1e25",
-  btnSecondary: "#ef4444",
-  btnSecondaryText: "#ffffff",
 };
 
 export default function ContasGerenciaisNovo() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
 
+  /* ===============================
+     ESTADO DO FORMULÁRIO
+  ================================== */
   const [form, setForm] = useState({
     nome: "",
     tipo: "entrada",
+    grupo_contabil: "",
   });
 
- async function salvar() {
-  const url = buildWebhookUrl("novacategoriagerencial");
+  /* modelos = tokens do diário */
+  const [modelos, setModelos] = useState([]);
+  const [modeloSelecionado, setModeloSelecionado] = useState(null);
+  const [linhas, setLinhas] = useState([]);
 
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ empresa_id, ...form }),
-  });
-
-  const texto = await resp.text();
-  let json = {};
-  try { json = JSON.parse(texto); } catch {}
-
-  // --- CORREÇÃO: valida retorno em array ---
-  if (Array.isArray(json) && json.length > 0 && json[0].id) {
-    alert("Conta criada!");
-    navigate("/contasgerenciais");
-    return;
+  /* ===============================
+     CARREGA OS MODELOS DO DIÁRIO
+  ================================== */
+  async function carregarModelos() {
+    try {
+      const url = buildWebhookUrl("modelos", { empresa_id });
+      const r = await fetch(url);
+      const dados = await r.json();
+      setModelos(dados);
+    } catch (e) {
+      console.log("Erro ao carregar modelos:", e);
+    }
   }
 
-  alert("Erro ao salvar");
-}
+  /* ===============================
+     QUANDO O USUÁRIO ESCOLHE O TOKEN
+  ================================== */
+  async function selecionarGrupo(token) {
+    setForm({ ...form, grupo_contabil: token });
 
+    const modelo = modelos.find((m) => m.codigo === token);
+    setModeloSelecionado(modelo);
 
-  return ( 
+    if (!modelo) {
+      setLinhas([]);
+      return;
+    }
 
-     <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white"> 
-      
+    const url = buildWebhookUrl("modelos_linhas", {
+      empresa_id,
+      modelo_id: modelo.id,
+    });
+
+    const r = await fetch(url);
+    const dados = await r.json();
+    setLinhas(dados);
+  }
+
+  /* ===============================
+     SALVAR NOVA CATEGORIA
+  ================================== */
+  async function salvar() {
+    const url = buildWebhookUrl("novacategoriagerencial");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ empresa_id, ...form }),
+    });
+
+    const texto = await resp.text();
+    let json = {};
+
+    try { json = JSON.parse(texto); } catch {}
+
+    if (Array.isArray(json) && json.length > 0 && json[0].id) {
+      alert("Categoria criada!");
+      navigate("/contasgerenciais");
+      return;
+    }
+
+    alert("Erro ao salvar");
+  }
+
+  useEffect(() => {
+    carregarModelos();
+  }, []);
+
+  /* ===============================
+        TELA
+  ================================== */
+  return (
+    <div className="min-h-screen py-6 px-4 bg-bgSoft">
+      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">
+
         <h1
-        className="text-2xl md:text-3xl font-bold mb-6 text-left"
-        style={{ color: THEME.title }}
-      >
-        ✏️ Nova Conta</h1>
-       <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
-
-        <label className="bg-gray-100 font-bold text-[#1e40af]">Nome</label>
-        <input
-           className="input-premium"
-          value={form.nome}
-           placeholder="nome"
-          onChange={(e) => setForm({ ...form, nome: e.target.value })}
-          
-        />
-
-        <label className="font-bold text-[#1e40af]">Tipo</label>
-        <select
-          className="input-premium"
-          value={form.tipo} 
-          placeholder="tipo"
-          onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+          className="text-2xl md:text-3xl font-bold mb-6 text-left"
+          style={{ color: THEME.title }}
         >
-          <option value="entrada">Entrada</option>
-          <option value="saida">Saída</option>
-        </select>
-        
+          ✏️ Nova Categoria Gerencial
+        </h1>
+
+        <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
+
+          {/* NOME */}
+          <label className="font-bold text-[#1e40af]">Nome</label>
+          <input
+            className="input-premium"
+            value={form.nome}
+            placeholder="Ex: Vendas Delivery"
+            onChange={(e) => setForm({ ...form, nome: e.target.value })}
+          />
+
+          {/* TIPO */}
+          <label className="font-bold text-[#1e40af]">Tipo</label>
+          <select
+            className="input-premium"
+            value={form.tipo}
+            onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+          >
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+          </select>
+
+          {/* GRUPO CONTÁBIL (TOKENS DO MODELO) */}
+          <label className="font-bold text-[#1e40af]">Grupo Contábil</label>
+
+          <select
+            className="input-premium"
+            value={form.grupo_contabil}
+            onChange={(e) => selecionarGrupo(e.target.value)}
+          >
+            <option value="">Selecione o Token...</option>
+            {modelos.map((m) => (
+              <option key={m.id} value={m.codigo}>
+                {m.codigo}
+              </option>
+            ))}
+          </select>
+
+          {/* MOSTRA O MODELO ESCOLHIDO (IGUAL AO DIÁRIO) */}
+          {modeloSelecionado && (
+            <div style={{ marginTop: 15 }}>
+              <div
+                style={{
+                  background: "#bfc0c2ff",
+                  padding: 10,
+                  borderRadius: 6,
+                  color: "#003ba2",
+                  marginBottom: 10,
+                }}
+              >
+                <b>Nome:</b> {modeloSelecionado.nome}
+              </div>
+
+              <table
+                className="tabela tabela-mapeamento"
+                style={{ width: "100%", borderCollapse: "collapse" }}
+              >
+                <thead>
+                  <tr style={{ background: "#002b80", color: "white" }}>
+                    <th>ID</th>
+                    <th>Conta</th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Natureza</th>
+                    <th>D/C</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {linhas.map((l, i) => (
+                    <tr
+                      key={i}
+                      style={{
+                             background: i % 2 === 0 ? "#eee4e4ff" : "#d2d2e8ff",
+                      }}
+                    >
+                      <td style={{ color:  "#003ba2" }} >{l.conta_id}</td>
+                      <td style={{ color:  "#003ba2" }}>{l.codigo}</td>
+                      <td style={{ color:  "#003ba2" }}>{l.nome}</td>
+                      <td style={{ color:  "#003ba2" }}>{l.tipo}</td>
+                      <td style={{ color:  "#003ba2" }}>{l.natureza}</td>
+                      <td style={{ color:  "#003ba2" }}>{l.dc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* BOTÕES */}
           <div className="flex gap-6 pt-8 pb-8 pl-1">
 
-              <button
-                onClick={salvar}
-                className="flex-1 bg-green-600 text-white px-5 py-2 rounded font-bold"
-              >
-                Salvar
-              </button>
+            <button
+              onClick={salvar} 
+              className="flex-1 bg-blue-600 text-white px-5 py-2 rounded font-bold"
+            >
+              Salvar
+            </button>
 
-              <button
-                  type="button"
-                  onClick={() => navigate("/contasgerenciais")}
-                  className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
-                >
-                  Cancelar
-                </button>
-           </div>
-      </div>
+            <button
+              type="button"
+              onClick={() => navigate("/contasgerenciais")}
+              className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
+            >
+              Cancelar
+            </button>
+
+          </div>
+
+        </div>
       </div>
     </div>
   );

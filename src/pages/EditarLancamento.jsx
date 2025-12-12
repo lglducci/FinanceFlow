@@ -240,7 +240,7 @@ const salvar = async () => {
         <div className="grid grid-cols-2 gap-4">
           
           <div>
-            <label className="block text-base font-bold text-[#1e40af]">Conta</label>
+            <label className="block text-base font-bold text-[#1e40af]">Conta Financeira</label>
             <select
               name="conta_id"
               value={form.conta_id}

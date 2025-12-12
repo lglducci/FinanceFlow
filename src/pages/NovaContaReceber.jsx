@@ -211,7 +211,7 @@ const THEME = {
         {/* FORNECEDOR */}
         <div>
           <div className="w-2/3"> 
-          <label className="font-bold text-[#1e40af]">Fornecedor</label>
+          <label className="font-bold text-[#1e40af]">Fornecedor/Cliente</label>
           <select
             name="fornecedor_id"
             value={form.fornecedor_id}
