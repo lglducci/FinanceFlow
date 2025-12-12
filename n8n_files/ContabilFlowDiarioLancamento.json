@@ -809,8 +809,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1648,
-        368
+        -816,
+        176
       ],
       "id": "918eec6a-f321-4357-85c2-78e955534f29",
       "name": "Respond to Webhook"
@@ -1009,8 +1009,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2032,
-        368
+        -1200,
+        176
       ],
       "id": "004206bb-91b9-42c7-8fc3-d590c0a48cc3",
       "name": "InsertConta",
@@ -1032,8 +1032,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2576,
-        368
+        -1744,
+        176
       ],
       "id": "3aacfb4d-1d0a-4325-8dc6-348cc6092f19",
       "name": "ImportarDiario",
@@ -1046,8 +1046,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2400,
-        368
+        -1568,
+        176
       ],
       "id": "0a30e9eb-b67f-48f9-aea1-2d33dd890c1b",
       "name": "Code in JavaScript"
@@ -1061,8 +1061,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -1840,
-        368
+        -1008,
+        176
       ],
       "id": "f0ff5fae-3199-4a67-971a-698b98702b59",
       "name": "Execute a SQL query1",
@@ -1081,8 +1081,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2224,
-        368
+        -1392,
+        176
       ],
       "id": "8c26f7de-5f41-488f-9fe7-f57558ab2c1c",
       "name": "CodeArquivo"
@@ -1097,34 +1097,11 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1760,
-        560
+        -928,
+        368
       ],
       "id": "b16d7e5b-f043-462e-9af4-3dc40331a501",
       "name": "Respond to Webhook1"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "delete  from  contab.diario_staging \n  where empresa_id = {{ $('EditDelLote').item.json.empresa_id }} and \n  lote_id = '{{ $json.lote_id }}';\n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1984,
-        560
-      ],
-      "id": "9a850c3f-4788-49db-a912-d413c6ad16e5",
-      "name": "Execute a SQL query",
-      "executeOnce": true,
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1143,8 +1120,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2384,
-        560
+        -1552,
+        368
       ],
       "id": "a9b5ac26-8252-4da3-b5d6-66edbd032743",
       "name": "EditDelLote"
@@ -1153,14 +1130,14 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1728,
-        176
+        -848,
+        -16
       ],
       "id": "fa7a903f-c7ab-4f02-9a9c-d99286531c69",
       "name": "Respond to Webhook2"
@@ -1175,8 +1152,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2592,
-        560
+        -1760,
+        368
       ],
       "id": "e52668b6-fc1f-451c-9d1f-06064e2e0dec",
       "name": "ExcluirLote",
@@ -1185,15 +1162,15 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "excluir_lote",
+        "path": "confirmar_lote",
         "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2560,
-        176
+        -1728,
+        -16
       ],
       "id": "30e955d8-e2b5-4626-9d2f-f92ad2b7107b",
       "name": "Consultar_lote",
@@ -1208,8 +1185,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2176,
-        560
+        -1344,
+        368
       ],
       "id": "a0230efe-a208-43b1-a567-3734efdeecd7",
       "name": "GetLote",
@@ -1239,8 +1216,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2352,
-        176
+        -1520,
+        -16
       ],
       "id": "258aee93-25bf-46b7-95be-529790959cbe",
       "name": "EditConsulta"
@@ -1254,12 +1231,36 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2144,
-        176
+        -2096,
+        -176
       ],
       "id": "48416f70-06e3-4a9b-b0a5-7812c0885296",
       "name": "LoteConsulta",
       "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "delete  from  contab.diario_staging \n  where empresa_id = {{ $('EditDelLote').item.json.empresa_id }} and \n  lote_id = '{{ $json.lote_id }}';\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1152,
+        368
+      ],
+      "id": "9a850c3f-4788-49db-a912-d413c6ad16e5",
+      "name": "ExcluiLote",
+      "executeOnce": true,
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
@@ -1271,18 +1272,18 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "    SELECT *\n    FROM contab.diario_staging\n    WHERE lote_id =  '{{ $json.lote_id }}' \nand empresa_id =  {{ $('EditConsulta').item.json.empresa_id }}  ;",
+        "query": " select * from  contab.ff_consolidar_diario_staging( {{ $json.empresa_id }}) ;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -1952,
-        176
+        -1280,
+        -16
       ],
       "id": "2e8e3326-a5a6-45e1-bb22-7427d3abd248",
-      "name": "Consulta_lote",
-      "executeOnce": true,
+      "name": "ff_diario_staging_validar",
+      "executeOnce": false,
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
@@ -1290,6 +1291,35 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1072,
+        -16
+      ],
+      "id": "f1197890-331d-435a-b84a-5626e5e7ca8e",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "content": "## Diário",
+        "height": 876,
+        "width": 1280,
+        "color": 3
+      },
+      "id": "b87d3348-b842-4668-892f-45b04f16f5ba",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1936,
+        -128
+      ]
     }
   ],
   "pinData": {},
@@ -1481,17 +1511,6 @@
         ]
       ]
     },
-    "Execute a SQL query": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "EditDelLote": {
       "main": [
         [
@@ -1529,7 +1548,7 @@
       "main": [
         [
           {
-            "node": "Execute a SQL query",
+            "node": "ExcluiLote",
             "type": "main",
             "index": 0
           }
@@ -1540,7 +1559,7 @@
       "main": [
         [
           {
-            "node": "LoteConsulta",
+            "node": "ff_diario_staging_validar",
             "type": "main",
             "index": 0
           }
@@ -1549,16 +1568,32 @@
     },
     "LoteConsulta": {
       "main": [
+        []
+      ]
+    },
+    "ExcluiLote": {
+      "main": [
         [
           {
-            "node": "Consulta_lote",
+            "node": "Respond to Webhook1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Consulta_lote": {
+    "ff_diario_staging_validar": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
       "main": [
         [
           {
@@ -1574,7 +1609,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "45b49b2d-4156-44ab-8f94-3f4760c8b228",
+  "versionId": "d450606e-7958-4c06-af56-3dc08669d039",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

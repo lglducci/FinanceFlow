@@ -11,65 +11,11 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        480,
-        208
-      ],
-      "id": "3241c222-5c97-4eee-a18f-76f382f28914",
-      "name": "Respond to Webhook6"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "select * from   contas_financeiras where empresa_id = \n  {{ $json.id_empresa }}  ;",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        288,
-        208
-      ],
-      "id": "bb5d91b2-c97b-41aa-88f1-ce2d9eb2c87f",
-      "name": "ListaContas",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {
-          "responseCode": 200
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
         512,
         32
       ],
       "id": "2196e7ac-2fcb-4515-b795-1d0b0e89f51b",
       "name": "Respond to Webhook7"
-    },
-    {
-      "parameters": {
-        "path": "listacontas",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -144,
-        208
-      ],
-      "id": "cb9a1bba-9eb8-41f2-a945-23e5659525e5",
-      "name": "ListaContas2",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
@@ -140,32 +86,9 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
-              "name": "id_empresa",
-              "value": "={{ $json.query.empresa_id}}",
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        64,
-        208
-      ],
-      "id": "eeb287d7-8415-4d51-bba7-0c55aee13996",
-      "name": "ListaEdit"
-    },
-    {
-      "parameters": {
         "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
-        "height": 1068,
-        "width": 1280,
+        "height": 940,
+        "width": 1248,
         "color": 5
       },
       "id": "f3228151-2c66-4bc3-b8df-cf26e58c5dbc",
@@ -187,8 +110,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        528,
-        400
+        512,
+        224
       ],
       "id": "4ddc139b-14fc-4f3f-98d7-3abd76e0906d",
       "name": "Respond to Webhook47"
@@ -203,8 +126,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
-        400
+        -160,
+        224
       ],
       "id": "4b6959dc-95b5-4478-8780-34d7707ef699",
       "name": "NovaCategoria",
@@ -231,6 +154,18 @@
               "name": "tipo",
               "value": "={{ $json.body.tipo}}",
               "type": "string"
+            },
+            {
+              "id": "25647865-3a6a-41f5-b45f-b75fe6d5c15f",
+              "name": "grupo_contabil",
+              "value": "={{ $json.body.grupo_contabil }}",
+              "type": "string"
+            },
+            {
+              "id": "dc4222af-9795-4872-a3ae-1aaa0641c467",
+              "name": "",
+              "value": "",
+              "type": "string"
             }
           ]
         },
@@ -239,8 +174,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        96,
-        400
+        80,
+        224
       ],
       "id": "9eb4c0fc-6789-4ff7-b445-7c1bba49fdbf",
       "name": "EditCategoria"
@@ -261,6 +196,10 @@
             {
               "fieldId": "nome",
               "fieldValue": "={{ $json.nome }}"
+            },
+            {
+              "fieldId": "grupo_contabil",
+              "fieldValue": "={{ $json.grupo_contabil }}"
             }
           ]
         }
@@ -268,8 +207,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        304,
-        400
+        288,
+        224
       ],
       "id": "1bcd7ec8-5854-4043-b570-b42772e2b7c8",
       "name": "InsertCategoria",
@@ -290,8 +229,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        512,
-        592
+        496,
+        416
       ],
       "id": "7484843f-c084-496b-ba29-cad8db577bef",
       "name": "Respond to Webhook48"
@@ -323,6 +262,12 @@
               "name": "id",
               "value": "={{ $json.body.id}}",
               "type": "string"
+            },
+            {
+              "id": "c6d68f78-ae12-4be4-9b50-cbab29e8a699",
+              "name": "grupo_contabil",
+              "value": "={{ $json.body.grupo_contabil }}",
+              "type": "string"
             }
           ]
         },
@@ -331,8 +276,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
-        592
+        64,
+        416
       ],
       "id": "5c78feda-19e9-465f-b4ba-35bd079b47b3",
       "name": "EditSalvaCategoria"
@@ -369,6 +314,10 @@
             {
               "fieldId": "nome",
               "fieldValue": "={{ $json.nome }}"
+            },
+            {
+              "fieldId": "grupo_contabil",
+              "fieldValue": "={{ $json.grupo_contabil }}"
             }
           ]
         }
@@ -376,8 +325,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        288,
-        592
+        272,
+        416
       ],
       "id": "808b2fb2-9cf9-4da2-af06-c6c618f8b559",
       "name": "SalvaCategoria",
@@ -398,8 +347,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -160,
-        592
+        -176,
+        416
       ],
       "id": "2fbba66d-9785-4aea-a44e-0969f3bedb3f",
       "name": "SalvaCategoria1",
@@ -415,8 +364,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        512,
-        768
+        496,
+        592
       ],
       "id": "7f0ff526-acec-4b4f-bf95-f194dcb9cc61",
       "name": "Respond to Webhook49"
@@ -430,8 +379,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        272,
-        768
+        256,
+        592
       ],
       "id": "4b440b0d-d76e-4396-81e8-c70027d23e51",
       "name": "ListaContas1",
@@ -466,8 +415,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        48,
-        768
+        32,
+        592
       ],
       "id": "3158ddf5-a58c-49d4-86a2-b70a3ae74e36",
       "name": "ListaEdit1"
@@ -482,8 +431,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -160,
-        768
+        -176,
+        592
       ],
       "id": "15130a62-569f-4860-920b-8ba189c2b297",
       "name": "ExcluiContaGerencial",
@@ -492,28 +441,6 @@
   ],
   "pinData": {},
   "connections": {
-    "ListaContas": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook6",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ListaContas2": {
-      "main": [
-        [
-          {
-            "node": "ListaEdit",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "ListaCategoria": {
       "main": [
         [
@@ -541,17 +468,6 @@
         [
           {
             "node": "categorias_gerenciais",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ListaEdit": {
-      "main": [
-        [
-          {
-            "node": "ListaContas",
             "type": "main",
             "index": 0
           }
@@ -662,7 +578,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f5990107-b73c-439b-99ab-607de16ddcfd",
+  "versionId": "efb7cc97-8a9a-464e-a3e9-fec2fe831f57",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },

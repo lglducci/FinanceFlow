@@ -76,7 +76,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n \nselect c.nome, c.bandeira, numero, limite_total,   fechamento_dia,  vencimento_dia, nomecartao,\nf.* from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id\n  where f.empresa_id = {{ $json.id_empresa }}\n and ( f.cartao_id = {{ $json.id }} or {{ $json.id }} = 0 )\nand  ( f.status =  '{{ $json.status}}' or  '{{ $json.status}}' = '') \n  AND  TO_CHAR(f.mes_referencia, 'YYYY-MM-DD') = '{{ $json.mes_referencia }}';",
+        "query": " \n \nselect c.nome, c.bandeira, c.numero, limite_total,   fechamento_dia,  vencimento_dia, nomecartao,\nf.* from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id\n  where f.empresa_id = {{ $json.id_empresa }}\n and ( f.cartao_id = {{ $json.id }} or {{ $json.id }} = 0 )\nand  ( f.status =  '{{ $json.status}}' or  '{{ $json.status}}' = '') \n  AND  TO_CHAR(f.mes_referencia, 'YYYY-MM-DD') = '{{ $json.mes_referencia }}';",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -152,7 +152,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "9ea52cf0-21a4-4288-893b-44eb5c24746d",
+  "versionId": "4fa2f235-27cf-4605-adeb-f015995c55e8",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },

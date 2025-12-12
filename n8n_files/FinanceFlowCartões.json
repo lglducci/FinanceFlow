@@ -727,7 +727,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -320,
+        -256,
         816
       ],
       "id": "d35cb7c6-eb9f-4bb8-af74-37c07f9bd1d2",
@@ -884,7 +884,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        560,
+        416,
         992
       ],
       "id": "2323c2ad-9cd1-420b-8484-6b1c078214d4",
@@ -911,7 +911,7 @@
           "name": "Financeflow"
         }
       },
-      "onError": "continueErrorOutput"
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1242,13 +1242,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "Respond to Webhook23",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Delcartoes": {
@@ -1278,7 +1272,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0b327839-6560-4193-8f8e-3f246771d9de",
+  "versionId": "320c8003-0b20-4fbe-97a5-f5ebce0a2898",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
