@@ -78,6 +78,7 @@
       ],
       "id": "c9007714-a7a8-44fd-8796-f28b6fed8cbf",
       "name": "ff_diario_listar",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
@@ -1609,7 +1610,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d450606e-7958-4c06-af56-3dc08669d039",
+  "versionId": "09d48c4b-3939-4d75-84ad-7a8f206c5e68",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

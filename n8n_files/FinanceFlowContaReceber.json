@@ -21,7 +21,7 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
@@ -107,7 +107,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
+        -128,
         -64
       ],
       "id": "a615ee29-37f0-4e56-acbb-c44d47363cf5",
@@ -165,6 +165,12 @@
               "name": "fornecedor_id",
               "value": "={{ $json.body.fornecedor_id}}",
               "type": "string"
+            },
+            {
+              "id": "58665a1f-d9d9-4896-91e5-23bbefc945fc",
+              "name": "doc_ref",
+              "value": "={{ $json.body.doc_ref}}",
+              "type": "string"
             }
           ]
         },
@@ -173,7 +179,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
+        96,
         -64
       ],
       "id": "fd3d2b3a-eed5-425a-99d7-f86de02e081b",
@@ -182,7 +188,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} \n)\n  \n ",
+        "query": " select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}'\n)\n  \n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -198,7 +204,8 @@
           "id": "STozEMe82vC1nwYd",
           "name": "Financeflow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -209,8 +216,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        480,
-        -64
+        1008,
+        -32
       ],
       "id": "76d6a18b-7d78-47ba-98cb-b4fe4dcb7893",
       "name": "ResultContaReceber",
@@ -448,6 +455,12 @@
               "name": "id",
               "value": "={{ $json.body.id}}",
               "type": "string"
+            },
+            {
+              "id": "688271a5-a1e8-4ea6-a52f-ff4df0178cec",
+              "name": "doc_ref",
+              "value": "={{ $json.body.doc_ref}}",
+              "type": "string"
             }
           ]
         },
@@ -466,6 +479,7 @@
       "parameters": {
         "operation": "update",
         "tableId": "contas_a_receber",
+        "filterType": "=manual",
         "matchType": "allFilters",
         "filters": {
           "conditions": [
@@ -510,6 +524,10 @@
             {
               "fieldId": "parcelas",
               "fieldValue": "={{ $json.parcelas }}"
+            },
+            {
+              "fieldId": "doc_ref",
+              "fieldValue": "={{ $json.doc_ref }}"
             }
           ]
         }
@@ -774,6 +792,19 @@
           "name": "Financeflow"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        -64
+      ],
+      "id": "3eafc451-df68-4e0c-ab53-89dd34ff8a77",
+      "name": "Code in JavaScript1"
     }
   ],
   "pinData": {},
@@ -804,7 +835,7 @@
       "main": [
         [
           {
-            "node": "ResultContaReceber",
+            "node": "Code in JavaScript1",
             "type": "main",
             "index": 0
           }
@@ -813,13 +844,7 @@
     },
     "ResultContaReceber": {
       "main": [
-        [
-          {
-            "node": "Respond to Webhook41",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "ConsultarContaReceber": {
@@ -1019,13 +1044,24 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook41",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f577b5aa-b3f6-41f4-a00d-f07f6808f295",
+  "versionId": "7e687598-0f80-4277-82b0-64f385c8a730",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
