@@ -17,6 +17,7 @@ export default function NovaContaPagar() {
     parcelas: 1,
     parcela_num: 1,
     status: "aberto",
+    doc_ref: "",
   });
 
 
@@ -106,7 +107,7 @@ const THEME = {
   // =======================================================
   //                  SALVAR NOVA CONTA
   // =======================================================
-   async function salvar() {
+ async function salvar() {
   try {
     setSalvando(true);
 
@@ -124,32 +125,38 @@ const THEME = {
         fornecedor_id: Number(form.fornecedor_id) || null,
         parcelas: Number(form.parcelas),
         parcela_num: Number(form.parcela_num),
-        status: form.status
+        status: form.status,
+        doc_ref: form.doc_ref
       })
     });
 
-    // 👇 AQUI É A CURA DO PROBLEMA
-    const json = await resp.json().catch(() => ({}));
+    const texto = await resp.text();
+    let json = {};
 
-    const sucesso =
-      (Array.isArray(json) && json.length > 0) ||
-      json?.id ||
-      json?.success === true;
+    try {
+      json = JSON.parse(texto);
+    } catch {
+      // resposta não era JSON
+    }
 
-    if (sucesso) {
-      alert("Conta a pagar cadastrada com sucesso!");
-      navigate("/contas-pagar");
+    // 🚨 ERRO HTTP (400, 500 etc)
+    if (!resp.ok) {
+      alert(json?.message || texto || "Erro ao salvar conta a pagar.");
       return;
     }
 
-    alert(json?.message || "Erro ao salvar.");
+    // ✅ SUCESSO
+    alert("Conta a pagar cadastrada com sucesso!");
+    navigate("/contas-pagar");
+
   } catch (e) {
-    console.log("ERRO SALVAR:", e);
-    alert("Erro ao salvar.");
+    console.error("ERRO SALVAR:", e);
+    alert("Erro de comunicação com o servidor.");
   } finally {
     setSalvando(false);
   }
 }
+
 
 
   return ( 
@@ -279,18 +286,19 @@ const THEME = {
          </div>
  
 
-        {/* PARCELA ATUAL  
+        {/* Numero documento ou nota fiscal  */}
         <div>
-          <label className="font-semibold text-sm">Número da Parcela</label>
-          <input
-            type="number"
-            name="parcela_num"
-            min="1"
-            value={form.parcela_num}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>*/}
+          <div className="w-2/3"> 
+                  <label className="font-bold text-[#1e40af]">Documento</label>
+                  <input
+                  name="doc_ref"
+                  value={form.doc_ref}
+                  onChange={handleChange}
+                  className="input-premium w-64"
+                  placeholder="Nro Documento"
+                />
+            </div> 
+         </div> 
 
         {/* STATUS */}
         <div>

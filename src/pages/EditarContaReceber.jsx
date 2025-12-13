@@ -21,6 +21,7 @@ export default function EditarContaReceber() {
     parcelas: 1,
     parcela_num: 1,
     status: "aberta",
+    doc_ref:""
   });
 
   function handleChange(e) {
@@ -136,6 +137,7 @@ async function carregar() {
       parcelas: dado.parcelas,
       parcela_num: dado.parcela_num,
       status: dado.status,
+      doc_ref: dado.doc_ref,
     });
 
 
@@ -169,7 +171,8 @@ async function carregar() {
           vencimento: form.vencimento,
           categoria_id: Number(form.categoria_id) || null,
           fornecedor_id: Number(form.fornecedor_id) || null,
-          status: form.status 
+          status: form.status ,
+           doc_ref: form.doc_ref
           
         }),
       });
@@ -331,6 +334,23 @@ async function carregar() {
           </select>
         </div>
         </div>
+
+
+        {/* documento */}
+        <div>
+          <label className="font-bold text-[#1e40af]">Documento</label>
+          <input
+            name="doc_ref"
+          
+            value={form.doc_ref}
+            onChange={handleChange}
+            className="input-premium"
+            placeholder="Nro Documento "
+
+          />
+        </div> 
+     
+
 
         {/* BOTÕES */}
              <div className="flex gap-6 pt-8 pb-8 pl-1">

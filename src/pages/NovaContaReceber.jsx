@@ -17,6 +17,7 @@ export default function NovaContaReceber() {
     parcelas: 1,
     parcela_num: 1,
     status: "aberto",
+    doc_ref:""
   });
 
 
@@ -124,7 +125,8 @@ const THEME = {
         fornecedor_id: Number(form.fornecedor_id) || null,
         parcelas: Number(form.parcelas),
         parcela_num: Number(form.parcela_num),
-        status: form.status
+        status: form.status,
+        doc_ref: form.doc_ref
       })
     });
 
@@ -282,18 +284,19 @@ const THEME = {
          </div>
  
 
-        {/* PARCELA ATUAL  
+            {/* Numero documento ou nota fiscal  */}
         <div>
-          <label className="font-semibold text-sm">Número da Parcela</label>
-          <input
-            type="number"
-            name="parcela_num"
-            min="1"
-            value={form.parcela_num}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>*/}
+          <div className="w-2/3"> 
+                  <label className="font-bold text-[#1e40af]">Documento</label>
+                  <input
+                  name="doc_ref"
+                  value={form.doc_ref}
+                  onChange={handleChange}
+                  className="input-premium w-64"
+                  placeholder="Nro Documento"
+                />
+            </div> 
+         </div> 
 
         {/* STATUS */}
         <div>

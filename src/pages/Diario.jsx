@@ -19,8 +19,11 @@ export default function Diario() {
     modelo: "",
     busca: "",
   });
+async function carregar() {
+  // 🔥 LIMPA A LISTA ANTES DE BUSCAR
+  setLista([]);
 
-  async function carregar() {
+  try {
     const url = buildWebhookUrl("consulta_diario", {
       empresa_id,
       data_ini: filtros.data_ini,
@@ -31,12 +34,16 @@ export default function Diario() {
 
     const r = await fetch(url);
     const dados = await r.json();
-    setLista(dados);
-  }
 
-  useEffect(() => {
-    carregar();
-  }, []);
+    // 🔒 GARANTE ARRAY
+    setLista(Array.isArray(dados) ? dados : []);
+  } catch (e) {
+    console.error("Erro ao carregar diário", e);
+    setLista([]); // segurança
+  }
+}
+
+ 
 
   // 👉 FORMATA DATA DA TABELA (remove horário)
   const formatarData = (d) => {
