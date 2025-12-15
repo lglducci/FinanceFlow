@@ -1,0 +1,527 @@
+{
+  "name": "ProcessaDIarioContabil",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        416,
+        128
+      ],
+      "id": "ca4bbaa2-86df-4fde-8383-19da58c3a0af",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        544,
+        320
+      ],
+      "id": "162dc11c-ae56-43df-bb28-48a1a820f58b",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        320
+      ],
+      "id": "bb2ecdd6-324d-490c-a5b4-6a431e9a9332",
+      "name": "EditDelLote"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        -64
+      ],
+      "id": "383aae74-6942-4ab3-9126-e0589154f9fe",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gerar_contabil",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        320
+      ],
+      "id": "b03e2278-90cc-44d6-afe0-53e7584f1c0d",
+      "name": "ExcluirLote",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select distinct lote_id\n  from contab.diario_staging \n  where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        320
+      ],
+      "id": "1aebea1a-45c1-4bb1-b7b4-47e70ae964bd",
+      "name": "GetLote",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "delete  from  contab.diario_staging \n  where empresa_id = {{ $('EditDelLote').item.json.empresa_id }} and \n  lote_id = '{{ $json.lote_id }}';\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        320,
+        320
+      ],
+      "id": "7c5aa39b-f507-46ac-81ba-4699bcd230d0",
+      "name": "ExcluiLote",
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Diário",
+        "height": 876,
+        "width": 1280,
+        "color": 3
+      },
+      "id": "0663f664-c303-4c81-accf-30ee713301d3",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gerar_staging",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        -64
+      ],
+      "id": "394c2fc1-c565-40c6-8560-31c6fd1335b2",
+      "name": "GeraStaging",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "84d4691f-07a7-48da-85b9-ad6557a565a7",
+              "name": "data_ini",
+              "value": "= {{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "e652a562-a4ac-4eba-ae02-bef31ce39227",
+              "name": "data_fim",
+              "value": "= {{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        -64
+      ],
+      "id": "edf0049b-c1da-40b6-a073-968787a1d224",
+      "name": "EditStaging"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from  contab.ff_gerar_diario_tudo ( {{ $json.empresa_id }},'{{ $json.data_ini }}','{{ $json.data_fim }}') ;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        -64
+      ],
+      "id": "6e770e17-78e7-4168-b910-901747e5ba80",
+      "name": "ff_gerar_diario_tudo",
+      "executeOnce": false,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "consolidar_diario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -272,
+        128
+      ],
+      "id": "8ee4d770-5101-4500-9ef4-559dd8997839",
+      "name": "ConsolidaDiario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        128
+      ],
+      "id": "54a77a8f-3309-43a1-a2cf-6a6c87f78e24",
+      "name": "EditDelLote1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  contab.ff_consolidar_diario_staging({{ $json.empresa_id }});\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        176,
+        128
+      ],
+      "id": "4ce5e224-6119-435d-b3b9-344d766b28bc",
+      "name": "ff_consolidar_diario_staging",
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        544
+      ],
+      "id": "f7b31681-e73a-47b0-b2a3-47ae0838e90c",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "path": "ultimo_processamento",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        544
+      ],
+      "id": "055891c2-09ba-4068-9c9e-c711026b5367",
+      "name": "Ultimo_process",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        544
+      ],
+      "id": "053c9dbc-1617-475f-8380-9ee77b59b9ef",
+      "name": "EditUltimo_process"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from contab.controle_fechamento  where empresa_id =  {{ $json.empresa_id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        144,
+        544
+      ],
+      "id": "bc99d423-9f2d-461b-9177-0a2ce7697d8e",
+      "name": "Ultimo_processamento",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "EditDelLote": {
+      "main": [
+        [
+          {
+            "node": "GetLote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluirLote": {
+      "main": [
+        [
+          {
+            "node": "EditDelLote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetLote": {
+      "main": [
+        [
+          {
+            "node": "ExcluiLote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiLote": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GeraStaging": {
+      "main": [
+        [
+          {
+            "node": "EditStaging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging": {
+      "main": [
+        [
+          {
+            "node": "ff_gerar_diario_tudo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_gerar_diario_tudo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsolidaDiario": {
+      "main": [
+        [
+          {
+            "node": "EditDelLote1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditDelLote1": {
+      "main": [
+        [
+          {
+            "node": "ff_consolidar_diario_staging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_consolidar_diario_staging": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ultimo_process": {
+      "main": [
+        [
+          {
+            "node": "EditUltimo_process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditUltimo_process": {
+      "main": [
+        [
+          {
+            "node": "Ultimo_processamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ultimo_processamento": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "64ef637d-7d6d-4895-b0e0-f4d9b49044ae",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "hb5rH2s3cAjNYWah",
+  "tags": []
+}

@@ -1232,8 +1232,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2096,
-        -176
+        -2256,
+        -288
       ],
       "id": "48416f70-06e3-4a9b-b0a5-7812c0885296",
       "name": "LoteConsulta",
@@ -1279,7 +1279,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -1280,
+        -1328,
         -16
       ],
       "id": "2e8e3326-a5a6-45e1-bb22-7427d3abd248",
@@ -1610,7 +1610,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "09d48c4b-3939-4d75-84ad-7a8f206c5e68",
+  "versionId": "569eb3d8-408f-42be-9dd1-5835f8e57916",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
