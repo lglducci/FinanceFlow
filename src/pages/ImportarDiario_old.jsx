@@ -1,5 +1,7 @@
  import { useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
+import { callApi } from "../utils/api";
+
 
 export default function ImportarDiario() {
   const empresa_id = localStorage.getItem("empresa_id") || "1";
@@ -8,10 +10,18 @@ export default function ImportarDiario() {
   const [lotes, setLotes] = useState([]);
   const [filtro, setFiltro] = useState("todos");
   const [msg, setMsg] = useState("");
+  const [showHelp, setShowHelp] = useState(false); // 👈 NOVO
+// Datas do processamento
+const hoje = new Date().toISOString().substring(0, 10);
 
-  // --------------------------------------------------------------------
-  // IMPORTAR ARQUIVO
-  // --------------------------------------------------------------------
+const [dataIni, setDataIni] = useState(hoje);
+const [dataFim, setDataFim] = useState(hoje);
+
+
+
+
+  // ---------------------------------------
+  // ENVIO
   async function enviar() {
     if (!arquivo) {
       alert("Selecione um arquivo");
@@ -24,131 +34,90 @@ export default function ImportarDiario() {
 
     const url = buildWebhookUrl("importar_diario");
 
-    const r = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
-
+    const r = await fetch(url, { method: "POST", body: formData });
     const data = await r.json();
+
     setLotes(data);
-
-    setMsg(
-      "Importação concluída. Revise as linhas abaixo. Você pode corrigir o arquivo original e importar novamente ou consolidar os registros válidos."
-    );
+    setMsg("Importação concluída. Revise as linhas abaixo.");
   }
 
-  // --------------------------------------------------------------------
+  // ---------------------------------------
   // EXCLUIR LOTE
-  // --------------------------------------------------------------------
- 
-async function excluirLote() {
-  try {
-    if (!window.confirm("Deseja realmente excluir o lote pendente?")) return;
-
-    const url = buildWebhookUrl("excluir_lote");
-
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id }),
-    });
-
-    const texto = await resp.text();
-    let json = null;
-
-    // tenta converter para JSON
+  async function excluirLote() {
     try {
-      json = JSON.parse(texto);
-    } catch (e) {
-      console.error("JSON inválido:", texto);
-      alert("❌ Erro inesperado no servidor.");
-      return;
-    }
+      if (!window.confirm("Deseja realmente excluir o lote pendente?")) return;
 
-    const item = Array.isArray(json) ? json[0] : json;
+      const resp = await fetch(buildWebhookUrl("excluir_lote"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa_id }),
+      });
 
-    // 🔥 TRATA ERRO DO SERVIDOR
-    if (!resp.ok || item?.ok === false || texto.includes("ERROR")) {
-      alert("❌ Falha ao excluir lote:\n\n" + (item?.message || texto));
-      return;
-    }
+      const texto = await resp.text();
+      let json = null;
 
-    // 🔥 SUCESSO
-    alert(item?.message || "✔ Lote excluído com sucesso!");
+      try {
+        json = JSON.parse(texto);
+      } catch {}
 
-    // RESET DA TELA
-    setLotes([]);
-    setArquivo(null);
-    setFiltro("todos");
-    setMsg("Lote excluído com sucesso.");
+      const item = Array.isArray(json) ? json[0] : json;
 
-  } catch (e) {
-    console.error("ERRO:", e);
-    alert("❌ Erro de comunicação com o servidor.");
-  }
-}
+      if (!resp.ok || item?.ok === false || texto.includes("ERROR")) {
+        alert("❌ Falha ao excluir lote:\n\n" + (item?.message || texto));
+        return;
+      }
 
- 
-
-  // --------------------------------------------------------------------
-  // CONFIRMAR LOTE
-  // --------------------------------------------------------------------
- async function confirmarLote() {
-  try {
-
-     if (!window.confirm("Deseja realmente confirmar  o lote pendente?")) return;
-    const url = buildWebhookUrl("confirmar_lote");
-
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id }),
-    });
-
-    const texto = await resp.text();
-    let json = null;
-
-    try {
-      json = JSON.parse(texto);   // tenta converter
+      alert(item?.message || "✔ Lote excluído com sucesso!");
+      setLotes([]);
+      setArquivo(null);
+      setFiltro("todos");
+      setMsg("Lote excluído com sucesso.");
     } catch {
-      console.error("Resposta não é JSON:", texto);
+      alert("❌ Erro de comunicação com o servidor.");
     }
-
-    // 🔥 SE EXISTE ERRO NA RESPOSTA
-    if (!resp.ok || json?.error || texto.includes("ERROR")) {
-      const msg = json?.message || texto || "Erro ao consolidar lote.";
-      alert("❌ Falha ao consolidar lote:\n\n" + msg);
-      return;
-    }
-
-    // 🔥 SUCESSO
-    alert("✔ Lote consolidado com sucesso!");
-
-    // RESET DA TELA
-    setLotes([]);
-    setArquivo(null);
-    setFiltro("todos");
-    setMsg("Lote consolidado com sucesso.");
-
-  } catch (e) {
-    console.error("ERRO:", e);
-    alert("❌ Erro de comunicação com o servidor.");
   }
-}
 
+  // ---------------------------------------
+  // CONFIRMAR LOTE
+  async function confirmarLote() {
+    try {
+      if (!window.confirm("Deseja realmente confirmar o lote?")) return;
 
-  // --------------------------------------------------------------------
-  // FILTRAGEM DOS REGISTROS
-  // --------------------------------------------------------------------
+      const resp = await fetch(buildWebhookUrl("confirmar_lote"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa_id }),
+      });
+
+      const texto = await resp.text();
+      let json = null;
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      if (!resp.ok || json?.error || texto.includes("ERROR")) {
+        alert("❌ Falha ao consolidar lote:\n\n" + (json?.message || texto));
+        return;
+      }
+
+      alert("✔ Lote consolidado com sucesso!");
+      setLotes([]);
+      setArquivo(null);
+      setFiltro("todos");
+      setMsg("Lote consolidado com sucesso.");
+    } catch {
+      alert("❌ Erro de comunicação com o servidor.");
+    }
+  }
+
+  // ---------------------------------------
+  // FILTRO
   const itensFiltrados = lotes.filter((l) => {
     if (filtro === "ok" && l.status !== "ok") return false;
     if (filtro === "erro" && l.status !== "erro") return false;
     return true;
   });
 
-  // --------------------------------------------------------------------
-  // DASHBOARD
-  // --------------------------------------------------------------------
   const totalLinhas = lotes.length;
   const totalOk = lotes.filter((x) => x.status === "ok").length;
   const totalErro = lotes.filter((x) => x.status === "erro").length;
@@ -169,136 +138,360 @@ async function excluirLote() {
     fontWeight: "bold",
   };
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h2 style={{ marginBottom: 20 }}>📥 Importação Diário</h2>
-
-      {/* ------------------ UPLOAD ------------------ */}
+  // -----------------------------
+  // MODAL DE AJUDA (HTML Simples)
+  const helpModal = (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(0,0,0,0.45)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999,
+      }}
+    >
       <div
         style={{
+          width: "70%",
+          maxHeight: "80%",
+          overflowY: "auto",
           background: "white",
           padding: 20,
           borderRadius: 10,
-          border: "4px solid #003ba2",
+          border: "3px solid #003ba2",
         }}
       >
-        <label style={{ fontWeight: "bold", fontSize: 15 }}>
-          Selecionar Arquivo
-        </label>
+        <h2>📘 Ajuda – Importação do Diário</h2>
+        <p style={{ marginTop: 10 }}>
+          Aqui estão as regras e estrutura para importar o arquivo do diário.
+        </p>
 
-        <div
+        <h3>📌 Estrutura do Arquivo</h3>
+        <pre style={{ background: "#f1f1f1", padding: 10 }}>
+        1) empresa_id – inteiro – tamanho 8  
+        2) data_mov – data – formato DD/MM/AAAA  
+        3) modelo_codigo – texto – identifica o modelo de lançamento  
+        4) historico – texto livre  
+        5) documento – texto  
+        6) valor – número decimal  
+        7) cnpj – numérico – válido ou vazio  
+        </pre>
+
+        <h3>✔ Critérios de Aceite</h3>
+        <ul>
+          <li>Linha com data válida</li>
+          <li>Modelo existente</li>
+          <li>Valor numérico</li>
+          <li>CNPJ válido (opcional)</li>
+        </ul>
+
+        <h3>❌ Critérios de Rejeição</h3>
+        <ul>
+          <li>Data inválida</li>
+          <li>Modelo inexistente</li>
+          <li>Valor zerado ou inválido</li>
+        </ul>
+
+        <h3>📄 Exemplo de Linha Válida</h3>
+        <pre style={{ background: "#f1f1f1", padding: 10 }}>
+1; 12/08/2025; 301; Compra de Mercadoria; NF123; 1290.55; 12345678000199
+        </pre>
+
+        <button
+          onClick={() => setShowHelp(false)}
           style={{
-            marginTop: 10,
-            padding: 20,
-            border: "2px dashed #003ba2",
+            marginTop: 20,
+            padding: "10px 18px",
+            background: "#003ba2",
+            color: "white",
+            border: "none",
             borderRadius: 6,
-            background: "#f7f9ff",
-            textAlign: "center",
           }}
         >
-          <input
-            type="file"
-            accept=".csv,.xlsx,.txt"
-            onChange={(e) => setArquivo(e.target.files[0])}
-          />
-
-          {arquivo ? (
-            <p style={{ marginTop: 10, fontWeight: "bold" }}>
-              Arquivo selecionado: {arquivo.name}
-            </p>
-          ) : (
-            <p style={{ marginTop: 10, opacity: 0.7 }}>
-              Clique para escolher o arquivo do diário
-            </p>
-          )}
-        </div>
-
-        {/* ------------------ BOTÕES ------------------ */}
-        <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-          <button
-            onClick={enviar}
-            style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
-          >
-            Importar Arquivo
-          </button>
-
-          <button
-            onClick={excluirLote}
-            style={{ ...estilosBtn, background: "#cc0000", color: "white" }}
-          >
-            Excluir Lote
-          </button>
-
-          <button
-            onClick={confirmarLote}
-            style={{ ...estilosBtn, background: "#0a8e32", color: "white" }}
-          >
-            Confirmar Lote
-          </button>
-        </div>
-
-        {/* MENSAGEM AO USUÁRIO */}
-        {msg && (
-          <div
-            style={{
-              marginTop: 15,
-              padding: 10,
-              background: "#e8f1ff",
-              borderRadius: 6,
-              color: "#003ba2",
-              fontWeight: "bold",
-            }}
-          >
-            {msg}
-          </div>
-        )}
-
-        {/* ------------------ DASHBOARD ------------------ */}
-        {lotes.length > 0 && (
-          <div
-            style={{
-              marginTop: 25,
-              display: "flex",
-              gap: 20,
-              fontWeight: "bold",
-            }}
-          >
-            <div>📄 Total de linhas: {totalLinhas}</div>
-            <div style={{ color: "#0a8e32" }}>
-              ✔ Válidas: {totalOk} (R$ {somaOk.toFixed(2)})
-            </div>
-            <div style={{ color: "#cc0000" }}>
-              ✖ Com erro: {totalErro} (R$ {somaErro.toFixed(2)})
-            </div>
-          </div>
-        )}
-
-        {/* ------------------ FILTROS ------------------ */}
-        <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-          <button
-            onClick={() => setFiltro("ok")}
-            style={{ ...estilosBtn, background: "#19d357", color: "white" }}
-          >
-            ✔ Linhas OK
-          </button>
-
-          <button
-            onClick={() => setFiltro("erro")}
-            style={{ ...estilosBtn, background: "#f64949", color: "white" }}
-          >
-            ✖ Linhas com Erro
-          </button>
-
-          <button
-            onClick={() => setFiltro("todos")}
-            style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
-          >
-            Mostrar Todos
-          </button>
-        </div>
+          Fechar
+        </button>
       </div>
+    </div>
+  );
 
-      {/* ------------------ TABELA ------------------ */}
+
+ async function gerarStaging() {
+  try {
+    setMsg("⏳ Gerando STAGING...");
+    await callApi(
+      buildWebhookUrl("gerar_staging"),
+      { empresa_id,
+    data_ini: dataIni,
+    data_fim: dataFim }
+    );
+    setMsg("✅ STAGING gerado com sucesso.");
+  } catch (e) {
+    alert("❌ " + e.message);
+  }
+}
+
+async function consolidarDiario() {
+  try {
+    setMsg("⏳ Consolidando diário...");
+    await callApi(
+      buildWebhookUrl("consolidar_diario"),
+      { empresa_id }
+    );
+    setMsg("✅ Diário consolidado.");
+  } catch (e) {
+    alert("❌ " + e.message);
+  }
+}
+
+ 
+async function gerarContabil() {
+  try {
+    setMsg("⏳ Gerando Contábil...");
+    await callApi(
+      buildWebhookUrl("gerar_contabil"),
+      { empresa_id }
+    );
+    setMsg("✅ Contábil gerado com sucesso.");
+  } catch (e) {
+    alert("❌ " + e.message);
+  }
+}
+
+ 
+ 
+
+
+
+
+  // ---------------------------------------
+  // RENDER
+  return (
+    <div style={{ padding: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between" ,
+            fontSize: 18 , fontWeight: "bold" ,   background: "#eeeff5ff", }}>
+        <h2 style={{ display: "flex", justifyContent: "space-between" ,
+            fontSize: 22 , fontWeight: "bold" ,   background: "#e4e5eeff"}}
+            >📥 Importação Diário/ Pré-Diário / Diário /Geração Contábil</h2>
+        
+      </div>
+            {/* ------------------ TOPO DA IMPORTAÇÃO ------------------ */}
+ <div
+  style={{
+    display: "flex",
+    gap: 20,
+    background: "white",
+    padding: 20,
+    borderRadius: 10,
+    border: "4px solid #003ba2",
+    marginBottom: 20,
+    alignItems: "flex-start",
+  }}
+>
+
+  {/* LINHA SUPERIOR: TÍTULO + AJUDA */}
+  <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <label style={{ fontWeight: "bold", fontSize: 15 }}>Selecionar Arquivo</label>
+
+    <button
+      onClick={() => setShowHelp(true)}
+      style={{
+        padding: "8px 14px",
+        borderRadius: 6,
+        border: "2px solid #cc7a00",
+        background: "#ffc045",
+        cursor: "pointer",
+        fontWeight: "bold",
+      }}
+    >
+      ❔ Ajuda
+    </button>
+  </div>
+
+  {/* ÁREA REDUZIDA DE UPLOAD */}
+  <div
+    style={{
+      marginTop: 10,
+      padding: 15,
+      border: "2px dashed #003ba2",
+      borderRadius: 6,
+      background: "#f7f9ff",
+      textAlign: "center",
+      width: "40%",      
+    }}
+  >
+    <input
+      type="file"
+      accept=".csv,.xlsx,.txt"
+      onChange={(e) => setArquivo(e.target.files[0])}
+    />
+
+    {arquivo ? (
+      <p style={{ marginTop: 10, fontWeight: "bold" }}>
+        Arquivo selecionado: {arquivo.name}
+      </p>
+    ) : (
+      <p style={{ marginTop: 10, opacity: 0.7 }}>
+        Clique para escolher o arquivo
+      </p>
+    )}
+  </div>
+
+  {/* BOTÕES */}
+  <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
+    <button
+      onClick={enviar}
+      style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
+    >
+      Importar Arquivo
+    </button>
+
+    <button
+      onClick={excluirLote}
+      style={{ ...estilosBtn, background: "#cc0000", color: "white" }}
+    >
+      Excluir Lote
+    </button>
+
+    <button
+      onClick={confirmarLote}
+      style={{ ...estilosBtn, background: "#eae249ff", color: "white" }}
+    >
+      Confirmar Lote
+    </button> 
+   {/* ------------------ PROCESSAMENTO CONTÁBIL ------------------ */}
+<div
+  style={{
+    background: "#f5f6fa",
+    padding: 20,
+    borderRadius: 10,
+    border: "3px solid #c7c7c7",
+    marginBottom: 20,
+  }}
+>
+  <h3 style={{ marginBottom: 15, fontWeight: "bold" }}>
+    Gerar STAGING / Diário / Contábil
+  </h3>
+
+  <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+    <div>
+      <label style={{ fontWeight: "bold" }}>Data Inicial</label><br />
+      <input
+        type="date"
+        value={dataIni}
+        onChange={(e) => setDataIni(e.target.value)}
+        style={{ padding: 6 }}
+      />
+    </div>
+
+    <div>
+      <label style={{ fontWeight: "bold" }}>Data Final</label><br />
+      <input
+        type="date"
+        value={dataFim}
+        onChange={(e) => setDataFim(e.target.value)}
+        style={{ padding: 6 }}
+      />
+    </div>
+  </div>
+
+  <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
+    <button
+      onClick={gerarStaging}
+      style={{ ...estilosBtn, background: "#0a8e32", color: "white" }}
+    >
+      ✔ Gerar STAGING
+    </button>
+
+    <button
+      onClick={consolidarDiario}
+      style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
+    >
+      ✔ Consolidar Diário
+    </button>
+
+    <button
+      onClick={gerarContabil}
+      style={{ ...estilosBtn, background: "#0bd849", color: "white" }}
+    >
+      ✔ Gerar Contábil
+    </button>
+  </div>
+</div> 
+  </div>
+  <span>📄 Total de linhas: {totalLinhas}</span>
+
+      <span style={{ color: "#0a8e32" }}>
+        ✔ Válidas: {totalOk} (R$ {somaOk.toFixed(2)})
+      </span>
+
+      <span style={{ color: "#cc0000" }}>
+        ✖ Com erro: {totalErro} (R$ {somaErro.toFixed(2)})
+      </span>
+
+  {/* INDICADORES */}
+  {lotes.length > 0 && (
+    <div
+      style={{
+        marginTop: 20,
+        display: "flex",
+        alignItems: "center",
+        gap: 20,
+        padding: 10,
+        background: "#eef4ff",
+        borderRadius: 6,
+        fontWeight: "bold",
+      }}
+    >
+      
+
+      {/* BOTÕES DE FILTRO */}
+      <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+        <button
+          onClick={() => setFiltro("ok")}
+          style={{ ...estilosBtn, background: "#19d357", color: "white" }}
+        >
+          ✔ Linhas OK
+        </button>
+
+        <button
+          onClick={() => setFiltro("erro")}
+          style={{ ...estilosBtn, background: "#f64949", color: "white" }}
+        >
+          ✖ Linhas com Erro
+        </button>
+
+        <button
+          onClick={() => setFiltro("todos")}
+          style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
+        >
+          Mostrar Todos
+        </button>
+      </div>
+    </div>
+  )}
+
+  {msg && (
+    <div
+      style={{
+        marginTop: 15,
+        padding: 10,
+        background: "#e8f1ff",
+        borderRadius: 6,
+        color: "#003ba2",
+        fontWeight: "bold",
+      }}
+    >
+      {msg}
+    </div>
+  )}
+</div> 
+
+      {/* tabela */}
       <div
         style={{
           marginTop: 30,
@@ -308,17 +501,16 @@ async function excluirLote() {
           padding: 10,
         }}
       >
-        <table className="tabela tabela-mapeamento" style={{ width: "60%", borderCollapse: "collapse" }}
-           
+        <table
+          className="tabela tabela-mapeamento"
+          style={{
+            width: "100%",
+            borderCollapse: "collapse",
+            fontSize: 14,
+          }}
         >
           <thead>
-            <tr
-              style={{
-                background: "#002b80",
-                color: "white",
-                height: 40,
-              }}
-            >
+            <tr style={{ background: "#002b80", color: "white", height: 40 }}>
               <th>Linha</th>
               <th>Data</th>
               <th>Token</th>
@@ -362,6 +554,9 @@ async function excluirLote() {
           </div>
         )}
       </div>
+
+      {/* modal de ajuda */}
+      {showHelp && helpModal}
     </div>
   );
 }

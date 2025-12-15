@@ -1,5 +1,7 @@
- import { useState } from "react";
+  import { useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
+import { callApi } from "../utils/api";
+
 
 export default function ImportarDiario() {
   const empresa_id = localStorage.getItem("empresa_id") || "1";
@@ -9,6 +11,14 @@ export default function ImportarDiario() {
   const [filtro, setFiltro] = useState("todos");
   const [msg, setMsg] = useState("");
   const [showHelp, setShowHelp] = useState(false); // 👈 NOVO
+// Datas do processamento
+const hoje = new Date().toISOString().substring(0, 10);
+
+const [dataIni, setDataIni] = useState(hoje);
+const [dataFim, setDataFim] = useState(hoje);
+
+
+
 
   // ---------------------------------------
   // ENVIO
@@ -209,157 +219,200 @@ export default function ImportarDiario() {
     </div>
   );
 
+
+ async function gerarStaging() {
+  try {
+    setMsg("⏳ Gerando STAGING..."); 
+
+   const data =  await callApi(
+      buildWebhookUrl("gerar_staging"),
+      { empresa_id,
+    data_ini: dataIni,
+    data_fim: dataFim }
+    );
+    
+    setLotes(data);
+
+    setMsg("✅ STAGING gerado com sucesso.");
+  } catch (e) {
+    alert("❌ " + e.message);
+  }
+}
+
+async function consolidarDiario() {
+  try {
+    setMsg("⏳ Consolidando diário...");
+     setLotes([]);
+   const data = await callApi(
+      buildWebhookUrl("consolidar_diario"),
+      { empresa_id }
+    );
+     
+      setLotes(data);
+    setMsg("✅ Diário consolidado.");
+  } catch (e) {
+    alert("❌ " + e.message);
+  }
+}
+
+ 
+async function gerarContabil() {
+  try {
+    setMsg("⏳ Gerando Contábil...");
+    await callApi(
+      buildWebhookUrl("gerar_contabil"),
+      { empresa_id }
+    );
+    setMsg("✅ Contábil gerado com sucesso.");
+  } catch (e) {
+    alert("❌ " + e.message);
+  }
+}
+
+ 
+ 
+
+
+
+
   // ---------------------------------------
   // RENDER
   return (
     <div style={{ padding: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between" ,
+            fontSize: 18 , fontWeight: "bold" ,   background: "#eeeff5ff", }}>
+        <h2 style={{ display: "flex", justifyContent: "space-between" ,
+            fontSize: 22 , fontWeight: "bold" ,   background: "#e4e5eeff"}}
+            >📥 Importação Diário/ Pré-Diário / Diário /Geração Contábil</h2>
+        
+      </div>
+            {/* ------------------ TOPO DA IMPORTAÇÃO ------------------ */}
+ {/* ===== GRID PRINCIPAL (2x2) ===== */}
+<div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+  {/* ===== LINHA 1 ===== */}
+  <div style={{ display: "flex", gap: 20 }}>
+
+    {/* CONTAINER 1 — UPLOAD */}
+    <div style={{
+      flex: 1,
+      background: "white",
+      padding: 20,
+      borderRadius: 10,
+      border: "3px solid #003ba2"
+    }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h2>📥 Importação Diário</h2>
-        <button
-          onClick={() => setShowHelp(true)}
-          style={{
-            ...estilosBtn,
-            background: "#ffa500",
-            color: "black",
-            border: "2px solid #cc7a00",
-          }}
-        >
+        <strong>Selecionar Arquivo</strong>
+        <button onClick={() => setShowHelp(true)}
+          style={{ padding: "6px 10px", background: "#ffc045", border: "1px solid #cc7a00" }}>
           ❔ Ajuda
         </button>
       </div>
-            {/* ------------------ TOPO DA IMPORTAÇÃO ------------------ */}
-<div
-  style={{
-    background: "white",
-    padding: 20,
-    borderRadius: 10,
-    border: "4px solid #003ba2",
-    marginBottom: 20,
-  }}
->
-  {/* LINHA SUPERIOR: TÍTULO + AJUDA */}
-  <div style={{ display: "flex", justifyContent: "space-between" }}>
-    <label style={{ fontWeight: "bold", fontSize: 15 }}>Selecionar Arquivo</label>
 
-    <button
-      onClick={() => setShowHelp(true)}
-      style={{
-        padding: "8px 14px",
-        borderRadius: 6,
-        border: "2px solid #cc7a00",
-        background: "#ffc045",
-        cursor: "pointer",
-        fontWeight: "bold",
-      }}
-    >
-      ❔ Ajuda
-    </button>
-  </div>
+      <div style={{
+        marginTop: 10,
+        padding: 15,
+        border: "2px dashed #003ba2",
+        background: "#f7f9ff",
+        textAlign: "center"
+      }}>
+        <input type="file" onChange={(e) => setArquivo(e.target.files[0])} />
+        {arquivo && <div><b>{arquivo.name}</b></div>}
+      </div>
 
-  {/* ÁREA REDUZIDA DE UPLOAD */}
-  <div
-    style={{
-      marginTop: 10,
-      padding: 15,
-      border: "2px dashed #003ba2",
-      borderRadius: 6,
-      background: "#f7f9ff",
-      textAlign: "center",
-      width: "40%",      
-    }}
-  >
-    <input
-      type="file"
-      accept=".csv,.xlsx,.txt"
-      onChange={(e) => setArquivo(e.target.files[0])}
-    />
-
-    {arquivo ? (
-      <p style={{ marginTop: 10, fontWeight: "bold" }}>
-        Arquivo selecionado: {arquivo.name}
-      </p>
-    ) : (
-      <p style={{ marginTop: 10, opacity: 0.7 }}>
-        Clique para escolher o arquivo
-      </p>
-    )}
-  </div>
-
-  {/* BOTÕES */}
-  <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
-    <button
-      onClick={enviar}
-      style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
-    >
-      Importar Arquivo
-    </button>
-
-    <button
-      onClick={excluirLote}
-      style={{ ...estilosBtn, background: "#cc0000", color: "white" }}
-    >
-      Excluir Lote
-    </button>
-
-    <button
-      onClick={confirmarLote}
-      style={{ ...estilosBtn, background: "#0a8e32", color: "white" }}
-    >
-      Confirmar Lote
-    </button>
-  </div>
-
-  {/* INDICADORES */}
-  {lotes.length > 0 && (
-    <div
-      style={{
-        marginTop: 20,
-        display: "flex",
-        alignItems: "center",
-        gap: 20,
-        padding: 10,
-        background: "#eef4ff",
-        borderRadius: 6,
-        fontWeight: "bold",
-      }}
-    >
-      <span>📄 Total de linhas: {totalLinhas}</span>
-
-      <span style={{ color: "#0a8e32" }}>
-        ✔ Válidas: {totalOk} (R$ {somaOk.toFixed(2)})
-      </span>
-
-      <span style={{ color: "#cc0000" }}>
-        ✖ Com erro: {totalErro} (R$ {somaErro.toFixed(2)})
-      </span>
-
-      {/* BOTÕES DE FILTRO */}
-      <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
-        <button
-          onClick={() => setFiltro("ok")}
-          style={{ ...estilosBtn, background: "#19d357", color: "white" }}
-        >
-          ✔ Linhas OK
+      <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
+        <button onClick={enviar} style={{ ...estilosBtn, background: "#003ba2", color: "#fff" }}>
+          Importar
         </button>
-
-        <button
-          onClick={() => setFiltro("erro")}
-          style={{ ...estilosBtn, background: "#f64949", color: "white" }}
-        >
-          ✖ Linhas com Erro
+        <button onClick={excluirLote} style={{ ...estilosBtn, background: "#cc0000", color: "#fff" }}>
+          Excluir
         </button>
-
-        <button
-          onClick={() => setFiltro("todos")}
-          style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
-        >
-          Mostrar Todos
+        <button onClick={confirmarLote} style={{ ...estilosBtn, background: "#eae249" }}>
+          Confirmar
         </button>
       </div>
     </div>
-  )}
 
-  {msg && (
+    {/* CONTAINER 3 — PROCESSAMENTO */}
+    <div style={{
+      flex: 1,
+      background: "#f5f6fa",
+      padding: 20,
+      borderRadius: 10,
+      border: "2px solid #c7c7c7"
+    }}>
+      <strong>Gerar STAGING / Diário / Contábil</strong>
+
+      <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
+        <div>
+          <label>Data Inicial</label><br />
+          <input type="date" value={dataIni} onChange={e => setDataIni(e.target.value)} />
+        </div>
+        <div>
+          <label>Data Final</label><br />
+          <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+        </div>
+      </div>
+
+      <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
+        <button onClick={gerarStaging} style={{ ...estilosBtn, background: "#0a8e32", color: "#fff" }}>
+          ✔ STAGING
+        </button>
+        <button onClick={consolidarDiario} style={{ ...estilosBtn, background: "#003ba2", color: "#fff" }}>
+          ✔ Diário
+        </button>
+        <button onClick={gerarContabil} style={{ ...estilosBtn, background: "#0bd849", color: "#fff" }}>
+          ✔ Contábil
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  {/* ===== LINHA 2 ===== */}
+  <div style={{ display: "flex", gap: 20 }}>
+
+    {/* CONTAINER 2 — RESUMO */}
+    <div style={{
+      flex: 1,
+      background: "#eef4ff",
+      padding: 15,
+      borderRadius: 8,
+      fontWeight: "bold",
+      display: "flex",
+      gap: 20
+    }}>
+      <span>📄 Total: {totalLinhas}</span>
+      <span style={{ color: "#0a8e32" }}>✔ OK: {totalOk} (R$ {somaOk.toFixed(2)})</span>
+      <span style={{ color: "#cc0000" }}>✖ Erro: {totalErro} (R$ {somaErro.toFixed(2)})</span>
+    </div>
+ 
+
+    {/* CONTAINER 4 — FILTROS */}
+    <div style={{
+      flex: 1,
+      background: "#eef4ff",
+      padding: 15,
+      borderRadius: 8,
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: 10
+    }}>
+      <button onClick={() => setFiltro("ok")} style={{ ...estilosBtn, background: "#19d357", color: "#fff" }}>
+        ✔ Linhas OK
+      </button>
+      <button onClick={() => setFiltro("erro")} style={{ ...estilosBtn, background: "#f64949", color: "#fff" }}>
+         ✔ Linhas Erro
+      </button>
+      <button onClick={() => setFiltro("todos")} style={{ ...estilosBtn, background: "#003ba2", color: "#fff" }}>
+        ✔ Todos
+      </button>
+    </div>
+    
+     
+  </div>
+ 
+      {msg && (
     <div
       style={{
         marginTop: 15,
@@ -373,9 +426,9 @@ export default function ImportarDiario() {
       {msg}
     </div>
   )}
+  
 </div>
 
-  
 
       {/* tabela */}
       <div
