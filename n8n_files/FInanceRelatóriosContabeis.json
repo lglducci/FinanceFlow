@@ -1,0 +1,523 @@
+{
+  "name": "FInanceRelatóriosContabeis",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        368,
+        32
+      ],
+      "id": "16725586-4c82-4ad2-a85e-1c3c124235c5",
+      "name": "Respond to Webhook19"
+    },
+    {
+      "parameters": {
+        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
+        "height": 1004,
+        "width": 1328,
+        "color": 4
+      },
+      "id": "e109de80-b263-4bfe-8af9-be4cc5e62776",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -192
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        608,
+        224
+      ],
+      "id": "c1a6ba8f-5bf3-4b56-9067-8ea74dd0fbc5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "contas",
+              "value": "={{ $json.body.contas}}",
+              "type": "string"
+            },
+            {
+              "id": "3d27d507-2aef-4907-9696-e41f23d10c6a",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        224
+      ],
+      "id": "73afc638-7b35-458c-81d7-8edc37358526",
+      "name": "Edtranscartao1"
+    },
+    {
+      "parameters": {
+        "path": "a",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        224
+      ],
+      "id": "f5da02e3-a017-44e4-a576-1909d04087f8",
+      "name": "RecebeContaReceber",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT ff_receber_contas(\n  {{ $json.empresa_id }},\n  '{{ $json.contas_json }}'::json,\n   {{ $json.conta_id }}\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        416,
+        224
+      ],
+      "id": "253a806c-c4f6-4bb6-8977-e2910aec42f4",
+      "name": "ff_receber_contas",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        640,
+        416
+      ],
+      "id": "1c168c9d-c4d1-458b-af5a-0ed6771cc8b7",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "path": "d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        416
+      ],
+      "id": "356abfee-4ec6-4dcf-b8a1-816c9339ed5a",
+      "name": "PagarFaturas",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "faturas",
+              "value": "={{ $json.body.faturas}}",
+              "type": "string"
+            },
+            {
+              "id": "6b48dd9f-af2a-414f-80e7-c21216ab10a8",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        416
+      ],
+      "id": "68042cc4-108d-4d43-9bed-855724f76ca4",
+      "name": "Edit_PagarFatura"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT ff_registrar_pagamento_faturas(\n  {{ $json.empresa_id }},\n   {{ $json.conta_id }},\n   '{{ $json.faturas }}'::json \n);\n\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        432,
+        416
+      ],
+      "id": "6f38eb93-4983-4620-abb1-32e1657a0d6d",
+      "name": "ff_registrar_pagamento_faturas",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        448,
+        608
+      ],
+      "id": "dfedce59-8c81-4e6c-87da-4c53c515cb02",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "path": "d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        608
+      ],
+      "id": "3cc21169-1558-486a-a972-12734c724c3d",
+      "name": "Estornalancto",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        608
+      ],
+      "id": "53149aec-6464-4880-8eb4-f542e75e8a8e",
+      "name": "EditEstorno"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT ff_estornar_transacao(\n  {{ $json.empresa_id }},\n  {{ $json.id }}\n);\n\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        608
+      ],
+      "id": "1179667f-b821-4ff0-a967-e0ef1fde99ba",
+      "name": "ff_estornar_transacao",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "balancete",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        32
+      ],
+      "id": "b48470d7-7753-4ad4-8f39-2a97742bc92e",
+      "name": "Balancete",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        32
+      ],
+      "id": "82314192-0db5-4295-934d-41698f13faec",
+      "name": "Edtranscartao"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * from contab.fn_balancete(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        176,
+        32
+      ],
+      "id": "580e9825-c607-4291-8c01-b19e1cc6a135",
+      "name": "fn_balancete",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Edtranscartao": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20250101",
+          "data_fim": "20251231"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Edtranscartao1": {
+      "main": [
+        [
+          {
+            "node": "ff_receber_contas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RecebeContaReceber": {
+      "main": [
+        [
+          {
+            "node": "Edtranscartao1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_receber_contas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PagarFaturas": {
+      "main": [
+        [
+          {
+            "node": "Edit_PagarFatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_PagarFatura": {
+      "main": [
+        [
+          {
+            "node": "ff_registrar_pagamento_faturas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_registrar_pagamento_faturas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estornalancto": {
+      "main": [
+        [
+          {
+            "node": "EditEstorno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditEstorno": {
+      "main": [
+        [
+          {
+            "node": "ff_estornar_transacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_estornar_transacao": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Balancete": {
+      "main": [
+        [
+          {
+            "node": "Edtranscartao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edtranscartao": {
+      "main": [
+        [
+          {
+            "node": "fn_balancete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fn_balancete": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "06c544b7-f583-482e-a945-3d336e81d136",
+  "meta": {
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "fNShdDeLkqovPEGd",
+  "tags": []
+}

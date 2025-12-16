@@ -162,8 +162,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1296,
-        80
+        1504,
+        32
       ],
       "id": "337e32a8-0eae-4f4d-8a4c-0e2ff0495605",
       "name": "ResultConta_pagar",
@@ -1060,7 +1060,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2ee7bba7-fdf3-47cc-984f-884cf20eba03",
+  "versionId": "0c6f4388-50de-4bba-9d06-b88eeb333981",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
