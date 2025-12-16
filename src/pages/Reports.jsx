@@ -1,11 +1,58 @@
+ import { useNavigate } from "react-router-dom";
+
 export default function Reports() {
+  const navigate = useNavigate();
+
+  const cards = [
+    {
+      title: "Fluxo de Caixa",
+      desc: "Entradas e saídas no período",
+      path: "/relatorios/fluxo-caixa",
+    },
+    {
+      title: "Saldos por Conta",
+      desc: "Saldo consolidado por conta financeira",
+      path: "/saldos",
+    },
+    {
+      title: "Diário Contábil",
+      desc: "Lançamentos contábeis do período",
+      path: "/diario",
+    },
+    {
+      title: "Balancete",
+      desc: "Débito e crédito por conta contábil",
+      path: "/relatorios/balancete",
+    },
+    {
+      title: "DRE",
+      desc: "Resultado do exercício",
+      path: "/relatorios/dre",
+    },
+    {
+      title: "Apuração PIS/COFINS",
+      desc: "Resumo fiscal por período",
+      path: "/relatorios/piscofins",
+    },
+  ];
+
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-gray-800">Relatórios</h2>
-      <div className="bg-white rounded-xl shadow p-4 text-sm text-gray-500">
-        Aqui você poderá exibir gráficos e resumos (diário, semanal, mensal)
-        quando estiver integrado ao backend. No momento é uma tela estática,
-        pronta para receber os dados.
+    <div>
+      <h1 className="text-2xl font-bold mb-6">Relatórios</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {cards.map((c) => (
+          <div
+            key={c.title}
+            onClick={() => navigate(c.path)}
+            className="cursor-pointer rounded-xl border border-gray-200 bg-white p-5 shadow hover:shadow-lg transition"
+          >
+            <h2 className="text-lg font-semibold text-blue-700">
+              {c.title}
+            </h2>
+            <p className="text-sm text-gray-500 mt-2">{c.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   );

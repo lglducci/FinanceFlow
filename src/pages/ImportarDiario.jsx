@@ -1,6 +1,9 @@
-  import { useState } from "react";
+  //import { useState } from "react";
+  import { useState, useEffect } from "react";
+
 import { buildWebhookUrl } from "../config/globals";
-import { callApi } from "../utils/api";
+import { callApi } from "../utils/api";   
+
 
 
 export default function ImportarDiario() {
@@ -16,10 +19,14 @@ const hoje = new Date().toISOString().substring(0, 10);
 
 const [dataIni, setDataIni] = useState(hoje);
 const [dataFim, setDataFim] = useState(hoje);
+ 
+const [loadingDatas, setLoadingDatas] = useState(true);
+const [ultimoFechamento, setUltimoFechamento] = useState("15/04/2025"); 
+// depois você liga no webhook
 
-
-
-
+ 
+     
+ 
   // ---------------------------------------
   // ENVIO
   async function enviar() {
@@ -233,7 +240,7 @@ const [dataFim, setDataFim] = useState(hoje);
     
     setLotes(data);
 
-    setMsg("✅ STAGING gerado com sucesso.");
+    setMsg("✅ STAGING gerado com sucesso. Fase 1 concluida.");
   } catch (e) {
     alert("❌ " + e.message);
   }
@@ -247,7 +254,7 @@ async function consolidarDiario() {
       buildWebhookUrl("consolidar_diario"),
       { empresa_id }
     );
-     
+       
       setLotes(data);
     setMsg("✅ Diário consolidado.");
   } catch (e) {
@@ -261,16 +268,49 @@ async function gerarContabil() {
     setMsg("⏳ Gerando Contábil...");
     await callApi(
       buildWebhookUrl("gerar_contabil"),
-      { empresa_id }
+      { empresa_id ,
+    data_ini: dataIni,
+    data_fim: dataFim }
     );
     setMsg("✅ Contábil gerado com sucesso.");
   } catch (e) {
     alert("❌ " + e.message);
   }
 }
+ 
+  
+ useEffect(() => {
+  async function carregar() {
+    try {
+      if (!empresa_id) {
+        console.error("empresa_id ausente");
+        return;
+      }
 
- 
- 
+      const url = buildWebhookUrl("ultimo_processamento", { empresa_id });
+
+      const r = await fetch(url);
+      const text = await r.text();
+      if (!text) return;
+
+      const resp = JSON.parse(text);
+      const item = Array.isArray(resp) ? resp[0] : resp;
+
+      if (!item?.ultimo_dia_processado) return;
+
+      const data = item.ultimo_dia_processado.slice(0, 10);
+
+      setUltimoFechamento(data);
+      setDataIni(data);
+      setDataFim(hoje);
+    } finally {
+      setLoadingDatas(false);
+    }
+  }
+
+  carregar();
+}, [empresa_id]);
+
 
 
 
@@ -299,7 +339,7 @@ async function gerarContabil() {
       background: "white",
       padding: 20,
       borderRadius: 10,
-      border: "3px solid #003ba2"
+      border: "4px solid #003ba2"
     }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <strong>Selecionar Arquivo</strong>
@@ -334,81 +374,113 @@ async function gerarContabil() {
     </div>
 
     {/* CONTAINER 3 — PROCESSAMENTO */}
+
+<div style={{
+  flex: 1,
+  background: "#f5f6fa",
+  padding: 20,
+  borderRadius: 10,
+  border: "4px solid #170fa5ff"
+}}>
+  <strong>Gerar STAGING / Diário / Contábil</strong>
+
+  {ultimoFechamento && (
     <div style={{
-      flex: 1,
-      background: "#f5f6fa",
-      padding: 20,
-      borderRadius: 10,
-      border: "2px solid #c7c7c7"
+      marginTop: 8,
+      padding: 8,
+      background: "#eef4ff",
+      borderRadius: 6,
+      fontWeight: "bold",
+      color: "#003ba2"
     }}>
-      <strong>Gerar STAGING / Diário / Contábil</strong>
+      Último fechamento contábil: {ultimoFechamento}
+    </div>
+  )}
 
-      <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
-        <div>
-          <label>Data Inicial</label><br />
-          <input type="date" value={dataIni} onChange={e => setDataIni(e.target.value)} />
-        </div>
-        <div>
-          <label>Data Final</label><br />
-          <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
-        </div>
-      </div>
-
-      <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
-        <button onClick={gerarStaging} style={{ ...estilosBtn, background: "#0a8e32", color: "#fff" }}>
-          ✔ STAGING
-        </button>
-        <button onClick={consolidarDiario} style={{ ...estilosBtn, background: "#003ba2", color: "#fff" }}>
-          ✔ Diário
-        </button>
-        <button onClick={gerarContabil} style={{ ...estilosBtn, background: "#0bd849", color: "#fff" }}>
-          ✔ Contábil
-        </button>
-      </div>
+  <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
+    <div>
+      <label className="font-bold text-[#1e40af]" >Data Inicial</label><br />
+      <input type="date"   className="border rounded-lg px-3 py-2 border-yellow-500"  value={dataIni} disabled />
     </div>
 
+    <div>
+      <label className="font-bold text-[#1e40af]">Data Final</label><br />
+      <input
+        type="date"
+          className="border rounded-lg px-3 py-2 border-yellow-500"
+        value={dataFim}
+        max={new Date().toISOString().substring(0, 10)}
+        onChange={e => setDataFim(e.target.value)}
+      />
+    </div>
   </div>
 
-  {/* ===== LINHA 2 ===== */}
-  <div style={{ display: "flex", gap: 20 }}>
+  <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
+    <button
+      onClick={gerarStaging}
+      style={{ ...estilosBtn, background: "#0a8e32", color: "#fff" , padding: 10}}
+    >
+      ✔  STAGING (Fase 1)
+    </button>
 
-    {/* CONTAINER 2 — RESUMO */}
-    <div style={{
-      flex: 1,
-      background: "#eef4ff",
-      padding: 15,
-      borderRadius: 8,
-      fontWeight: "bold",
-      display: "flex",
-      gap: 20
-    }}>
-      <span>📄 Total: {totalLinhas}</span>
-      <span style={{ color: "#0a8e32" }}>✔ OK: {totalOk} (R$ {somaOk.toFixed(2)})</span>
-      <span style={{ color: "#cc0000" }}>✖ Erro: {totalErro} (R$ {somaErro.toFixed(2)})</span>
-    </div>
- 
+    <button
+      onClick={consolidarDiario}
+      style={{ ...estilosBtn, background: "#003ba2", color: "#fff" , padding: 10 }}
+    >
+      ✔  Diário (Fase 2)
+    </button>
 
-    {/* CONTAINER 4 — FILTROS */}
-    <div style={{
-      flex: 1,
-      background: "#eef4ff",
-      padding: 15,
-      borderRadius: 8,
-      display: "flex",
-      justifyContent: "flex-end",
-      gap: 10
-    }}>
-      <button onClick={() => setFiltro("ok")} style={{ ...estilosBtn, background: "#19d357", color: "#fff" }}>
-        ✔ Linhas OK
-      </button>
-      <button onClick={() => setFiltro("erro")} style={{ ...estilosBtn, background: "#f64949", color: "#fff" }}>
-         ✔ Linhas Erro
-      </button>
-      <button onClick={() => setFiltro("todos")} style={{ ...estilosBtn, background: "#003ba2", color: "#fff" }}>
-        ✔ Todos
-      </button>
+    <button
+      onClick={gerarContabil}
+      style={{ ...estilosBtn, background: "#0bd849", color: "#fff" , padding: 10 }}
+    >
+      ✔ Contábil (Fase Final)
+    </button>
+  </div>
+</div>
+  
+  
+  {/* INDICADORES */}
+  {lotes.length > 0 && (
+    <div
+      style={{
+        marginTop: 20,
+        display: "flex",
+        alignItems: "center",
+        gap: 20,
+        padding: 10,
+        background: "#eef4ff",
+        borderRadius: 6,
+        fontWeight: "bold",
+      }}
+    >
+      
+
+      {/* BOTÕES DE FILTRO */}
+      <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
+        <button
+          onClick={() => setFiltro("ok")}
+          style={{ ...estilosBtn, background: "#19d357", color: "white" }}
+        >
+          ✔ Linhas OK
+        </button>
+
+        <button
+          onClick={() => setFiltro("erro")}
+          style={{ ...estilosBtn, background: "#f64949", color: "white" }}
+        >
+          ✖ Linhas com Erro
+        </button>
+
+        <button
+          onClick={() => setFiltro("todos")}
+          style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
+        >
+          Mostrar Todos
+        </button>
+      </div>
     </div>
-    
+  )}
      
   </div>
  
@@ -421,12 +493,25 @@ async function gerarContabil() {
         borderRadius: 6,
         color: "#003ba2",
         fontWeight: "bold",
+        
       }}
     >
       {msg}
+          
+       <span style={{   color: "#003ba2", padding: 70 }}
+       
+        >📄 Total de linhas: {totalLinhas}</span>
+
+      <span style={{ color: "#0a8e32" , padding: 10 }}>
+        ✔ Válidas: {totalOk} (R$ {somaOk.toFixed(2)})
+      </span>
+
+      <span style={{ color: "#cc0000", padding: 10 }}>
+        ✖ Com erro: {totalErro} (R$ {somaErro.toFixed(2)})
+      </span>
     </div>
   )}
-  
+   
 </div>
 
 
