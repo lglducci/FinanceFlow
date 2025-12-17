@@ -100,3 +100,26 @@ body {
 .tabela-mapeamento tr:nth-child(odd) {
   background: #d5defaff;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #print-area,
+  #print-area * {
+    visibility: visible;
+  }
+
+  #print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  /* remove botões */
+  button {
+    display: none !important;
+  }
+}

@@ -58,7 +58,13 @@ import EditarDiario from "./pages/EditarDiario";
 import ImportarDiario from "./pages/ImportarDiario";
 import RelatoriosBalancete from "./pages/RelatoriosBalancete";
 
+ // App.jsx
+import RelatoriosRazao from "./pages/RelatoriosRazao";
+import RelatoriosBalanco from "./pages/RelatoriosBalanco";
+import RelatoriosDiario from "./pages/RelatoriosDiario";
+
  
+
 
 
 export default function App() {
@@ -135,7 +141,9 @@ export default function App() {
    <Route path="editar-diario" element={<EditarDiario />} /> 
     <Route path="/importar-diario" element={<ImportarDiario />} />
   <Route path="/relatorios/balancete" element={<RelatoriosBalancete />} />
-   
+   <Route path="/relatorios/razao" element={<RelatoriosRazao />} />
+   <Route path="/relatorios/balanco" element={<RelatoriosBalanco />} /> 
+    <Route path="/relatorios/diario" element={<RelatoriosDiario />} />
 </Routes>
 
 
