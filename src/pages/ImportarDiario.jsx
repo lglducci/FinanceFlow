@@ -226,25 +226,35 @@ const [ultimoFechamento, setUltimoFechamento] = useState("15/04/2025");
     </div>
   );
 
-
- async function gerarStaging() {
+async function gerarStaging() {
   try {
     setMsg("⏳ Gerando STAGING..."); 
 
-   const data =  await callApi(
+    const data = await callApi(
       buildWebhookUrl("gerar_staging"),
-      { empresa_id,
-    data_ini: dataIni,
-    data_fim: dataFim }
+      {
+        empresa_id,
+        data_ini: dataIni,
+        data_fim: dataFim
+      }
     );
-    
-    setLotes(data);
 
-    setMsg("✅ STAGING gerado com sucesso. Fase 1 concluida.");
+    setLotes(data); 
+
+    const qtdErros = data.filter(l => l.status === "erro").length;
+
+    if (qtdErros > 0) {
+      setMsg(`❌ Existem ${qtdErros} linhas com erro. Corrija antes de continuar.`);
+    } else {
+      setMsg("✅ STAGING gerado com sucesso. Fase 1 concluida.");
+    }
+
   } catch (e) {
     alert("❌ " + e.message);
   }
 }
+
+ 
 
 async function consolidarDiario() {
   try {
@@ -256,7 +266,7 @@ async function consolidarDiario() {
     );
        
       setLotes(data);
-    setMsg("✅ Diário consolidado.");
+    setMsg("✅ Diário consolidado. Fase 2 concluida.");
   } catch (e) {
     alert("❌ " + e.message);
   }
@@ -311,8 +321,7 @@ async function gerarContabil() {
   carregar();
 }, [empresa_id]);
 
-
-
+ 
 
 
   // ---------------------------------------

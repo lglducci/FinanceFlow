@@ -1,5 +1,6 @@
  import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
+import { useNavigate } from "react-router-dom";
 
 export default function RelatoriosBalancete() {
 
@@ -10,6 +11,7 @@ export default function RelatoriosBalancete() {
   const [dataFim, setDataFim] = useState(hoje);
   const [loading, setLoading] = useState(false);
   const [dados, setDados] = useState([]);
+  const navigate = useNavigate();
 
  const fmt = new Intl.NumberFormat("pt-BR", {
   minimumFractionDigits: 2,
@@ -61,6 +63,8 @@ useEffect(() => {
 
   return (
     <div className="p-6">
+
+         
       <h1 className="text-2xl font-bold mb-6">📒 Balancete</h1>
 
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
@@ -90,7 +94,26 @@ useEffect(() => {
         >
           Consultar
         </button>
+
+
+        <button
+          onClick={() => window.print()}
+          className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
+        >
+          🖨️ Imprimir
+        </button> 
+
+
+          <button
+          onClick={() =>   navigate("/reports") }
+          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+          >
+          Voltar 
+          </button>
+
       </div>
+
+       <div id="print-area"> 
 
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full text-sm">
@@ -106,12 +129,12 @@ useEffect(() => {
           <tbody>
             {dados.map((l, idx) => (
               <tr key={idx} className="border-b">
-                <td className="p-3 font-bold">{l.codigo}</td>
-                <td className="p-3 font-bold">{l.conta_nome}</td>
-                <td className="p-3 text-right font-bold">{fmt.format(l.total_debito)}</td>
-                <td className="p-3 text-right font-bold">{fmt.format(l.total_credito)}</td>
+                <td className="p-2 font-bold font-size: 16px">{l.codigo}</td>
+                <td className="p-2 font-bold font-size: 16px">{l.conta_nome}</td>
+                <td className="p-2 text-right font-bold font-size: 16px">{fmt.format(l.total_debito)}</td>
+                <td className="p-2 text-right font-bold font-size: 16px">{fmt.format(l.total_credito)}</td>
                 <td
-                  className={`p-3 text-right font-bold ${
+                  className={`p-3 text-right font-bold font-size: 16px ${
                     l.saldo < 0 ? "text-red-600" : "text-green-700"
                   }`}
                 >
@@ -131,11 +154,12 @@ useEffect(() => {
         </table>
 
         {loading && (
-          <div className="p-6 text-center text-blue-600 font-semibold">
+          <div className="p-6 text-center text-blue-600 font-bold">
             Carregando...
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

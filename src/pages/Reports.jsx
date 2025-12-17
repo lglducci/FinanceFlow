@@ -12,12 +12,12 @@ export default function Reports() {
     {
       title: "Saldos por Conta",
       desc: "Saldo consolidado por conta financeira",
-      path: "/saldos",
+      path: "/relatorios/saldos",
     },
     {
       title: "Diário Contábil",
       desc: "Lançamentos contábeis do período",
-      path: "/diario",
+      path: "/relatorios/diario",
     },
     {
       title: "Balancete",
@@ -33,6 +33,17 @@ export default function Reports() {
       title: "Apuração PIS/COFINS",
       desc: "Resumo fiscal por período",
       path: "/relatorios/piscofins",
+    },
+    {
+      title: "Relação Razão",
+      desc: " Lançamentos detalhados por conta",
+      path: "/relatorios/razao",
+    },
+
+     {
+      title: "Relação Balanço",
+      desc: " Lançamentos detalhados por conta",
+      path: "/relatorios/balanco",
     },
   ];
 
