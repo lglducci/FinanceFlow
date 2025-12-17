@@ -52,7 +52,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n SELECT  * from contab.modelos where empresa_id = \n  {{ $json.empresa_id }}\n;\n",
+        "query": " \n SELECT  * from contab.modelos where empresa_id = \n  {{ $json.empresa_id }}  ORDER BY CODIGO ASC\n;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1034,63 +1034,6 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
-              "name": "empresa_id",
-              "value": "={{ $json.body.empresa_id}}",
-              "type": "number"
-            },
-            {
-              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
-              "name": "codigo",
-              "value": "={{ $json.body.codigo}}",
-              "type": "string"
-            },
-            {
-              "id": "eed502e7-079f-47a3-8dab-2c78153a5cb8",
-              "name": "nome",
-              "value": "={{ $json.body.nome}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -128,
-        976
-      ],
-      "id": "37e9f48b-0b0b-4b10-926b-79571a123f79",
-      "name": "Edit_PagarFatura1"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " \n\nselect * from ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}')\n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        112,
-        976
-      ],
-      "id": "0cfc5b56-5f41-4fbd-b90f-0fa6ea651f8b",
-      "name": "AutalizaModelLinha1",
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "httpMethod": "POST",
         "path": "inseremodelo",
         "responseMode": "responseNode",
@@ -1213,7 +1156,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n\nselect * from ff_excluir_modelo({{ $json.empresa_id }}, {{ $json.modelo_id }} )\n",
+        "query": " \n\nselect * from contab.ff_excluir_modelo({{ $json.empresa_id }}, {{ $json.modelo_id }} )\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1224,6 +1167,69 @@
       ],
       "id": "e1638b15-86f8-461d-ba60-0a72caf2fb0a",
       "name": "ff_excluir_modelo",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "codigo",
+              "value": "={{ $json.body.codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "eed502e7-079f-47a3-8dab-2c78153a5cb8",
+              "name": "nome",
+              "value": "={{ $json.body.nome}}",
+              "type": "string"
+            },
+            {
+              "id": "c5eb8155-10fe-4573-90dc-7eb78363fe99",
+              "name": "tipo_automacao",
+              "value": "={{ $json.body.tipo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        976
+      ],
+      "id": "37e9f48b-0b0b-4b10-926b-79571a123f79",
+      "name": "EditNovoModelo"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nselect * from contab.ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}', '{{ $json.tipo_automacao }}')\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        112,
+        976
+      ],
+      "id": "0cfc5b56-5f41-4fbd-b90f-0fa6ea651f8b",
+      "name": "ff_criar_modelo",
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
@@ -1510,33 +1516,11 @@
         ]
       ]
     },
-    "Edit_PagarFatura1": {
-      "main": [
-        [
-          {
-            "node": "AutalizaModelLinha1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "AutalizaModelLinha1": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "NovoModelo": {
       "main": [
         [
           {
-            "node": "Edit_PagarFatura1",
+            "node": "EditNovoModelo",
             "type": "main",
             "index": 0
           }
@@ -1597,13 +1581,35 @@
           }
         ]
       ]
+    },
+    "EditNovoModelo": {
+      "main": [
+        [
+          {
+            "node": "ff_criar_modelo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_criar_modelo": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8fdba950-18ec-49fe-aaca-5a5565fee012",
+  "versionId": "e1e80486-f6d2-47a8-afba-f2da78b823a4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

@@ -133,6 +133,7 @@
       "id": "6e770e17-78e7-4168-b910-901747e5ba80",
       "name": "ff_gerar_diario_tudo",
       "executeOnce": false,
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
@@ -496,7 +497,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7354e976-936b-48ba-934d-a56be36b12da",
+  "versionId": "e1e61091-ba5f-4625-bbd5-68a7eef556e3",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
