@@ -31,3 +31,7 @@ export function calcularPeriodo(tipo, hojeStr) {
     fim: fim.toISOString().split("T")[0],
   };
 }
+
+
+
+ 
