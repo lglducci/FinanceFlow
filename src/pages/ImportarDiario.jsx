@@ -246,7 +246,7 @@ async function gerarStaging() {
     if (qtdErros > 0) {
       setMsg(`❌ Existem ${qtdErros} linhas com erro. Corrija antes de continuar.`);
     } else {
-      setMsg("✅ STAGING gerado com sucesso. Fase 1 concluida.");
+      setMsg("✅ STAGING gerado com sucesso. Fase 1 concluida com sucesso.");
     }
 
   } catch (e) {
@@ -266,7 +266,7 @@ async function consolidarDiario() {
     );
        
       setLotes(data);
-    setMsg("✅ Diário consolidado. Fase 2 concluida.");
+    setMsg("✅ Diário consolidado. Fase 2 concluida com sucesso.");
   } catch (e) {
     alert("❌ " + e.message);
   }
@@ -282,7 +282,7 @@ async function gerarContabil() {
     data_ini: dataIni,
     data_fim: dataFim }
     );
-    setMsg("✅ Contábil gerado com sucesso.");
+    setMsg("✅ Contábil gerado com sucesso. Fase 3 concluida");
   } catch (e) {
     alert("❌ " + e.message);
   }

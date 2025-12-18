@@ -74,47 +74,55 @@ export default function ContasContabeis() {
       }}
     >
       {/* 🔵 CARD DO TOPO */}
-      <div
-        style={{
-          background: "#ffffff",
-          border: "6px solid #003ba2",
-          borderRadius: 12,
-          padding: 20,
-          marginBottom: 20,
-        }}
-      >
+    <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",   // 👈 CONTROLA O ESPAÇO ENTRE ELES
+    marginBottom: 15,
+  }}
+>
         <h2 style={{ marginBottom: 10, fontWeight: "bold" }}  className="tabela tabela-mapeamento" >Plano de Contas</h2>
 
-        {/* 🔍 BUSCA */}
-        <input
-          placeholder="Buscar por código ou nome..."
-          value={filtro}
-          onChange={(e) => setFiltro(e.target.value)}
-          style={{
-            width: "300px",
-            padding: "8px",
-            marginRight: "15px",
-            border: "1px solid #999",
-            borderRadius: 8,
-          }}
-        />
+  {/* 🔍 BUSCA */}
+  <input
+    placeholder="Buscar por código ou nome..."
+    value={filtro}
+    onChange={(e) => setFiltro(e.target.value)}
+    style={{
+      width: "300px",
+      padding: "8px",
+      border: "1px solid #999",
+      borderRadius: 8,
+    }}
+  />
 
-        {/* ➕ BOTÃO NOVO */}
+  {/* ➕ NOVA CONTA */}
+  <button
+    onClick={() => navigate("/nova-conta-contabil")}
+    style={{
+      padding: "8px 18px",
+      background: "#003ba2",
+      color: "white",
+      border: "none",
+      borderRadius: 10,
+      fontWeight: "bold",
+      cursor: "pointer",
+    }}
+  >
+    + Nova Conta
+  </button>
         <button
-          onClick={() => navigate("/nova-conta-contabil")}
-          style={{
-            padding: "8px 18px",
-            background: "#003ba2",
-            color: "white",
-            border: "none",
-            borderRadius: 10,
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
+          onClick={() => window.print()}
+          className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
         >
-          + Nova Conta
+          🖨️ Imprimir
         </button>
+
       </div>
+
+
+        <div id="print-area"> 
 
       {/* 🔵 TABELA EM OUTRO CARD */}
       <div
@@ -166,10 +174,10 @@ export default function ContasContabeis() {
                     <span
                       onClick={() =>
                         navigate("/editar-conta-contabil", { 
-  state: { 
-    id: c.id,
-    empresa_id: localStorage.getItem("empresa_id") || "1"
-  } })
+                        state: { 
+                          id: c.id,
+                          empresa_id: localStorage.getItem("empresa_id") || "1"
+                        } })
 
                         
                       }
@@ -203,20 +211,8 @@ export default function ContasContabeis() {
           </tbody>
         </table>
 
-        <button
-          onClick={() => navigate("/")}
-          style={{
-            marginTop: 20,
-            padding: "8px 20px",
-            borderRadius: 10,
-            border: "2px solid #003ba2",
-            background: "white",
-            cursor: "pointer",
-          }}
-        >
-          Voltar
-        </button>
+        
       </div>
-    </div>
+    </div></div>
   );
 }

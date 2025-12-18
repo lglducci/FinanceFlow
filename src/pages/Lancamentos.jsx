@@ -386,11 +386,22 @@ const [loading, setLoading] = useState(false);
                 >
                   Novo
                 </button>
+                
+
+                 <button
+                  onClick={() => window.print()}
+                  className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
+                >
+                  🖨️ Imprimir
+                </button>
+
 
             </div>
         </div>
 
     </div>
+
+   
 
     {/* COLUNA 2 - DADOS DA CONTA */}
     <div className="bg-white rounded-xl shadow p-4 border-l-4 border-blue-700 h-fit">
@@ -419,7 +430,7 @@ const [loading, setLoading] = useState(false);
 </div>
 </div>
 
-  
+    <div id="print-area">   
        <div className="bg-gray-100 rounded-xl shadow p-4">
   
           {/* TOTAIS EM 3 COLUNAS */}
@@ -580,5 +591,6 @@ const [loading, setLoading] = useState(false);
         )}
       </div>
     </div>
+     </div>
   );
 }
