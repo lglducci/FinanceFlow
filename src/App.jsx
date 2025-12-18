@@ -63,7 +63,10 @@ import RelatoriosRazao from "./pages/RelatoriosRazao";
 import RelatoriosBalanco from "./pages/RelatoriosBalanco";
 import RelatoriosDiario from "./pages/RelatoriosDiario";
 
+import RelatoriosDER from "./pages/RelatoriosDER";
+
  
+
 
 
 
@@ -144,6 +147,7 @@ export default function App() {
    <Route path="/relatorios/razao" element={<RelatoriosRazao />} />
    <Route path="/relatorios/balanco" element={<RelatoriosBalanco />} /> 
     <Route path="/relatorios/diario" element={<RelatoriosDiario />} />
+    <Route path="/relatorios/dre" element={<RelatoriosDER />} />
 </Routes>
 
 
