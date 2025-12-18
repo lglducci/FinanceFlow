@@ -12,15 +12,15 @@
       "typeVersion": 1.4,
       "position": [
         368,
-        32
+        112
       ],
       "id": "16725586-4c82-4ad2-a85e-1c3c124235c5",
       "name": "Respond to Webhook19"
     },
     {
       "parameters": {
-        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
-        "height": 1004,
+        "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
+        "height": 1052,
         "width": 1328,
         "color": 4
       },
@@ -29,8 +29,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -448,
-        -176
+        -464,
+        -32
       ]
     },
     {
@@ -44,7 +44,7 @@
       "typeVersion": 2.1,
       "position": [
         -240,
-        32
+        112
       ],
       "id": "b48470d7-7753-4ad4-8f39-2a97742bc92e",
       "name": "Balancete",
@@ -80,7 +80,7 @@
       "typeVersion": 3.4,
       "position": [
         -16,
-        32
+        112
       ],
       "id": "82314192-0db5-4295-934d-41698f13faec",
       "name": "Edtranscartao"
@@ -95,7 +95,7 @@
       "typeVersion": 2.6,
       "position": [
         176,
-        32
+        112
       ],
       "id": "580e9825-c607-4291-8c01-b19e1cc6a135",
       "name": "fn_balancete",
@@ -116,8 +116,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        384,
-        240
+        368,
+        272
       ],
       "id": "7f579d2c-6600-4851-af02-90466d297a55",
       "name": "Respond to Webhook"
@@ -157,8 +157,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        240
+        -16,
+        272
       ],
       "id": "0e92ceb2-7cdd-424e-8342-9250fcf6adef",
       "name": "Edtranscartao1"
@@ -173,8 +173,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -208,
-        240
+        -224,
+        272
       ],
       "id": "9f65f177-ad07-4cb9-a65e-2773362d9b4c",
       "name": "Razão",
@@ -189,8 +189,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        192,
-        240
+        176,
+        272
       ],
       "id": "19c5e2b1-b3d2-40e7-9e34-426d984405ae",
       "name": "ff_relatorio_razao",
@@ -213,7 +213,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        384,
+        352,
         464
       ],
       "id": "053ed878-be92-4faa-912a-ac722f544fe6",
@@ -229,7 +229,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -208,
+        -240,
         464
       ],
       "id": "15deae35-600a-4696-9204-8d945537ce8b",
@@ -259,7 +259,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
+        -32,
         464
       ],
       "id": "77374356-b514-48da-9484-44f8f60016ed",
@@ -274,7 +274,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        192,
+        160,
         464
       ],
       "id": "b5306696-f07d-4fff-857c-753277f61f28",
@@ -298,8 +298,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        384,
-        656
+        368,
+        672
       ],
       "id": "87a1b471-5b05-4258-ad50-6ced5ef7d25c",
       "name": "Respond to Webhook20"
@@ -314,8 +314,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -224,
-        656
+        -240,
+        672
       ],
       "id": "5e31a887-69a7-4e3f-9bdb-7b4e9c0842f8",
       "name": "diario_contabil",
@@ -330,8 +330,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        192,
-        656
+        176,
+        672
       ],
       "id": "1c0e08f1-fc1b-404e-bfbb-fb7cee4eb95f",
       "name": "ff_diario_contabil",
@@ -373,11 +373,100 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        656
+        -16,
+        672
       ],
       "id": "d9cc33e7-452d-461d-9cc7-6a83d873dea9",
       "name": "EditDiario"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        848
+      ],
+      "id": "eee4a194-8135-45fc-b31d-ad0b5a86f057",
+      "name": "Respond to Webhook21"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * from contab.ff_dre_periodo(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        160,
+        848
+      ],
+      "id": "a66b52a6-536f-4272-8fbf-8faa02e1b193",
+      "name": "ff_dre_periodo",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        848
+      ],
+      "id": "cb07a22b-e805-424b-b45e-887f7cde34af",
+      "name": "EditDer"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "der",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        848
+      ],
+      "id": "e2667adf-efe1-4851-bb9a-35afac3bce9e",
+      "name": "der",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {},
@@ -513,13 +602,46 @@
           }
         ]
       ]
+    },
+    "ff_dre_periodo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditDer": {
+      "main": [
+        [
+          {
+            "node": "ff_dre_periodo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "der": {
+      "main": [
+        [
+          {
+            "node": "EditDer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e7d104ca-f722-4692-8c85-6dfc696a39cd",
+  "versionId": "63e9365a-3425-45ce-b958-466a75fda8c4",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
