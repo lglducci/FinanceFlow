@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 export default function RelatoriosDRE() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [empresaId, setEmpresaId] = useState(null);
-  const [dataIni, setDataIni] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+   const [dataIni, setDataIni] = useState(hojeLocal());
+const [dataFim, setDataFim] = useState(hojeLocal());
+
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
@@ -40,11 +42,7 @@ export default function RelatoriosDRE() {
 
     try {
 
-      console.log("PAYLOAD DRE:", {
-          empresa_id: empresaId,
-          data_ini: dataIni,
-          data_fim: dataFim,
-        });
+      
       const resp = await fetch(buildWebhookUrl("der"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,7 +69,7 @@ export default function RelatoriosDRE() {
       {/* FILTROS */}
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
         <div>
-          <label className="font-bold text-[#1e40af]"> Data inicial  </label>
+          <label className="block font-bold text-[#1e40af]"> Data inicial  </label>
           <input
             type="date"
             value={dataIni}
@@ -81,12 +79,12 @@ export default function RelatoriosDRE() {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]"> Data final  </label>
+          <label className="block font-bold text-[#1e40af]"> Data final  </label>
           <input
             type="date"
             value={dataFim}
             onChange={(e) => setDataFim(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
+            className="block border rounded-lg px-3 py-2 border-yellow-500"
           />
         </div>
 
@@ -109,7 +107,7 @@ export default function RelatoriosDRE() {
           onClick={() =>   navigate("/reports") }
           className="bg-gray-400 text-white px-4 py-2 rounded-lg font-bold"
         >   
-          Voltar 
+         ← Voltar
         </button>
 
       </div>

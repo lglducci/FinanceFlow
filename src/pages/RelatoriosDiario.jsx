@@ -59,8 +59,12 @@ export default function RelatoriosDiario() {
       {/* filtros */}
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
         <div>
-          <label className="font-bold text-[#1e40af]"> Data inicial </label>
+          <label className=" block font-bold text-[#1e40af]">
+             Data inicial 
+             </label>
           <input
+ 
+
             type="date"
             value={dataIni}
             onChange={(e) => setDataIni(e.target.value)}
@@ -69,7 +73,8 @@ export default function RelatoriosDiario() {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]"> Data final </label>
+          <label className=" block font-bold text-[#1e40af]">
+             Data final </label>
           <input
             type="date"
             value={dataFim}

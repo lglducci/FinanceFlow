@@ -80,7 +80,7 @@ const navigate = useNavigate();
       {/* FILTROS */}
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
         <div>
-          <label className="font-bold text-[#1e40af]">  Data de Corte  </label>
+          <label className=" block font-bold text-[#1e40af]">  Data de Corte  </label>
           <input
             type="date"
             value={dataCorte}

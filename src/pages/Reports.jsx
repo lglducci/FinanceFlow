@@ -12,7 +12,7 @@ export default function Reports() {
     {
       title: "Saldos por Conta",
       desc: "Saldo consolidado por conta financeira",
-      path: "/relatorios/saldos",
+      path: "/relatorios/saldoporconta",
     },
     {
       title: "Diário Contábil",
@@ -45,23 +45,34 @@ export default function Reports() {
       desc: " Lançamentos detalhados por conta",
       path: "/relatorios/balanco",
     },
+      {
+      title: "Relação KPIs",
+      desc: " Relatório de KPIs",
+      path: "/relatorios/kpi",
+    },
+    
+     {
+      title: "Relação Balanço Níveis",
+      desc: " Balanço por níveis",
+      path: "/relatorios/balanco-niveis",
+    },
   ];
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Relatórios</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {cards.map((c) => (
           <div
             key={c.title}
             onClick={() => navigate(c.path)}
-            className="cursor-pointer rounded-xl border border-gray-200 bg-white p-5 shadow hover:shadow-lg transition"
+            className="cursor-pointer rounded-xl border border-blue-400 bg-gray-100 p-5 shadow hover:shadow-lg transition"
           >
-            <h2 className="text-lg font-semibold text-blue-700">
+            <h2 className="text-lg font-bold text-blue-700">
               {c.title}
             </h2>
-            <p className="text-sm text-gray-500 mt-2">{c.desc}</p>
+            <p className="text- base text-gray-700 mt-2">{c.desc}</p>
           </div>
         ))}
       </div>

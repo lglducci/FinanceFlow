@@ -51,8 +51,8 @@ export default function EditaMapeamento() {
     try {
       const url = buildWebhookUrl("buscar_contas", {
         empresa_id,
-        nome: texto ,
-        dc:  linha.natureza,     // <-- AQUI: usa o D/C da linha (D ou C)
+        nome: texto  
+       // dc:  linha.natureza,     // <-- AQUI: usa o D/C da linha (D ou C)
      });
 
       const resp = await fetch(url);

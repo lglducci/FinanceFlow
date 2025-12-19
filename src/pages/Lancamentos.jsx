@@ -96,7 +96,7 @@ const [loading, setLoading] = useState(false);
 
 
   function aplicarPeriodo(tipo) {
-    const hoje = new Date( hojeLocal() );;
+    const hoje = new Date( hojeLocal() ); 
     let ini, fim;
 
     if (tipo === "mes") {
