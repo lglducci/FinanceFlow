@@ -63,8 +63,12 @@ import RelatoriosRazao from "./pages/RelatoriosRazao";
 import RelatoriosBalanco from "./pages/RelatoriosBalanco";
 import RelatoriosDiario from "./pages/RelatoriosDiario";
 
-import RelatoriosDER from "./pages/RelatoriosDER";
+import RelatoriosDER from "./pages/RelatoriosDER"; 
 
+ 
+import RelatoriosSaldoPorConta from "./pages/RelatoriosSaldoPorConta";
+import  RelatoriosBalancoNiveis from "./pages/RelatoriosBalancoNiveis";
+ 
  
 
 
@@ -148,6 +152,13 @@ export default function App() {
    <Route path="/relatorios/balanco" element={<RelatoriosBalanco />} /> 
     <Route path="/relatorios/diario" element={<RelatoriosDiario />} />
     <Route path="/relatorios/dre" element={<RelatoriosDER />} />
+  
+    <Route path="/relatorios/saldoporconta" element={<RelatoriosSaldoPorConta />} />
+    <Route path="/relatorios/balanco-niveis" element={<RelatoriosBalancoNiveis />} />
+
+    
+
+ 
 </Routes>
 
 
