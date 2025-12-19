@@ -229,7 +229,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \nSELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza  \nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND (\n        unaccent(lower(nome))   LIKE unaccent(lower('%{{ $json.buscar_nome}}%'))\n     OR unaccent(lower(codigo)) LIKE unaccent(lower('%{{ $json.buscar_nome}}%'))\n  )  and natureza = '{{ $json.dc }}'\nORDER BY codigo\nLIMIT 20;\n",
+        "query": " \nSELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza  \nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND (\n        unaccent(lower(nome))   LIKE unaccent(lower('%{{ $json.buscar_nome}}%'))\n     OR unaccent(lower(codigo)) LIKE unaccent(lower('%{{ $json.buscar_nome}}%'))\n  )  \nORDER BY codigo\nLIMIT 20;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -997,7 +997,7 @@
     },
     {
       "parameters": {
-        "content": "## Contabil",
+        "content": "## Modelos   e Modelo Linhas ( Mapeamento de lancamentos contabeis)",
         "height": 716,
         "width": 1280,
         "color": 7
@@ -1609,7 +1609,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e1e80486-f6d2-47a8-afba-f2da78b823a4",
+  "versionId": "11cdd72f-eb68-4389-9753-25f4e944e37b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

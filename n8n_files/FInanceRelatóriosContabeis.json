@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
-        "height": 1052,
+        "height": 1868,
         "width": 1328,
         "color": 4
       },
@@ -467,6 +467,273 @@
       "id": "e2667adf-efe1-4851-bb9a-35afac3bce9e",
       "name": "der",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        1072
+      ],
+      "id": "5d4c1ad9-7f0f-4094-85d7-c989ecf507c7",
+      "name": "Respond to Webhook22"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "saldo_conta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        1072
+      ],
+      "id": "3ed20447-c2c2-4036-afbc-71e3d58abecc",
+      "name": "SaldConta",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        1072
+      ],
+      "id": "96dead41-880d-4374-99aa-b5a62bb41c3e",
+      "name": "EditSaldoConta"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\n\nSELECT\n  c.codigo,\n  c.nome,\n  SUM(COALESCE(l.debito,0))  AS total_debito,\n  SUM(COALESCE(l.credito,0)) AS total_credito,\n  SUM(COALESCE(l.debito,0) - COALESCE(l.credito,0)) AS saldo\nFROM contab.lancamentos l\nJOIN contab.contas c ON c.id = l.conta_id\nWHERE l.empresa_id =   {{ $json.empresa_id }}\n  AND l.data_mov BETWEEN  '{{ $json.data_ini }}'  AND '{{ $json.data_fim }}'\nGROUP BY c.codigo, c.nome\nORDER BY c.codigo\n\n\n\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        160,
+        1072
+      ],
+      "id": "98263094-c906-4ef2-958e-09a34f845b60",
+      "name": "Saldo_por_conta",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        384,
+        1296
+      ],
+      "id": "96144b08-ae2c-4eed-a467-1f74a349f579",
+      "name": "Respond to Webhook23"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        1296
+      ],
+      "id": "ec7cdd9c-5a61-4534-bfee-75fb694573c8",
+      "name": "EditSaldoConta1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "balancete111",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        1296
+      ],
+      "id": "796bbbff-cb30-411a-8ecc-dcd065fee982",
+      "name": "balancete",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n  c.codigo,\n  c.nome,\n  c.tipo,\n  SUM(COALESCE(l.debito, 0))  AS total_debito,\n  SUM(COALESCE(l.credito, 0)) AS total_credito,\n  SUM(COALESCE(l.debito, 0) - COALESCE(l.credito, 0)) AS saldo\nFROM contab.lancamentos l\nJOIN contab.contas c \n  ON c.id = l.conta_id\nWHERE l.empresa_id =  {{ $json.empresa_id }}\n  AND l.data_mov BETWEEN  '{{ $json.data_ini }}'  AND '{{ $json.data_fim }}'\n   AND (\n  c.codigo ILIKE '%' || '{{ $json.filtro }}' || '%'\n  OR c.nome   ILIKE '%' ||  '{{ $json.filtro }}' || '%'\n)\n\nGROUP BY\n  c.codigo,\n  c.nome,\n  c.tipo\nORDER BY\n  c.codigo;\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        1296
+      ],
+      "id": "c6a82105-d55f-4548-8977-29cb323b64be",
+      "name": "Balancete1",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        1552
+      ],
+      "id": "0e6b8356-58e9-4625-afc5-7b1e7ededa27",
+      "name": "Respond to Webhook24"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        1552
+      ],
+      "id": "464b73a1-438d-422b-bc6f-129504f0d4db",
+      "name": "EditbalancoNivel"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n  grupo,\n  SUM(valor_ajustado)::numeric(18,2) AS saldo\nFROM (\n  SELECT\n    CASE\n      WHEN conta_codigo LIKE '1.1%' THEN 'ATIVO_CIRCULANTE'\n      WHEN conta_codigo LIKE '1.2%' THEN 'ATIVO_NAO_CIRC'\n      WHEN conta_codigo LIKE '2.1%' THEN 'PASSIVO_CIRC'\n      WHEN conta_codigo LIKE '2.2%' THEN 'PASSIVO_NAO_CIRC'\n      WHEN conta_codigo LIKE '3%'   THEN 'PATRIMONIO_LIQ'\n    END AS grupo,\n\n    CASE\n      -- ativos somam normal\n      WHEN conta_codigo LIKE '1%' THEN valor\n      -- passivo e PL invertem sinal\n      WHEN conta_codigo LIKE '2%' OR conta_codigo LIKE '3%' THEN -valor\n    END AS valor_ajustado\n\n  FROM contab.vw_mov_contabil\n  WHERE empresa_id =  {{ $json.empresa_id }}\n    AND data_mov BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n) x\nWHERE grupo IS NOT NULL\nGROUP BY grupo\nORDER BY grupo;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        1552
+      ],
+      "id": "7c7be700-6145-40f8-8688-ac66eabe2308",
+      "name": "BalancoNivel",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "balanco_niveis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        1552
+      ],
+      "id": "1d3c2999-1f29-40c0-a398-49438dc28471",
+      "name": "BalancoNiveis",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {},
@@ -635,13 +902,112 @@
           }
         ]
       ]
+    },
+    "SaldConta": {
+      "main": [
+        [
+          {
+            "node": "EditSaldoConta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditSaldoConta": {
+      "main": [
+        [
+          {
+            "node": "Saldo_por_conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saldo_por_conta": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditSaldoConta1": {
+      "main": [
+        [
+          {
+            "node": "Balancete1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "balancete": {
+      "main": [
+        [
+          {
+            "node": "EditSaldoConta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Balancete1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditbalancoNivel": {
+      "main": [
+        [
+          {
+            "node": "BalancoNivel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BalancoNivel": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BalancoNiveis": {
+      "main": [
+        [
+          {
+            "node": "EditbalancoNivel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "63e9365a-3425-45ce-b958-466a75fda8c4",
+  "versionId": "4d608aa4-2c90-4feb-ad21-9c88357f566a",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
