@@ -36,7 +36,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT *\nFROM categorias_gerenciais\nWHERE empresa_id = {{ $json.id_empresa }}\n  AND (\n        '{{ $json.tipo }}' IS NULL\n        OR  '{{ $json.tipo }}'  = ''\n        OR tipo =  '{{ $json.tipo }}' \n      ) order by id asc;\n",
+        "query": " SELECT *\nFROM categorias_gerenciais\nWHERE empresa_id = {{ $json.id_empresa }}\n  AND (\n        '{{ $json.tipo }}' IS NULL\n        OR  '{{ $json.tipo }}'  = ''\n        OR tipo =  '{{ $json.tipo }}' \n      ) order by nome asc;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -578,7 +578,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "efb7cc97-8a9a-464e-a3e9-fec2fe831f57",
+  "versionId": "9f98bbac-3910-40e3-83d1-1b33712b725b",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
