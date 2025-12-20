@@ -70,6 +70,9 @@ import RelatoriosSaldoPorConta from "./pages/RelatoriosSaldoPorConta";
 import  RelatoriosBalancoNiveis from "./pages/RelatoriosBalancoNiveis";
  
  
+ import RelatorioGerencial from "./pages/RelatorioGerencial";
+
+
 
 
 
@@ -145,7 +148,7 @@ export default function App() {
  <Route path="/novo-modelo" element={<NovaModeloContabil />} />
  <Route path="/diario" element={<Diario />} />
   <Route path="/novo-diario" element={<NovoDiario />} />
-   <Route path="editar-diario" element={<EditarDiario />} /> 
+   <Route path="/editar-diario" element={<EditarDiario />} /> 
     <Route path="/importar-diario" element={<ImportarDiario />} />
   <Route path="/relatorios/balancete" element={<RelatoriosBalancete />} />
    <Route path="/relatorios/razao" element={<RelatoriosRazao />} />
@@ -155,6 +158,7 @@ export default function App() {
   
     <Route path="/relatorios/saldoporconta" element={<RelatoriosSaldoPorConta />} />
     <Route path="/relatorios/balanco-niveis" element={<RelatoriosBalancoNiveis />} />
+    <Route path="/relatorios/gerencial" element={<RelatorioGerencial />} />
 
     
 
