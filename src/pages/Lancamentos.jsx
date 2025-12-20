@@ -28,6 +28,12 @@ const [loading, setLoading] = useState(false);
 
   const [contaId, setContaId] = useState("");
   const [dadosConta, setDadosConta] = useState(null);
+  const [categoriaId, setCategoriaId] = useState("");
+const [fornecedorId, setFornecedorId] = useState("");
+
+const [categorias, setCategorias] = useState([]);
+const [fornecedores, setFornecedores] = useState([]);
+
 
   // ------------------- CARREGAR SALDO DA CONTA -------------------
   async function carregarSaldoConta(id_conta) {
@@ -224,11 +230,13 @@ const [loading, setLoading] = useState(false);
      await carregar(); // <-- Atualiza SALDO aqui e somente aqui
     setCarregando(true);
     try {
-      const url = buildWebhookUrl('listalancamentos', {
+      const url = buildWebhookUrl('listalancamentos', { 
         empresa_id: empresa_id,
-        conta_id: contaId,
+          conta_id: Number(contaId) || 0,
         data_ini: dataIni,
-        data_fim: dataFim
+        data_fim: dataFim,
+        categoria_id: Number(categoriaId) || 0,
+        fornecedor_id: Number(fornecedorId) || 0
       });
 
       const resp = await fetch(url);
@@ -290,6 +298,54 @@ const [loading, setLoading] = useState(false);
       state: { id_lancamento: id, empresa_id: empresa_id }
     });
   }
+
+  async function carregarFornecedores() {
+  try {
+    const url = buildWebhookUrl("fornecedorcliente", {
+      empresa_id,     tipo: "ambos"
+      // SEM tipo → backend retorna todos
+    });
+
+    const resp = await fetch(url);
+    const txt = await resp.text();
+
+    let lista = [];
+    try {
+      lista = JSON.parse(txt);
+    } catch {}
+
+    setFornecedores(Array.isArray(lista) ? lista : []);
+  } catch (e) {
+    console.log("ERRO ao carregar fornecedores:", e);
+  }
+}
+
+async function carregarCategorias() {
+  try {
+    const url = buildWebhookUrl("listacategorias", {
+      empresa_id , tipo:''
+      // SEM tipo → traz entrada + saída
+    });
+
+    const resp = await fetch(url);
+    const txt = await resp.text();
+
+    let lista = [];
+    try {
+      lista = JSON.parse(txt);
+    } catch {}
+
+    setCategorias(Array.isArray(lista) ? lista : []);
+  } catch (e) {
+    console.log("ERRO ao carregar categorias:", e);
+  }
+}
+
+useEffect(() => {
+  carregarFornecedores();
+  carregarCategorias();
+}, [empresa_id]);
+
 
   return (
     <div>
@@ -372,6 +428,43 @@ const [loading, setLoading] = useState(false);
                       ))}
                     </select>
                 </div>
+
+
+                              {/* CATEGORIA */}
+                <div className="flex flex-col">
+                  <label className="text-base font-bold text-[#1e40af]">Categoria</label>
+                  <select
+                    value={categoriaId}
+                    onChange={(e) => setCategoriaId(e.target.value)}
+                    className="border rounded-lg px-3 py-2 w-48 mt-1 border-yellow-500"
+                  >
+                    <option value="">Todas</option>
+                    {categorias.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* FORNECEDOR / CLIENTE  
+                <div className="flex flex-col">
+                  <label className="text-base font-bold text-[#1e40af]">Fornecedor / Cliente</label>
+                  <select
+                    value={fornecedorId}
+                    onChange={(e) => setFornecedorId(e.target.value)}
+                    className="border rounded-lg px-3 py-2 w-56 mt-1 border-yellow-500"
+                  >
+                    <option value="">Todos</option>
+                    {fornecedores.map((f) => (
+                      <option key={f.id} value={f.id}>
+                        {f.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>*/}
+
+
 
                 <button
                   onClick={pesquisar}

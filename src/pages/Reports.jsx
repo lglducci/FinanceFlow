@@ -48,9 +48,9 @@ export default function Reports() {
       {
       title: "Relação KPIs",
       desc: " Relatório de KPIs",
-      path: "/relatorios/kpi",
+      path: "/relatorios/gerencial",
     },
-    
+ 
      {
       title: "Relação Balanço Níveis",
       desc: " Balanço por níveis",

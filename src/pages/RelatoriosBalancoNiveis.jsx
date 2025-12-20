@@ -118,8 +118,9 @@ useEffect(() => {
         >
           🖨️ Imprimir
         </button>
-    
+     
      </div>
+      <div id="print-area">  
       {/* RESULTADO */}
       {loading && <p>Carregando...</p>}
 
@@ -146,6 +147,7 @@ useEffect(() => {
 
        
     </div>
+     </div>
   );
 }
 
