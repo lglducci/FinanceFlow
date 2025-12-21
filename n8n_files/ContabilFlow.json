@@ -118,7 +118,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -224,
+        -208,
         416
       ],
       "id": "c745590c-72f8-42ec-89a9-608e6071a02d",
@@ -1237,6 +1237,88 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        432,
+        608
+      ],
+      "id": "a0439fe0-c53a-491b-b4fb-be3ffce96262",
+      "name": "Respond to Webhook20"
+    },
+    {
+      "parameters": {
+        "path": "modelos_gerencial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        608
+      ],
+      "id": "78b3d5e6-cdc8-4c04-9821-1b86ef3d342d",
+      "name": "modelogerencial",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "fff3302c-87a7-4e48-99ba-f42e5f6733de",
+              "name": "=gerencial_id",
+              "value": "={{ $json.query.gerencial_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        608
+      ],
+      "id": "d6d48304-e07e-4468-ab61-0448cc035796",
+      "name": "EditModGerencial"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n SELECT  m.* from contab.modelos m \n   inner join  categorias_gerenciais g \n   on g.grupo_contabil = m.codigo and \n       g.empresa_id  = m.empresa_id\n   where m.empresa_id = \n  {{ $json.empresa_id }} and g.id =   {{ $json.gerencial_id }} ORDER BY CODIGO ASC\n;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        176,
+        608
+      ],
+      "id": "8f93d4de-67ce-4e09-80b9-02ee9ce1dca7",
+      "name": "ModeloGerencial",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1603,13 +1685,46 @@
           }
         ]
       ]
+    },
+    "modelogerencial": {
+      "main": [
+        [
+          {
+            "node": "EditModGerencial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditModGerencial": {
+      "main": [
+        [
+          {
+            "node": "ModeloGerencial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ModeloGerencial": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "11cdd72f-eb68-4389-9753-25f4e944e37b",
+  "versionId": "52c94a69-8e03-408b-86ab-ce1ba669d5b8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
