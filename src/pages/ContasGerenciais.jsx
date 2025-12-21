@@ -199,7 +199,7 @@ export default function ContasGerenciais() {
                         })
                       }
                     >
-                      Impacto
+                      Impacto Contábil?
                     </td>
 
 

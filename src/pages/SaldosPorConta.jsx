@@ -150,7 +150,7 @@ const editarConta = (conta) => {
         </div>
       </div>
 
-<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 
   {dados.map((c, idx) => {
     const saldoFinal = Number(c.saldo_final);

@@ -162,19 +162,7 @@ async function carregar() {
               + Novo
             </button>
 
-            <button
-              onClick={() => alert("IMPORTAR: em construção")}
-              style={{
-                padding: "8px 20px",
-                background: "#444",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              Importar
-            </button>
+            
           </div>
         </div>
       </div>

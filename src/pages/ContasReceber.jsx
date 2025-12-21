@@ -416,6 +416,13 @@ async function receberSelecionadas() {
             >
               Receber Selecionadas
             </button>
+
+            <button
+                onClick={() => window.print()}
+                className="bg-gray-700 text-white px-6 py-2 rounded-lg font-bold"
+              >
+                🖨️ Imprimir
+              </button> 
           </div>
 
         </div>
@@ -466,6 +473,7 @@ async function receberSelecionadas() {
     {loading && <p>Carregando...</p>}
 
     <div className="bg-gray-300 rounded-xl shadow border border-gray-200 overflow-x-auto">
+             <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
       <table className="w-full text-base">
         <thead className="bg-blue-300">
           <tr>
@@ -552,6 +560,7 @@ async function receberSelecionadas() {
         </tbody>
       </table>
     </div>
+     </div>
 
   </div>
 );

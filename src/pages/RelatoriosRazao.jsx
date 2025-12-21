@@ -128,7 +128,7 @@ async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
           </div>
 
           <div>
-            <label className="font-bold text-[#1e40af]"> Conta (opcional)  </label>
+            <label className=" block font-bold text-[#1e40af]"> Conta (opcional)  </label>
             <input
               type="text"
               placeholder="Código ou nome"
@@ -180,10 +180,27 @@ async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
               {dados.map((l, idx) => (
                 <tr key={idx} className="border-b">
                  <td   className="p-2 font-bold font-size: 16px">{formatarData(l.data_mov)}</td>
-                  <td  className="p-2 font-bold font-size: 16px">
+                       <td
+                            className={`p-2 font-bold ${
+                              l.historico === "TOTAL DA CONTA"
+                                ? "text-green-700 text-lg"
+                                : ""
+                            }`}
+                          >
                     {l.conta_codigo} – {l.conta_nome}
                   </td>
-                  <td  className="p-2 font-bold font-size: 16px">{l.historico}</td>
+                 {/*  <td  className="p-2 font-bold font-size: 16px">{l.historico}</td>´*/}
+
+                     <td
+                            className={`p-2 font-bold ${
+                              l.historico === "TOTAL DA CONTA"
+                                ? "text-green-700 text-lg"
+                                : ""
+                            }`}
+                          >
+                            {l.historico}
+                          </td>
+
                   <td   className="p-2 font-bold text-right font-size: 16px">
                     {fmt.format(l.debito)}
                   </td>

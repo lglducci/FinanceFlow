@@ -62,8 +62,7 @@ const [filtro, setFiltro] = useState("");
     console.log("Erro ao carregar linhas:", e);
   }
 }
-
-  
+ 
 
   useEffect(() => {
     carregarModelos();
@@ -151,53 +150,8 @@ const [filtro, setFiltro] = useState("");
   </div>
 
 </div>
-
-              {/* 🔍 FILTRO DE PESQUISA */}
-              <div
-                className="bg-gray-100 rounded-xl shadow p-6 border-[6px] border-blue-800 mb-6 flex items-center gap-6"
-              >
-                <label className="font-bold text-[#1e40af]">
-                     <div
-                        style={{
-                            marginTop: 20,
-                            background: "#ffffff",
-                            border: "2px solid #1e40af",
-                            borderRadius: 10,
-                            padding: 16,
-                            fontSize: 14,
-                            lineHeight: "1.6",
-                            color: "#1f2937",
-                        }}
-                        >
-                        <b>📘 Como este modelo funciona</b>
-                        <p style={{ marginTop: 10 }}>
-                            Este modelo contábil define como um evento do sistema será registrado na
-                            contabilidade.
-                        </p>
-
-                        <p>
-                            Cada linha abaixo representa uma conta contábil utilizada no lançamento.
-                            A contabilidade sempre utiliza o método da <b>partida dobrada</b>.
-                        </p>
-
-                        <p>
-                            <b>Partida dobrada</b> significa que todo valor lançado gera:
-                            <br />• um débito em uma conta
-                            <br />• um crédito em outra conta
-                        </p>
-
-                        <p>
-                            O campo <b>D/C</b> indica se aquela conta será debitada (D) ou creditada (C)
-                            quando o lançamento ocorrer.
-                        </p>
-                        </div>
-
-
-
-
-                </label> 
-                
-              </div>
+ 
+            
           <button
           onClick={() => navigate("/contasgerenciais")}
           className="bg-gray-400 text-white px-4 py-2 rounded-lg font-bold"
@@ -240,41 +194,7 @@ const [filtro, setFiltro] = useState("");
         )}
       </div>
 
-      {/* ============================================= */}
-      {/*   PARTE DE BAIXO — LISTA DE MODELOS           */}
-      {/* ============================================= */}
-      <h2>Mapeamento Contábil</h2>
-          
-
-                <div
-            style={{
-                marginTop: 20,
-                background: "#f9fafb",
-                border: "2px dashed #2563eb",
-                borderRadius: 10,
-                padding: 20,
-                fontSize: 14,
-                lineHeight: "1.7",
-                color: "#111827",
-            }}
-            >
-            <b>🧭 Como o dinheiro percorre o sistema</b>
-
-            <ol style={{ marginTop: 12, paddingLeft: 20 }}>
-                <li>Lançamento financeiro pelo usuário</li>
-                <li>Classificação por conta gerencial</li>
-                <li>Aplicação automática do modelo contábil</li>
-                <li>Registro no diário para conferência</li>
-                <li>Geração contábil oficial</li>
-                <li>Impacto nos relatórios (DRE, KPIs, Balanço)</li>
-            </ol>
-
-            <p style={{ marginTop: 10 }}>
-                Todo esse processo ocorre automaticamente, sem necessidade de conhecimento
-                contábil por parte do usuário.
-            </p>
-            </div>
-
+        
       <table  className="tabela tabela-mapeamento" 
       
             style={{
@@ -323,6 +243,87 @@ const [filtro, setFiltro] = useState("");
           ))}
         </tbody>
       </table>
+             <div
+                className="bg-gray-100 rounded-xl shadow p-6 border-[6px] border-blue-800 mb-6 flex items-center gap-6"
+              >
+                <label className="font-bold text-[#1e40af]">
+                     <div
+                        style={{
+                            marginTop: 20,
+                            background: "#ffffff",
+                            border: "2px solid #1e40af",
+                            borderRadius: 10,
+                            padding: 16,
+                            fontSize: 14,
+                            lineHeight: "1.6",
+                            color: "#1f2937",
+                        }}
+                        >
+                        <b>📘 Como este modelo funciona</b>
+                        <p style={{ marginTop: 10 }}>
+                            Este modelo contábil define como um evento do sistema será registrado na
+                            contabilidade.
+                        </p>
+
+                        <p>
+                            Cada linha abaixo representa uma conta contábil utilizada no lançamento.
+                            A contabilidade sempre utiliza o método da <b>partida dobrada</b>.
+                        </p>
+
+                        <p>
+                            <b>Partida dobrada</b> significa que todo valor lançado gera:
+                            <br />• um débito em uma conta
+                            <br />• um crédito em outra conta
+                        </p>
+
+                        <p>
+                            O campo <b>D/C</b> indica se aquela conta será debitada (D) ou creditada (C)
+                            quando o lançamento ocorrer.
+                        </p>
+                        </div> 
+
+                </label> 
+                
+              </div>
+
+      {/* ============================================= */}
+      {/*   PARTE DE BAIXO — LISTA DE MODELOS           */}
+      {/* ============================================= */}
+      <h2>
+  Mapeamento Contábil : &quot;Evento Gerencial Categorias&quot; → Modelos → Modelo Linhas → Contas Contábeis
+</h2>
+
+          
+
+                <div
+            style={{
+                marginTop: 20,
+                background: "#f9fafb",
+                border: "2px dashed #2563eb",
+                borderRadius: 10,
+                padding: 20,
+                fontSize: 14,
+                lineHeight: "1.7",
+                color: "#111827",
+            }}
+            >
+            <b>🧭 Como o dinheiro percorre o sistema</b>
+
+            <ol style={{ marginTop: 12, paddingLeft: 20 }}>
+                <li>Lançamento financeiro pelo usuário</li>
+                <li>Classificação por conta gerencial</li>
+                <li>Aplicação automática do modelo contábil</li>
+                <li>Registro no diário para conferência</li>
+                <li>Geração contábil oficial</li>
+                <li>Impacto nos relatórios (DRE, KPIs, Balanço)</li>
+            </ol>
+
+            <p style={{ marginTop: 10 }}>
+                Todo esse processo ocorre automaticamente, sem necessidade de conhecimento
+                contábil por parte do usuário.
+            </p>
+            </div>
+ 
 
     </div>
   );

@@ -5,7 +5,10 @@ import { useNavigate } from "react-router-dom";
 export default function FaturasCartao() {
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
   const navigate = useNavigate();
+const btnPadrao =
+  "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
+  
   const [cartoes, setCartoes] = useState([]);
   const [lista, setLista] = useState([]);
   const [selecionadas, setSelecionadas] = useState([]);
@@ -192,11 +195,12 @@ export default function FaturasCartao() {
                 </select>
             </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> 
             {/* BOTÕES */}
             <div className="flex items-end">
                 <button
                   onClick={pesquisar}
-                  className="bg-blue-600 text-white px-6 py-2 rounded font-bold w-full"
+                  className={`${btnPadrao} bg-blue-600 hover:bg-blue-700`}
                 >
                   Pesquisar
                 </button>
@@ -205,12 +209,20 @@ export default function FaturasCartao() {
             <div className="flex items-end">
                 <button
                   onClick={fecharFaturas}
-                  className="bg-green-600 text-white px-6 py-2 rounded font-bold w-full"
+                    className={`${btnPadrao} bg-green-600 hover:bg-green-700`}
                 >
                   Fechar Fatura
                 </button>
             </div>
-
+              <div className="flex items-end"> 
+              <button
+                onClick={() => window.print()}
+                 className={`${btnPadrao} bg-gray-700 hover:bg-gray-800`}
+              >
+                🖨️ Imprimir
+              </button> 
+            </div>
+          </div>
         </div>
     </div>
 
@@ -240,6 +252,7 @@ export default function FaturasCartao() {
 
       {/* ==================== LISTAGEM DAS FATURAS ==================== */}
       <div className="bg-white rounded-xl shadow border p-4">
+          <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
         <table className="w-full text-base">
           <thead className="bg-blue-200">
             <tr>
@@ -305,5 +318,6 @@ export default function FaturasCartao() {
       </div>
     </div>
     </div>
+      </div>
   );
 }

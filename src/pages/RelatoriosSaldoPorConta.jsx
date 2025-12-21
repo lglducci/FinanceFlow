@@ -47,10 +47,8 @@ const navigate = useNavigate();
       setLoading(false);
     }
   }
+ 
 
-  useEffect(() => {
-    consultar();
-  }, [empresa_id]);
 
   const filtrados = dados.filter(item =>
     item.codigo.includes(filtro) ||

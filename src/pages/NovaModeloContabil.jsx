@@ -9,7 +9,11 @@ export default function NovaModeloContabil() {
   const [form, setForm] = useState({
     codigo: "",
     nome: "",
+    tipo_automacao:"FINANCEIRO_PADRAO"
   });
+
+
+ 
 
  async function salvar() {
   try {
@@ -50,6 +54,7 @@ export default function NovaModeloContabil() {
 
     // sucesso
     alert("Modelo criado com sucesso!");
+     alert("Configure as contas para este novo modelo em editar mapeameto.");
     navigate("/mapeamento-contabil");
 
   } catch (e) {
@@ -140,6 +145,7 @@ export default function NovaModeloContabil() {
           <input
             type="text"
             value={form.tipo_automacao}
+              disabled
             onChange={(e) =>
               setForm((f) => ({ ...f, tipo_automacao: e.target.value }))
             }

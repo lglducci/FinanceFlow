@@ -414,7 +414,17 @@ async function pagarSelecionadas() {
             >
               Pagar Selecionadas
             </button>
-          </div>
+        
+           {/* 🖨️ IMPRIMIR */}
+                 
+                  <button
+                    onClick={() => window.print()}
+                    className="bg-gray-700 text-white px-6 py-2 rounded-lg font-bold"
+                  >
+                    🖨️ Imprimir
+                  </button> 
+               
+              </div>
 
         </div>
 
@@ -459,11 +469,12 @@ async function pagarSelecionadas() {
         })}
       </p>
     </div>
-
+   
     {/* LISTA */}
     {loading && <p>Carregando...</p>}
 
     <div className="bg-gray-300 rounded-xl shadow border border-gray-200 overflow-x-auto">
+       <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
       <table className="w-full text-base">
         <thead className="bg-blue-300">
           <tr>
@@ -520,6 +531,7 @@ async function pagarSelecionadas() {
                   currency: "BRL",
                 })}
               </td>
+              
                <td className="px-3 py-2 text-center font-bold">{c.status}</td>
               <td className="px-3 py-2 text-center">
                   {c.status === "aberto" && (
@@ -540,12 +552,13 @@ async function pagarSelecionadas() {
                 </button>
                   )}
               </td>
-
+                 
             </tr>
           ))}
 
         </tbody>
       </table>
+      </div>
     </div>
 
   </div>

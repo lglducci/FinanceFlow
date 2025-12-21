@@ -111,7 +111,9 @@ export default function FornecedorCliente() {
              <option value="ambos">Ambos</option>
           </select>
         </div>
-
+       
+          <div>
+          <label  className="block font-bold text-[#1e40af]" > Pesquisa - Nome ou CNPJ </label>
         <input
             type="text"
             placeholder="Buscar por nome, tipo, grupo..."
@@ -119,7 +121,8 @@ export default function FornecedorCliente() {
             onChange={(e) => setFiltro(e.target.value)} 
              className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
           />
-
+           </div>
+       
 
         <button
           onClick={carregar}
