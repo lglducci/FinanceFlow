@@ -24,7 +24,7 @@ export default function Sidebar() {
      { id: "contascontabeis", label: "Contas Contábeis", path: "/contascontabeis" },
     { id: "mapeamentocontabil", label: "Mapeamento Contábil", path: "/mapeamento-contabil" },
     { id: "diario", label: "Diário Contábil", path: "/diario" },
-    { id: "importar-diario", label: "Importação Diario", path: "/importar-diario" }
+    { id: "importar-diario", label: "Importação-Diario-Contábil", path: "/importar-diario" }
 
 
 
@@ -42,7 +42,10 @@ export default function Sidebar() {
           <button
             key={item.id}
             onClick={() => navigate(item.path)}
-            className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:bg-[#245f90]"
+      className="
+  w-full text-left px-3 py-2 rounded-lg text-xl font-medium text-white/80
+  transition-colors duration-150
+  hover:bg-blue-600/30"
           >
             {item.label}
           </button>
