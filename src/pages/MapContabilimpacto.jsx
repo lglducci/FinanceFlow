@@ -1,9 +1,10 @@
  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
-export default function MapeamentoContabil() {
-  const navigate = useNavigate();
+export default function MapContabilImpacto() {
+ 
   const empresa_id = localStorage.getItem("empresa_id") || "1";
 
   const [lista, setLista] = useState([]);
@@ -11,13 +12,21 @@ export default function MapeamentoContabil() {
   const [linhas, setLinhas] = useState([]);
 
 const [filtro, setFiltro] = useState("");
-  
+  const { state } = useLocation();
+   
+  const id = state?.id;
+
+  const [modelo, setModelo] = useState(null);
+  const [contas, setContas] = useState([]);
+ 
+ 
+    const navigate = useNavigate();
  
  // const contaGerencialId = state?.conta_gerencial_id;
 
   async function carregarModelos() {
     try {
-      const url = buildWebhookUrl("modelos", { empresa_id });
+      const url = buildWebhookUrl("modelos_gerencial", { empresa_id, gerencial_id: id });
       const r = await fetch(url);
       const j = await r.json();
       setLista(j);
@@ -30,7 +39,7 @@ const [filtro, setFiltro] = useState("");
   try {
     const url = buildWebhookUrl("modelos_linhas", {
       empresa_id,
-      modelo_id: id_modelo,
+      modelo_id: id_modelo, 
     });
 
     const r = await fetch(url);
@@ -54,77 +63,18 @@ const [filtro, setFiltro] = useState("");
   }
 }
 
-
-
- async function Excluir(modelo_id) {
   
-  if (!window.confirm("Tem certeza que deseja excluir este modelo?")) {
-    return;
-  }
-
-  try {
-    const url = buildWebhookUrl("excluirmodelo", {
-      empresa_id:empresa_id,
-      modelo_id,
-    });
-
-    const resp = await fetch(url, { method: "POST" });
-
-    const texto = await resp.text();
-    let json = null;
-
-    try {
-      json = JSON.parse(texto);
-    } catch (e) {
-      console.log("JSON inválido:", texto);
-      alert("Erro inesperado no servidor.");
-      return;
-    }
-
-    // quando webhook retorna array
-    const item = Array.isArray(json) ? json[0] : json;
-
-    // erro controlado pelo backend
-    if (item?.ok === false) {
-      alert(item.message || "Erro ao excluir.");
-      return;
-    }
-
-    alert("Modelo excluído com sucesso!");
-
-    // recarrega a lista
-    carregarModelos();
-
-  } catch (e) {
-    console.log("ERRO REQUEST:", e);
-    alert("Erro de comunicação com o servidor.");
-  }
-}
-
-
-
- 
-
-
- function editar(m) {
-  const empresa_id = localStorage.getItem("empresa_id") || "1";
-
-  navigate("/edita-mapeamento", {
-    state: {
-      modelo_id: m.id,
-      empresa_id: empresa_id ,
-      token: m.codigo,   // <<< VOLTOU O QUE VOCÊ FALOU
-      nome: m.nome,     
-    }
-  });
-}
-
-
-
 
   useEffect(() => {
     carregarModelos();
+   
   }, []);
+
+  useEffect(() => {
+  if (lista.length > 0) {
+    visualizar(lista[0].id); // 🔥 pega o primeiro modelo automaticamente
+  }
+}, [lista]);
 
 
 
@@ -135,7 +85,7 @@ const [filtro, setFiltro] = useState("");
 );
 
   return (
-    <div style={{ width: "100%", padding: 20 }}>
+    <div style={{ width: "100%", padding: 40 }}>
 
       {/* ============================================= */}
       {/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}
@@ -197,23 +147,7 @@ const [filtro, setFiltro] = useState("");
     </div>
 
     {/* BOTÃO NOVO MODELO */}
-    <button
      
-       onClick={() => navigate("/novo-modelo")}
-      style={{
-        padding: "10px 22px",
-        background: "#003ba2",
-        color: "white",
-        border: "none",
-        borderRadius: 8,
-        fontWeight: "bold",
-        cursor: "pointer",
-        fontSize: 15,
-        boxShadow: "0 2px 4px rgba(0,0,0,0.25)",
-      }}
-    >
-      + Novo Modelo
-    </button>
   </div>
 
 </div>
@@ -223,19 +157,53 @@ const [filtro, setFiltro] = useState("");
                 className="bg-gray-100 rounded-xl shadow p-6 border-[6px] border-blue-800 mb-6 flex items-center gap-6"
               >
                 <label className="font-bold text-[#1e40af]">
-                  Buscar:
-                </label>
+                     <div
+                        style={{
+                            marginTop: 20,
+                            background: "#ffffff",
+                            border: "2px solid #1e40af",
+                            borderRadius: 10,
+                            padding: 16,
+                            fontSize: 14,
+                            lineHeight: "1.6",
+                            color: "#1f2937",
+                        }}
+                        >
+                        <b>📘 Como este modelo funciona</b>
+                        <p style={{ marginTop: 10 }}>
+                            Este modelo contábil define como um evento do sistema será registrado na
+                            contabilidade.
+                        </p>
 
-                <input
-                  type="text"
-                  placeholder="Token, descrição ou tipo automação..."
-                  value={filtro}
-                  onChange={(e) => setFiltro(e.target.value)}
-                  className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
-                 // className="border rounded-xl px-3 py-2 border-yellow-500"
-                />
+                        <p>
+                            Cada linha abaixo representa uma conta contábil utilizada no lançamento.
+                            A contabilidade sempre utiliza o método da <b>partida dobrada</b>.
+                        </p>
+
+                        <p>
+                            <b>Partida dobrada</b> significa que todo valor lançado gera:
+                            <br />• um débito em uma conta
+                            <br />• um crédito em outra conta
+                        </p>
+
+                        <p>
+                            O campo <b>D/C</b> indica se aquela conta será debitada (D) ou creditada (C)
+                            quando o lançamento ocorrer.
+                        </p>
+                        </div>
+
+
+
+
+                </label> 
+                
               </div>
-
+          <button
+          onClick={() => navigate("/contasgerenciais")}
+          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-bold"
+        >
+          ← Voltar
+        </button>
 
         {/* TABELA DE LINHAS DENTRO DO BLOCO AZUL */}
         {linhas.length > 0 && (
@@ -276,6 +244,36 @@ const [filtro, setFiltro] = useState("");
       {/*   PARTE DE BAIXO — LISTA DE MODELOS           */}
       {/* ============================================= */}
       <h2>Mapeamento Contábil</h2>
+          
+
+                <div
+            style={{
+                marginTop: 20,
+                background: "#f9fafb",
+                border: "2px dashed #2563eb",
+                borderRadius: 10,
+                padding: 20,
+                fontSize: 14,
+                lineHeight: "1.7",
+                color: "#111827",
+            }}
+            >
+            <b>🧭 Como o dinheiro percorre o sistema</b>
+
+            <ol style={{ marginTop: 12, paddingLeft: 20 }}>
+                <li>Lançamento financeiro pelo usuário</li>
+                <li>Classificação por conta gerencial</li>
+                <li>Aplicação automática do modelo contábil</li>
+                <li>Registro no diário para conferência</li>
+                <li>Geração contábil oficial</li>
+                <li>Impacto nos relatórios (DRE, KPIs, Balanço)</li>
+            </ol>
+
+            <p style={{ marginTop: 10 }}>
+                Todo esse processo ocorre automaticamente, sem necessidade de conhecimento
+                contábil por parte do usuário.
+            </p>
+            </div>
 
       <table  className="tabela tabela-mapeamento" 
       
@@ -309,23 +307,7 @@ const [filtro, setFiltro] = useState("");
              
 
               <td style={{ display: "flex", gap: "28px"}}>
-               <button
-                onClick={() =>
-                  navigate("/editar-mapeamento", {
-                    state: {
-                      modelo_id: m.id,
-                      empresa_id: empresa_id,
-                      token: m.codigo,
-                      nome: m.nome,
-                      tipo:m.tipo_automacao
-                    }  
-                  })
-                }
-
-                  style={{ color: "#1c09c6ff"  }}
-              >
-                Editar
-              </button> 
+               
               
                 <button
                  className="tabela tabela-mapeamento"
@@ -334,15 +316,7 @@ const [filtro, setFiltro] = useState("");
                 >
                   Visualizar
                 </button>
-              
-                <button
-                 className="tabela tabela-mapeamento"
-                  onClick={() => Excluir(m.id)}
-                  style={{ color: "#c02525ff", gap: "32px" }}
-                >
-                  Excluir
-                </button>
-
+          
 
               </td>
             </tr>

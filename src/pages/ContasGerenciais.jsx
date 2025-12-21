@@ -9,6 +9,16 @@ export default function ContasGerenciais() {
   const [tipo, setTipo] = useState("");
   const [lista, setLista] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [filtro, setFiltro] = useState("");
+
+  const listaFiltrada = lista.filter((l) =>
+  l.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
+  l.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
+  l.grupo_contabil?.toLowerCase().includes(filtro.toLowerCase()) ||
+  String(l.id).includes(filtro)
+);
+
+
 
   async function carregar() {
     setLoading(true);
@@ -95,16 +105,27 @@ export default function ContasGerenciais() {
       {/* FILTRO */}
       
       <div className="bg-gray-100 rounded-xl shadow p-8  border-[12px] border-blue-800 mb-8 w-[1850px] flex items-center gap-6">
-             <label className="font-bold text-[#1e40af]">Descrição</label>
+               
+
+             <label className="block font-bold text-[#1e40af]"> Tipo </label>
             <select 
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
-              className="border px-5 py-2 rounded w-46 border-yellow-500 w-32"
+              className="border px-5 py-2 rounded rounded-xl w-46 border-yellow-500 w-32"
             >
               <option value="">Todos</option>
               <option value="entrada">Entrada</option>
               <option value="saida">Saída</option>
             </select>
+
+            <input
+              type="text"
+              placeholder="Buscar por nome, tipo, grupo..."
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+              className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
+            />
+
 
             <button
               onClick={carregar}
@@ -120,6 +141,7 @@ export default function ContasGerenciais() {
               >
                 Novo
               </button>
+ 
 
           </div>
 
@@ -141,7 +163,7 @@ export default function ContasGerenciais() {
         </thead>
 
         <tbody>
-          {lista.map((l, i) => (
+         {listaFiltrada.map((l, i) => (
             <tr
               key={l.id}
               className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
@@ -165,6 +187,22 @@ export default function ContasGerenciais() {
                     }>
                   Editar
                 </td>
+
+                 <td
+                      className="px-4 py-1 text-indigo-600 underline font-bold cursor-pointer"
+                      onClick={() =>
+                        navigate("/mapeamento-contabil/impacto", {
+                          state: {
+                            id: l.id, 
+                            empresa_id: empresa_id
+                          }
+                        })
+                      }
+                    >
+                      Impacto
+                    </td>
+
+
 
                 <td
                   className="px-4 py-1 text-red-600 underline font-bold cursor-pointer"

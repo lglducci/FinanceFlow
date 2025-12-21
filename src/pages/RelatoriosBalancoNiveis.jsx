@@ -20,6 +20,19 @@ const [dataFim, setDataFim] = useState(hojeLocal());
   const [loading, setLoading] = useState(false);
 
    
+  const grupo_contabil = state?.grupo_contabil;
+  const id = state?.id;
+
+  const [modelo, setModelo] = useState(null);
+  const [contas, setContas] = useState([]);
+
+  useEffect(() => {
+    if (!empresa_id || !grupo_contabil) return;
+
+    carregarImpacto();
+  }, [empresa_id, grupo_contabil]);
+
+
   // Formatter BR
   const fmt = new Intl.NumberFormat("pt-BR", {
     minimumFractionDigits: 2,

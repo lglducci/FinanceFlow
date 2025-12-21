@@ -9,9 +9,17 @@ export default function FornecedorCliente() {
   const [lista, setLista] = useState([]);
   const [tipo, setTipo] = useState("fornecedor");
   const [carregando, setCarregando] = useState(false);
+ const [filtro, setFiltro] = useState("");
 
- 
-  
+
+ const listaFiltrada = lista.filter((c) =>
+  c.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
+  c.cpf_cnpj?.toLowerCase().includes(filtro.toLowerCase()) ||   
+  c.telefone?.toLowerCase().includes(filtro.toLowerCase()) || 
+  String(c.id).includes(filtro)
+);
+
+
   async function carregar() {
     try {
       setCarregando(true);
@@ -104,6 +112,15 @@ export default function FornecedorCliente() {
           </select>
         </div>
 
+        <input
+            type="text"
+            placeholder="Buscar por nome, tipo, grupo..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)} 
+             className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
+          />
+
+
         <button
           onClick={carregar}
           className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold text-base"
@@ -133,7 +150,8 @@ export default function FornecedorCliente() {
           </thead>
 
           <tbody>
-            {lista.map((c, i) => {
+             
+            {listaFiltrada.map((c, i) => {
               const tipoColor =
                 c.tipo?.toLowerCase() === "fornecedor"
                   ? "text-red-700 font-bold"
