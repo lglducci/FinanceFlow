@@ -75,6 +75,7 @@ import MapContabilImpacto from "./pages/MapContabilImpacto";
 
 
 import FluxoCaixaDetalhado from "./pages/FluxoCaixaDetalhado";
+import RelatoriosFluxoCaixaMensal from "./pages/RelatoriosFluxoCaixaMensal";
 
  
 
@@ -165,6 +166,7 @@ export default function App() {
     <Route path="/relatorios/gerencial" element={<RelatorioGerencial />} />
     <Route path="/mapeamento-contabil/impacto" element={<MapContabilImpacto />}/>
     <Route path="/relatorios/fluxo-caixa-detalhado" element={<FluxoCaixaDetalhado />}/>
+   <Route path="/relatorios/fluxo-caixa-mensal" element={<RelatoriosFluxoCaixaMensal />} />
 
     
 
