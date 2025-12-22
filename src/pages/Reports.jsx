@@ -19,7 +19,7 @@ export default function Reports() {
     {
       title: "Fluxo de Caixa Mensal",
       desc: "Entradas e saídas mensal",
-      path: "/relatorios/fluxo-caixa",
+      path: "/relatorios/fluxo-caixa-mensal",
     },
 
     {
