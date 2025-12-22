@@ -24,7 +24,9 @@ const [loadingDatas, setLoadingDatas] = useState(true);
 const [ultimoFechamento, setUltimoFechamento] = useState("15/04/2025"); 
 // depois você liga no webhook
 
- 
+ const btnPadrao =
+  "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+
      
  
   // ---------------------------------------
@@ -322,7 +324,21 @@ async function gerarContabil() {
 }, [empresa_id]);
 
  
-
+ async function voltadata() {
+  try {
+    setMsg("⏳ Gerando Contábil...");
+    await callApi(
+      buildWebhookUrl("voltadata"),
+      { empresa_id  }
+    );
+     carregar();
+    setMsg("✅ Contábil gerado com sucesso. Fase 3 concluida");
+   
+  } catch (e) {
+    alert("❌ " + e.message);
+  }
+}
+ 
 
   // ---------------------------------------
   // RENDER
@@ -370,13 +386,19 @@ async function gerarContabil() {
       </div>
 
       <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
-        <button onClick={enviar} style={{ ...estilosBtn, background: "#003ba2", color: "#fff" }}>
+        <button onClick={enviar}
+        // style={{ ...estilosBtn, background: "#003ba2", color: "#fff" }}>
+            className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700 px-4 py-2 `}>
           Importar
         </button>
-        <button onClick={excluirLote} style={{ ...estilosBtn, background: "#cc0000", color: "#fff" }}>
+        <button onClick={excluirLote} 
+        //style={{ ...estilosBtn, background: "#cc0000", color: "#fff" }}>
+           className= { `${btnPadrao} bg-red-600 hover:bg-red-700 px-4 py-2 `}>
           Excluir
         </button>
-        <button onClick={confirmarLote} style={{ ...estilosBtn, background: "#eae249" }}>
+        <button onClick={confirmarLote}
+         style={{ ...estilosBtn, background: "#eae249" }} 
+          className= { `${btnPadrao} bg-yellow-400 hover:bg-yellow-700 px-4 py-2 `}>
           Confirmar
         </button>
       </div>
@@ -445,6 +467,14 @@ async function gerarContabil() {
     >
       ✔ Contábil (Fase Final)
     </button>
+
+    <button
+      onClick={voltadata}
+      style={{ ...estilosBtn, background: "#cd0707ff", color: "#fff" , padding: 10 }}
+    >
+      ✔ Voltar Data  
+    </button>
+
   </div>
 </div>
   

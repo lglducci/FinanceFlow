@@ -10,7 +10,7 @@ export default function ContasGerenciais() {
   const [lista, setLista] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filtro, setFiltro] = useState("");
-
+    const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
   const listaFiltrada = lista.filter((l) =>
   l.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
   l.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
@@ -129,16 +129,16 @@ export default function ContasGerenciais() {
 
             <button
               onClick={carregar}
-              className="bg-blue-600 text-white px-5 py-2 rounded font-bold w-32"
-            >
+             // className="bg-blue-600 text-white px-5 py-2 rounded font-bold w-32">
+              className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700 px-4 py-2 `}>
               Pesquisar
             </button>
 
 
              <button
                 onClick={() => navigate("/contasgerenciais/novo")}
-                className="bg-green-600 text-white px-5 py-2 rounded font-bold shadow"
-              >
+                //className="bg-green-600 text-white px-5 py-2 rounded font-bold shadow">
+                 className= { `${btnPadrao} bg-green-600 hover:bg-green-700 px-4 py-2 `}>
                 Novo
               </button>
  

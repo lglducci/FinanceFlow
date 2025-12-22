@@ -10,7 +10,7 @@ export default function FornecedorCliente() {
   const [tipo, setTipo] = useState("fornecedor");
   const [carregando, setCarregando] = useState(false);
  const [filtro, setFiltro] = useState("");
-
+ const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
  const listaFiltrada = lista.filter((c) =>
   c.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
@@ -126,14 +126,15 @@ export default function FornecedorCliente() {
 
         <button
           onClick={carregar}
-          className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold text-base"
+          className={ `${btnPadrao} bg-blue-600 hover:bg-blue-700`}
+                                
         >
           {carregando ? "Carregando..." : "Pesquisar"}
         </button>
 
         <button
           onClick={novo}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-base"
+          className={ `${btnPadrao} bg-green-600  hover:green-600`}
         >
           Novo
         </button>

@@ -13,7 +13,7 @@ export default function SaldosPorConta() {
   const [inicio, setInicio] = useState(hoje);
   const [fim, setFim] = useState(hoje);
   const [periodo, setPeriodo] = useState("");
-
+   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
    const carregar = async () => {
   try {
     const empresa_id = localStorage.getItem("id_empresa"); // 🔵 PEGOU!
@@ -118,8 +118,9 @@ const editarConta = (conta) => {
             </label>
           ))}
         </div>
-       
-        <div className="flex gap-4 bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
+
+        
+         <div className="flex gap-4 bg-white shadow rounded-lg p-4 border-l-4 border-gray-600 items-end">
           <div className="flex flex-col">
             <label className="text-base font-bold  text-[#1e40af] ">Data início</label>
             <input
@@ -140,15 +141,21 @@ const editarConta = (conta) => {
             />
           </div>
 
-          <button onClick={carregar} className="bg-blue-600 text-white px-4 py-2 rounded h-10 mt-5">
+          <button onClick={carregar}
+        //  className="bg-blue-600 text-white px-4 py-2 rounded h-10 mt-5"
+           className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700 px-4 py-2 `}>
             Pesquisar
           </button>
 
-          <button onClick={novaConta} className="bg-green-600 text-white px-4 py-2 rounded h-10 mt-5">
+          <button onClick={novaConta}
+          //className="bg-green-600 text-white px-4 py-2 rounded h-10 mt-5">
+             className= { `${btnPadrao} bg-green-600 hover:bg-green-700 px-4 py-2 `}>
             Nova Conta
           </button>
         </div>
+        
       </div>
+     
 
 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 

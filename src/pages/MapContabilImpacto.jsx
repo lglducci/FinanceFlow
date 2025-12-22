@@ -290,8 +290,8 @@ const [filtro, setFiltro] = useState("");
       {/*   PARTE DE BAIXO — LISTA DE MODELOS           */}
       {/* ============================================= */}
       <h2>
-  Mapeamento Contábil : &quot;Evento Gerencial Categorias&quot; → Modelos → Modelo Linhas → Contas Contábeis
-</h2>
+          Mapeamento Contábil : &quot;Evento Gerencial Categorias&quot; → Modelos → Modelo Linhas → Contas Contábeis
+        </h2>
 
           
 

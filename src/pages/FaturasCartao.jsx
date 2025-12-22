@@ -200,8 +200,8 @@ const btnPadrao =
             <div className="flex items-end">
                 <button
                   onClick={pesquisar}
-                  className={`${btnPadrao} bg-blue-600 hover:bg-blue-700`}
-                >
+                //  className={`${btnPadrao} bg-blue-600 hover:bg-blue-700`}>
+                     className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700`}>
                   Pesquisar
                 </button>
             </div>

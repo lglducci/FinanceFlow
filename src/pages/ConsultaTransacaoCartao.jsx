@@ -11,7 +11,7 @@ export default function ConsultaTransacaoCartao() {
   const [referencia, setReferencia] = useState("");
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(false);
-
+    const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
   const [listaCartoes, setListaCartoes] = useState([]);
 
   // =============================
@@ -140,15 +140,15 @@ export default function ConsultaTransacaoCartao() {
             <button
               onClick={pesquisar}
               disabled={loading}
-              className="bg-blue-600 text-white px-5 py-2 rounded h-10"
-            >
+             // className="bg-blue-600 text-white px-5 py-2 rounded h-10">
+              className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700 px-4 py-2 `}>
               {loading ? "Carregando..." : "Pesquisar"}
             </button>
 
             <button
               onClick={novaTransacao}
-              className="bg-green-600 text-white px-5 py-1.5 rounded h-10"
-            >
+             // className="bg-green-600 text-white px-5 py-1.5 rounded h-10">
+               className= { `${btnPadrao} bg-green-600 hover:bg-green-700 px-4 py-2 `}>
               Nova Transação
             </button>
           </div>

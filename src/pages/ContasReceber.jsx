@@ -29,7 +29,8 @@ export default function ContasReceber() {
  const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false);
  const [selecionadas, setSelecionadas] = useState([]);
 
- 
+   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+
 
 
  // CARREGA CONTAS BANCÁRIAS
@@ -395,23 +396,24 @@ async function receberSelecionadas() {
 
           {/* BOTÕES */}
           <div className="flex justify-left gap-2 mt-4">
-            <button onClick={pesquisar} className="bg-blue-600 text-white px-5 py-2 rounded font-semibold">
+            <button onClick={pesquisar} 
+               className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700`}>
               Pesquisar
             </button>
 
-            <button onClick={() => navigate("/nova-conta-receber")} className="bg-green-600 text-white px-5 py-2 rounded font-semibold">
+            <button onClick={() => navigate("/nova-conta-receber")} 
+             className= { `${btnPadrao} bg-green-600 hover:bg-green-700`}>
               Novo Conta
             </button>
 
             <button
               onClick={() => navigate("/excluir-parcelamento-receber")}
-              className="bg-red-600 text-white px-5 py-2 rounded font-semibold"
-            >
+              className= { `${btnPadrao} bg-red-600 hover:bg-red-700`}>
               Excluir Parcelamento
             </button>
 
             <button
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                className= { `${btnPadrao} bg-green-600 hover:bg-green-700`}
               onClick={receberSelecionadas}
             >
               Receber Selecionadas
@@ -419,7 +421,7 @@ async function receberSelecionadas() {
 
             <button
                 onClick={() => window.print()}
-                className="bg-gray-700 text-white px-6 py-2 rounded-lg font-bold"
+                className= { `${btnPadrao} bg-gray-600 hover:bg-gray-700`}
               >
                 🖨️ Imprimir
               </button> 
