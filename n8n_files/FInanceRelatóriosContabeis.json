@@ -550,12 +550,14 @@
       ],
       "id": "98263094-c906-4ef2-958e-09a34f845b60",
       "name": "Saldo_por_conta",
+      "alwaysOutputData": false,
       "credentials": {
         "postgres": {
           "id": "STozEMe82vC1nwYd",
           "name": "Financeflow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1154,7 +1156,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "da1e2ea5-5d0d-40a2-bba2-12880676dd4f",
+  "versionId": "cd2a9cdb-5827-48fc-be61-15c53f77f8d2",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },

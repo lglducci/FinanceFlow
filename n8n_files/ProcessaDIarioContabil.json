@@ -53,7 +53,7 @@
     {
       "parameters": {
         "content": "## Diário",
-        "height": 876,
+        "height": 1084,
         "width": 1280,
         "color": 3
       },
@@ -214,8 +214,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        352,
-        544
+        400,
+        528
       ],
       "id": "f7b31681-e73a-47b0-b2a3-47ae0838e90c",
       "name": "Respond to Webhook3"
@@ -229,8 +229,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -304,
-        544
+        -288,
+        528
       ],
       "id": "055891c2-09ba-4068-9c9e-c711026b5367",
       "name": "Ultimo_process",
@@ -253,8 +253,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -96,
-        544
+        -48,
+        528
       ],
       "id": "053c9dbc-1617-475f-8380-9ee77b59b9ef",
       "name": "EditUltimo_process"
@@ -268,8 +268,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        144,
-        544
+        192,
+        528
       ],
       "id": "bc99d423-9f2d-461b-9177-0a2ce7697d8e",
       "name": "Ultimo_processamento",
@@ -356,6 +356,86 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        720
+      ],
+      "id": "2f5eed7d-bec9-412e-89bd-7820e8b3f20a",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        720
+      ],
+      "id": "f9a18529-ab54-4cc3-b9df-9834687ae52b",
+      "name": "EditUltimo_process1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nCALL contab.sp_reset_contabil_desde_data(1);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        192,
+        720
+      ],
+      "id": "9fa173b7-df2b-443b-ba42-3e58585ce8e7",
+      "name": "Ultimo_processamento1",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "voltadata",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        720
+      ],
+      "id": "4fc5314d-3fd7-4804-94f7-2cdc5de9cb17",
+      "name": "voltadiaroo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {},
@@ -491,13 +571,46 @@
           }
         ]
       ]
+    },
+    "EditUltimo_process1": {
+      "main": [
+        [
+          {
+            "node": "Ultimo_processamento1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ultimo_processamento1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "voltadiaroo": {
+      "main": [
+        [
+          {
+            "node": "EditUltimo_process1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e1e61091-ba5f-4625-bbd5-68a7eef556e3",
+  "versionId": "bc0ff3cd-d70c-4f1d-b2e1-7e512ac0e53c",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
