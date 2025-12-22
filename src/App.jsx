@@ -74,6 +74,9 @@ import  RelatoriosBalancoNiveis from "./pages/RelatoriosBalancoNiveis";
 import MapContabilImpacto from "./pages/MapContabilImpacto";
 
 
+import FluxoCaixaDetalhado from "./pages/FluxoCaixaDetalhado";
+
+ 
 
 
 
@@ -160,8 +163,8 @@ export default function App() {
     <Route path="/relatorios/saldoporconta" element={<RelatoriosSaldoPorConta />} />
     <Route path="/relatorios/balanco-niveis" element={<RelatoriosBalancoNiveis />} />
     <Route path="/relatorios/gerencial" element={<RelatorioGerencial />} />
-    <Route path="/mapeamento-contabil/impacto" element={<MapContabilImpacto />}
-/>
+    <Route path="/mapeamento-contabil/impacto" element={<MapContabilImpacto />}/>
+    <Route path="/relatorios/fluxo-caixa-detalhado" element={<FluxoCaixaDetalhado />}/>
 
     
 
