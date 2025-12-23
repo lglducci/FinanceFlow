@@ -341,27 +341,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": " SELECT ff_estornar_transacao(\n  {{ $json.empresa_id }},\n  {{ $json.id }}\n);\n\n\n ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        256,
-        544
-      ],
-      "id": "60d89428-4fa4-43e5-a183-4743f6bf13c9",
-      "name": "ff_registrar_pagamento_faturas1",
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      }
-    },
-    {
-      "parameters": {
         "jsCode": " return [\n  {\n    empresa_id: $json.empresa_id,\n    faturas: JSON.stringify( $input.first().json.faturas).replace(/\\\\/g, '').replace(/^\"|\"$/g, ''),\n    conta_id: $input.first().json.conta_id\n  }\n];\n"
       },
       "type": "n8n-nodes-base.code",
@@ -419,6 +398,27 @@
       ],
       "id": "e30ef8f0-ab1c-42f4-bab1-f6604ad3bc84",
       "name": "EditEstorno"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT ff_estornar_transacao(\n  {{ $json.empresa_id }},\n  {{ $json.id }}\n);\n\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        256,
+        544
+      ],
+      "id": "60d89428-4fa4-43e5-a183-4743f6bf13c9",
+      "name": "ff_estornar_transacao",
+      "credentials": {
+        "postgres": {
+          "id": "STozEMe82vC1nwYd",
+          "name": "Financeflow"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -555,17 +555,6 @@
         ]
       ]
     },
-    "ff_registrar_pagamento_faturas1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "CodeReceber3": {
       "main": [
         []
@@ -586,7 +575,18 @@
       "main": [
         [
           {
-            "node": "ff_registrar_pagamento_faturas1",
+            "node": "ff_estornar_transacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_estornar_transacao": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
             "type": "main",
             "index": 0
           }
@@ -598,7 +598,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3818506a-cbc1-4598-afd9-c3417817ee23",
+  "versionId": "2885124e-2551-4bab-91c3-d9f4c3f984ec",
   "meta": {
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
