@@ -100,7 +100,7 @@ const editarConta = (conta) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Saldos por Conta</h2>
+      <h2 className="text-2xl font-bold mb-4">Contas Financeiras e Saldos</h2>
      
       <div className="bg-gray-100 p-6 rounded shadow mb-6  border-[12px] border-blue-800">
         <p className="font-bold text-base gray-700 mb-2  text-[#1e40af]">Períodos</p>

@@ -14,7 +14,9 @@ export default function NovaConta() {
     conta: "",
     conjunta: false,
     juridica: false,
-    padrao: false
+    padrao: false,
+    conta_contabil:""
+
   });
 
 /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
@@ -70,6 +72,7 @@ const THEME = {
           conjunta: form.conjunta,
           juridica: form.juridica,
           padrao: form.padrao,
+          conta_contabil: form.conta_contabil
         },
       };
 
@@ -144,7 +147,7 @@ const THEME = {
 
         {/* Nome */}
         <div>
-          <label className="block font-bold mb-1 text-[#1e40af]">Nome da Conta</label>
+          <label className="label label-required block font-bold mb-1 text-[#1e40af]">Nome da Conta</label>
           <input
             name="nome" 
             value={form.nome}
@@ -157,7 +160,7 @@ const THEME = {
         {/* Banco + Número do Banco */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block font-bold mb-1 text-[#1e40af]">Banco</label>
+            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Banco</label>
             <input
               name="banco"
               className="input-base w-64 h-10"
@@ -168,7 +171,7 @@ const THEME = {
           </div>
 
           <div>
-            <label className="block font-bold mb-1 text-[#1e40af]">Número do Banco</label>
+            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Número do Banco</label>
             <input
               name="nro_banco"
                  className="input-base w-64 h-10"
@@ -183,7 +186,7 @@ const THEME = {
        
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block font-bold mb-1 text-[#1e40af]">Agência</label>
+            <label className=" label label-required block font-bold mb-1 text-[#1e40af]">Agência</label>
             <input
               name="agencia"
                className="input-base w-48 h-10"
@@ -194,7 +197,7 @@ const THEME = {
           </div>
 
           <div>
-            <label className="block font-bold mb-1 text-[#1e40af]">Número da Conta</label>
+            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Número da Conta</label>
             <input
               name="conta"
                className="input-base w-48 h-10"
@@ -206,7 +209,7 @@ const THEME = {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block font-bold mb-1 text-[#1e40af]">Tipo</label>
+            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Tipo</label>
             <select
               name="tipo"
               value={form.tipo}
@@ -226,7 +229,7 @@ const THEME = {
         {/* Tipo + Saldo Inicial */}
         <div className="grid grid-cols-1 md:grid-cols-1 gap-6"> 
           <div>
-            <label className="block font-bold mb-1 text-[#1e40af]">Saldo Inicial</label>
+            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Saldo Inicial</label>
             <input
               name="saldo_inicial"
               className="input-base w-72 h-10"
@@ -238,7 +241,7 @@ const THEME = {
         </div></div>
 
         {/* Checkboxes */}
-        <div className="font-bold grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-[#1e40af]">
+        <div className=" label label-required font-bold grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-[#1e40af]">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -267,7 +270,19 @@ const THEME = {
               onChange={handleChange}
             />
             Padrão
-          </label>
+          </label> 
+        </div>
+       
+
+        <div>
+          <label className="label label-required block font-bold mb-1 text-[#1e40af]">Conta Contábil </label>
+          <input
+            name="conta_contabil" 
+            value={form.conta_contabil}
+            onChange={handleChange}
+             className="input-base w-full h-10"
+             placeholder="Nome da sua conta contábil (exemplo) 1.1.23.1"
+          />
         </div>
        
        

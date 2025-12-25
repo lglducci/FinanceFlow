@@ -11,6 +11,8 @@ export default function RelatoriosDiario() {
   const [dataFim, setDataFim] = useState(hoje);
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
+    const [filtro, setFiltro] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,6 +66,21 @@ function formatarDataBR(data) {
     }
   }
 
+const filtrados = dados.filter(item => {
+  if (!filtro) return true;
+
+  const f = filtro.toLowerCase();
+
+  return (
+    (item.conta_codigo || "").toLowerCase().includes(f) ||
+    (item.conta_nome || "").toLowerCase().includes(f) ||
+    (item.historico || "").toLowerCase().includes(f) ||
+    (item.modelo_codigo || "").toLowerCase().includes(f)
+  );
+});
+
+   
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">📘 Diário  Contábil</h1>
@@ -94,6 +111,20 @@ function formatarDataBR(data) {
             className="border rounded-lg px-3 py-2 border-yellow-500"
           />
         </div>
+
+        <div>
+          <label className="block font-bold text-blue-700">
+            Conta
+          </label>
+          <input
+            type="text"
+            placeholder="Código ou nome"
+            value={filtro}
+            onChange={e => setFiltro(e.target.value)} 
+            className="border rounded px-3 py-2 border-yellow-500 w-64"
+          />
+        </div>
+
 
         <button
           onClick={consultar}
@@ -134,7 +165,7 @@ function formatarDataBR(data) {
             </tr>
           </thead>
           <tbody>
-            {dados.map((l, i) => (
+            {filtrados.map((l, i) => (
               <tr key={i} className="border-b">
                  {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
                  <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data_mov)}</td>  

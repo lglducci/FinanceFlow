@@ -56,6 +56,31 @@ const THEME = {
   // ========================
   async function salvar() {
     try {
+
+          // ================== VALIDAÇÕES ==================
+        if (!form.cpf_cnpj.trim()) {
+          alert("CPF ou CNPJ é obrigatório.");
+          return;
+        }
+
+        if (!form.nome.trim()) {
+          alert("Nome da Empresa é obrigatório.");
+          return;
+        }
+
+        if (!form.telefone) {
+          alert("Telefone é obrigatório.");
+          return;
+        }
+
+        if (!form.whatsapp) {
+          alert(" Whatsapp é obrigatório.");
+          return;
+        }
+
+ 
+
+        
       const url = buildWebhookUrl("inserefornecedorcliente");
 
       const resp = await fetch(url, {
@@ -117,7 +142,7 @@ const THEME = {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Nome</label>
+          <label className="label label-required font-bold text-[#1e40af]">Nome</label>
           <input
             name="nome"
             value={form.nome}
@@ -128,7 +153,7 @@ const THEME = {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">CPF / CNPJ</label>
+          <label className="label label-required font-bold text-[#1e40af]">CPF / CNPJ</label>
           <input
             name="cpf_cnpj"
             value={form.cpf_cnpj}
@@ -151,7 +176,7 @@ const THEME = {
 
         <div className="flex gap-4">
           <div className="w-1/2">
-            <label className="font-bold text-[#1e40af]">Telefone</label>
+            <label className="label label-required font-bold text-[#1e40af]">Telefone</label>
             <input
               name="telefone"
               value={form.telefone}
@@ -162,7 +187,7 @@ const THEME = {
           </div>
 
           <div className="w-1/2">
-            <label className="font-bold text-[#1e40af]">WhatsApp</label>
+            <label className="label label-required font-bold text-[#1e40af]">WhatsApp</label>
             <input
               name="whatsapp"
               value={form.whatsapp}
