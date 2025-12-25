@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2816,
-        240
+        912,
+        -608
       ],
-      "id": "6c233780-e5ca-448b-8d0d-14b1070c2e49",
+      "id": "e13a8f29-2325-488e-b82f-12929583bb58",
       "name": "Respond to Webhook7"
     },
     {
@@ -58,10 +58,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2384,
-        240
+        480,
+        -608
       ],
-      "id": "c180db3b-bcba-4f05-af93-6b8b84ee3518",
+      "id": "1d6c89bc-05fd-403b-8fb2-f88f5705aa9a",
       "name": "EditModeloslinha3"
     },
     {
@@ -73,10 +73,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2592,
-        240
+        688,
+        -608
       ],
-      "id": "2997aa1d-d7eb-44a7-9797-d476a1c17fd9",
+      "id": "e33a1929-d128-47f6-beb9-4af6afcc5c7a",
       "name": "ff_diario_listar",
       "alwaysOutputData": true,
       "credentials": {
@@ -94,13 +94,13 @@
         "width": 1280,
         "color": 2
       },
-      "id": "c2cdc757-d971-4531-8b31-c071bea76b31",
+      "id": "86fd6d4c-67db-434c-a195-d5cbf7059ac8",
       "name": "Sticky Note4",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1888,
-        160
+        -32,
+        -688
       ]
     },
     {
@@ -112,10 +112,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2176,
-        240
+        272,
+        -608
       ],
-      "id": "940e983b-3613-46df-ad7e-d9f84ac8c6e3",
+      "id": "0e56cd97-df8c-4963-8c40-670776c4046f",
       "name": "ConsultaDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -129,10 +129,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2784,
-        448
+        880,
+        -400
       ],
-      "id": "b69178d8-364e-44ed-a2f5-13e7fd2d748b",
+      "id": "dce12dbe-5893-4b85-b4c3-331aa2c221b5",
       "name": "Respond to Webhook8"
     },
     {
@@ -160,6 +160,8 @@
             "historico": "={{ $json.historico}}",
             "doc_ref": "={{ $json['doc_ref '] }}",
             "data_vencto": "={{ $json.parceiro_id}}",
+            "valor_custo": "={{ $json.valor_custo}}",
+            "valor_imposto": "={{ $json.valor_imposto}}",
             "desconto": 0
           },
           "matchingColumns": [
@@ -263,7 +265,7 @@
               "display": true,
               "type": "number",
               "canBeUsedToMatch": true,
-              "removed": true
+              "removed": false
             },
             {
               "id": "valor_imposto",
@@ -273,7 +275,7 @@
               "display": true,
               "type": "number",
               "canBeUsedToMatch": true,
-              "removed": true
+              "removed": false
             },
             {
               "id": "desconto",
@@ -304,10 +306,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2432,
-        -96
+        656,
+        -400
       ],
-      "id": "5883816c-34a0-4ff9-bad9-4daa7da5e3e4",
+      "id": "f218d789-7fcb-4989-97a2-f8ee6b16b0cb",
       "name": "InsertConta2",
       "credentials": {
         "postgres": {
@@ -327,10 +329,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2144,
-        448
+        240,
+        -400
       ],
-      "id": "553d3e6b-0709-4ece-af74-23cd293851eb",
+      "id": "dc284109-ce03-485c-bf05-76325da5c699",
       "name": "InsereDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -397,12 +399,6 @@
               "name": "valor_imposto",
               "value": "={{$json.body.valor_imposto}}",
               "type": "string"
-            },
-            {
-              "id": "e80760ff-976d-4ec5-b131-ebd3f45c2582",
-              "name": "nro_parcelas",
-              "value": "={{$json.body.parcelas}}",
-              "type": "string"
             }
           ]
         },
@@ -411,10 +407,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2352,
-        448
+        448,
+        -400
       ],
-      "id": "1ca9c805-8c97-4ce0-a93e-1ed8c918f41f",
+      "id": "80dd3440-3d6c-4be1-880a-e37a23f77da7",
       "name": "EditInsertDiario"
     },
     {
@@ -427,10 +423,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2800,
-        656
+        896,
+        -192
       ],
-      "id": "b5a1e85e-8ad1-4199-9e09-cbee52e97398",
+      "id": "75631ff6-a6e0-478a-bd88-4d47546a1d93",
       "name": "Respond to Webhook9"
     },
     {
@@ -442,10 +438,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2160,
-        656
+        256,
+        -192
       ],
-      "id": "1e15eed2-2d2c-4500-8988-000ca827b124",
+      "id": "a03f2539-3543-4247-b9d6-66c87b7a44be",
       "name": "EditaDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -472,10 +468,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2368,
-        656
+        464,
+        -192
       ],
-      "id": "a126f9e1-e04c-4870-a8f9-14f9b46b1daf",
+      "id": "4f6d7922-3aee-466e-8658-b50f418c71d2",
       "name": "EditDiarioRetrieve"
     },
     {
@@ -487,10 +483,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2576,
-        656
+        672,
+        -192
       ],
-      "id": "294dfcfa-be51-4862-9cd2-c992f81a38c9",
+      "id": "08440f8a-a372-43d8-8b10-6aafc012635f",
       "name": "DiarioRetrieve",
       "credentials": {
         "postgres": {
@@ -510,10 +506,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2784,
-        864
+        880,
+        16
       ],
-      "id": "88aad422-c092-4a4d-9121-ad6e9f1e1cd0",
+      "id": "6abeb6a0-b214-448f-b0b5-7b57ad22e3e1",
       "name": "Respond to Webhook10"
     },
     {
@@ -691,10 +687,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2560,
-        864
+        656,
+        16
       ],
-      "id": "3dbcb578-eddf-4369-b782-23e0be6868a5",
+      "id": "b5e43a67-9d05-4382-82ea-e5116263e2bd",
       "name": "InsertConta3",
       "credentials": {
         "postgres": {
@@ -781,10 +777,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2352,
-        864
+        448,
+        16
       ],
-      "id": "4a73c127-da62-481a-961e-67cc8014a4e4",
+      "id": "32c51ef9-94b8-4df7-9125-3fcfbbdf3c5c",
       "name": "EditInsertDiario1"
     },
     {
@@ -797,10 +793,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2144,
-        864
+        240,
+        16
       ],
-      "id": "8cede640-01ef-4f35-8392-5e411faf84c9",
+      "id": "1ca1bd15-22b8-49dd-971d-f405cc132785",
       "name": "SalvarDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -814,10 +810,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1440,
-        464
+        -480,
+        -384
       ],
-      "id": "8b3c7ce1-8446-42a9-a9a8-0309c45b2a44",
+      "id": "653392a5-0edc-4229-8a7a-7d8e6ce8ab27",
       "name": "Respond to Webhook"
     },
     {
@@ -1014,10 +1010,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1056,
-        464
+        -864,
+        -384
       ],
-      "id": "22f38ecc-185a-44fa-b275-8fbe4a6d05d1",
+      "id": "1a989fce-e903-4f32-99a1-f92ff19d421b",
       "name": "InsertConta",
       "credentials": {
         "postgres": {
@@ -1037,10 +1033,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        512,
-        464
+        -1408,
+        -384
       ],
-      "id": "7145a0c2-5e06-4804-a6c1-884432678953",
+      "id": "7ec57f23-e13b-4192-8ee8-68bb93c3b893",
       "name": "ImportarDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1051,10 +1047,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        688,
-        464
+        -1232,
+        -384
       ],
-      "id": "6589e152-5aac-4a09-878d-46183564829f",
+      "id": "9e3a1143-03b4-4f25-970b-b23d28e5724e",
       "name": "Code in JavaScript"
     },
     {
@@ -1066,10 +1062,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1248,
-        464
+        -672,
+        -384
       ],
-      "id": "82ee543a-8630-4e5a-ba6a-8b8c2008ec20",
+      "id": "c8fd1675-1ad1-423c-8a0c-98d4c782cdf3",
       "name": "Execute a SQL query1",
       "executeOnce": true,
       "credentials": {
@@ -1086,10 +1082,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        864,
-        464
+        -1056,
+        -384
       ],
-      "id": "3bacad2d-10c6-4f15-ae15-a2a711e264ef",
+      "id": "d30e1396-be1d-47fb-9069-436915f4fd92",
       "name": "CodeArquivo"
     },
     {
@@ -1102,10 +1098,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1328,
-        656
+        -592,
+        -192
       ],
-      "id": "64a62284-d2fc-4be4-aa7d-b99b7e587837",
+      "id": "33e04148-248b-4c0e-8e7e-ad535baffa1c",
       "name": "Respond to Webhook1"
     },
     {
@@ -1125,10 +1121,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        704,
-        656
+        -1216,
+        -192
       ],
-      "id": "74a80257-7cdc-4209-9e4f-8250870a2c91",
+      "id": "2d3e1642-34e2-4785-8ab6-b00e8b0a0258",
       "name": "EditDelLote"
     },
     {
@@ -1141,10 +1137,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1408,
-        272
+        -512,
+        -576
       ],
-      "id": "0e3db1ed-7b7f-416f-b16d-9d9e5d33f2a4",
+      "id": "f620ae7d-21f4-4b99-a031-7a0a4401e0d6",
       "name": "Respond to Webhook2"
     },
     {
@@ -1157,10 +1153,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        496,
-        656
+        -1424,
+        -192
       ],
-      "id": "c25e7028-4008-4a67-b50b-585c571646c2",
+      "id": "ef8253c7-a0f7-4585-9db4-eab2e9fb20d4",
       "name": "ExcluirLote",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1174,10 +1170,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        528,
-        272
+        -1392,
+        -576
       ],
-      "id": "52ef9c53-c095-47b4-acb5-bf8e64a3a9ea",
+      "id": "b14d6dcf-1f5b-4e34-a7c4-517b2ab57d66",
       "name": "Consultar_lote",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1190,10 +1186,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        912,
-        656
+        -1008,
+        -192
       ],
-      "id": "6e554cea-d1eb-40b0-b9f0-a8d3944b68ca",
+      "id": "2415cfc4-f84d-4904-9a43-b6cdc7e02bc3",
       "name": "GetLote",
       "alwaysOutputData": true,
       "credentials": {
@@ -1221,10 +1217,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        736,
-        272
+        -1184,
+        -576
       ],
-      "id": "0409db93-b56d-4f2f-83bb-7abd0b60339a",
+      "id": "5b20dcc1-887c-4ba9-898a-fdce3de3ccbc",
       "name": "EditConsulta"
     },
     {
@@ -1236,10 +1232,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        0
+        -1920,
+        -848
       ],
-      "id": "a6919564-0749-409b-9035-19714ed2d515",
+      "id": "74dd4d18-8e12-4124-8a79-db885eb7d08b",
       "name": "LoteConsulta",
       "alwaysOutputData": true,
       "credentials": {
@@ -1260,10 +1256,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1104,
-        656
+        -816,
+        -192
       ],
-      "id": "9db876ad-6dc2-4022-a3b4-8795fd0fa564",
+      "id": "657b6262-f5fb-4f10-add2-f5842f23a298",
       "name": "ExcluiLote",
       "executeOnce": true,
       "credentials": {
@@ -1283,10 +1279,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        928,
-        272
+        -992,
+        -576
       ],
-      "id": "bd7031ed-95a1-4042-8ba2-7f3bbb69571f",
+      "id": "42444c19-7a1d-42ec-9ef0-6944ccb1872c",
       "name": "ff_diario_staging_validar",
       "executeOnce": false,
       "credentials": {
@@ -1304,10 +1300,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1184,
-        272
+        -736,
+        -576
       ],
-      "id": "2d96f4a1-fea1-4fa2-a08b-66f323163057",
+      "id": "4355b7f8-613e-4e8c-9045-c381b6ded009",
       "name": "Code in JavaScript1"
     },
     {
@@ -1317,56 +1313,17 @@
         "width": 1280,
         "color": 3
       },
-      "id": "7f2f0fb5-1a34-4d68-8f02-92ce362e13c9",
+      "id": "e310b502-6827-4327-963b-33ce36594021",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        320,
-        160
+        -1600,
+        -688
       ]
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM contab.diario_registrar({{ $json.empresa_id }},'{{ $json.data_mov }}', '{{ $json.modelo_codigo }}','{{ $json.historico }}',{{ $json.valor_total }},'{{ $json.data_vencto }}',{{ $json.parceiro_id }}, {{ $json.nro_parcelas}}, '{{ $json['doc_ref '] }}',null)\n  ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        2560,
-        448
-      ],
-      "id": "4c70990b-51ea-4357-ae00-14ccf8998b0f",
-      "name": "diario_registrar",
-      "credentials": {
-        "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
-          "name": "FinanceFlow"
-        }
-      }
     }
   ],
-  "pinData": {
-    "EditInsertDiario": [
-      {
-        "json": {
-          "empresa_id": 1,
-          "data_mov": "20251223",
-          "modelo_codigo": "VENDAS",
-          "historico": "TESTE",
-          "doc_ref ": "nf4554",
-          "parceiro_id": 1,
-          "data_vencto": "20251225",
-          "valor_total": 8500,
-          "valor_custo": 0,
-          "valor_imposto": 0,
-          "nro_parcelas": 7
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "EditModeloslinha3": {
       "main": [
@@ -1403,7 +1360,13 @@
     },
     "InsertConta2": {
       "main": [
-        []
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "InsereDiario": {
@@ -1421,7 +1384,7 @@
       "main": [
         [
           {
-            "node": "diario_registrar",
+            "node": "InsertConta2",
             "type": "main",
             "index": 0
           }
@@ -1636,24 +1599,13 @@
           }
         ]
       ]
-    },
-    "diario_registrar": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook8",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ed5eb594-6b91-4969-ae6b-00ae974637fd",
+  "versionId": "c90114bf-7e8b-4eef-a557-b58d6b4d0775",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

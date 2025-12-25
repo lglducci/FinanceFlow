@@ -8,13 +8,13 @@
         "width": 1328,
         "color": 7
       },
-      "id": "7d30bebd-11d7-4caf-a8b4-ac32d44a50ea",
+      "id": "b16bebff-b6d8-4d69-b36a-2db9336af30e",
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -400,
-        -240
+        0,
+        0
       ]
     },
     {
@@ -27,10 +27,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        448,
-        160
+        1056,
+        400
       ],
-      "id": "4292d152-56e5-4c97-aee3-44a3536bacac",
+      "id": "37ca26b1-19e9-481b-b1a0-bd358a7f4ffd",
       "name": "Respond to Webhook9"
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -240,
-        160
+        160,
+        400
       ],
-      "id": "e39b95fe-3346-493c-9de8-894c5dd7ce31",
+      "id": "15f94a36-67b2-48b0-a865-1cd4cfe005a8",
       "name": "ContaFinanceira",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -57,47 +57,51 @@
           "fieldValues": [
             {
               "fieldId": "empresa_id",
-              "fieldValue": "={{ $json.id_empresa}} "
+              "fieldValue": "= {{ $('EditCriaConta').item.json.id_empresa }}"
             },
             {
               "fieldId": "nome",
-              "fieldValue": "={{ $json.nome}}"
+              "fieldValue": "= {{ $('EditCriaConta').item.json.nome }}"
             },
             {
               "fieldId": "banco",
-              "fieldValue": "={{ $json.banco}}"
+              "fieldValue": "={{  $('EditCriaConta').item.json.banco}}"
             },
             {
               "fieldId": "tipo",
-              "fieldValue": "={{ $json.tipo}}"
+              "fieldValue": "={{  $('EditCriaConta').item.json.tipo}}"
             },
             {
               "fieldId": "saldo_inicial",
-              "fieldValue": "={{ $json.saldo_inicial}}"
+              "fieldValue": "={{  $('EditCriaConta').item.json.saldo_inicial}}"
             },
             {
               "fieldId": "nro_banco",
-              "fieldValue": "={{ $json.nro_banco}}"
+              "fieldValue": "={{  $('EditCriaConta').item.json.nro_banco}}"
             },
             {
               "fieldId": "agencia",
-              "fieldValue": "={{ $json.agencia}}"
+              "fieldValue": "={{  $('EditCriaConta').item.json.agencia}}"
             },
             {
               "fieldId": "conta",
-              "fieldValue": "={{ $json.conta}}"
+              "fieldValue": "={{  $('EditCriaConta').item.json.conta}}"
             },
             {
               "fieldId": "conjunta",
-              "fieldValue": "={{ $json.conjunta}}"
+              "fieldValue": "={{  $('EditCriaConta').item.json.conjunta}}"
             },
             {
               "fieldId": "juridica",
-              "fieldValue": "={{ $json[' juridica'] }}"
+              "fieldValue": "={{ $('EditCriaConta').item.json[' juridica'] }}"
             },
             {
               "fieldId": "padrao",
-              "fieldValue": "={{ $json[' padrao'] }}"
+              "fieldValue": "={{ $('EditCriaConta').item.json[' padrao'] }}"
+            },
+            {
+              "fieldId": "contabil_id",
+              "fieldValue": "={{ $json.id }}"
             }
           ]
         }
@@ -105,14 +109,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        208,
-        160
+        816,
+        400
       ],
-      "id": "1166a0ee-250d-44c2-9f45-3e6591e76e8f",
+      "id": "a1417190-dd76-430f-8988-4d5d4629ae1d",
       "name": "CriaConta",
       "credentials": {
         "supabaseApi": {
-          "id": "HoBl47G6kDDDNQ29",
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -127,10 +131,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        448,
-        -32
+        848,
+        208
       ],
-      "id": "b3598a4e-5f16-48b8-8125-7d3e2bc7abe2",
+      "id": "35c322ef-b846-4b57-8031-3785f52ed298",
       "name": "Respond to Webhook10"
     },
     {
@@ -143,10 +147,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -240,
-        -32
+        160,
+        208
       ],
-      "id": "c6a54e1a-f3a7-4e26-8d82-2e0c9ee7ba74",
+      "id": "d5312add-1253-421f-8bbd-dea10551a700",
       "name": "UpdateContaFinanceira",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -215,14 +219,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        208,
-        -32
+        608,
+        208
       ],
-      "id": "0dfbf244-9558-49e1-a67d-6139ccf4d01b",
+      "id": "a1cc4a87-2226-4866-b890-964fb6622cda",
       "name": "UpdateConta",
       "credentials": {
         "supabaseApi": {
-          "id": "HoBl47G6kDDDNQ29",
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -316,10 +320,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        -32
+        400,
+        208
       ],
-      "id": "f0322b85-a31a-4f0d-917e-e407ab0fba13",
+      "id": "c7559a0f-de3d-4b42-b177-e2f08b60082e",
       "name": "EditContaFinanceira"
     },
     {
@@ -397,6 +401,12 @@
               "name": "agencia",
               "value": "={{ $json.body.body.agencia}}",
               "type": "string"
+            },
+            {
+              "id": "55ae6302-439e-4f20-b351-28531c5bec6c",
+              "name": "conta_contabil",
+              "value": "={{ $json.body.body.conta_contabil}}",
+              "type": "string"
             }
           ]
         },
@@ -405,10 +415,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        160
+        400,
+        400
       ],
-      "id": "975527c1-2a9f-4d7f-8442-ae09db7788f8",
+      "id": "95048ef5-78b8-41ab-9d20-ef71a609f0c6",
       "name": "EditCriaConta"
     },
     {
@@ -421,10 +431,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        448,
-        352
+        848,
+        592
       ],
-      "id": "9b3145c2-9d37-44e4-91ee-bbf2329a30b8",
+      "id": "39e86d0e-6910-4c76-9f5a-f884a5e64fc5",
       "name": "Respond to Webhook6"
     },
     {
@@ -436,16 +446,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        208,
-        352
+        608,
+        592
       ],
-      "id": "25a004cd-fb57-4608-a900-85684f6eb145",
+      "id": "23f9a4f9-b8ea-43e4-abf9-779bfac8cd28",
       "name": "ListaContas",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -458,10 +468,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -224,
-        352
+        176,
+        592
       ],
-      "id": "0fa341db-e6d4-47c9-8f92-ef61e972a2dd",
+      "id": "b1508b1b-cd97-40df-afbb-a5dd88670b57",
       "name": "ListaContas2",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -482,11 +492,144 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        352
+        400,
+        592
       ],
-      "id": "c31e28d0-1485-4a5a-9936-799361a77fa1",
+      "id": "6426db7b-4e5b-4b0d-8d20-5de8b50e9acb",
       "name": "ListaEdit"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "contab",
+          "mode": "list",
+          "cachedResultName": "contab"
+        },
+        "table": {
+          "__rl": true,
+          "value": "contas",
+          "mode": "list",
+          "cachedResultName": "contas"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "analitica": true,
+            "empresa_id": "={{ $json.id_empresa }}",
+            "nivel": 2,
+            "conta_pai_id": 1,
+            "codigo": "={{ $json.conta_contabil }}",
+            "nome": "={{ $json.nome }} - Banco : {{ $json.nro_banco }} - Agencia: {{ $json[' agencia'] }} - Conta: {{ $json.conta }}",
+            "natureza": "D",
+            "tipo": "ATIVO"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "codigo",
+              "displayName": "codigo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa_id",
+              "displayName": "empresa_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo",
+              "displayName": "tipo",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "natureza",
+              "displayName": "natureza",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nivel",
+              "displayName": "nivel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conta_pai_id",
+              "displayName": "conta_pai_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "analitica",
+              "displayName": "analitica",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        608,
+        400
+      ],
+      "id": "8fd912c5-57d1-4455-9259-4f6d758d1811",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -550,7 +693,7 @@
       "main": [
         [
           {
-            "node": "CriaConta",
+            "node": "Insert rows in a table",
             "type": "main",
             "index": 0
           }
@@ -589,16 +732,28 @@
           }
         ]
       ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "CriaConta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "77ca2a49-8220-4af6-86bc-c35e954e06aa",
+  "versionId": "fcc6a990-7f74-4b7e-b8fd-544c4a29cc1e",
   "meta": {
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "8nNa24hvtnd7p64C",
+  "id": "tsjIVaLzTdGtlTe9",
   "tags": []
 }
