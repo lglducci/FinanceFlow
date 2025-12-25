@@ -6,6 +6,14 @@ export default function Diario() {
   const navigate = useNavigate();
   const empresa_id = localStorage.getItem("empresa_id") || "1";
 
+     const fmt = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+   const btnPadrao =
+  "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+
   // 👉 DATA HOJE (usa global se existir, senão fallback local)
   const hoje = typeof dataHoje === "function"
     ? dataHoje()
@@ -135,14 +143,7 @@ async function carregar() {
           {/* LINHA 3 — BOTÕES */}
           <div style={{ display: "flex", gap: 15, marginTop: 10 }}>
             <button
-              style={{
-                padding: "8px 20px",
-                background: "#003ba2",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
+             className= { `${btnPadrao} bg-blue-900 hover:bg-blue-700 px-4 py-2 `}
               onClick={carregar}
             >
               Filtrar
@@ -150,14 +151,7 @@ async function carregar() {
 
             <button
               onClick={() => navigate("/novo-diario")}
-              style={{
-                padding: "8px 20px",
-                background: "green",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
+                className= { `${btnPadrao} bg-green-700 hover:bg-green-700 px-4 py-2 `}
             >
               + Novo
             </button>
@@ -184,7 +178,11 @@ async function carregar() {
               <th>Token</th>
               <th>Histórico</th>
               <th>Doc</th>
+              <th>Parceiro</th>
               <th>Valor</th>
+             {/*   <th>Parcelado</th>
+              <th> Nro Parcela</th>
+               <th>Parcela Atual</th>*/}
               <th>Ações</th>
             </tr>
           </thead>
@@ -203,7 +201,11 @@ async function carregar() {
                 <td>{l.modelo_codigo}</td>
                 <td>{l.historico}</td>
                 <td>{l.doc_ref}</td>
-                <td>{Number(l.valor_total).toFixed(2)}</td>
+                <td>{l.parceiro}</td>
+                <td>{fmt.format(l.valor_total)}</td>
+               {/*} <td>{l.parcelado ? "Sim" : "Não"}</td> 
+                <td>{l.numero_parcelas}</td>
+                   <td>{l.parcela_atual}</td>*/}
                 <td style={{ display: "flex", gap: "28px" }} >
                   <button
                     onClick={() => 

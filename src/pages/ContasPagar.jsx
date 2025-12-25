@@ -1,16 +1,25 @@
  import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
-
+ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
  
- import { hojeLocal, dataLocal } from "../utils/dataLocal";
-
+ 
  
 
 
 export default function ContasPagar() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
+
+  function formatarDataBR(data) {
+  if (!data) return "";
+  const d = new Date(data);
+  const dia = String(d.getUTCDate()).padStart(2, "0");
+  const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const ano = d.getUTCFullYear();
+  return `${dia}-${mes}-${ano}`;
+}
+
 
   const [lista, setLista] = useState([]);
   const [fornecedores, setFornecedores] = useState([]);
@@ -525,7 +534,7 @@ async function pagarSelecionadas() {
               <td className="px-3 py-2">{c.id}</td>
               <td className="px-3 py-2 font-bold">{c.descricao}</td>
               <td className="px-3 py-2 text-center font-bold">
-                {c.vencimento ? new Date(c.vencimento).toLocaleDateString("pt-BR") : ""}
+                { formatarDataBR(c.vencimento) }
               </td>
               <td className="px-3 py-2 font-bold">{c.categoria}</td>
               <td className="px-3 py-2 font-bold">{c.fornecedor}</td>

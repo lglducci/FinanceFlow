@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
-import { hojeLocal, dataLocal } from "../utils/dataLocal";
+ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+
 
 
 export default function NovaContaPagar() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
+ 
+ const [form, setForm] = useState({
+  descricao: "",
+  valor: "",
+  vencimento: hojeMaisDias(1), // amanhã (BR)
+  categoria_id: "",
+  fornecedor_id: "",
+  parcelas: 1,
+  parcela_num: 1,
+  status: "aberto",
+  doc_ref: "",
+});
 
-  const [form, setForm] = useState({
-    descricao: "",
-    valor: "",
-    vencimento: hojeLocal(), // 👈 DEFAULT HOJE,
-    categoria_id: "",
-    fornecedor_id: "",
-    parcelas: 1,
-    parcela_num: 1,
-    status: "aberto",
-    doc_ref: "",
-  });
 
 
   /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
@@ -111,8 +113,50 @@ const THEME = {
   try {
     setSalvando(true);
 
-    const url = buildWebhookUrl("novacontapagar");
+  const hoje = hojeMaisDias(0);
 
+    // ================== VALIDAÇÕES ==================
+if (!form.descricao.trim()) {
+  alert("Descrição é obrigatória.");
+  return;
+}
+
+if (!form.valor || Number(form.valor) <= 0) {
+  alert("Informe um valor maior que zero.");
+  return;
+}
+
+if (!form.categoria_id) {
+  alert("Categoria é obrigatória.");
+  return;
+}
+
+if (!form.fornecedor_id) {
+  alert("Fornecedor é obrigatório.");
+  return;
+}
+
+if (!form.doc_ref.trim()) {
+  alert("Documento é obrigatório.");
+  return;
+}
+
+if (!form.parcelas || Number(form.parcelas) < 1) {
+  alert("Número de parcelas inválido.");
+  return;
+}
+
+// vencimento já tratado, mas reforçando
+ 
+if (form.vencimento <= hoje) {
+  alert("Vencimento deve ser maior que hoje.");
+  return;
+}
+
+
+    const url = buildWebhookUrl("novacontapagar");
+   
+   
     const resp = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -158,6 +202,8 @@ const THEME = {
 }
 
 
+ 
+
 
   return ( 
          <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
@@ -172,12 +218,12 @@ const THEME = {
 
       <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
 
- 
-
-        {/* DESCRIÇÃO */}
+  
+        {/* DESCRIÇÃO 
+    <label className="label label-required">Descrição</label>*/}
         <div>
             <div className="w-4/5"> 
-          <label className="font-bold text-[#1e40af]">Descrição</label>
+          <label   className="label label-required">Descrição</label>
           <input
             name="descricao"
             value={form.descricao}
@@ -193,7 +239,7 @@ const THEME = {
         {/* CATEGORIA */}
         <div>
             <div className="w-2/3"> 
-          <label className="font-bold text-[#1e40af]">Categoria</label>
+          <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
@@ -215,7 +261,7 @@ const THEME = {
         {/* FORNECEDOR */}
         <div>
           <div className="w-2/3"> 
-          <label className="font-bold text-[#1e40af]">Fornecedor</label>
+          <label className=" label label-required font-bold text-[#1e40af]">Fornecedor</label>
           <select
             name="fornecedor_id"
             value={form.fornecedor_id}
@@ -238,7 +284,7 @@ const THEME = {
         {/* VALOR */}
         <div>
            <div className="w-1/2"> 
-          <label className="font-bold text-[#1e40af]">Valor</label>
+          <label className="label label-required font-bold text-[#1e40af]">Valor</label>
           <input
             type="number"
             name="valor"
@@ -253,10 +299,11 @@ const THEME = {
         {/* VENCIMENTO */}
         <div>
             <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Vencimento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
           <input
             type="date"
             name="vencimento"
+             min={hojeMaisDias(1)}   // 🔒 trava ontem e hoje 
             value={form.vencimento}
             onChange={handleChange}
              className="input-premium w-24"
@@ -272,7 +319,7 @@ const THEME = {
         <div>
             
           <div className="w-1/5"> 
-          <label className="font-bold text-[#1e40af]">Parcelas</label>
+          <label className="label label-required font-bold text-[#1e40af]">Parcelas</label>
           <input
             type="number"
             name="parcelas"
@@ -289,7 +336,7 @@ const THEME = {
         {/* Numero documento ou nota fiscal  */}
         <div>
           <div className="w-2/3"> 
-                  <label className="font-bold text-[#1e40af]">Documento</label>
+                  <label className="label label-required font-bold text-[#1e40af]">Documento</label>
                   <input
                   name="doc_ref"
                   value={form.doc_ref}
@@ -303,7 +350,7 @@ const THEME = {
         {/* STATUS */}
         <div>
            <div className="w-1/4"> 
-          <label className="font-bold text-[#1e40af]">Status</label>
+          <label className="label label-required font-bold text-[#1e40af]">Status</label>
           <select
             name="status"
             value={form.status}

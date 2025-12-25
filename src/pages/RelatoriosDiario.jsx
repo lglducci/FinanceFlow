@@ -23,8 +23,20 @@ export default function RelatoriosDiario() {
     maximumFractionDigits: 2,
   });
 
-  const fmtData = (d) =>
-    d ? new Date(d).toLocaleDateString("pt-BR") : "";
+  {/*const fmtData = (d) =>
+    d ? new Date(d).toLocaleDateString("pt-BR") : "";*/}
+
+ 
+function formatarDataBR(data) {
+  if (!data) return "";
+  const d = new Date(data);
+  const dia = String(d.getUTCDate()).padStart(2, "0");
+  const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const ano = d.getUTCFullYear();
+  return `${dia}-${mes}-${ano}`;
+}
+
+
 
   async function consultar() {
     if (!empresaId) return alert("Empresa não carregada");
@@ -54,7 +66,7 @@ export default function RelatoriosDiario() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">📘 Diário Contábil</h1>
+      <h1 className="text-2xl font-bold mb-6">📘 Diário  Contábil</h1>
 
       {/* filtros */}
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
@@ -124,7 +136,8 @@ export default function RelatoriosDiario() {
           <tbody>
             {dados.map((l, i) => (
               <tr key={i} className="border-b">
-                <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>
+                 {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
+                 <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data_mov)}</td>  
                 <td   className="p-2 font-bold text-left font-size: 16px">{l.diario_id}</td>
                 <td   className="p-2 font-bold text-left font-size: 16px">{l.modelo_codigo}</td>
                 <td    className="p-2 font-bold text-left font-size: 16px">

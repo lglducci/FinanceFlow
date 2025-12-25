@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 export default function EditarContaPagar() {
   const navigate = useNavigate();
@@ -158,6 +159,47 @@ async function carregar() {
     try {
       setSavando(true);
 
+      
+  const hoje = hojeMaisDias(0);
+
+              // ================== VALIDAÇÕES ==================
+          if (!form.descricao.trim()) {
+            alert("Descrição é obrigatória.");
+            return;
+          }
+
+          if (!form.valor || Number(form.valor) <= 0) {
+            alert("Informe um valor maior que zero.");
+            return;
+          }
+
+          if (!form.categoria_id) {
+            alert("Categoria é obrigatória.");
+            return;
+          }
+
+          if (!form.fornecedor_id) {
+            alert("Fornecedor é obrigatório.");
+            return;
+          }
+
+          if (!form.doc_ref.trim()) {
+            alert("Documento é obrigatório.");
+            return;
+          }
+
+          if (!form.parcelas || Number(form.parcelas) < 1) {
+            alert("Número de parcelas inválido.");
+            return;
+          }
+
+          // vencimento já tratado, mas reforçando
+          
+          if (form.vencimento <= hoje) {
+            alert("Vencimento deve ser maior que hoje.");
+            return;
+          }
+
       const url = buildWebhookUrl("salvarcontapagar");
 
       const resp = await fetch(url, {
@@ -237,7 +279,7 @@ async function carregar() {
 
         {/* DESCRIÇÃO */}
         <div>
-          <label className="font-bold text-[#1e40af]">Descrição</label>
+          <label className="label label-required font-bold text-[#1e40af]">Descrição</label>
           <input
             name="descricao"
           
@@ -252,7 +294,7 @@ async function carregar() {
         {/* CATEGORIA */}
         <div>
           <div className="w-2/3"> 
-          <label className="font-bold text-[#1e40af]">Categoria</label>
+          <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
@@ -270,7 +312,7 @@ async function carregar() {
         {/* FORNECEDOR */}
         <div>
             <div className="w-2/3"> 
-          <label className="ffont-bold text-[#1e40af]">Fornecedor</label>
+          <label className="label label-required font-bold text-[#1e40af]">Fornecedor</label>
           <select
             name="fornecedor_id"
             value={form.fornecedor_id}
@@ -289,7 +331,7 @@ async function carregar() {
          {/* VALOR */}
         <div>
               <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Valor</label>
+          <label className="label label-required font-bold text-[#1e40af]">Valor</label>
           <input
             type="number"
             name="valor" 
@@ -304,10 +346,11 @@ async function carregar() {
         {/* VENCIMENTO */}
         <div>
             <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Vencimento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
           <input
             type="date"
-            name="vencimento"  
+            name="vencimento"   
+             min={hojeMaisDias(1)}   // 🔒 trava ontem e hoje 
             value={form.vencimento}
             onChange={handleChange}
             className="input-premium"
@@ -319,7 +362,7 @@ async function carregar() {
         {/* STATUS */}
         <div>
             <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Status</label>
+          <label className="label label-required font-bold text-[#1e40af]">Status</label>
           <select
             name="status" 
             value={form.status}
@@ -335,7 +378,7 @@ async function carregar() {
 
         {/* documento */}
         <div>
-          <label className="font-bold text-[#1e40af]">Documento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Documento</label>
           <input
             name="doc_ref"
           

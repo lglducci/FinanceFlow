@@ -76,7 +76,7 @@ const THEME = {
       console.log("ENVIANDO PRO WEBHOOK:", payload);
 
       const resp = await fetch(
-        "https://webhook.lglducci.com.br/webhook/novacontafinanceira",
+        "https://webhook-homolog.lglducci.com.br/webhook/novacontafinanceira",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

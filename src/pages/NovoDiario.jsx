@@ -184,7 +184,7 @@ export default function NovoDiario() {
                 <b className="font-bold text-[#003ba2]"> Nome:</b > {modeloSelecionado.nome}
               </div>
 
-              <table   className="tabela tabela-mapeamento" style={{ width: "80%", borderCollapse: "collapse" }} >
+              <table   className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse" }} >
                 <thead>
                   <tr style={{ background: "#09090aff" }}>
                     <th className="font-bold text-[#1e40af text-align: left]">ID</th>
@@ -262,7 +262,7 @@ export default function NovoDiario() {
           />
 
            {/* VALORES */}
-                {["valor_total", "valor_custo", "valor_imposto"].map((campo) => (
+                {["valor_total"].map((campo) => (
                   <div key={campo}>
                     <label className="font-bold text-[#1e40af]">
                       {capitalizeWords(campo)}
