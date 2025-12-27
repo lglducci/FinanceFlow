@@ -137,3 +137,12 @@ body {
   color: #dc2626; /* vermelho */
   font-weight: bold;
 }
+
+
+.input-desativado {
+  background-color: #adb7cd;      /* cinza claro */
+  color: #0b285b;                 /* texto cinza */
+  border-color: #234c8a;
+  cursor: not-allowed;
+  
+}
