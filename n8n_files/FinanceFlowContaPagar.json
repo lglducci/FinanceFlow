@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        656,
-        160
+        -128,
+        -688
       ],
-      "id": "4e2283e7-74e4-489e-a1ee-7ba198560256",
+      "id": "9421cfc4-83fe-4df7-b287-3bfa106f7b5a",
       "name": "Respond to Webhook31"
     },
     {
@@ -27,10 +27,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
-        -16
+        112,
+        -864
       ],
-      "id": "7106394d-715f-4416-9b00-0ff8cc4cfb23",
+      "id": "c31de4c3-49c3-41c0-832d-e56f9a18b20e",
       "name": "Respond to Webhook33"
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        672,
-        336
+        -112,
+        -512
       ],
-      "id": "5dda86e2-de54-4f86-a4c3-3de9ee2c0bff",
+      "id": "4409d55b-554c-4345-bc02-ff6df6c5c38b",
       "name": "Respond to Webhook34"
     },
     {
@@ -56,13 +56,13 @@
         "width": 1328,
         "color": 6
       },
-      "id": "eb8d533a-7cb8-4eec-9f95-87c45d4f0512",
+      "id": "812ee912-4722-4531-89e7-de9fee55987e",
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -144,
-        -192
+        -928,
+        -1040
       ]
     },
     {
@@ -75,10 +75,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        32,
-        -16
+        -752,
+        -864
       ],
-      "id": "3f0489e3-0453-4ac8-833d-33dcf6d3a28c",
+      "id": "0f0b69d2-6e12-4fb1-943e-9d360b415d0e",
       "name": "InsereContapagar",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -147,10 +147,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        240,
-        -16
+        -544,
+        -864
       ],
-      "id": "640b2760-6e2f-470b-9abc-fde15db56837",
+      "id": "1518d155-970c-4f03-9f2f-d310af19989e",
       "name": "EditaaContapagar"
     },
     {
@@ -162,37 +162,37 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1504,
-        32
+        736,
+        -816
       ],
-      "id": "337e32a8-0eae-4f4d-8a4c-0e2ff0495605",
+      "id": "0f07098d-35bc-40dc-b2ab-55f06eb462f4",
       "name": "ResultConta_pagar",
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select *\nfrom ff_consultar_contas_pagar(\n  {{ $json.id_empresa }},\n  '{{ $json.status }}',\n  '{{ $json.data_ini}}', \n  '{{ $json.data_fim}}',\n   {{ $json.fornecedor_id }}\n)\n\n\n ",
+        "query": " select *\nfrom ff_consultar_contas_pagar(\n  {{ $json.id_empresa }},\n  '{{ $json.status }}',\n  '{{ $json.data_ini}}', \n  '{{ $json.data_fim}}',\n   {{ $json.fornecedor_id }},\n   {{ $json.somente_vencidas }}\n)\n\n\n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        160
+        -336,
+        -688
       ],
-      "id": "7f97f1e1-04ec-4734-836c-54a2f8678b4f",
+      "id": "f4f64fa1-15aa-4ca9-b1e2-ef3017973500",
       "name": "ff_consultar_contas_pagar",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -229,6 +229,12 @@
               "name": "fornecedor_id",
               "value": "={{ $json.query.fornecedor_id}}",
               "type": "string"
+            },
+            {
+              "id": "72e2b890-70b7-441f-84bf-2c82d917eb0e",
+              "name": "somente_vencidas",
+              "value": "={{ $json.query.somente_vencidas}}",
+              "type": "string"
             }
           ]
         },
@@ -237,10 +243,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        256,
-        160
+        -528,
+        -688
       ],
-      "id": "b2f20217-d372-4d74-a3b0-c7e984ec8f74",
+      "id": "5526a3c1-963f-45c1-a084-e7a0a1af7397",
       "name": "transcontapg"
     },
     {
@@ -252,10 +258,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        32,
-        160
+        -752,
+        -688
       ],
-      "id": "47246909-fcdb-4f14-8d94-39d8f421f23d",
+      "id": "88dab36e-7df1-4890-8926-07ceb5ecd857",
       "name": "ConsultarContaPagar",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -268,15 +274,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        -16
+        -336,
+        -864
       ],
-      "id": "2937eefd-020f-444b-87da-de5e9bd52d21",
+      "id": "cf62403f-6ec4-4798-ac61-56ab667c174f",
       "name": "ff_registrar_conta_pagar_com_parcelas",
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -291,10 +297,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        688,
-        528
+        -96,
+        -320
       ],
-      "id": "5afe5257-f004-4e74-807c-2a4ef97c3a4e",
+      "id": "a5ea8437-5d11-4b7f-8508-15afba628bbc",
       "name": "Respond to Webhook37"
     },
     {
@@ -368,10 +374,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        256,
-        528
+        -528,
+        -320
       ],
-      "id": "c89e286d-0a18-4836-b41c-ce354e3df113",
+      "id": "e46ffe93-50dc-4904-a99a-1942455cf9cb",
       "name": "EditaaContapagar1"
     },
     {
@@ -384,10 +390,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        32,
-        528
+        -752,
+        -320
       ],
-      "id": "944e3349-8355-4779-9891-8a027e724c4b",
+      "id": "f320f858-f6c1-4040-93d4-9d0d3eabc8cd",
       "name": "SalvaContaPagar",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -401,10 +407,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        32,
-        336
+        -752,
+        -512
       ],
-      "id": "9fb66ba9-5289-4b2d-a63d-1f91c435a037",
+      "id": "383551b5-fb75-4d15-bc05-d8e42b6ddf46",
       "name": "ExcluiContaPagar",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -417,16 +423,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        336
+        -336,
+        -512
       ],
-      "id": "4e20de56-2383-4970-8813-c2f32f161455",
+      "id": "cb6fd076-f1e1-44ad-84d3-3b9ee892112b",
       "name": "ExcluiConta_a_pagar",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -440,10 +446,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        688,
-        720
+        -96,
+        -128
       ],
-      "id": "5bb975ad-d4c3-4b83-999a-67f01eaf25d4",
+      "id": "aee22b0c-9925-404b-a404-ccdc658cb624",
       "name": "Respond to Webhook40"
     },
     {
@@ -469,10 +475,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        224,
-        336
+        -560,
+        -512
       ],
-      "id": "c727ff1f-7481-4474-8098-395f89ea2097",
+      "id": "ed13f10a-e8e4-42f1-8d25-077c2ba598be",
       "name": "ExcluircontaPagar"
     },
     {
@@ -498,10 +504,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        224,
-        720
+        -560,
+        -128
       ],
-      "id": "6f9e1e7a-4200-42ce-93ff-f46508ad4345",
+      "id": "3d5ef73d-d4e9-474b-91d3-af3bf1fbfb6a",
       "name": "EditarContaPagar"
     },
     {
@@ -513,10 +519,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        16,
-        720
+        -768,
+        -128
       ],
-      "id": "b47919ac-0115-4d3e-85bb-56a075940eb8",
+      "id": "268981ef-4651-43f6-89fc-28ec5147bb53",
       "name": "ContaPagar",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -530,10 +536,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        704,
-        912
+        -80,
+        80
       ],
-      "id": "9676a3c0-574b-46bc-8c50-1dfbbebe02d8",
+      "id": "dd2b418b-e7ea-4d30-811b-f4514a08c295",
       "name": "Respond to Webhook45"
     },
     {
@@ -571,10 +577,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        240,
-        912
+        -544,
+        80
       ],
-      "id": "4b8985ad-c779-4e1a-b2cf-774c18bdf6e1",
+      "id": "7d66ea42-3233-46c3-9fb8-527b18622d4e",
       "name": "EditarContaPagar1"
     },
     {
@@ -586,10 +592,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        32,
-        912
+        -752,
+        80
       ],
-      "id": "04abe9ef-c825-4fc1-9b9f-414fcc813d63",
+      "id": "eb50879e-e6a9-4d47-9c5f-a6c73ee6a8bb",
       "name": "ContaPagar1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -603,10 +609,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        672,
-        1088
+        -112,
+        256
       ],
-      "id": "8a5b1b62-fd8e-4b38-be02-9ee2ac192dcd",
+      "id": "b1747d6c-03dc-49a4-861f-f34c5e3c6100",
       "name": "Respond to Webhook46"
     },
     {
@@ -632,10 +638,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        224,
-        1088
+        -560,
+        256
       ],
-      "id": "043ddc83-c439-4510-898c-2d884be40d54",
+      "id": "5e150bb7-203c-4d90-8076-0ebb73ad0b88",
       "name": "ExcluircontaPagar1"
     },
     {
@@ -647,16 +653,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        720
+        -336,
+        -128
       ],
-      "id": "a67f1179-50df-40e8-8378-358340f5e62f",
+      "id": "d9089841-2700-4356-8814-b0fb1dbad668",
       "name": "BuscaConta",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -669,16 +675,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        912
+        -336,
+        80
       ],
-      "id": "72f89965-3233-42b5-b30d-1eab7086b04a",
+      "id": "906f1774-484f-4b98-aca3-0b516a127fa1",
       "name": "BuscaParcelamento",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -691,16 +697,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        448,
-        1088
+        -336,
+        256
       ],
-      "id": "82bf6a3e-ce8f-4b32-87ed-7828cc80e9e7",
+      "id": "82e4f086-d049-4cf8-bd18-e6dc8a7315bc",
       "name": "ExcluiTodaContaParcelada",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -714,10 +720,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        32,
-        1088
+        -752,
+        256
       ],
-      "id": "ee0cdb38-c505-401a-9f7f-5652bbe0e835",
+      "id": "1ff77989-67f1-45c1-bea9-6d015a3fcf18",
       "name": "ExcluiContatoda",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -728,10 +734,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        672,
-        -16
+        -112,
+        -864
       ],
-      "id": "daa5c5c3-a0ac-4537-b0d5-b63f1b46beab",
+      "id": "84788034-e33e-495b-b653-c1b2029b0b46",
       "name": "Code in JavaScript1"
     },
     {
@@ -793,14 +799,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        464,
-        528
+        -320,
+        -320
       ],
-      "id": "b164eeb7-3074-4dd9-befc-c3271c6b1db3",
+      "id": "bde5537c-defd-490b-9abd-a09186de6e77",
       "name": "SalvaContaPagar2",
       "credentials": {
         "supabaseApi": {
-          "id": "HoBl47G6kDDDNQ29",
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -828,11 +834,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "ResultConta_pagar": {
-      "main": [
-        []
       ]
     },
     "ff_consultar_contas_pagar": {
@@ -1060,10 +1061,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0c6f4388-50de-4bba-9d06-b88eeb333981",
+  "versionId": "617983c9-f70b-4ac0-a3d0-dcd15d5e6033",
   "meta": {
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "t8wTDqNu58cetd6W",
+  "id": "9svxXg7J4uDHmCIL",
   "tags": []
 }
