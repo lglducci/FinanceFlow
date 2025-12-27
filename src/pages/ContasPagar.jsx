@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 export default function ContasPagar() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
+  const [somenteVencidas, setSomenteVencidas] = useState(false);
+ 
 
   function formatarDataBR(data) {
   if (!data) return "";
@@ -220,6 +222,7 @@ async function pagarSelecionadas() {
         data_ini: dataIni,
         data_fim: dataFim,
         fornecedor_id,
+        somente_vencidas:somenteVencidas
       });
 
       const resp = await fetch(url);
@@ -311,14 +314,17 @@ async function pagarSelecionadas() {
 
             {/* DATA INÍCIO */}
             <div>
-              <label className="font-bold text-base block mb-1 text-[#1e40af]">Data início</label>
-              <input
-                type="date"
-                value={dataIni}
-                onChange={e => setDataIni(e.target.value)}
-                className="border font-bold text-base rounded px-2 py-1 w-full border-yellow-500"
-              />
-            </div>
+              <label className="font-bold text-base block mb-1 text-[#1e40af]">Data início</label>  
+            <input
+              type="date"
+              value={dataIni}
+              disabled={somenteVencidas}
+              onChange={(e) => setDataIni(e.target.value)}
+              className={`border rounded-lg px-3 py-2 border-yellow-500
+                ${somenteVencidas ? "input-desativado" : ""}
+              `}
+            />
+              </div>
 
             {/* DATA FIM */}
             <div>
@@ -327,7 +333,9 @@ async function pagarSelecionadas() {
                 type="date"
                 value={dataFim}
                 onChange={e => setDataFim(e.target.value)}
-                className="border font-bold text-base rounded px-2 py-1 w-full border-yellow-500"
+                 className={`border rounded-lg px-3 py-2 border-yellow-500
+                ${somenteVencidas ? "input-desativado" : ""}
+              `}
               />
             </div>
 
@@ -395,8 +403,19 @@ async function pagarSelecionadas() {
                     {ct.nome}
                   </option>
                 ))}
-              </select>
-            </div>
+              </select> 
+            </div> 
+            <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={somenteVencidas}
+                  onChange={e => setSomenteVencidas(e.target.checked)}
+                />
+                <label className="font-bold text-base block mb-2 text-[#1e40af]">
+                  Somente vencidas
+                </label>
+              </div>
+
 
           </div>
 

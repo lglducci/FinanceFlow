@@ -1,6 +1,6 @@
  import React, { useState } from "react";
  import { hojeLocal, dataLocal } from "../utils/dataLocal";
-
+import { useNavigate } from "react-router-dom";
 
 export default function NovaConta() {
   const [form, setForm] = useState({
@@ -43,7 +43,7 @@ const THEME = {
   btnSecondaryText: "#ffffff",
 };
 
-
+ const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
 
