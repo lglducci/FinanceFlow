@@ -1,7 +1,6 @@
  import { useEffect, useState } from "react";
-import { buildWebhookUrl } from "../config/globals";
-import { useNavigate } from "react-router-dom";
-
+ import { buildWebhookUrl } from "../config/globals";
+ import { useNavigate } from "react-router-dom"; 
  import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
  
@@ -28,6 +27,16 @@ export default function ContasReceber() {
  const [totalPeriodo, setTotalPeriodo] = useState(0);
  const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false);
  const [selecionadas, setSelecionadas] = useState([]);
+const [somenteVencidas, setSomenteVencidas] = useState(false);
+
+  function formatarDataBR(data) {
+  if (!data) return "";
+  const d = new Date(data);
+  const dia = String(d.getUTCDate()).padStart(2, "0");
+  const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const ano = d.getUTCFullYear();
+  return `${dia}-${mes}-${ano}`;
+}
 
    const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
@@ -214,6 +223,7 @@ async function receberSelecionadas() {
         data_ini: dataIni,
         data_fim: dataFim,
         fornecedor_id,
+         somente_vencidas:somenteVencidas
       });
 
       const resp = await fetch(url);
@@ -303,16 +313,19 @@ async function receberSelecionadas() {
           {/* PERÍODO + STATUS + DATA + FORNECEDOR + CONTA */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            {/* DATA INÍCIO */}
+                {/* DATA INÍCIO */}
             <div>
-              <label className="font-bold text-base block mb-1 text-[#1e40af]">Data início</label>
-              <input
-                type="date"
-                value={dataIni}
-                onChange={e => setDataIni(e.target.value)}
-                className="border font-bold text-base rounded px-2 py-1 w-full border-yellow-500"
-              />
-            </div>
+              <label className="font-bold text-base block mb-1 text-[#1e40af]">Data início</label>  
+            <input
+              type="date"
+              value={dataIni}
+              disabled={somenteVencidas}
+              onChange={(e) => setDataIni(e.target.value)}
+              className={`border rounded-lg px-3 py-2 border-yellow-500
+                ${somenteVencidas ? "input-desativado" : ""}
+              `}
+            />
+              </div>
 
             {/* DATA FIM */}
             <div>
@@ -321,7 +334,9 @@ async function receberSelecionadas() {
                 type="date"
                 value={dataFim}
                 onChange={e => setDataFim(e.target.value)}
-                className="border font-bold text-base rounded px-2 py-1 w-full border-yellow-500"
+                 className={`border rounded-lg px-3 py-2 border-yellow-500
+                ${somenteVencidas ? "input-desativado" : ""}
+              `}
               />
             </div>
 
@@ -391,7 +406,16 @@ async function receberSelecionadas() {
                 ))}
               </select>
             </div>
-
+           <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={somenteVencidas}
+                  onChange={e => setSomenteVencidas(e.target.checked)}
+                />
+                <label className="font-bold text-base block mb-2 text-[#1e40af]">
+                  Somente vencidas
+                </label>
+              </div>
           </div>
 
           {/* BOTÕES */}

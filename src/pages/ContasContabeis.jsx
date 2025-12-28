@@ -149,6 +149,7 @@ export default function ContasContabeis() {
               <th style={{ padding: 8 }}>Tipo</th>
               <th style={{ padding: 8 }}>Natureza</th>
               <th style={{ padding: 8 }}>Nível</th>
+              <th style={{ padding: 8 }}>Sistema</th>
               <th style={{ padding: 8, width: 140 }}>Ações</th>
             </tr>
           </thead>
@@ -169,40 +170,74 @@ export default function ContasContabeis() {
                 <td style={{ padding: 8 }}>{c.tipo}</td>
                 <td style={{ padding: 8 }}>{c.natureza}</td>
                 <td style={{ padding: 8 }}>{c.nivel}</td>
+                <td style={{ padding: 8 }}>
+                    {c.sistema ? "Sistema" : "Usuário"}
+                    </td>
+
+
 
                 <td style={{ padding: 8 }}>
-                    <span
-                      onClick={() =>
-                        navigate("/editar-conta-contabil", { 
-                        state: { 
-                          id: c.id,
-                          empresa_id: localStorage.getItem("empresa_id") || "1"
-                        } })
+                   {c.sistema ? (
+                            <>
+                              <span
+                                style={{
+                                  marginRight: 15,
+                                  color: "#999",
+                                  cursor: "not-allowed",
+                                  textDecoration: "line-through",
+                                }}
+                                title="Conta do sistema — não pode ser editada"
+                              >
+                                Editar
+                              </span>
 
-                        
-                      }
-                      style={{
-                        marginRight: 15,
-                        color: "#0056d6",
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                        textDecoration: "underline",
-                      }}
-                    >
-                      Editar
-                    </span>
+                              <span
+                                style={{
+                                  color: "#999",
+                                  cursor: "not-allowed",
+                                  textDecoration: "line-through",
+                                }}
+                                title="Conta do sistema — não pode ser excluída"
+                              >
+                                Excluir
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span
+                                onClick={() =>
+                                  navigate("/editar-conta-contabil", {
+                                    state: {
+                                      id: c.id,
+                                      empresa_id: localStorage.getItem("empresa_id") || "1",
+                                    },
+                                  })
+                                }
+                                style={{
+                                  marginRight: 15,
+                                  color: "#0056d6",
+                                  cursor: "pointer",
+                                  fontWeight: "bold",
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                Editar
+                              </span>
 
-                    <span
-                      onClick={() => excluirConta(c.id)}
-                      style={{
-                        color: "#c62828",
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                        textDecoration: "underline",
-                      }}
-                    >
-                      Excluir
-                    </span>
+                              <span
+                                onClick={() => excluirConta(c.id)}
+                                style={{
+                                  color: "#c62828",
+                                  cursor: "pointer",
+                                  fontWeight: "bold",
+                                  textDecoration: "underline",
+                                }}
+                              >
+                                Excluir
+                              </span>
+                            </>
+                          )}
+
 
                   </td>
 

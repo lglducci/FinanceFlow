@@ -283,6 +283,7 @@ const [filtro, setFiltro] = useState("");
             width: "100%",
             borderCollapse: "collapse",
             fontSize: 14,
+            alignItems: "left",
           }} >
         <thead>
           <tr>
@@ -290,7 +291,8 @@ const [filtro, setFiltro] = useState("");
             <th>Token</th>
             <th>Descrição</th>
              <th>Tipo Automação</th>
-            <th>  Ações </th>
+            <th> Ações </th>
+            <th> Sistema </th>
           </tr>
         </thead>
 
@@ -307,44 +309,63 @@ const [filtro, setFiltro] = useState("");
               <td>{m.nome}</td>
                <td>{m.tipo_automacao}</td>
              
-
-              <td style={{ display: "flex", gap: "28px"}}>
-               <button
-                onClick={() =>
-                  navigate("/editar-mapeamento", {
-                    state: {
-                      modelo_id: m.id,
-                      empresa_id: empresa_id,
-                      token: m.codigo,
-                      nome: m.nome,
-                      tipo:m.tipo_automacao
-                    }  
-                  })
-                }
-
-                  style={{ color: "#1c09c6ff"  }}
-              >
-                Editar
-              </button> 
-              
+                  <td style={{ display: "flex", gap: "28px" }}>
+                {/* EDITAR */}
                 <button
-                 className="tabela tabela-mapeamento"
+                  disabled={m.sistema}
+                  onClick={() =>
+                    !m.sistema &&
+                    navigate("/editar-mapeamento", {
+                      state: {
+                        modelo_id: m.id,
+                        empresa_id: empresa_id,
+                        token: m.codigo,
+                        nome: m.nome,
+                        tipo: m.tipo_automacao,
+                      },
+                    })
+                  }
+                  style={{
+                    color: m.sistema ? "#7d8490ff" : "#1c09c6ff",
+                    cursor: m.sistema ? "not-allowed" : "pointer",
+                    opacity: m.sistema ? 0.6 : 1,
+                  }}
+                >
+                  Editar
+                </button>
+
+                {/* VISUALIZAR (sempre ativo) */}
+                <button
                   onClick={() => visualizar(m.id)}
-                  style={{ color: "#14953bff" , gap: "32px" }}
+                  style={{ color: "#14953bff", cursor: "pointer" }}
                 >
                   Visualizar
                 </button>
-              
+
+                {/* EXCLUIR */}
                 <button
-                 className="tabela tabela-mapeamento"
-                  onClick={() => Excluir(m.id)}
-                  style={{ color: "#c02525ff", gap: "32px" }}
+                  disabled={m.sistema}
+                  onClick={() => !m.sistema && Excluir(m.id)}
+                  style={{
+                    color: m.sistema ? "#7d8490ff" : "#c02525ff",
+                    cursor: m.sistema ? "not-allowed" : "pointer",
+                    opacity: m.sistema ? 0.6 : 1,
+                  }}
                 >
                   Excluir
                 </button>
-
-
               </td>
+
+
+
+
+               <td style={{ padding: 8, fontWeight: "bold", color: m.sistema ? "#7d8490ff" : "#2563eb" }}>
+                      {m.sistema ? "Sistema" : "Usuário"}
+                    </td>
+
+
+
+
             </tr>
           ))}
         </tbody>
