@@ -52,77 +52,6 @@
     },
     {
       "parameters": {
-        "tableId": "contas_financeiras",
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "empresa_id",
-              "fieldValue": "= {{ $('EditCriaConta').item.json.id_empresa }}"
-            },
-            {
-              "fieldId": "nome",
-              "fieldValue": "= {{ $('EditCriaConta').item.json.nome }}"
-            },
-            {
-              "fieldId": "banco",
-              "fieldValue": "={{  $('EditCriaConta').item.json.banco}}"
-            },
-            {
-              "fieldId": "tipo",
-              "fieldValue": "={{  $('EditCriaConta').item.json.tipo}}"
-            },
-            {
-              "fieldId": "saldo_inicial",
-              "fieldValue": "={{  $('EditCriaConta').item.json.saldo_inicial}}"
-            },
-            {
-              "fieldId": "nro_banco",
-              "fieldValue": "={{  $('EditCriaConta').item.json.nro_banco}}"
-            },
-            {
-              "fieldId": "agencia",
-              "fieldValue": "={{  $('EditCriaConta').item.json.agencia}}"
-            },
-            {
-              "fieldId": "conta",
-              "fieldValue": "={{  $('EditCriaConta').item.json.conta}}"
-            },
-            {
-              "fieldId": "conjunta",
-              "fieldValue": "={{  $('EditCriaConta').item.json.conjunta}}"
-            },
-            {
-              "fieldId": "juridica",
-              "fieldValue": "={{ $('EditCriaConta').item.json[' juridica'] }}"
-            },
-            {
-              "fieldId": "padrao",
-              "fieldValue": "={{ $('EditCriaConta').item.json[' padrao'] }}"
-            },
-            {
-              "fieldId": "contabil_id",
-              "fieldValue": "={{ $json.id }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [
-        816,
-        400
-      ],
-      "id": "a1417190-dd76-430f-8988-4d5d4629ae1d",
-      "name": "CriaConta",
-      "credentials": {
-        "supabaseApi": {
-          "id": "GfCFzcpZSxkxWy1M",
-          "name": "FinanceFlow"
-        }
-      }
-    },
-    {
-      "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
           "responseCode": 200
@@ -609,6 +538,16 @@
               "display": true,
               "type": "boolean",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "sistema",
+              "displayName": "sistema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -623,10 +562,81 @@
         400
       ],
       "id": "8fd912c5-57d1-4455-9259-4f6d758d1811",
-      "name": "Insert rows in a table",
+      "name": "InsereContaContabil",
       "credentials": {
         "postgres": {
           "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "contas_financeiras",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "empresa_id",
+              "fieldValue": "= {{ $('EditCriaConta').item.json.id_empresa }}"
+            },
+            {
+              "fieldId": "nome",
+              "fieldValue": "= {{ $('EditCriaConta').item.json.nome }}"
+            },
+            {
+              "fieldId": "banco",
+              "fieldValue": "={{  $('EditCriaConta').item.json.banco}}"
+            },
+            {
+              "fieldId": "tipo",
+              "fieldValue": "={{  $('EditCriaConta').item.json.tipo}}"
+            },
+            {
+              "fieldId": "saldo_inicial",
+              "fieldValue": "={{  $('EditCriaConta').item.json.saldo_inicial}}"
+            },
+            {
+              "fieldId": "nro_banco",
+              "fieldValue": "={{  $('EditCriaConta').item.json.nro_banco}}"
+            },
+            {
+              "fieldId": "agencia",
+              "fieldValue": "={{  $('EditCriaConta').item.json.agencia}}"
+            },
+            {
+              "fieldId": "conta",
+              "fieldValue": "={{  $('EditCriaConta').item.json.conta}}"
+            },
+            {
+              "fieldId": "conjunta",
+              "fieldValue": "={{  $('EditCriaConta').item.json.conjunta}}"
+            },
+            {
+              "fieldId": "juridica",
+              "fieldValue": "={{ $('EditCriaConta').item.json[' juridica'] }}"
+            },
+            {
+              "fieldId": "padrao",
+              "fieldValue": "={{ $('EditCriaConta').item.json[' padrao'] }}"
+            },
+            {
+              "fieldId": "contabil_id",
+              "fieldValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        816,
+        400
+      ],
+      "id": "a1417190-dd76-430f-8988-4d5d4629ae1d",
+      "name": "CriaContaFinanceira",
+      "credentials": {
+        "supabaseApi": {
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -639,17 +649,6 @@
         [
           {
             "node": "EditCriaConta",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "CriaConta": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook9",
             "type": "main",
             "index": 0
           }
@@ -693,7 +692,7 @@
       "main": [
         [
           {
-            "node": "Insert rows in a table",
+            "node": "InsereContaContabil",
             "type": "main",
             "index": 0
           }
@@ -733,11 +732,22 @@
         ]
       ]
     },
-    "Insert rows in a table": {
+    "InsereContaContabil": {
       "main": [
         [
           {
-            "node": "CriaConta",
+            "node": "CriaContaFinanceira",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CriaContaFinanceira": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook9",
             "type": "main",
             "index": 0
           }
@@ -749,7 +759,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "fcc6a990-7f74-4b7e-b8fd-544c4a29cc1e",
+  "versionId": "ccb78778-96d7-42d9-b647-725018970448",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
