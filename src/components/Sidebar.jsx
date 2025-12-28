@@ -34,11 +34,9 @@ export default function Sidebar() {
           open={open === "financeiro"}
           onClick={() => toggle("financeiro")}
         >
-          <SubItem label="Lançamentos" onClick={() => navigate("/transactions")} />
-          <SubItem label="Contas Financeiras" onClick={() => navigate("/saldos")} />
+          <SubItem label="Lançamentos" onClick={() => navigate("/transactions")} /> 
           <SubItem label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
-          <SubItem label="Contas a Receber" onClick={() => navigate("/contas-receber")} />
-          <SubItem label="Cartões" onClick={() => navigate("/cards")} />
+          <SubItem label="Contas a Receber" onClick={() => navigate("/contas-receber")} /> 
           <SubItem label="Faturas" onClick={() => navigate("/faturas-cartao")} />
         </MenuGroup>
 
@@ -49,9 +47,8 @@ export default function Sidebar() {
           onClick={() => toggle("contabil")}
         >
           <SubItem label="Diário Contábil" onClick={() => navigate("/diario")} />
-          <SubItem label="Importação Diário" onClick={() => navigate("/importar-diario")} />
-          <SubItem label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
-          <SubItem label="Mapeamento Contábil" onClick={() => navigate("/mapeamento-contabil")} />
+          <SubItem label="Importação e Processamento" onClick={() => navigate("/importar-diario")} /> 
+         
         </MenuGroup>
 
         {/* Cadastros */}
@@ -64,6 +61,10 @@ export default function Sidebar() {
         > 
         <SubItem label="Fornecedores / Clientes" onClick={() => navigate("/providers-clients")} />
         <SubItem label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} /> 
+        <SubItem label="Contas Financeiras" onClick={() => navigate("/saldos")} />
+        <SubItem label="Cartões" onClick={() => navigate("/cards")} />
+        <SubItem label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
+          <SubItem label="Mapeamento Contábil" onClick={() => navigate("/mapeamento-contabil")} />
          </MenuGroup>
 
         <MenuItem label="Relatórios" onClick={() => navigate("/reports")} />
