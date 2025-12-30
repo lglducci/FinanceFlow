@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
-        "height": 1164,
+        "height": 1356,
         "width": 1328,
         "color": 4
       },
@@ -29,8 +29,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1504,
-        0
+        1520,
+        16
       ]
     },
     {
@@ -117,7 +117,7 @@
       "typeVersion": 1.4,
       "position": [
         2336,
-        256
+        304
       ],
       "id": "2259f300-9769-41fb-a938-8c893083cb92",
       "name": "Respond to Webhook"
@@ -158,7 +158,7 @@
       "typeVersion": 3.4,
       "position": [
         1952,
-        256
+        304
       ],
       "id": "298c0f1b-8065-437e-9cfe-2549b1c694ac",
       "name": "Edtranscartao1"
@@ -174,7 +174,7 @@
       "typeVersion": 2.1,
       "position": [
         1744,
-        256
+        304
       ],
       "id": "7bac25b0-81e8-4afe-89a1-b82fd13152cf",
       "name": "Razão",
@@ -183,14 +183,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT * from contab.ff_relatorio_razao(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n '{{ $json.data_fim }}',\n   '{{ $json.filtro }}'\n);\n",
+        "query": " SELECT * from  contab.ff_relatorio_razao(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n   '{{ $json.filtro }}' \n);\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         2144,
-        256
+        304
       ],
       "id": "2b78bf5c-9616-418e-a1aa-87615e3daf46",
       "name": "ff_relatorio_razao",
@@ -213,8 +213,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        448
+        2336,
+        848
       ],
       "id": "7b3d114e-c218-4d43-b03b-ca9847506687",
       "name": "Respond to Webhook1"
@@ -229,8 +229,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        448
+        1744,
+        848
       ],
       "id": "35a6bdc5-35ac-448d-bf0d-ea7079adc922",
       "name": "balanco",
@@ -259,8 +259,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        448
+        1952,
+        848
       ],
       "id": "e2b7ab6e-4203-45b0-9c71-87a6d46a4960",
       "name": "EdtBalanco"
@@ -274,8 +274,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        448
+        2144,
+        848
       ],
       "id": "2dd8c56b-4e97-4f32-bead-01730ca0dd59",
       "name": "ff_relatorio_balanco",
@@ -298,8 +298,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        656
+        2352,
+        1056
       ],
       "id": "169f81d0-1c12-4452-89ae-f9fe27ac9330",
       "name": "Respond to Webhook20"
@@ -314,8 +314,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        656
+        1744,
+        1056
       ],
       "id": "b48a61c2-5832-4785-bff6-f47321b15d27",
       "name": "diario_contabil",
@@ -330,8 +330,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2144,
-        656
+        2160,
+        1056
       ],
       "id": "c1332a3c-63da-4209-b434-7cb8f7b30584",
       "name": "ff_diario_contabil",
@@ -379,8 +379,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1952,
-        656
+        1968,
+        1056
       ],
       "id": "cd125153-8836-438d-bf19-faaa42bad422",
       "name": "EditDiario"
@@ -395,8 +395,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        832
+        2336,
+        1232
       ],
       "id": "6020bf28-3a1a-4ada-9448-e43a5a6956be",
       "name": "Respond to Webhook21"
@@ -410,8 +410,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        832
+        2144,
+        1232
       ],
       "id": "93f0798c-3132-4d20-8b46-f2e7cc0661f2",
       "name": "ff_dre_periodo",
@@ -451,8 +451,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        832
+        1952,
+        1232
       ],
       "id": "798abab7-02e3-4e60-966b-0095818c82e6",
       "name": "EditDer"
@@ -467,8 +467,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        832
+        1728,
+        1232
       ],
       "id": "d3bc0278-11ae-4dc3-9de8-0957ecc11e19",
       "name": "der",
@@ -1040,6 +1040,200 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2336,
+        480
+      ],
+      "id": "330e0b51-869d-4f95-a441-c2e574a4a584",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "1604e86a-56f9-4afa-8125-8e35d289822b",
+              "name": "filtro",
+              "value": "={{ $json.body.filtro}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        480
+      ],
+      "id": "df7c1977-6118-4ca8-a384-4a2131bf7c4a",
+      "name": "Edtranscartao2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "razao_diario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1744,
+        480
+      ],
+      "id": "1afb28cd-0013-4ad5-9d0d-b11007f7366e",
+      "name": "RazãoDiario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * from  contab.ff_razao_sintetico_diario(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n   '{{ $json.filtro }}' \n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2144,
+        480
+      ],
+      "id": "af011746-2df2-4c48-bf28-55b216f30d50",
+      "name": "ff_relatorio_razao_diario",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2336,
+        656
+      ],
+      "id": "b8de6d38-413f-485d-8d39-a106699c26df",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "1604e86a-56f9-4afa-8125-8e35d289822b",
+              "name": "filtro",
+              "value": "={{ $json.body.filtro}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        656
+      ],
+      "id": "9fb6f215-7657-44d8-8ad3-8cdcd0a155b7",
+      "name": "Edtranscartao3"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "razao_mensal",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1744,
+        656
+      ],
+      "id": "52e00aee-1985-44a9-a0d0-8799cf8adc6e",
+      "name": "RazãoMensal",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * from  contab.ff_razao_sintetico_mensal(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n   '{{ $json.filtro }}' \n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2144,
+        656
+      ],
+      "id": "bb3975dd-4c99-4b51-bf4b-9999ffc88b3d",
+      "name": "ff_razao_sintetico_mensal",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -1049,6 +1243,39 @@
           "empresa_id": 1,
           "ano": 2025,
           "mes": 11
+        }
+      }
+    ],
+    "Edtranscartao1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20250501",
+          "data_fim": "20251231",
+          "filtro": null,
+          "tipo": "d"
+        }
+      }
+    ],
+    "Edtranscartao2": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20250501",
+          "data_fim": "20251231",
+          "filtro": null,
+          "tipo": "d"
+        }
+      }
+    ],
+    "Edtranscartao3": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20250501",
+          "data_fim": "20251231",
+          "filtro": null,
+          "tipo": "d"
         }
       }
     ]
@@ -1416,13 +1643,79 @@
           }
         ]
       ]
+    },
+    "Edtranscartao2": {
+      "main": [
+        [
+          {
+            "node": "ff_relatorio_razao_diario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RazãoDiario": {
+      "main": [
+        [
+          {
+            "node": "Edtranscartao2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_relatorio_razao_diario": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edtranscartao3": {
+      "main": [
+        [
+          {
+            "node": "ff_razao_sintetico_mensal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RazãoMensal": {
+      "main": [
+        [
+          {
+            "node": "Edtranscartao3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_razao_sintetico_mensal": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "22ebbef9-8197-4516-96f2-41ed0a50a046",
+  "versionId": "81074b4c-f8c3-44f2-b102-8023e27d2766",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
