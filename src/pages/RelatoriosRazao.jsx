@@ -21,7 +21,8 @@ export default function RelatoriosRazao() {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
 
- 
+ const [tipo, setTipo] = useState("r"); // r = detalhado (default)
+
   const location = useLocation();
  const navigate = useNavigate();
 
@@ -37,19 +38,19 @@ export default function RelatoriosRazao() {
 }
 
 
-async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
+async function consultarComParams({  webhook, empresa_id, data_ini, data_fim, filtro }) {
   setLoading(true);
   setDados([]);
 
   try {
-    const resp = await fetch(buildWebhookUrl("razao"), {
+    const resp = await fetch(buildWebhookUrl(webhook), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         empresa_id,
         data_ini,
         data_fim,
-        filtro: filtro || ""
+        filtro: filtro || ""  
       }),
     });
 
@@ -90,13 +91,31 @@ async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
  async function consultar() {
   const emp = Number(empresaId || localStorage.getItem("id_empresa") || localStorage.getItem("empresa_id") || 0);
   if (!emp) return alert("Empresa não carregada");
+  let webhook = "razao"; // default
+
+  if (tipo === "d") webhook = "razao_diario";
+  if (tipo === "m") webhook = "razao_mensal";
 
   return consultarComParams({
+     webhook,
     empresa_id: emp,
     data_ini: dataIni,
     data_fim: dataFim,
     filtro: contaId,
   });
+}
+
+
+function trocarTipo(novoTipo) {
+  setTipo(novoTipo);
+
+  // 🔥 LIMPA TUDO
+  setDados([]);
+  setLoading(false);
+
+  // se tiver:
+  // setTotais(null);
+  // setSelecionado(null);
 }
 
 
@@ -138,12 +157,53 @@ async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
             />
           </div>
 
+          
+
           <button
             onClick={consultar}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
           >
             Consultar
           </button>
+
+              <div className="flex gap-6 items-center mt-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="tipoRelatorio"
+                    value="r"
+                    checked={tipo === "r"}
+                 //   onChange={() => setTipo("r")}
+                     onChange={() => trocarTipo("r")}
+                  />
+                  Razão detalhado
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="tipoRelatorio"
+                    value="d"
+                    checked={tipo === "d"}
+                  //  onChange={() => setTipo("d")}
+                     onChange={() => trocarTipo("d")}
+                  />
+                  Sintético diário
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="tipoRelatorio"
+                    value="m"
+                    checked={tipo === "m"}
+                    //onChange={() => setTipo("m")}
+                     onChange={() => trocarTipo("m")}
+                  />
+                  Sintético mensal
+                </label>
+              </div>
+ 
 
           <button
             onClick={() => window.print()}
@@ -166,9 +226,11 @@ async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
           <table className="w-full text-sm">
             <thead className="bg-blue-700 text-white">
               <tr>
-                <th className="p-3 text-left">Data</th>
-                <th className="p-3 text-left">Conta</th>
-                <th className="p-3 text-left">Histórico</th>
+                {tipo !== "m" && ( <th className="p-3 text-left">Data</th>)}
+                 {tipo === "m" && (<th className="p-3 text-left">Mes-Ano</th>)}
+                 <th className="p-3 text-left">Conta</th>
+                 {tipo !== "m" && (<th className="p-3 text-left">Histórico</th>)}
+                  <th className="p-3 text-right">Saldo Inicial</th>
                 <th className="p-3 text-right">Débito</th>
                 <th className="p-3 text-right">Crédito</th>
                 <th className="p-3 text-right">Saldo</th>
@@ -178,20 +240,30 @@ async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
             </thead>
             <tbody>
               {dados.map((l, idx) => (
-                <tr key={idx} className="border-b">
-                 <td   className="p-2 font-bold font-size: 16px">{formatarData(l.data_mov)}</td>
-                       <td
-                            className={`p-2 font-bold ${
-                              l.historico === "TOTAL DA CONTA"
-                                ? "text-green-700 text-lg"
-                                : ""
-                            }`}
-                          >
-                    {l.conta_codigo} – {l.conta_nome}
-                  </td>
+                <tr key={idx} className="border-b"> 
+
+                 {tipo !== "m" && (<td   className="p-2 font-bold font-size: 16px">{formatarData(l.data_mov)}</td>)} 
+                   {tipo === "m" && (<td    className={`p-2 font-bold ${
+                            l.historico === "TOTAL DA CONTA"
+                              ? "text-green-700 text-lg"
+                              : ""
+                          }`}
+                        >
+                      {l.mes_ano}
+                    </td>)}
+
+                  <td
+                      className={`p-2 font-bold ${
+                        l.historico === "TOTAL DA CONTA"
+                          ? "text-green-700 text-lg"
+                          : ""
+                      }`}
+                    >
+                  {l.conta_codigo} – {l.conta_nome}
+                </td>
                  {/*  <td  className="p-2 font-bold font-size: 16px">{l.historico}</td>´*/}
 
-                     <td
+                     {tipo !== "m" && ( <td
                             className={`p-2 font-bold ${
                               l.historico === "TOTAL DA CONTA"
                                 ? "text-green-700 text-lg"
@@ -199,7 +271,10 @@ async function consultarComParams({ empresa_id, data_ini, data_fim, filtro }) {
                             }`}
                           >
                             {l.historico}
-                          </td>
+                          </td>)}
+                    <td   className="p-2 font-bold text-right font-size: 16px">
+                    {fmt.format(l.saldo_inicial)}
+                  </td>
 
                   <td   className="p-2 font-bold text-right font-size: 16px">
                     {fmt.format(l.debito)}
