@@ -231,6 +231,7 @@ const THEME = {
           <div>
             <label className="label label-required block font-bold mb-1 text-[#1e40af]">Saldo Inicial</label>
             <input
+                 type="number"
               name="saldo_inicial"
               className="input-base w-72 h-10"
               value={form.saldo_inicial}

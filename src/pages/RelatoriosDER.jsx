@@ -5,10 +5,9 @@ import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 export default function RelatoriosDRE() {
   const hoje = new Date().toISOString().slice(0, 10);
-
-  const [empresaId, setEmpresaId] = useState(null);
-   const [dataIni, setDataIni] = useState(hojeLocal());
-const [dataFim, setDataFim] = useState(hojeLocal());
+ const [empresaId, setEmpresaId] = useState(null);
+ const [dataIni, setDataIni] = useState(hojeLocal());
+ const [dataFim, setDataFim] = useState(hojeLocal());
 
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);

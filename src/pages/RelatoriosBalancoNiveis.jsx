@@ -13,8 +13,8 @@ export default function RelatoriosBalancoNiveis() {
  
    const [empresaId, setEmpresaId] = useState(null);
 
- const [dataIni, setDataIni] = useState(hojeLocal());
-const [dataFim, setDataFim] = useState(hojeLocal());
+ const [dataIni, setDataIni] = useState(hojelocal());
+const [dataFim, setDataFim] = useState(hojelocal());
 
   const [dados, setDados] = useState(null);
   const [loading, setLoading] = useState(false);

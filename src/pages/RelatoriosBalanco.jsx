@@ -3,14 +3,14 @@ import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
  
 
 export default function RelatoriosBalanco() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [empresaId, setEmpresaId] = useState(null);
-  const [dataCorte, setDataCorte] = useState(hoje);
+  const [dataCorte, setDataCorte] = useState(hojeLocal());
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
 

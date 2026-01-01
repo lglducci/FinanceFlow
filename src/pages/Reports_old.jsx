@@ -1,39 +1,5 @@
  import { useNavigate } from "react-router-dom";
 
- const baseIcon = "w-10 h-10 stroke-blue-600";
-
-const IconCash = () => (
-  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <rect x="2" y="6" width="20" height="12" rx="2" />
-    <circle cx="12" cy="12" r="3" />
-  </svg>
-);
-
-const IconChart = () => (
-  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path d="M4 19V5M10 19V9M16 19V13M22 19H2" />
-  </svg>
-);
-
-const IconBook = () => (
-  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path d="M4 4h16v16H4z" />
-  </svg>
-);
-
-const IconBalance = () => (
-  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path d="M12 3v18M5 7h14M7 21h10" />
-  </svg>
-);
-
-const IconReport = () => (
-  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path d="M6 2h9l5 5v15H6z" />
-  </svg>
-);
-
-
 export default function Reports() {
   const navigate = useNavigate();
 
@@ -42,78 +8,66 @@ export default function Reports() {
       title: "Fluxo de Caixa Consolidado",
       desc: "Entradas e saídas consolidado",
       path: "/relatorios/fluxo-caixa",
-       icon: <IconCash />,
     },
 
     {
       title: "Fluxo de Caixa Detalhado",
       desc: "Entradas e saídas no período",
       path: "/relatorios/fluxo-caixa-detalhado",
-       icon: <IconBook />,
     },
 
     {
       title: "Fluxo de Caixa Mensal",
       desc: "Entradas e saídas mensal",
       path: "/relatorios/fluxo-caixa-mensal",
-       icon: <IconChart />,
     },
 
     {
       title: "Saldos por Conta",
       desc: "Saldo consolidado por conta financeira",
       path: "/relatorios/saldoporconta",
-      icon: <IconBalance />,
     },
     {
       title: "Diário Contábil",
       desc: "Lançamentos contábeis do período",
       path: "/relatorios/diario",
-       icon: <IconBook />,
     },
     {
       title: "Balancete",
       desc: "Débito e crédito por conta contábil",
       path: "/relatorios/balancete",
-          icon: <IconReport />,
     },
     {
       title: "DRE",
       desc: "Resultado do exercício",
       path: "/relatorios/dre",
-        icon: <IconChart />,
     },
     {
       title: "Apuração PIS/COFINS",
       desc: "Resumo fiscal por período",
       path: "/relatorios/piscofins",
-      icon: <IconReport />,
     },
     {
       title: "Relação Razão",
       desc: " Lançamentos detalhados por conta",
       path: "/relatorios/razao",
-       icon: <IconBook />,
     },
 
      {
       title: "Relação Balanço",
       desc: " Lançamentos detalhados por conta",
       path: "/relatorios/balanco",
-        icon: <IconBalance />,
     },
       {
       title: "Relação KPIs",
       desc: " Relatório de KPIs",
       path: "/relatorios/gerencial",
-        icon: <IconChart />,
     },
  
      {
       title: "Relação Balanço Níveis",
       desc: " Balanço por níveis",
       path: "/relatorios/balanco-niveis",
-        icon: <IconBalance />,
     },
   ];
 
@@ -123,22 +77,16 @@ export default function Reports() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {cards.map((c) => (
-         <div
+          <div
             key={c.title}
             onClick={() => navigate(c.path)}
             className="cursor-pointer rounded-xl border border-blue-400 bg-gray-100 p-5 shadow hover:shadow-lg transition"
           >
-            <div className="mb-3">{c.icon}</div>
-
             <h2 className="text-lg font-bold text-blue-700">
               {c.title}
             </h2>
-
-            <p className="text-base text-gray-700 mt-2">
-              {c.desc}
-            </p>
+            <p className="text- base text-gray-700 mt-2">{c.desc}</p>
           </div>
-
         ))}
       </div>
     </div>

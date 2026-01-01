@@ -9,8 +9,8 @@ export default function RelatoriosSaldoPorConta() {
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [dataIni, setDataIni] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+  const [dataIni, setDataIni] = useState(hojelocal());
+  const [dataFim, setDataFim] = useState(hojelocal());
 
   const empresa_id =
     localStorage.getItem("empresa_id") ||

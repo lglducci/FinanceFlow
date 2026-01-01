@@ -1,14 +1,15 @@
  import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 export default function RelatoriosBalancete() {
 
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [empresaId, setEmpresaId] = useState(null);
-  const [dataIni, setDataIni] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+  const [dataIni, setDataIni] = useState(hojeLocal());
+  const [dataFim, setDataFim] = useState(hojeLocal());
   const [loading, setLoading] = useState(false);
   const [dados, setDados] = useState([]);
   const navigate = useNavigate();

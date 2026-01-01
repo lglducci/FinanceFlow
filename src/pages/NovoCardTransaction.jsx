@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+ 
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
@@ -11,6 +12,7 @@ export default function NovoCardTransaction() {
 
   const [listaCartoes, setListaCartoes] = useState([]);
   const [cartaoSelecionado, setCartaoSelecionado] = useState("");
+  const [contas, setContas] = useState([]);
 
   const [form, setForm] = useState({
     descricao: "",
@@ -77,6 +79,7 @@ export default function NovoCardTransaction() {
           valor_total: form.valor,
           parcelas: form.parcelas,
           data_compra: form.data_parcela,
+          contabil_id:form.contabil_id
         }),
       });
 
@@ -88,6 +91,26 @@ export default function NovoCardTransaction() {
       alert("Erro ao registrar transação.");
     }
   };
+
+
+  useEffect(() => {
+  async function carregarContas() {
+    try {
+      const resp = await fetch(
+        "https://webhook-homolog.lglducci.com.br/webhook/contascontabilcartao?empresa_id=" +
+          empresa_id,
+      );
+
+      const data = await resp.json();
+      setContas(data);
+    } catch (e) {
+      console.error("Erro ao carregar contas contábeis", e);
+    }
+  }
+
+  carregarContas();
+}, [form.empresa_id]);
+
 
   return (
      <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
@@ -169,6 +192,32 @@ export default function NovoCardTransaction() {
         placeholder="descricao"
           className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300"
       />
+
+          
+      
+           <div>
+            <label className="label label-required block font-bold mb-1 text-[#1e40af]">
+              Conta Contábil
+            </label>
+
+            <select
+              name="contabil_id"
+              value={form.contabil_id || ""}
+              onChange={handleChange}
+              className="input-base w-full h-10"
+            >
+              <option value="">Selecione a conta contábil…</option>
+
+              {contas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.codigo} — {c.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+
+
 
 
       {/* Botões */}

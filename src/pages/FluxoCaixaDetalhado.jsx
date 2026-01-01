@@ -11,8 +11,8 @@ export default function FluxoCaixaDetalhado() {
     localStorage.getItem("empresa_id") ||
     localStorage.getItem("id_empresa");
 
-  const [dataIni, setDataIni] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+  const [dataIni, setDataIni] = useState(hojeLocal());
+  const [dataFim, setDataFim] = useState(hojeLocal());
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
  

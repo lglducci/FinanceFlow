@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 export default function RelatoriosFluxoCaixaMensal() {
   const hoje = new Date().toISOString().slice(0,10);
   const navigate = useNavigate();
-  const [dataIni, setDataIni] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+  const [dataIni, setDataIni] = useState(hojeLocal());
+  const [dataFim, setDataFim] = useState(hojeLocal());
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
 

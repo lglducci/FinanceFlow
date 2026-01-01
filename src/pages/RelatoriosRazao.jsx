@@ -3,6 +3,7 @@ import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
  
 import { useLocation } from "react-router-dom";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 
 const empresa_id =
@@ -15,8 +16,8 @@ export default function RelatoriosRazao() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [empresaId, setEmpresaId] = useState(null);
-  const [dataIni, setDataIni] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+  const [dataIni, setDataIni] = useState(hojeLocal());
+  const [dataFim, setDataFim] = useState(hojeLocal());
   const [contaId, setContaId] = useState("");
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
