@@ -185,8 +185,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        960,
-        896
+        928,
+        880
       ],
       "id": "55c6f946-1b24-48b9-851b-39f18e2b72bb",
       "name": "Respond to Webhook1"
@@ -949,7 +949,7 @@
     {
       "parameters": {
         "content": "## Contabil",
-        "height": 716,
+        "height": 940,
         "width": 1280
       },
       "id": "48fed976-479f-4a2c-9ba0-0e3bd9a5ccb5",
@@ -1319,6 +1319,82 @@
       "id": "4e92ceba-df37-4bb8-8e7c-17d235f536b2",
       "name": "ExcluirontaCtb",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        832,
+        1520
+      ],
+      "id": "bb7ce43c-c254-445b-ab2a-fde5dc9127b0",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nselect * from  contab.vw_contas_validas_compra_cartao  \n  \nWHERE empresa_id = {{ $json.empresa_id }}\n \nORDER BY codigo;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        624,
+        1520
+      ],
+      "id": "148422db-4657-476f-be53-086c55cfb7bd",
+      "name": "ContasContb1",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "contascontabilcartao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        1520
+      ],
+      "id": "56862c10-ccf1-474a-9571-e64685205539",
+      "name": "ContasContabeisCartão",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        1520
+      ],
+      "id": "c80d40fe-154d-4320-87b1-d1ad6fce2fa9",
+      "name": "EditCtbContas_Cartao"
     }
   ],
   "pinData": {},
@@ -1718,13 +1794,46 @@
           }
         ]
       ]
+    },
+    "ContasContb1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContasContabeisCartão": {
+      "main": [
+        [
+          {
+            "node": "EditCtbContas_Cartao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditCtbContas_Cartao": {
+      "main": [
+        [
+          {
+            "node": "ContasContb1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "38936156-39bc-457d-a8db-ac06b31466d3",
+  "versionId": "6edb430a-c2db-4a9d-9c8a-2c1d17ed05ec",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

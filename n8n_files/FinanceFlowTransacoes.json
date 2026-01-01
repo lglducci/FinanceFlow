@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        224,
-        -128
+        1232,
+        -80
       ],
-      "id": "3c5125da-0850-4ec2-a9c0-029d3f0dc928",
+      "id": "661363b6-ffd7-413c-809f-e0d7594d3c39",
       "name": "Respond to Webhook1"
     },
     {
@@ -26,10 +26,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -496,
-        -128
+        512,
+        -80
       ],
-      "id": "dcff36ae-1994-4b86-a073-a836e22852df",
+      "id": "bfd0fd0d-e0ab-4d1a-b9fb-198804746dcd",
       "name": "Lancamento",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -80,10 +80,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        -128
+        784,
+        -80
       ],
-      "id": "95f7b6fe-a44d-4e3d-b8bb-b52209eba4bb",
+      "id": "aa1075a0-377b-4a67-818b-f8c01c157100",
       "name": "TransacaoEdit"
     },
     {
@@ -95,16 +95,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        -128
+        1008,
+        -80
       ],
-      "id": "6d5ee613-4d73-4712-b2ed-38850a4c21fd",
+      "id": "96ab1268-1bb1-45f9-994b-26f1a2c3c96a",
       "name": "Lancamentos",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -118,10 +118,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        256,
-        752
+        1264,
+        800
       ],
-      "id": "c15245bf-66e8-47b5-ad50-8f3f1b97ddc3",
+      "id": "28425a6f-7000-486a-a3b4-6abec9c6abd7",
       "name": "Respond to Webhook5"
     },
     {
@@ -133,10 +133,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -464,
-        752
+        544,
+        800
       ],
-      "id": "b991767b-a805-45bf-8fbe-ab4b98482624",
+      "id": "038a097c-8b0c-4157-b4e5-ec1259145b02",
       "name": "consultaSaldo",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -175,10 +175,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -208,
-        752
+        800,
+        800
       ],
-      "id": "081570b4-d13c-4655-b402-06a36fc0b375",
+      "id": "7a4f5083-12ff-4bd7-b775-0c2fbf07fe9c",
       "name": "SaldoEdit"
     },
     {
@@ -191,10 +191,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        256,
-        592
+        1264,
+        640
       ],
-      "id": "f2119620-9fa3-4fa9-9f9d-8a4b9abdc8b8",
+      "id": "c28af53c-9128-4ba6-9869-6e482fe792a1",
       "name": "Respond to Webhook11"
     },
     {
@@ -220,10 +220,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -208,
-        592
+        800,
+        640
       ],
-      "id": "1a767bf9-7427-45ff-abe2-0fad2cf2d0a1",
+      "id": "11f92ed3-6cb6-4835-bdda-7e7cdac9f3b9",
       "name": "SaldoEdit3"
     },
     {
@@ -235,15 +235,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        16,
-        592
+        1024,
+        640
       ],
-      "id": "62a5d966-a994-4759-a393-335fc77f7e2b",
+      "id": "c4af0a06-f4f3-4205-8a94-6e03856831d9",
       "name": "ContasFinanceiras",
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -256,16 +256,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        16,
-        752
+        1024,
+        800
       ],
-      "id": "77727f78-9812-4816-b67d-ec4f1dc6f6a0",
+      "id": "5f09e04e-8a38-4175-8363-ba3117566a86",
       "name": "consultar_saldo_periodo",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -278,10 +278,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -464,
-        592
+        544,
+        640
       ],
-      "id": "5b076db3-e01c-4607-9a38-b31dda4c1508",
+      "id": "48ae86d3-e58b-4a8d-8b29-4f22dd0f9526",
       "name": "RetrieveContaFInanc",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -295,10 +295,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        240,
-        416
+        1248,
+        464
       ],
-      "id": "fac67bd3-114b-4623-9391-df284fc2624a",
+      "id": "f7d53b6e-9df3-4e59-a5ad-9bf564d777d9",
       "name": "Respond to Webhook"
     },
     {
@@ -310,16 +310,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        16,
-        416
+        1024,
+        464
       ],
-      "id": "ba542473-f6b8-47f4-b5d0-ccd7b4621621",
+      "id": "49f9c93b-f3c0-463b-92b4-171c125b01bd",
       "name": "Lancamentos1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -332,10 +332,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -448,
-        416
+        560,
+        464
       ],
-      "id": "1f66bdc7-05f3-4fab-9a76-16839a71fb74",
+      "id": "73cb2f15-870e-4214-adfa-b88d34bd5228",
       "name": "EditarLancto",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -362,10 +362,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        416
+        784,
+        464
       ],
-      "id": "dc619278-e59e-44e9-ac6a-2fa3ee876722",
+      "id": "e31d96c0-0aa4-4a92-820d-e428c11399d7",
       "name": "EditLancto"
     },
     {
@@ -378,33 +378,11 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        224,
-        240
+        1232,
+        288
       ],
-      "id": "08a0b5ea-0245-4ba9-8d43-2df5b257aa5d",
+      "id": "61efdff5-ceca-417b-bf7e-f4f21502e6ce",
       "name": "Respond to Webhook14"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " delete \nFROM transacoes   \nWHERE empresa_id = {{ $json.id_empresa }}\n  AND id = {{ $json.id }} \n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        0,
-        240
-      ],
-      "id": "ff85b81f-d95d-4249-bc05-a6f6ee1fba32",
-      "name": "Lancamentos2",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
-        }
-      }
     },
     {
       "parameters": {
@@ -415,10 +393,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -464,
-        240
+        544,
+        288
       ],
-      "id": "1ee125b7-e93d-4b76-bc0d-cc4ed2903b43",
+      "id": "82de4a8f-5f89-4b91-9ead-75271d375a63",
       "name": "DeliteLancto",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -445,10 +423,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -240,
-        240
+        768,
+        288
       ],
-      "id": "84189a72-a2bd-4087-8577-f0b0e184a06b",
+      "id": "a7099197-e866-4f99-8379-a75447113d10",
       "name": "Deletelancto"
     },
     {
@@ -461,10 +439,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        224,
-        80
+        1232,
+        128
       ],
-      "id": "813e7777-2f4d-482f-b0a5-2752fec34a82",
+      "id": "92e7426a-3bc7-4bf5-8b43-c96258b78fe9",
       "name": "Respond to Webhook15"
     },
     {
@@ -477,10 +455,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -464,
-        80
+        544,
+        128
       ],
-      "id": "940028d7-1c55-4c2d-91de-b4ecb96261ac",
+      "id": "8deb0497-5fa2-4743-ad1d-d2dee6f46626",
       "name": "UpdateLancto",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -539,15 +517,15 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        0,
-        80
+        1008,
+        128
       ],
-      "id": "f10b4d28-b1ae-4cf3-985b-fa9aca21f2ef",
+      "id": "d45637bc-d467-418f-811b-b82604126f7b",
       "name": "UpdateLancto1",
       "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
-          "id": "HoBl47G6kDDDNQ29",
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -617,10 +595,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -256,
-        80
+        752,
+        128
       ],
-      "id": "be23cb37-1181-4c4b-91c9-a14363fca25f",
+      "id": "dd5886bb-dc39-4099-bbe5-0c0fa0f2fab8",
       "name": "Editlanct"
     },
     {
@@ -630,14 +608,36 @@
         "width": 1312,
         "color": 3
       },
-      "id": "943087d2-ade9-48ad-b6b1-0084d2e9fe0d",
+      "id": "7644eaea-6a0d-4883-b322-6ea30afcbcd8",
       "name": "Sticky Note5",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -640,
-        -256
+        368,
+        -208
       ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " delete \nFROM transacoes   \nWHERE empresa_id = {{ $json.id_empresa }}\n  AND id = {{ $json.id }} \n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1008,
+        288
+      ],
+      "id": "7e1da45a-0043-42c9-9aad-46f37f2161f2",
+      "name": "DeleteLancto",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -774,17 +774,6 @@
         ]
       ]
     },
-    "Lancamentos2": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook14",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "DeliteLancto": {
       "main": [
         [
@@ -800,7 +789,7 @@
       "main": [
         [
           {
-            "node": "Lancamentos2",
+            "node": "DeleteLancto",
             "type": "main",
             "index": 0
           }
@@ -839,16 +828,28 @@
           }
         ]
       ]
+    },
+    "DeleteLancto": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "5aa74c97-aaea-4d62-afec-a010f2ffe642",
+  "versionId": "8f7cb35d-d43e-4989-b08a-4c12919fd755",
   "meta": {
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "uRVRsEXSMB4j17Vc",
+  "id": "EZHn2ZAaICpQcvj5",
   "tags": []
 }
