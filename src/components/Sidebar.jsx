@@ -25,7 +25,7 @@ export default function Sidebar() {
 
         <MenuGroup
           icon={<IconMoney />}
-          label="Financeiro"
+          label="Transações Financeiras"
           open={open === "financeiro"}
           onClick={() => toggle("financeiro")}
         >
@@ -44,7 +44,7 @@ export default function Sidebar() {
           onClick={() => toggle("contabil")}
         >
           <SubItem icon={<IconBook />} label="Diário Contábil" onClick={() => navigate("/diario")} />
-          <SubItem icon={<IconSettings />} label="Importação" onClick={() => navigate("/importar-diario")} />
+          <SubItem icon={<IconSettings />} label="Processar e Importar" onClick={() => navigate("/importar-diario")} />
         </MenuGroup>
 
         <MenuGroup
