@@ -60,10 +60,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        32,
-        32
+        384,
+        304
       ],
-      "id": "69410749-767c-420c-87d6-886db6f368a1",
+      "id": "ad99be65-1f0a-478f-be35-70a3f57710b9",
       "name": "Edit Fields"
     },
     {
@@ -94,10 +94,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        192,
-        32
+        544,
+        304
       ],
-      "id": "6af66e88-6941-4527-a6bc-4ca0f3ccf62f",
+      "id": "f3221227-e5c7-428d-a789-c1e6aa9d4ad4",
       "name": "If"
     },
     {
@@ -110,10 +110,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -160,
-        32
+        192,
+        304
       ],
-      "id": "88e13d4c-13ba-462e-ae1e-494e799d635d",
+      "id": "b98ce4b4-0adc-488f-9f03-1a997b0aab33",
       "name": "NovoLancamento",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -126,17 +126,17 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        384,
-        -128
+        736,
+        144
       ],
-      "id": "523e7406-7663-4d73-aa18-07a4bd8e5add",
+      "id": "b8797356-7f1f-4e15-ae63-d915fcb83b0c",
       "name": "registrar_despesa",
       "alwaysOutputData": true,
       "retryOnFail": false,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -150,16 +150,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        384,
-        144
+        736,
+        416
       ],
-      "id": "7066c451-6279-44d8-b85f-3da5d864170f",
+      "id": "8a104590-3be9-4f94-9872-2e6dfdeb696a",
       "name": "registrar_receita",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -174,10 +174,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        816,
-        -32
+        1168,
+        240
       ],
-      "id": "6442f7e7-d120-4ab6-b166-1703f8e398b1",
+      "id": "482f5e34-d549-4912-9e84-520cbadec44f",
       "name": "Respond to Webhook13"
     },
     {
@@ -187,13 +187,13 @@
         "width": 1472,
         "color": 5
       },
-      "id": "12200dd1-4405-4397-8e08-514a5e8ea156",
+      "id": "b3f0a945-8f93-4c82-926d-7c1eec405370",
       "name": "Sticky Note6",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -352,
-        -272
+        0,
+        0
       ]
     },
     {
@@ -203,10 +203,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        560,
-        -128
+        912,
+        144
       ],
-      "id": "ad67ea14-59ac-4d96-8769-9c671d42a368",
+      "id": "d7608e54-fd0a-45de-b44a-68197b7e567c",
       "name": "Code in JavaScript1"
     },
     {
@@ -216,10 +216,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        576,
-        144
+        928,
+        416
       ],
-      "id": "7cfd95ef-bae1-498f-9846-f509d5627bed",
+      "id": "b8c62fa1-f3b0-40e1-8598-9d2cd6696989",
       "name": "Code in JavaScript"
     }
   ],
@@ -273,8 +273,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
       ]
     },
     "registrar_receita": {
@@ -285,8 +284,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
       ]
     },
     "Code in JavaScript1": {
@@ -316,10 +314,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7cab3f25-a17d-4d87-bd4f-a32db2ffc4d1",
+  "versionId": "580377bb-43da-491c-8b1f-49b611b0a02f",
   "meta": {
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "v0a96gvbqRXx8tDB",
+  "id": "uaWS1lWi8UFJTaj2",
   "tags": []
 }

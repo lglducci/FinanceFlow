@@ -5,7 +5,7 @@
       "parameters": {
         "content": "##  Modulo Contas Gerenciais (Banco)\n Controla Contas Gerenciais do Sistema Financeflow",
         "height": 1036,
-        "width": 1328,
+        "width": 1552,
         "color": 7
       },
       "id": "b16bebff-b6d8-4d69-b36a-2db9336af30e",
@@ -27,7 +27,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1056,
+        1232,
         400
       ],
       "id": "37ca26b1-19e9-481b-b1a0-bd358a7f4ffd",
@@ -629,7 +629,7 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        816,
+        784,
         400
       ],
       "id": "a1417190-dd76-430f-8988-4d5d4629ae1d",
@@ -637,6 +637,87 @@
       "credentials": {
         "supabaseApi": {
           "id": "GfCFzcpZSxkxWy1M",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "contab",
+          "mode": "list",
+          "cachedResultName": "contab"
+        },
+        "table": {
+          "__rl": true,
+          "value": "saldos_iniciais",
+          "mode": "list",
+          "cachedResultName": "saldos_iniciais"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "empresa_id": "= {{ $('EditCriaConta').item.json.id_empresa }}",
+            "conta_id": "={{ $json.contabil_id}}  ",
+            "saldo": "={{ $json.saldo_inicial}}  "
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "empresa_id",
+              "displayName": "empresa_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conta_id",
+              "displayName": "conta_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "data_base",
+              "displayName": "data_base",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "saldo",
+              "displayName": "saldo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        992,
+        400
+      ],
+      "id": "f8d4358c-b0e8-432c-94ed-e14c91afea4e",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
           "name": "FinanceFlow"
         }
       }
@@ -747,6 +828,17 @@
       "main": [
         [
           {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
             "node": "Respond to Webhook9",
             "type": "main",
             "index": 0
@@ -759,7 +851,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ccb78778-96d7-42d9-b647-725018970448",
+  "versionId": "66b27608-94e9-4b7e-9cbe-94fc48e6865a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

@@ -528,6 +528,12 @@
               "name": "data_fim",
               "value": "={{ $json.body.data_fim}}",
               "type": "string"
+            },
+            {
+              "id": "fc6875b8-d1d0-4b0e-9a39-395fce9b022d",
+              "name": "filtro",
+              "value": "={{ $json.body.filtro}}",
+              "type": "string"
             }
           ]
         },
@@ -545,13 +551,13 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n\n\nSELECT\n  c.codigo,\n  c.nome,\n  SUM(COALESCE(l.debito,0))  AS total_debito,\n  SUM(COALESCE(l.credito,0)) AS total_credito,\n  SUM(COALESCE(l.debito,0) - COALESCE(l.credito,0)) AS saldo\nFROM contab.lancamentos l\nJOIN contab.contas c ON c.id = l.conta_id\nWHERE l.empresa_id =   {{ $json.empresa_id }}\n  AND l.data_mov BETWEEN  '{{ $json.data_ini }}'  AND '{{ $json.data_fim }}'\nGROUP BY c.codigo, c.nome\nORDER BY c.codigo\n\n\n\n\n\n",
+        "query": "SELECT  CONTA_CODIGO CODIGO , CONTA_NOME NOME , SALDO_INICIAL, DEBITO  total_debito  , CREDITO total_credito ,  SALDO   \n  from  contab.ff_razao_sintetico_mensal(\n   {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n '{{ $json.filtro }}'\n);\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        720,
+        752,
         272
       ],
       "id": "b23f22a8-7e4d-489a-9edf-998cedc79e01",
@@ -843,8 +849,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        16,
+        16
       ]
     },
     {
@@ -1227,6 +1233,29 @@
       "id": "bb3975dd-4c99-4b51-bf4b-9999ffc88b3d",
       "name": "ff_razao_sintetico_mensal",
       "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\n\nSELECT\n  c.codigo,\n  c.nome,\n  SUM(COALESCE(l.debito,0))  AS total_debito,\n  SUM(COALESCE(l.credito,0)) AS total_credito,\n  SUM(COALESCE(l.debito,0) - COALESCE(l.credito,0)) AS saldo\nFROM contab.lancamentos l\nJOIN contab.contas c ON c.id = l.conta_id\nWHERE l.empresa_id =   {{ $json.empresa_id }}\n  AND l.data_mov BETWEEN  '{{ $json.data_ini }}'  AND '{{ $json.data_fim }}'\nGROUP BY c.codigo, c.nome\nORDER BY c.codigo\n\n\n\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1360,
+        368
+      ],
+      "id": "0b19b24f-2cb6-4529-83a2-e62c87be5ba3",
+      "name": "Saldo_por_conta1",
+      "alwaysOutputData": false,
       "credentials": {
         "postgres": {
           "id": "XLdUjmOBeD6MkxJ4",
@@ -1715,7 +1744,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "81074b4c-f8c3-44f2-b102-8023e27d2766",
+  "versionId": "fd44b1c4-4b86-45b1-945d-5003c0ae2736",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

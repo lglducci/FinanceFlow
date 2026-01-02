@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        464,
+        752,
         288
       ],
-      "id": "36127d3f-e5d4-4bc7-a8ba-3694b3c24e91",
+      "id": "08c110ec-0777-4f24-8bf7-1c06b5c48bf5",
       "name": "Respond to Webhook16"
     },
     {
@@ -26,10 +26,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
+        144,
         288
       ],
-      "id": "362c8bb5-e329-4023-bc70-36e70260a9a4",
+      "id": "8f0d6527-e290-409f-9a7b-b466597d621e",
       "name": "TransacaoCartao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -42,16 +42,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        272,
+        560,
         288
       ],
-      "id": "b714a563-bdef-4580-9fcf-8299a9f327cc",
+      "id": "e89daa96-d4da-4012-9727-3c9e323ac4f3",
       "name": "TransaCartão",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -65,10 +65,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        528,
+        816,
         464
       ],
-      "id": "4d2a1d31-0288-45b0-a24b-b8631e40b851",
+      "id": "69f8686a-9ede-45f8-b649-17d44c8b317c",
       "name": "Respond to Webhook17"
     },
     {
@@ -80,16 +80,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        288,
+        576,
         464
       ],
-      "id": "dc7748b3-ec58-481b-b2f5-8154074e20eb",
+      "id": "affc4a6e-5725-470f-a622-f7786c26bb98",
       "name": "TransaCartão1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -116,10 +116,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
+        368,
         464
       ],
-      "id": "63c8cca5-e383-48f8-be11-55cdd5a779cc",
+      "id": "a80c1628-b4b0-43f1-bb78-0c3bdb8cc5f1",
       "name": "EditarTranscartao"
     },
     {
@@ -132,10 +132,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        688,
+        976,
         112
       ],
-      "id": "20143bd1-99ea-4e18-bbaf-6e2823dc7862",
+      "id": "7f0b669e-42a4-44d2-8266-7965edaaf9b3",
       "name": "Respond to Webhook19"
     },
     {
@@ -148,10 +148,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
+        144,
         112
       ],
-      "id": "7670f92f-1f5c-4c55-a918-165b52f8daeb",
+      "id": "f8abbaf9-c539-42e5-978e-cd000dfc0875",
       "name": "InsereTransCartão",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -164,15 +164,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        464,
+        752,
         112
       ],
-      "id": "0eac66cb-1ba8-41d4-b51b-95e9ba0bcfe8",
+      "id": "03c6de67-0981-4d7b-9e74-424a57cb3fbf",
       "name": "Execute a SQL query1",
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -186,10 +186,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        512,
+        800,
         656
       ],
-      "id": "5e407d47-2012-4218-8dc2-8e99e5d77c51",
+      "id": "659dd76b-bf54-47fc-9f39-382ecd69b2de",
       "name": "Respond to Webhook18"
     },
     {
@@ -215,10 +215,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        64,
+        352,
         656
       ],
-      "id": "f37b5cfc-a0dc-4e12-9f8a-549c2e1e0bae",
+      "id": "4be18999-abd0-402c-941d-20b33edb246e",
       "name": "EditarTranscartao1"
     },
     {
@@ -231,10 +231,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -128,
+        160,
         656
       ],
-      "id": "a84848f1-70e6-4c05-aa00-55da70d610f6",
+      "id": "38e772b0-26f7-4413-8c65-d54738dfdc1c",
       "name": "Excluinscartao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -247,37 +247,37 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        288,
+        576,
         656
       ],
-      "id": "df97460b-a233-421a-989f-043b26f4867c",
+      "id": "bb3363c9-d1d5-40b5-b9a0-7f549aa7dafb",
       "name": "ff_excluir_transacao_cartao",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_compra_credito(\n  {{ $json.empresa_id }} ,\n  '{{ $json.cartao_nome }}',\n '{{ $json.descricao }}' ,\n {{ $json.valor }}  ,\n  {{ $json.parcela_num }},\n '{{ $json.data_parcela }}'  \n)",
+        "query": " select  * from ff_registrar_compra_credito(\n  {{ $json.empresa_id }} ,\n  '{{ $json.cartao_nome }}',\n '{{ $json.descricao }}' ,\n {{ $json.valor }}  ,\n  {{ $json.parcela_num }},\n '{{ $json.data_parcela }}'  ,{{ $json.contabil_id }}\n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        272,
+        560,
         112
       ],
-      "id": "94a2a537-3b28-4752-896e-7bbe27fec26e",
+      "id": "3d315dc9-0b5d-45e2-8e4a-7211ce38b0ad",
       "name": "ff_registrar_compra_credito1",
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -310,10 +310,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
+        368,
         288
       ],
-      "id": "50faad38-a90b-43f1-b282-3002b06a618e",
+      "id": "844e0c00-53a5-4525-9190-7de8c713261e",
       "name": "transcartao"
     },
     {
@@ -325,10 +325,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
+        144,
         464
       ],
-      "id": "61ddb570-d188-47b9-a30a-08441e91a034",
+      "id": "aec7d1ed-2451-4d92-bdce-6328cef76df3",
       "name": "Consultatrasacao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -342,10 +342,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        528,
+        816,
         816
       ],
-      "id": "77a3feb5-51d7-4f4d-90fb-f4faf6df96d5",
+      "id": "edb44be0-d8c5-44a9-8cf4-a909c765c597",
       "name": "Respond to Webhook"
     },
     {
@@ -357,16 +357,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        288,
+        576,
         816
       ],
-      "id": "c4689b4a-f73a-4e42-88cd-e44035bd81df",
+      "id": "fcc5de91-3bb1-49c3-90f3-c63162829af7",
       "name": "TransaCartão2",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -380,10 +380,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -144,
+        144,
         816
       ],
-      "id": "1de29154-ef7c-4da6-b61b-bff6dfc24cfa",
+      "id": "0a438076-e0d0-44b1-a471-655cbbd731c0",
       "name": "EditarTransacao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -416,10 +416,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
+        368,
         816
       ],
-      "id": "b740fe5c-036e-4d9c-869b-25b81ae4ee2c",
+      "id": "e24cae9c-b524-4491-b45a-b90a3c086633",
       "name": "EditarSalvaTrans"
     },
     {
@@ -429,12 +429,12 @@
         "width": 1328,
         "color": 4
       },
-      "id": "9d2edf4d-10f3-433e-87f1-17b30473a710",
+      "id": "4bcc19d8-1ce5-4d1d-b91c-ebf43198db19",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -288,
+        0,
         0
       ]
     },
@@ -483,6 +483,12 @@
               "name": "descricao",
               "value": "={{ $json.body.descricao}}",
               "type": "string"
+            },
+            {
+              "id": "12d90e74-f631-4248-8bfd-f9a220e2c69a",
+              "name": "contabil_id",
+              "value": "={{ $json.body.contabil_id}}",
+              "type": "string"
             }
           ]
         },
@@ -491,10 +497,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        80,
+        368,
         112
       ],
-      "id": "73a5b9a9-db6e-4aa3-8781-1467706bec8d",
+      "id": "16335723-d7f0-431b-acfe-5ad1452252e3",
       "name": "Edtranscartao"
     }
   ],
@@ -681,10 +687,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6a6b81d2-13cb-407f-83bf-0a41e7be4835",
+  "versionId": "7262aaf2-7542-4340-aec0-50726b160148",
   "meta": {
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "lMVniaqv4YzeqexN",
+  "id": "JYOT0mtzru6cpQr7",
   "tags": []
 }

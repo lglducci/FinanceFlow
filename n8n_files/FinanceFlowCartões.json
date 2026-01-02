@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        608,
-        432
+        384,
+        1040
       ],
-      "id": "60fcb500-8320-4d12-87c5-cbe7c2d14a64",
+      "id": "5afbc8f8-2a82-406b-b64e-9d912a5c013d",
       "name": "Respond to Webhook4"
     },
     {
@@ -64,10 +64,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -48,
-        432
+        -272,
+        1040
       ],
-      "id": "1f6a70f6-e1a6-45d4-825a-cbd7d24b3177",
+      "id": "24edd5b9-550e-4296-9c77-2856e2751e6e",
       "name": "CartãoTransacaoEdit1"
     },
     {
@@ -79,10 +79,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -272,
-        432
+        -496,
+        1040
       ],
-      "id": "f7c43685-9d40-45b7-811d-221d0faeb2b4",
+      "id": "af9c2df2-3e82-4e91-98a2-f143caff505c",
       "name": "InseretransacaoCartão",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -95,15 +95,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        400,
-        432
+        176,
+        1040
       ],
-      "id": "bb3e4986-3d32-4afb-8940-955255c89737",
+      "id": "f89fcc8b-417a-47d2-8766-28e98f7c9b78",
       "name": "Execute a SQL query",
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -114,10 +114,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        -608
+        0,
+        0
       ],
-      "id": "568c2edf-0e69-469c-9ebb-c22b63a80d40",
+      "id": "5f8e35ad-c300-4b28-8dad-1f5328b36baa",
       "name": "Sim"
     },
     {
@@ -127,10 +127,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        208,
-        -352
+        -16,
+        256
       ],
-      "id": "ad3241f2-00d6-4184-9115-4678c282dab9",
+      "id": "f823b7b3-df42-4068-908f-bc77179033ac",
       "name": "Não"
     },
     {
@@ -153,15 +153,15 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -368,
-        -496
+        -592,
+        112
       ],
-      "id": "c037e117-f71d-49a4-95ab-c761b7c3da41",
+      "id": "b0bc6007-c655-42c0-a1e1-44d41cf724c2",
       "name": "DadosUsuario",
       "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
-          "id": "HoBl47G6kDDDNQ29",
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -175,15 +175,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        800,
-        -512
+        576,
+        96
       ],
-      "id": "7380120d-6e07-417f-b9df-639a451fe46a",
+      "id": "464eaafd-9f4c-4566-91bc-4c2e81481298",
       "name": "DadosEmpresa",
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -197,10 +197,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -800,
-        -496
+        -1024,
+        112
       ],
-      "id": "555f0462-7588-4a4a-b0b2-a817abbca3d4",
+      "id": "3dbfe472-0236-4ae1-85c0-eaf16a353d8b",
       "name": "Login",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -242,10 +242,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -96,
-        -496
+        -320,
+        112
       ],
-      "id": "b40eea51-dfcc-4bf7-af26-466a5bf973f2",
+      "id": "bef3c8d8-a7fe-4daf-8b5d-d3e1ad652a4d",
       "name": "If2"
     },
     {
@@ -253,10 +253,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        528,
-        -512
+        304,
+        96
       ],
-      "id": "9f327108-013f-4fe8-96f0-6881b944a298",
+      "id": "22f94dcb-d337-422c-b012-eae92eeac6a4",
       "name": "Merge2"
     },
     {
@@ -268,10 +268,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1024,
-        -512
+        800,
+        96
       ],
-      "id": "69a7d027-4f56-4331-8346-57735b55e288",
+      "id": "103fd1a2-88c1-4686-a92d-d3aa155faa41",
       "name": "Respond to Webhook12"
     },
     {
@@ -297,10 +297,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -592,
-        -496
+        -816,
+        112
       ],
-      "id": "4d6ca530-266f-4340-bc25-d295134192cc",
+      "id": "444cb90d-a7b0-4eaf-841d-7855cc0356e8",
       "name": "Usuario"
     },
     {
@@ -313,10 +313,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        448,
-        640
+        224,
+        1248
       ],
-      "id": "e0ecf47c-55a1-4eb8-8890-f3a2194b4c70",
+      "id": "9f0a7fec-06fa-46ce-85d4-849a97268bf3",
       "name": "Respond to Webhook20"
     },
     {
@@ -329,10 +329,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -256,
-        640
+        -480,
+        1248
       ],
-      "id": "cb329046-057a-461b-b3c2-1b6d0a1c09a4",
+      "id": "405accc4-c48b-4a7d-aae7-2910f0145e8d",
       "name": "NovoCartao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -345,16 +345,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        192,
-        432
+        -32,
+        1040
       ],
-      "id": "1482cc1d-1b18-45a7-a1c3-cb7ace00ec6a",
+      "id": "5c5e0caf-219b-4a6a-b124-745d0386ac2b",
       "name": "ff_registrar_compra_credito",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -364,13 +364,13 @@
         "height": 1148,
         "width": 1312
       },
-      "id": "8af1b9c6-f8e5-426c-b3f5-1650f5eb3181",
+      "id": "5923ce79-66e3-4387-8d70-1cd6b71fb3bc",
       "name": "Sticky Note4",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -400,
-        0
+        -624,
+        608
       ]
     },
     {
@@ -382,10 +382,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -272,
-        240
+        -496,
+        848
       ],
-      "id": "66e05941-4c3b-4c4d-b52f-f36cdcc9a0cf",
+      "id": "9f213b76-bb0c-43c3-9a4f-13ef74de96f6",
       "name": "ListaCartões",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -398,16 +398,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        192,
-        240
+        -32,
+        848
       ],
-      "id": "58724447-05ca-4b47-b41e-9790677a47f0",
+      "id": "53d72a6d-bd32-4b83-87cf-03ec01d83540",
       "name": "Cartoes",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -428,10 +428,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -64,
-        240
+        -288,
+        848
       ],
-      "id": "ace3a0cc-c2a0-4687-8645-9cf2adb75526",
+      "id": "849bf947-74f3-4d18-adeb-eee07b0b516e",
       "name": "cartoesEdit"
     },
     {
@@ -444,10 +444,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        400,
-        240
+        176,
+        848
       ],
-      "id": "51f60de7-6b89-4e92-bb25-030d470140cc",
+      "id": "c4170ca9-22e4-4ab1-9189-ba36afb81450",
       "name": "Respond to Webhook8"
     },
     {
@@ -460,10 +460,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        400,
-        80
+        176,
+        688
       ],
-      "id": "a9d55796-54dd-42ea-a3da-6a507553bc2c",
+      "id": "eb8f19bc-f700-4bee-9790-efe929270f9b",
       "name": "Respond to Webhook21"
     },
     {
@@ -475,10 +475,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -272,
-        80
+        -496,
+        688
       ],
-      "id": "d2dbe83b-890d-4d7a-98b7-7d655a525323",
+      "id": "04776100-9ddc-4689-8bea-c6d29636eaeb",
       "name": "EditarCartões",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -505,10 +505,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -64,
-        80
+        -288,
+        688
       ],
-      "id": "c54f6607-8909-4246-8af4-d906aac162e5",
+      "id": "6a9abfef-743f-4126-bf0b-69c3c4ac604b",
       "name": "EditarCartões1"
     },
     {
@@ -520,16 +520,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        192,
-        80
+        -32,
+        688
       ],
-      "id": "8ff53d49-bc3a-4e0b-8995-d0a70dd37b25",
+      "id": "7ed28061-7133-4f3a-96c3-1944e4438b27",
       "name": "EditarCartão",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -543,10 +543,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        416,
-        816
+        192,
+        1424
       ],
-      "id": "2d734df0-f09b-4aa5-9b93-0eec87362c31",
+      "id": "e668dc80-055b-41f7-9c94-0d8576766b6c",
       "name": "Respond to Webhook22"
     },
     {
@@ -632,10 +632,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -32,
-        816
+        -256,
+        1424
       ],
-      "id": "dc7185f1-70d3-4717-9b02-ee595d5ba33e",
+      "id": "2108033a-3d0b-4893-b9cf-6df5af361763",
       "name": "EditNewCartao1"
     },
     {
@@ -705,14 +705,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        192,
-        816
+        -32,
+        1424
       ],
-      "id": "abcb8627-2053-4a27-8be3-ede3f18b05f5",
+      "id": "129ec32a-747b-41cf-b078-0f4fd0fbc46a",
       "name": "SalvaCartao",
       "credentials": {
         "supabaseApi": {
-          "id": "HoBl47G6kDDDNQ29",
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -727,10 +727,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -256,
-        816
+        -480,
+        1424
       ],
-      "id": "d35cb7c6-eb9f-4bb8-af74-37c07f9bd1d2",
+      "id": "83ba3aea-8d63-47a1-a491-a2655973375a",
       "name": "SalvaCartao1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -805,10 +805,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        0,
-        640
+        -224,
+        1248
       ],
-      "id": "967c867b-480c-4e05-8ba5-f1c22d8d8caa",
+      "id": "5e3c8be1-d963-4a24-9c20-5fffcadbacf3",
       "name": "EditNewCartao"
     },
     {
@@ -862,14 +862,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        208,
-        640
+        -16,
+        1248
       ],
-      "id": "b7a7f768-a1f5-4656-9e2a-e470186a547a",
+      "id": "ac13f776-5fcd-4ac1-8f1c-c2f4e2284089",
       "name": "SalvaCartao2",
       "credentials": {
         "supabaseApi": {
-          "id": "HoBl47G6kDDDNQ29",
+          "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
       }
@@ -884,10 +884,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        416,
-        992
+        192,
+        1600
       ],
-      "id": "2323c2ad-9cd1-420b-8484-6b1c078214d4",
+      "id": "b82f65ae-2154-49d0-baeb-8dbed33f2ab4",
       "name": "Respond to Webhook23"
     },
     {
@@ -899,16 +899,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        192,
-        992
+        -32,
+        1600
       ],
-      "id": "cba42baa-e637-4318-a055-b4320e055f25",
+      "id": "33d4f6de-c94e-48bd-8583-22306460a5f4",
       "name": "DelCartões",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "STozEMe82vC1nwYd",
-          "name": "Financeflow"
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -936,10 +936,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -64,
-        992
+        -288,
+        1600
       ],
-      "id": "5ac05972-5be9-42fb-8535-15de76b93f8a",
+      "id": "11b43533-5939-4e5d-bce7-7b2e7cdb3e80",
       "name": "Delcartoes"
     },
     {
@@ -952,10 +952,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -272,
-        992
+        -496,
+        1600
       ],
-      "id": "99c6d7e7-66ed-49c6-bfb5-8904d7900926",
+      "id": "d22138a0-a58e-4778-8b5b-979449cd96a3",
       "name": "DelCard",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
@@ -1241,8 +1241,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
       ]
     },
     "Delcartoes": {
@@ -1272,11 +1271,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "320c8003-0b20-4fbe-97a5-f5ebce0a2898",
+  "versionId": "3f48dc53-a13a-4af1-aca9-5c409da21e0b",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "uuQBOxRbnXcFHvee",
+  "id": "LbIec65ByAAFk2Ij",
   "tags": []
 }
