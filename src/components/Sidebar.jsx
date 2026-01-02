@@ -13,7 +13,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-[#3862b7] text-white flex flex-col h-screen">
+    <aside className="w-64 bg-[#172c52ff] text-white flex flex-col h-screen">
       <div className="px-6 py-4 border-b border-blue-800/40">
         <h2 className="text-xl font-bold">Finance-Flow</h2>
         <p className="text-xs text-blue-100">Painel pessoal</p>
@@ -29,7 +29,8 @@ export default function Sidebar() {
           open={open === "financeiro"}
           onClick={() => toggle("financeiro")}
         >
-          <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")} />
+          
+          <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}   className="!text-blue-300" />
           <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />
           <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
@@ -99,7 +100,7 @@ function MenuGroup({ icon, label, open, onClick, children }) {
 
 function SubItem({ icon, label, onClick }) {
   return (
-    <button onClick={onClick} className="flex items-center gap-3 px-3 py-1 text-sm text-blue-100 hover:bg-blue-700/30 rounded">
+    <button onClick={onClick} className="flex items-center gap-3 px-3 py-1 text-base text-blue-100 hover:bg-blue-700/30 rounded">
       {icon}{label}
     </button>
   );
