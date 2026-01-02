@@ -66,6 +66,7 @@ export default function Visaogeral() {
         receita: acc.receita + c.receita,
         despesa: acc.despesa + c.despesa,
         saldo: acc.saldo + c.saldo_final,
+        saldo_inicial :acc.saldo + c.saldo_final,
       }),
       { receita: 0, despesa: 0, saldo: 0 }
     );
@@ -93,7 +94,7 @@ export default function Visaogeral() {
 {/*<div className="bg- blue p-6 rounded-xl shadow mb-10 flex flex-col gap-2">*/}
 
   
-         <div className="bg-gray-100 rounded-xl shadow p-5  border-[12px] border-blue-800 mb-10 w-[1850px] flex items-center"> 
+         <div className="bg-gray-100 rounded-xl shadow p-5  border-[8px] border-blue-800 mb-4 w-full flex items-center"> 
  
 
   <div className="bg-gray-100 p-6 rounded-xl shadow mb-8 flex flex-col gap-2"> 
@@ -138,12 +139,12 @@ export default function Visaogeral() {
   <div className="bg-gray-300 p-4 rounded-xl shadow">
   <table className="w-full text-base border-collapse">
   <thead>
-    <tr className="bg-blue-300 font-black text-lg">
+    <tr className="bg-blue-800 font-black text-lg text-white">
       <th className="p-2 text-left border">Banco</th>
-      <th className="p-2 text-right border text-blue-800">Saldo Inicial</th>
-      <th className="p-2 text-right border text-green-900">Receita</th>
+      <th className="p-2 text-right border text-white">Saldo Inicial</th>
+      <th className="p-2 text-right border text-green-200">Receita</th>
       <th className="p-2 text-right border text-red-700">Despesa</th>
-      <th className="p-2 text-right border text-blue-700">Saldo Final</th>
+      <th className="p-2 text-right border text-white">Saldo Final</th>
     </tr>
   </thead>
 
@@ -189,26 +190,26 @@ export default function Visaogeral() {
   </tbody>
 
   <tfoot>
-    <tr className="bg-blue-300 font-black text-lg">
+    <tr className="bg-blue-800 font-black text-lg text-white">
       <td className="p-2">Total Geral</td>
 
-      <td className="p-2 text-right text-blue-700">-</td>
+      <td className="p-2 text-right text-white">-</td>
 
-      <td className="p-2 text-right text-green-700">
+      <td className="p-2 text-right text-white">
         {totais.receita.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         })}
       </td>
 
-      <td className="p-2 text-right text-red-600">
+      <td className="p-2 text-right text-red-200">
         {totais.despesa.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         })}
       </td>
 
-      <td className="p-2 text-right text-blue-700 font-bold">
+      <td className="p-2 text-right text-white font-bold">
         {totais.saldo.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",

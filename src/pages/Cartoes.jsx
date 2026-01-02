@@ -105,10 +105,8 @@ return (
 
     {/* FILTROS */}
      
-      <div className="bg-gray-100 rounded-xl shadow p-5  border-[12px] border-blue-800 mb-10 w-[1850px] flex items-center">
- 
- 
-    <div className="bg-gray-100 p-5 rounded-xl shadow flex items-end gap-6 mb-10  w-[1050px]  border-[2px]  border-gray-200">
+      <div className="bg-gray-100 rounded-xl shadow p-5  border-[8px] border-blue-800 mb-6 w-[1850px] flex items-center"> 
+    
 
       <div>
         <label className="text-base font-bold block mb-1 font-bold text-[#1e40af]">Status</label>
@@ -124,21 +122,22 @@ return (
       </div>
       
          <div className="flex gap-8 pt-8 pb-8 pl-1"> 
+           <div> 
             <button
               onClick={carregar}
               className="flex-1 bg-blue-600  w-[200px] text-white px-5 py-3 rounded-lg font-bold "
             >
               {carregando ? "Carregando..." : "Pesquisar"}
             </button>
-            
+            </div>
+            <div> 
             <button
               onClick={novoCartao}
               className="flex-1  bg-green-600   w-[200px] text-white px-5 py-3 rounded-lg font-bold"
             >
               Novo cartão
-            </button>
+            </button> 
           </div>
-        
       </div>
     </div>
 

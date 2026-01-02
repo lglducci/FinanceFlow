@@ -1,16 +1,17 @@
  import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
-
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 export default function RelatoriosSaldoPorConta() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [dados, setDados] = useState([]);
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const [dataIni, setDataIni] = useState(hojelocal());
-  const [dataFim, setDataFim] = useState(hojelocal());
+ const [contaId, setContaId] = useState("");
+  const [dataIni, setDataIni] = useState(hojeLocal());
+  const [dataFim, setDataFim] = useState(hojeLocal());
+   const [mostrarZeradas, setMostrarZeradas] = useState(false);
 
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -34,7 +35,8 @@ const navigate = useNavigate();
           body: JSON.stringify({
             empresa_id,
             data_ini: dataIni,
-            data_fim: dataFim
+            data_fim: dataFim,
+            filtro: contaId
           })
         }
       );
@@ -48,83 +50,93 @@ const navigate = useNavigate();
     }
   }
  
-
-
-  const filtrados = dados.filter(item =>
-    item.codigo.includes(filtro) ||
-    item.nome.toLowerCase().includes(filtro.toLowerCase())
+ 
+  function linhaZerada(c) {
+  return (
+    Number(c.saldo_inicial || 0) === 0 &&
+    Number(c.total_debito || 0) === 0 &&
+    Number(c.total_credito || 0) === 0 &&
+    Number(c.saldo || 0) === 0  
   );
+}
+
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
 
       <h2 className="text-xl font-bold mb-4">📊 Saldo por Conta</h2>
+ 
+{/* 🔎 FILTROS */}
+<div className="bg-white rounded-xl p-4 shadow mb-6">
 
-      {/* 🔎 FILTROS */}
-      <div className="flex gap-4 items-end mb-6">
-        <div>
-          <label  className="block font-bold text-[#1e40af]">
-            Data inicial
-          </label>
-          <input
-            type="date"
-            value={dataIni}
-            onChange={e => setDataIni(e.target.value)}
-             className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
+  {/* LINHA 1 — filtros e botões */}
+  <div className="flex flex-wrap gap-4 items-end">
+    <div>
+      <label className="block font-bold text-[#1e40af]">Data inicial</label>
+      <input
+        type="date"
+        value={dataIni}
+        onChange={(e) => setDataIni(e.target.value)}
+        className="border rounded-lg px-3 py-2 border-yellow-500"
+      />
+    </div>
 
-        <div>
-          <label className="block font-bold text-blue-700">
-            Data final
-          </label>
-          <input
-            type="date"
-            value={dataFim}
-            onChange={e => setDataFim(e.target.value)} 
-             className="border rounded px-3 py-2 border-yellow-500"
-          />
-        </div>
+    <div>
+      <label className="block font-bold text-[#1e40af]">Data final</label>
+      <input
+        type="date"
+        value={dataFim}
+        onChange={(e) => setDataFim(e.target.value)}
+        className="border rounded-lg px-3 py-2 border-yellow-500"
+      />
+    </div>
 
-        <div>
-          <label className="block font-bold text-blue-700">
-            Conta
-          </label>
-          <input
-            type="text"
-            placeholder="Código ou nome"
-            value={filtro}
-            onChange={e => setFiltro(e.target.value)} 
-            className="border rounded px-3 py-2 border-yellow-500 w-64"
-          />
-        </div>
+    <div>
+      <label className="block font-bold text-[#1e40af]">Conta (opcional)</label>
+      <input
+        type="text"
+        placeholder="Código ou nome"
+        value={contaId}
+        onChange={(e) => setContaId(e.target.value)}
+        className="border rounded-lg px-3 py-2 border-yellow-500 w-64"
+      />
+    </div>
 
-        <button
-          onClick={consultar}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold"
-        >
-          Consultar
-        </button>
+    <button
+      onClick={consultar}
+      className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold"
+    >
+      Consultar
+    </button>
 
-        {/* 🖨️ IMPRIMIR */}
-      <div className="flex justify-end mt-6">
-        <button
-          onClick={() => window.print()}
-          className="bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold"
-        >
-          🖨️ Imprimir
-        </button> 
-      </div>
+    <button
+      onClick={() => window.print()}
+      className="bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold"
+    >
+      🖨️ Imprimir
+    </button>
 
-       <button
-          onClick={() =>   navigate("/reports") }
-          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-bold"
-        >   
-          Voltar 
-        </button>
-        
+    <button
+      onClick={() => navigate("/reports")}
+      className="bg-gray-400 text-white px-4 py-2 rounded-lg font-bold"
+    >
+      Voltar
+    </button>
+  </div>
 
-      </div>
+  {/* LINHA 2 — checkbox */}
+  <div className="mt-4">
+    <label className="flex items-center gap-2 cursor-pointer font-semibold">
+      <input
+        type="checkbox"
+        checked={!mostrarZeradas}
+        onChange={() => setMostrarZeradas(!mostrarZeradas)}
+      />
+      Ocultar contas sem movimento
+    </label>
+  </div>
+
+</div>
 
       {loading && (
         <p className="text-blue-600 font-semibold">Carregando...</p>
@@ -137,16 +149,23 @@ const navigate = useNavigate();
           <tr className="bg-blue-600 text-white">
             <th className="p-2 text-left">Código</th>
             <th className="p-2 text-left">Conta</th>
+                <th className="p-2 text-left">Saldo Inicial</th>
             <th className="p-2 text-right">Débito</th>
             <th className="p-2 text-right">Crédito</th>
             <th className="p-2 text-right">Saldo</th>
           </tr>
         </thead>
         <tbody>
-          {filtrados.map((c, i) => (
-            <tr key={i} className="border-b">
+            
+          {  dados.filter((c) => mostrarZeradas || !linhaZerada(c)).map((c, idx) => (
+            <tr key={idx} className="border-b">
+              
               <td className="p-2">{c.codigo}</td>
               <td className="p-2">{c.nome}</td>
+              <td className="p-2 text-right">
+                
+                   {fmt.format(c.saldo_inicial)}
+              </td>
               <td className="p-2 text-right">
                 
                    {fmt.format(c.total_debito)}

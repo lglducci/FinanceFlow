@@ -100,8 +100,8 @@ export default function ConsultaTransacaoCartao() {
       <h2 className="text-2xl font-bold mb-4">Transações de Cartão</h2>
 
       {/* FILTROS  */}
-      <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl mb-10 border border-[12px] border-blue-800">
-        <div className="bg-gray-100 p-2.5 rounded-lg mb-10 flex flex-col md:flex-row md:items-end gap-4">
+      <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl mb-4 border border-[8px] border-blue-800">
+        <div className="bg-gray-100 p-2.5 rounded-lg mb-4 flex flex-col md:flex-row md:items-end gap-2">
           <div className="flex flex-col">
             <label className="font-bold mb-1 text-[#1e40af]">Cartão</label>
             <select
@@ -167,17 +167,17 @@ export default function ConsultaTransacaoCartao() {
       {dados && !dados.erro && dados.fatura && (
         <>
           {/* Painel superior */}
-          <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
+          <div className="bg-gray-100 shadow rounded-lg p-3 border-l-4 border-gray-600">
             {/* GRID COM 2 COLUNAS */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
               {/* COLUNA 1 – PAINEL DA FATURA */}
-              <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
-                <h2 className="text-lg font-bold text-gray-800 mb-3">
+              <div className="bg-gray-100 shadow rounded-lg p-3 border-l-4 border-gray-600">
+                <h2 className="text-lg font-bold text-gray-800 mb-2">
                   Cartão:{" "}
                   <span className="text-blue-700">{dados.cartao}</span>
                 </h2>
 
-                <div className="grid grid-cols-2 gap-4 text-gray-700">
+                <div className="grid grid-cols-4 gap-3 text-gray-700">
                   <div className="p-3 bg-gray-100 rounded">
                     <span className="font-bold block text-sm text-gray-600">
                       Mês referência
@@ -227,28 +227,18 @@ export default function ConsultaTransacaoCartao() {
                       )}
                     </span>
                   </div>
-
-                  <div className="p-3 bg-gray-100 rounded">
-                    <span className="font-semibold block text-sm text-gray-600">
-                      Soma Transações
-                    </span>
-                    <span className="text-lg font-bold text-green-700">
-                      {Number(
-                        dados.fatura.soma_transacoes
-                      ).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </span>
-                  </div>
+ 
                 </div>
               </div>
 
               {/* COLUNA 2 – DADOS DO CARTÃO */}
-              <div className="bg-white shadow rounded-lg p-4 border-l-4 border-blue-700">
-                <h3 className="font-bold text-lg text-blue-700 mb-2">
+               
+              <div className="bg-gray-100 shadow rounded-lg p-2 border-l-4 border-blue-700">
+                 <h3 className="font-bold text-lg text-blue-700 mb-2">
                   Informações do Cartão
                 </h3>
+                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-2"> 
+                
                 <p>
                   <strong>Nome : </strong>
                   {cartaoSelecionado?.nome || "-"}
@@ -285,31 +275,17 @@ export default function ConsultaTransacaoCartao() {
                 <p>
                   <strong>Nome no Cartão :</strong>{" "}
                   {cartaoSelecionado?.nomecartao || "-"}
-                </p>
-                <p>
-                  <strong>Vencimento (MM/AA) :</strong>{" "}
-                  {cartaoSelecionado?.Vencimento || "-"}
-                </p>
-
-                <p
-                  className={`font-bold mt-2 ${
-                    cartaoSelecionado?.status === "ativo"
-                      ? "text-green-700"
-                      : "text-red-600"
-                  }`}
-                >
-                  Status : {cartaoSelecionado?.status || "-"}
-                </p>
+                </p> 
               </div>
             </div>
           </div>
-
+           </div>
           {/* Tabela */}
-          <div className="bg-gray-300 p-4 rounded-xl shadow">
+          <div className="bg-gray-100 p-4 rounded-xl shadow">
             <div className="bg-white p-4 rounded-xl shadow">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-blue-300 font-black text-base">
+                  <tr className="bg-blue-900 font-black text-base text-white">
                     <th className="p-2 text-left border">Data</th>
                     <th className="p-2 text-left border">Descrição</th>
                     <th className="p-2 text-right border text-blue-800">

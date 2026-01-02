@@ -102,10 +102,10 @@ const editarConta = (conta) => {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Contas Financeiras e Saldos</h2>
      
-      <div className="bg-gray-100 p-6 rounded shadow mb-6  border-[12px] border-blue-800">
-        <p className="font-bold text-base gray-700 mb-2  text-[#1e40af]">Períodos</p>
+      <div className="bg-gray-100 p-6 rounded shadow mb-6  border-[8px] border-blue-800">
+        <p className="font-bold text-base gray-100 mb-2  text-[#1e40af]">Períodos</p>
         <div className="flex gap-6 text-base  font-bold  mb-4">
-           <div className="flex gap-4 text-base font-bold flex-wrap"></div>
+         
            
           {["mes", "15", "semana", "hoje"].map((tipo) => (
             <label key={tipo} className="flex text-base items-center gap-2  text-[#1e40af]">

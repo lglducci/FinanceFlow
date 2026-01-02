@@ -21,7 +21,7 @@ export default function RelatoriosRazao() {
   const [contaId, setContaId] = useState("");
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
-
+ const [mostrarZeradas, setMostrarZeradas] = useState(false);
  const [tipo, setTipo] = useState("r"); // r = detalhado (default)
 
   const location = useLocation();
@@ -119,6 +119,16 @@ function trocarTipo(novoTipo) {
   // setSelecionado(null);
 }
 
+function linhaZerada(l) {
+  return (
+    Number(l.saldo_inicial || 0) === 0 &&
+    Number(l.debito || 0) === 0 &&
+    Number(l.credito || 0) === 0 &&
+    Number(l.saldo || 0) === 0  
+  );
+}
+
+
 
   return (
     <div className="p-6">
@@ -126,101 +136,112 @@ function trocarTipo(novoTipo) {
 
        
         {/* FILTROS */}
-        <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
-          <div>
-            <label className="block font-bold text-[#1e40af]"> Data inicial </label>
+        <div className="bg-white rounded-xl p-4 shadow mb-6 space-y-4">
+
+  {/* 🔹 LINHA 1 – filtros principais */}
+  <div className="flex flex-wrap gap-4 items-end">
+    <div>
+      <label className="block font-bold text-[#1e40af]">Data inicial</label>
+      <input
+        type="date"
+        value={dataIni}
+        onChange={(e) => setDataIni(e.target.value)}
+        className="border rounded-lg px-3 py-2 border-yellow-500"
+      />
+    </div>
+
+    <div>
+      <label className="block font-bold text-[#1e40af]">Data final</label>
+      <input
+        type="date"
+        value={dataFim}
+        onChange={(e) => setDataFim(e.target.value)}
+        className="border rounded-lg px-3 py-2 border-yellow-500"
+      />
+    </div>
+
+    <div>
+      <label className="block font-bold text-[#1e40af]">Conta (opcional)</label>
+      <input
+        type="text"
+        placeholder="Código ou nome"
+        value={contaId}
+        onChange={(e) => setContaId(e.target.value)}
+        className="border rounded-lg px-3 py-2 border-yellow-500 w-64"
+      />
+    </div>
+
+    <button
+      onClick={consultar}
+      className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
+    >
+      Consultar
+    </button>
+
+    <button
+      onClick={() => window.print()}
+      className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
+    >
+      🖨️ Imprimir
+    </button>
+
+    <button
+      onClick={() => navigate("/reports")}
+      className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+    >
+      Voltar
+    </button>
+  </div>
+
+  {/* 🔹 LINHA 2 – opções do relatório */}
+  <div className="flex flex-wrap gap-6 items-center text-sm">
+
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
-              type="date"
-              value={dataIni}
-              onChange={(e) => setDataIni(e.target.value)}
-              className="border rounded-lg px-3 py-2 border-yellow-500"
+              type="radio"
+              name="tipoRelatorio"
+              checked={tipo === "r"}
+              onChange={() => trocarTipo("r")}
             />
-          </div>
+            Razão detalhado
+          </label>
 
-          <div>
-            <label className="block font-bold text-[#1e40af]"> Data final  </label>
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
-              type="date"
-              value={dataFim}
-              onChange={(e) => setDataFim(e.target.value)}
-              className="border rounded-lg px-3 py-2 border-yellow-500"
+              type="radio"
+              name="tipoRelatorio"
+              checked={tipo === "d"}
+              onChange={() => trocarTipo("d")}
             />
-          </div>
+            Sintético diário
+          </label>
 
-          <div>
-            <label className=" block font-bold text-[#1e40af]"> Conta (opcional)  </label>
+          <label className="flex items-center gap-2 cursor-pointer">
             <input
-              type="text"
-              placeholder="Código ou nome"
-              value={contaId}
-              onChange={(e) => setContaId(e.target.value)}
-              className="border rounded-lg px-3 py-2 border-yellow-500"
+              type="radio"
+              name="tipoRelatorio"
+              checked={tipo === "m"}
+              onChange={() => trocarTipo("m")}
             />
-          </div>
+            Sintético mensal
+          </label>
 
-          
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!mostrarZeradas}
+            onChange={() => setMostrarZeradas(!mostrarZeradas)}
+          />
+          Ocultar contas sem movimento
+        </label>
 
-          <button
-            onClick={consultar}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
-          >
-            Consultar
-          </button>
+      </div>
+    
 
-              <div className="flex gap-6 items-center mt-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="tipoRelatorio"
-                    value="r"
-                    checked={tipo === "r"}
-                 //   onChange={() => setTipo("r")}
-                     onChange={() => trocarTipo("r")}
-                  />
-                  Razão detalhado
-                </label>
-
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="tipoRelatorio"
-                    value="d"
-                    checked={tipo === "d"}
-                  //  onChange={() => setTipo("d")}
-                     onChange={() => trocarTipo("d")}
-                  />
-                  Sintético diário
-                </label>
-
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="tipoRelatorio"
-                    value="m"
-                    checked={tipo === "m"}
-                    //onChange={() => setTipo("m")}
-                     onChange={() => trocarTipo("m")}
-                  />
-                  Sintético mensal
-                </label>
-              </div>
+ 
+        </div>
  
 
-          <button
-            onClick={() => window.print()}
-            className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
-          >
-            🖨️ Imprimir
-          </button>
-
-            <button
-          onClick={() =>   navigate("/reports") }
-          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
-            >
-            Voltar 
-            </button>
-
-        </div>
        <div id="print-area">
         {/* TABELA */}
         <div className="bg-white rounded-xl shadow overflow-x-auto">
@@ -240,7 +261,8 @@ function trocarTipo(novoTipo) {
               </tr>
             </thead>
             <tbody>
-              {dados.map((l, idx) => (
+               { dados.filter((l) => mostrarZeradas || !linhaZerada(l)).map((l, idx) => (
+
                 <tr key={idx} className="border-b"> 
 
                  {tipo !== "m" && (<td   className="p-2 font-bold font-size: 16px">{formatarData(l.data_mov)}</td>)} 

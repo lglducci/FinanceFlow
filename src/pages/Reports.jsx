@@ -33,6 +33,42 @@ const IconReport = () => (
   </svg>
 );
 
+const IconSigma = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M18 4H6l6 8-6 8h12" />
+  </svg>
+);
+
+const IconCashFlow = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M3 12h18" />
+    <path d="M7 8l-4 4 4 4" />
+    <path d="M17 16l4-4-4-4" />
+  </svg>
+);
+ 
+const IconDocument = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M6 2h9l5 5v15H6z" />
+    <path d="M9 12h6M9 16h6" />
+  </svg>
+);
+
+const IconJournal = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M5 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5z" />
+    <path d="M9 3v18" />
+    <path d="M12 8h4M12 12h4M12 16h4" />
+  </svg>
+);
+
+const IconBars = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <rect x="4" y="10" width="3" height="10" />
+    <rect x="10" y="6" width="3" height="14" />
+    <rect x="16" y="3" width="3" height="17" />
+  </svg>
+);
 
 export default function Reports() {
   const navigate = useNavigate();
@@ -63,13 +99,13 @@ export default function Reports() {
       title: "Saldos por Conta",
       desc: "Saldo consolidado por conta financeira",
       path: "/relatorios/saldoporconta",
-      icon: <IconBalance />,
+      icon: <IconCashFlow />,
     },
     {
       title: "Diário Contábil",
       desc: "Lançamentos contábeis do período",
       path: "/relatorios/diario",
-       icon: <IconBook />,
+       icon: <IconJournal />,
     },
     {
       title: "Balancete",
@@ -81,7 +117,7 @@ export default function Reports() {
       title: "DRE",
       desc: "Resultado do exercício",
       path: "/relatorios/dre",
-        icon: <IconChart />,
+        icon: <IconSigma />,
     },
     {
       title: "Apuração PIS/COFINS",
@@ -93,14 +129,14 @@ export default function Reports() {
       title: "Relação Razão",
       desc: " Lançamentos detalhados por conta",
       path: "/relatorios/razao",
-       icon: <IconBook />,
+       icon: <IconDocument />,
     },
 
      {
       title: "Relação Balanço",
       desc: " Lançamentos detalhados por conta",
       path: "/relatorios/balanco",
-        icon: <IconBalance />,
+        icon: <IconBars />,
     },
       {
       title: "Relação KPIs",
@@ -119,14 +155,15 @@ export default function Reports() {
 
   return (
     <div>
+      <div className="bg-[#ffffff] min-h-screen p-6"> 
       <h1 className="text-2xl font-bold mb-6">Relatórios</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+ 
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"> 
         {cards.map((c) => (
          <div
             key={c.title}
             onClick={() => navigate(c.path)}
-            className="cursor-pointer rounded-xl border border-blue-400 bg-gray-100 p-5 shadow hover:shadow-lg transition"
+            className="cursor-pointer rounded-xl border border-blue-500 bg-gray-100 p-5 shadow hover:shadow-lg transition"
           >
             <div className="mb-3">{c.icon}</div>
 
@@ -140,7 +177,7 @@ export default function Reports() {
           </div>
 
         ))}
-      </div>
+      </div></div>
     </div>
   );
 }

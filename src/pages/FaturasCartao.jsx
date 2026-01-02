@@ -125,7 +125,7 @@ const btnPadrao =
     <h2 className="text-xl font-bold mb-4"> Pagar Faturas </h2>
 
     {/* CONTAINER PRINCIPAL */}
-    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-6 border-[10px] border-blue-800 mb-6">
+    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-6 border-[8px] border-blue-800 mb-2">
 
       {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -137,7 +137,7 @@ const btnPadrao =
 
             {/* CARTÃO */}
             <div>
-                <label className="block font-bold mb-2 text-blue-900">Cartão</label>
+                 <label className="font-bold text-base block mb-1 text-[#1e40af]">Cartão</label>
                 <select
                   value={cartao_id}
                   onChange={(e) => setCartaoId(Number(e.target.value))}
@@ -152,7 +152,7 @@ const btnPadrao =
 
             {/* STATUS */}
             <div>
-                <label className="block font-bold mb-2 text-blue-900">Status</label>
+                <label className="font-bold text-base block mb-1 text-[#1e40af]"> Status</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
@@ -166,7 +166,7 @@ const btnPadrao =
 
             {/* MÊS */}
             <div>
-                <label className="block font-bold mb-2 text-blue-900">Mês referência</label>
+                  <label className="font-bold text-base block mb-1 text-[#1e40af]"> Mês referência</label>
                 <input
                   type="month"
                   value={mes}
@@ -177,7 +177,7 @@ const btnPadrao =
 
             {/* CONTA BANCÁRIA */}
             <div>
-                <label className="block font-bold mb-2 text-blue-900">Conta bancária</label>
+                  <label className="font-bold text-base block mb-1 text-[#1e40af]"> Conta bancária</label>
                 <select
                   value={conta_id}
                   onChange={(e) => {
@@ -249,12 +249,12 @@ const btnPadrao =
             </div>
 
           </div>
-
+     </div>
       {/* ==================== LISTAGEM DAS FATURAS ==================== */}
       <div className="bg-white rounded-xl shadow border p-4">
           <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
         <table className="w-full text-base">
-          <thead className="bg-blue-200">
+          <thead className="bg-blue-900 text-white">
             <tr>
               <th className="px-3 py-2 text-center font-bold">Sel</th>
               <th className="px-3 py-2 text-left font-bold">ID</th>
@@ -318,6 +318,6 @@ const btnPadrao =
       </div>
     </div>
     </div>
-      </div>
+      
   );
 }

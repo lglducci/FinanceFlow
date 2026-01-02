@@ -96,21 +96,23 @@ export default function FornecedorCliente() {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Fornecedores / Clientes</h2>
 
+      
+
       {/* FILTRO */}
        
-       <div className="bg-gray-50 p-5 rounded-xl shadow border border flex items-end border-[10px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
-        <div>
-          <label className="text-base font-bold block mb-1 text-[#1e40af]">Tipo</label>
-          <select
-            className="border font-bold rounded-lg px-3 py-2 w-48 text-base border-yellow-500"
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
-          >   
-            <option value="fornecedor">Fornecedor</option>
-            <option value="cliente">Cliente</option> 
-             <option value="ambos">Ambos</option>
-          </select>
-        </div>
+       <div className="bg-gray-50 p-5 rounded-xl shadow border border flex items-end border-[8px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
+            <div>
+              <label className="text-base font-bold block mb-1 text-[#1e40af]">Tipo</label>
+              <select
+                className="border font-bold rounded-lg px-3 py-2 w-48 text-base border-yellow-500"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+              >   
+                <option value="fornecedor">Fornecedor</option>
+                <option value="cliente">Cliente</option> 
+                <option value="ambos">Ambos</option>
+              </select>
+            </div>
        
           <div>
           <label  className="block font-bold text-[#1e40af]" > Pesquisa - Nome ou CNPJ </label>
@@ -140,11 +142,12 @@ export default function FornecedorCliente() {
         </button>
       </div>
 
-      {/* LISTAGEM EM TABELA (FIGURA 2) */}
-      <div className="bg-white shadow rounded-lg overflow-hidden mt-6">
+      {/* LISTAGEM EM TABELA (FIGURA 2) */} 
+      
+      <div className="bg-gray-500 shadow rounded-lg overflow-hidden mt-6">
         <table className="w-full text-base border-collapse">
           <thead>
-            <tr className="bg-blue-300 text-left font-bold text-lg">
+            <tr className="bg-blue-900 text-left font-bold text-lg text-white">
               <th className="p-2 border">Nome</th>
               <th className="p-2 border">Tipo</th>
               <th className="p-2 border">Documento</th>
@@ -166,15 +169,15 @@ export default function FornecedorCliente() {
                   key={c.id}
                   className={i % 2 === 0 ? "bg-white" : "bg-gray-100"}
                 >
-                  <td className="p-2 border font-semibold">{c.nome}</td>
+                  <td className="p-2 border font-bold">{c.nome}</td>
 
                   <td className={`p-2 border ${tipoColor}`}>
                     {c.tipo.charAt(0).toUpperCase() + c.tipo.slice(1)}
                   </td>
 
-                  <td className="p-2 border">{c.cpf_cnpj}</td>
+                  <td className="p-2 border font-bold ">{c.cpf_cnpj}</td>
 
-                  <td className="p-2 border">{c.telefone}</td>
+                  <td className="p-2 border font-bold ">{c.telefone}</td>
 
                   <td className="p-4 border text-center">
                   <div className="flex justify-center items-center gap-6">

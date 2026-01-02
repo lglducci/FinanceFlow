@@ -96,17 +96,14 @@ export default function ContasGerenciais() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between mb-5">
-        <h1 className="text-2xl font-bold text-blue-600">Contas Gerenciais</h1>
-
-        
-      </div>
+    
+         <h2 className="text-2xl font-bold mb-4"> Contas Gerenciais </h2> 
+       
 
       {/* FILTRO */}
       
-      <div className="bg-gray-100 rounded-xl shadow p-8  border-[12px] border-blue-800 mb-8 w-[1850px] flex items-center gap-6">
-               
-
+        <div className="bg-gray-150 p-5 rounded-xl shadow border border  flex items-end border-[8px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
+           <div> 
              <label className="block font-bold text-[#1e40af]"> Tipo </label>
             <select 
               value={tipo}
@@ -117,7 +114,9 @@ export default function ContasGerenciais() {
               <option value="entrada">Entrada</option>
               <option value="saida">Saída</option>
             </select>
-
+          </div>
+              <div> 
+             <label className="block font-bold text-[#1e40af]"> Nome ou Tipo </label>
             <input
               type="text"
               placeholder="Buscar por nome, tipo, grupo..."
@@ -125,7 +124,7 @@ export default function ContasGerenciais() {
               onChange={(e) => setFiltro(e.target.value)}
               className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
             />
-
+            </div>
 
             <button
               onClick={carregar}
@@ -150,11 +149,13 @@ export default function ContasGerenciais() {
       {loading && <p>Carregando…</p>}
 
       {/* TABELA */}
-       <div className="bg-gray-300 p-8 rounded-xl shadow"> 
-      <table className="w-full border">
-        <thead className="bg-blue-600 text-white">
-          <tr>
-            <th className="p-1 border text-right border">ID</th>
+      
+         
+       <div className="bg-gray-500 shadow rounded-lg overflow-hidden mt-6">
+        <table className="w-full text-base border-collapse">
+          <thead>
+            <tr className="bg-blue-900 text-left font-bold text-lg text-white">
+            <th className="p-1 border text-left border">ID</th>
             <th className="p-1 border text-left border">Nome</th>
             <th className="p-1 border text-left border">Tipo</th>
             <th className="p-1 border text-left border">Grupo Contábil</th>
