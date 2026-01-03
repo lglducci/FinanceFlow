@@ -125,7 +125,7 @@ const btnPadrao =
     <h2 className="text-xl font-bold mb-4"> Pagar Faturas </h2>
 
     {/* CONTAINER PRINCIPAL */}
-    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-6 border-[8px] border-blue-800 mb-2">
+    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-6 border-[4px] border-blue-900 mb-2">
 
       {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -250,8 +250,10 @@ const btnPadrao =
 
           </div>
      </div>
+
+ 
       {/* ==================== LISTAGEM DAS FATURAS ==================== */}
-      <div className="bg-white rounded-xl shadow border p-4">
+      <div className="bg-white rounded-xl shadow  border-[4px] border-gray-500 p-4">
           <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
         <table className="w-full text-base">
           <thead className="bg-blue-900 text-white">

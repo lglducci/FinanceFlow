@@ -100,7 +100,7 @@ export default function FornecedorCliente() {
 
       {/* FILTRO */}
        
-       <div className="bg-gray-50 p-5 rounded-xl shadow border border flex items-end border-[8px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
+       <div className="bg-gray-50 p-5 rounded-xl shadow border border flex items-end border-[4px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
             <div>
               <label className="text-base font-bold block mb-1 text-[#1e40af]">Tipo</label>
               <select
@@ -144,7 +144,7 @@ export default function FornecedorCliente() {
 
       {/* LISTAGEM EM TABELA (FIGURA 2) */} 
       
-      <div className="bg-gray-500 shadow rounded-lg overflow-hidden mt-6">
+      <div className="bg-gray-300 shadow rounded-lg overflow-hidden mt-6 border-[4px] border-gray-500">
         <table className="w-full text-base border-collapse">
           <thead>
             <tr className="bg-blue-900 text-left font-bold text-lg text-white">
@@ -167,7 +167,7 @@ export default function FornecedorCliente() {
               return (
                 <tr
                   key={c.id}
-                  className={i % 2 === 0 ? "bg-white" : "bg-gray-100"}
+                  className={i % 2 === 0 ? "bg-white" : "bg-gray-200"}
                 >
                   <td className="p-2 border font-bold">{c.nome}</td>
 

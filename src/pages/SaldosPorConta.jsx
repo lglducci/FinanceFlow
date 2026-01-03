@@ -102,7 +102,7 @@ const editarConta = (conta) => {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Contas Financeiras e Saldos</h2>
      
-      <div className="bg-gray-100 p-6 rounded shadow mb-6  border-[8px] border-blue-800">
+      <div className="bg-gray-100 p-6 rounded shadow mb-6  border-[4px] border-blue-800 ">
         <p className="font-bold text-base gray-100 mb-2  text-[#1e40af]">Períodos</p>
         <div className="flex gap-6 text-base  font-bold  mb-4">
          
@@ -169,10 +169,9 @@ const editarConta = (conta) => {
         className={`bg-white rounded-xl shadow-lg p-5 border-l-8 
           ${positivo ? "border-green-600" : "border-red-600"} 
           transition-all hover:shadow-xl`}
-      >
-
+      > 
         {/* Título + Editar */}
-        <div className="flex justify-between items-center mb-3">
+        <div className="flex justify-between items-center mb-3 ">
           <h3 className="text-xl font-bold text-blue-800 flex items-center gap-2">
             🏦 {c.conta_nome}
           </h3>
@@ -186,7 +185,7 @@ const editarConta = (conta) => {
         </div>
 
         {/* Dados bancários */}
-        <div className="text-sm text-gray-600 mb-3">
+        <div className="text-sm text-gray-600 mb-3 ">
           <p><strong>Banco:</strong> {c.nro_banco ?? "-"}</p>
           <p><strong>Agência:</strong> {c.agencia ?? "-"}</p>
           <p><strong>Conta:</strong> {c.conta ?? "-"}</p>

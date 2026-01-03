@@ -1,4 +1,4 @@
-  import { useState, useEffect } from "react";
+ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 
@@ -180,13 +180,13 @@ const [fornecedores, setFornecedores] = useState([]);
   }
 };
 
-{/*} 👉 ADICIONE SÓ ISSO
+{/*} 👉 ADICIONE SÓ ISSO*/}
  useEffect(() => {
   if (dataIni && dataFim) {
     carregar();
     pesquisar();     // lançamentos
   }
-}, [dataIni, dataFim, contaId]);*/}
+}, [dataIni, dataFim, contaId]); 
 
 
 
@@ -214,11 +214,11 @@ const [fornecedores, setFornecedores] = useState([]);
       }, [contas]);
 
 
-      useEffect(() => {
+   {/*}   useEffect(() => {
   if (contaId) {
     carregarSaldoConta(contaId);
   }
-}, [contaId]);
+}, [contaId]);*/}
 
 
   useEffect(() => {
@@ -360,7 +360,7 @@ useEffect(() => {
 
       <div className="mb-2 grid grid-cols-1 lg:grid-cols-1 gap-4"> 
       
-      <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[8px] border-blue-800 mb-2"> 
+      <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-900 mb-2"> 
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
 
     {/* COLUNA 1 - FILTROS  
@@ -577,20 +577,19 @@ useEffect(() => {
 
 
   {/* TABELA */} 
-  <table className="w-full text-sm">
+  <table className="w-full text-sm   ">
   
   </table>
 </div>
 
       {/* TABELA  
       
-      <div className="bg-white rounded-xl shadow p-4">* 
-       <div className="bg-gray-300 p-4 rounded-xl shadow">*/}
-           <div className="bg-gray-200 p-4 rounded-xl shadow border-[4px] border-gray-500"> 
+      <div className="bg-white rounded-xl shadow p-4">*/}
+          <div className="bg-gray-200 p-4 rounded-xl border-[4px] border-gray-300">
         {lista.length === 0 ? (
-          <p className="text-gray-600 text-base">Nenhum lançamento encontrado.</p>
+          <p className="text-gray-300 text-base">Nenhum lançamento encontrado.</p>
         ) : (
-          <table className="w-full text-sm">
+          <table className="w-full text-sm ">
             <thead>
               <tr className="border-b bg-blue-900 text-base text-white">
                 <th className="text-left py-2 px-2 w-10 text-base">ID</th>

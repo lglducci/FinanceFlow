@@ -26,7 +26,7 @@ export default function ContasPagar() {
   const [lista, setLista] = useState([]);
   const [fornecedores, setFornecedores] = useState([]);
 
-  const [status, setStatus] = useState("aberto");
+  const [status, setStatus] = useState("0");
   const [fornecedor_id, setFornecedorId] = useState(0);
 
    const [contas, setContas] = useState([]);
@@ -301,7 +301,7 @@ async function pagarSelecionadas() {
     
 
     {/* CONTAINER PRINCIPAL */}
-    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[8px] border-blue-800 mb-4">
+    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-4">
 
       {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -349,10 +349,11 @@ async function pagarSelecionadas() {
                 value={status}
                 onChange={e => setStatus(e.target.value)}
                 className="border font-bold rounded px-3 py-2 w-full border-yellow-500"
-              >
+              >  
+                 <option value="0">Todos</option>
                 <option value="aberto">Aberto</option>
                 <option value="pago">Pago</option>
-                <option value="0">Todos</option>
+                
               </select>
             </div>
 
@@ -516,7 +517,7 @@ async function pagarSelecionadas() {
     {/* LISTA */}
     {loading && <p>Carregando...</p>}
 
-    <div className="bg-gray-300 rounded-xl shadow border border-gray-200 overflow-x-auto">
+    <div className="bg-gray-300 rounded-xl shadow  border-[4px] border-gray-500 overflow-x-auto">
        <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
       <table className="w-full text-base">
         <thead className="bg-blue-900 text-white">

@@ -137,17 +137,25 @@ const [filtro, setFiltro] = useState("");
   return (
     <div style={{ width: "100%", padding: 20 }}>
 
+          <h2   style={{
+        padding: 2,
+        width: "55%",
+        maxWidth: 1250, 
+        marginTop: 10,
+      }} className="text-xl font-bold mb-4 text-[#1d1d93ff]"> Modelo Contábil</h2>
+    
+
       {/* ============================================= */}
       {/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}
       {/* ============================================= */}
       <div
         style={{
           width: "100%",
-          background: "#2246c7ff",      // azul grande — igual da foto
-          border: "4px solid #2464d2ff",
+          background: "#f7f7f7ff",      // azul grande — igual da foto
+          border: "4px solid #1d1d93ff",
           borderRadius: 12,
-          padding: 10,
-          marginBottom: 30,
+          padding: 4,
+          marginBottom: 16,
         }}
       >
         {/* Faixa amarela token/descrição */}
@@ -159,21 +167,21 @@ const [filtro, setFiltro] = useState("");
 {/* ============================================= */}
      <div
   style={{
-    width: "100%",
+    width: "83%",
     background: "#f7f9ff", // azul MUITO claro (quase branco)
-    border: "3px solid #bcd0ff", // borda azul clara
+    border: "4px solid #eff1f7ff", // borda azul clara
     borderRadius: 12,
-    padding: 20,
-    marginBottom: 30,
+    padding: 10,
+    marginBottom: 16,
   }}
 >
 
   {/* QUADRO INTERNO BRANCO COM O BOTÃO */}
   <div
     style={{
-      background: "#d7e2f3ff",
-      border: "2px solid #1414d2ff",
-      padding: 20,
+      background: "#b7d5f0ff",
+      border: "4px solid #1d1d93ff",
+      padding: 10,
       borderRadius: 10,
       display: "flex",
       alignItems: "center",
@@ -201,8 +209,8 @@ const [filtro, setFiltro] = useState("");
      
        onClick={() => navigate("/novo-modelo")}
       style={{
-        padding: "10px 22px",
-        background: "#003ba2",
+        padding: "8px 22px",
+        background: "#1414d2ff",
         color: "white",
         border: "none",
         borderRadius: 8,
@@ -220,9 +228,10 @@ const [filtro, setFiltro] = useState("");
 
               {/* 🔍 FILTRO DE PESQUISA */}
               <div
-                className="bg-gray-100 rounded-xl shadow p-6 border-[6px] border-blue-800 mb-6 flex items-center gap-6"
+                className="bg-gray-100 rounded-xl shadow p-6 border-[3px] border-blue-800 mb-4 flex items-center gap-6 w-4/5 ml-4" 
+
               >
-                <label className="font-bold text-[#1e40af]">
+                <label className="font-bold text-[#1414d2ff]">
                   Buscar:
                 </label>
 
@@ -239,7 +248,8 @@ const [filtro, setFiltro] = useState("");
 
         {/* TABELA DE LINHAS DENTRO DO BLOCO AZUL */}
         {linhas.length > 0 && (
-          <table  className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table  className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse"  }}> 
+            
             <thead>
               <tr>
                 <th>Conta ID</th>
@@ -275,9 +285,9 @@ const [filtro, setFiltro] = useState("");
       {/* ============================================= */}
       {/*   PARTE DE BAIXO — LISTA DE MODELOS           */}
       {/* ============================================= */}
-      <h2>Mapeamento Contábil</h2>
+     
 
-      <table  className="tabela tabela-mapeamento" 
+      <table   className="tabela tabela-mapeamento border-[4px] border-gray-500"
       
             style={{
             width: "100%",

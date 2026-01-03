@@ -88,16 +88,16 @@ export default function Visaogeral() {
 
   return (
     <div className="p-2">
-      <h2 className="text-3xl font-bold mb-4 text-blue-500">Visão Geral</h2>
+      <h2 className="text-3xl font-bold mb-4 text-blue-900">Visão Geral</h2>
  
 {/* FILTROS */}
 {/*<div className="bg- blue p-6 rounded-xl shadow mb-10 flex flex-col gap-2">*/}
 
   
-         <div className="bg-gray-100 rounded-xl shadow p-5  border-[8px] border-blue-800 mb-4 w-full flex items-center"> 
+<div className="bg-gray-100 rounded-xl shadow p-5  border-[4px] border-blue-900 mb-4 w-full flex items-center h-fit"> 
  
 
-  <div className="bg-gray-100 p-6 rounded-xl shadow mb-8 flex flex-col gap-2"> 
+  <div className="bg-gray-100 p-6 rounded-xl    shadow mb-8 flex flex-col gap-2"> 
  
   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
     
@@ -136,10 +136,10 @@ export default function Visaogeral() {
   
    <table className="w-full text-sm border-collapse">*/}
 
-  <div className="bg-gray-300 p-4 rounded-xl shadow">
-  <table className="w-full text-base border-collapse">
+  <div className="bg-gray-100 p-4 rounded-xl shadow border-[4px] border-gray-300">
+  <table className="w-full text-base bg-gray-200 p-4 rounded-xl border-collapse   ">
   <thead>
-    <tr className="bg-blue-800 font-black text-lg text-white">
+    <tr className="bg-blue-900 font-black text-lg text-white">
       <th className="p-2 text-left border">Banco</th>
       <th className="p-2 text-right border text-white">Saldo Inicial</th>
       <th className="p-2 text-right border text-green-200">Receita</th>
@@ -190,7 +190,7 @@ export default function Visaogeral() {
   </tbody>
 
   <tfoot>
-    <tr className="bg-blue-800 font-black text-lg text-white">
+    <tr className="bg-blue-900 font-black text-lg text-white">
       <td className="p-2">Total Geral</td>
 
       <td className="p-2 text-right text-white">-</td>

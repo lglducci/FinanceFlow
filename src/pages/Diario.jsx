@@ -62,18 +62,29 @@ async function carregar() {
   };
 
   return (
+
+
+    <div className="p-4">
+
+ 
+
+     
+    <h2 className="text-xl font-bold mb-4"> Diário Contábil </h2>
+
+
     <div style={{ width: "100%", padding: 20 }}>
 
       {/* CABEÇALHO AZUL */}
       <div
-        style={{
-          background: "#003ba2",
-          padding: 20,
-          borderRadius: 12,
-          marginBottom: 20,
-        }}
-      >
-        <h2 style={{ color: "white", marginBottom: 10 }}>Diário Contábil</h2>
+          style={{
+            background: "#003ba2",
+            padding: "4px 4px",   // ⬅️ antes era 20
+            borderRadius: 8,       // ⬅️ antes era 12
+            marginBottom: 12,      // ⬅️ antes era 20
+          }}
+        >
+
+        
 
         {/* CARD BRANCO */}
         <div
@@ -160,6 +171,7 @@ async function carregar() {
           </div>
         </div>
       </div>
+      </div>
 
       {/* LISTA */}
       <div
@@ -167,7 +179,7 @@ async function carregar() {
           background: "white",
           padding: 20,
           borderRadius: 10,
-          border: "3px solid #003ba2",
+          border: "4px solid #666667ff",
         }}
       >
         <table className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse" }}>

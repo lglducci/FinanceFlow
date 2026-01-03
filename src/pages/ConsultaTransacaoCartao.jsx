@@ -100,7 +100,7 @@ export default function ConsultaTransacaoCartao() {
       <h2 className="text-2xl font-bold mb-4">Transações de Cartão</h2>
 
       {/* FILTROS  */}
-      <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl mb-4 border border-[8px] border-blue-800">
+      <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl mb-4 border border-[4px] border-blue-900">
         <div className="bg-gray-100 p-2.5 rounded-lg mb-4 flex flex-col md:flex-row md:items-end gap-2">
           <div className="flex flex-col">
             <label className="font-bold mb-1 text-[#1e40af]">Cartão</label>
@@ -281,7 +281,7 @@ export default function ConsultaTransacaoCartao() {
           </div>
            </div>
           {/* Tabela */}
-          <div className="bg-gray-100 p-4 rounded-xl shadow">
+          <div className="bg-gray-100 p-4 rounded-xl shadow border-[4px] border-gray-500">
             <div className="bg-white p-4 rounded-xl shadow">
               <table className="w-full text-sm border-collapse">
                 <thead>

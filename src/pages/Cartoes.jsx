@@ -105,7 +105,7 @@ return (
 
     {/* FILTROS */}
      
-      <div className="bg-gray-100 rounded-xl shadow p-5  border-[8px] border-blue-800 mb-6 w-[1850px] flex items-center"> 
+      <div className="bg-gray-100 rounded-xl shadow p-5  border-[4px] border-blue-800 mb-6 w-[1850px] flex items-center"> 
     
 
       <div>
