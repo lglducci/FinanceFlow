@@ -1,13 +1,13 @@
  export default function Header() {
   return (
-    <header className="h-32 border-b flex items-center justify-between px-8 bg-[#172c52ff]">
+    <header className="h-24 border-b flex items-left justify-between px-10 bg-[#061f4aff]">
       <div>
-        <h1 className="text-lg font-bold text-white">Finance-Flow</h1>
+        <h1 className="text-xl font-bold text-white pt-8">Finance-Flow</h1>
         <p className="text- base  text-gray-100">
           Acompanhamento rápido das suas finanças.
         </p>
       </div>
-      <div className="text-base text-white">
+      <div className="text-base text-white  pt-8">
         {new Date().toLocaleDateString("pt-BR")}
       </div>
     </header>

@@ -13,13 +13,16 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-[#172c52ff] text-white flex flex-col h-screen">
-      <div className="px-6 py-4 border-b border-blue-800/40">
+    <aside className="w-60 bg-[#ffffffff]  text-blue-500 text-base font-medium  flex flex-col h-screen  8px border  border-blue-800/100">
+      
+      <div className="px-6 py-6 border-b border-blue-800/100 bg-[#061f4aff] text-white font-bold text-base">
+       
+ 
         <h2 className="text-xl font-bold">Finance-Flow</h2>
-        <p className="text-xs text-blue-100">Painel pessoal</p>
+        <p className="text-xs text-blue-600 font-bold  text-white font-bold text-base">Painel pessoal</p>
       </div>
 
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-400 text-sm">
 
         <MenuItem icon={<IconHome />} label="Visão Geral" onClick={() => navigate("/dashboard")} />
 
@@ -30,7 +33,7 @@ export default function Sidebar() {
           onClick={() => toggle("financeiro")}
         >
           
-          <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}   className="!text-blue-300" />
+          <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}   className="!text-blue-400" />
           <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />
           <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
@@ -39,13 +42,14 @@ export default function Sidebar() {
         </MenuGroup>
 
         <MenuGroup
-          icon={<IconBook />}
+          icon={<IconBuilding />}
           label="Contábil"
           open={open === "contabil"}
           onClick={() => toggle("contabil")}
         >
-          <SubItem icon={<IconBook />} label="Diário Contábil" onClick={() => navigate("/diario")} />
-          <SubItem icon={<IconSettings />} label="Processar e Importar" onClick={() => navigate("/importar-diario")} />
+          <SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />
+          <SubItem icon={<IconRefresh />} label="Processar e Importar" onClick={() => navigate("/importar-diario")} />
+           <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />
         </MenuGroup>
 
         <MenuGroup
@@ -54,12 +58,12 @@ export default function Sidebar() {
           open={open === "cadastro"}
           onClick={() => toggle("cadastro")}
         >
-          <SubItem icon={<IconUsers />} label="Fornecedores / Clientes" onClick={() => navigate("/providers-clients")} />
+          <SubItem icon={<IconUsers />} label="Fornecedores/Clientes" onClick={() => navigate("/providers-clients")} />
           <SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />
           <SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />
           <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />
           <SubItem icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
-          <SubItem icon={<IconMap />} label="Mapeamento Contábil" onClick={() => navigate("/mapeamento-contabil")} />
+          <SubItem icon={<IconMap />} label="Modelo Contabil" onClick={() => navigate("/mapeamento-contabil")} />
         </MenuGroup>
 
         <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />
@@ -67,8 +71,8 @@ export default function Sidebar() {
 
       </nav>
 
-      <div className="px-4 py-3 border-t border-blue-800/40">
-        <button onClick={logout} className="flex items-center gap-2 text-sm text-red-200 hover:text-red-300">
+      <div className="px-4 py-3 border 12px  border-blue-800/40  text-blue-600 font-bold ">
+        <button onClick={logout} className="flex items-center gap-2 text-base text-red-200 hover:text-red-800   font-mediun  ">
           <IconLogout /> Sair
         </button>
       </div>
@@ -80,27 +84,49 @@ export default function Sidebar() {
 
 function MenuItem({ icon, label, onClick }) {
   return (
-    <button onClick={onClick} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-600/30">
+    <button onClick={onClick} className="flex items-left gap-3 px-3 py-2 rounded-lg hover:bg-blue-800 text-blue-500 text-sm">
       {icon}{label}
     </button>
   );
 }
 
-function MenuGroup({ icon, label, open, onClick, children }) {
+ function MenuGroup({ icon, label, open, onClick, children }) {
   return (
     <div>
-      <button onClick={onClick} className="flex justify-between items-center w-full px-3 py-2 rounded-lg hover:bg-blue-600/30">
-        <span className="flex items-center gap-3">{icon}{label}</span>
-        <span className="text-xs">{open ? "▲" : "▼"}</span>
+      <button
+        onClick={onClick}
+        className="
+          flex items-center justify-between
+          w-full px-3 py-2
+          rounded-lg
+          hover:bg-blue-800
+         text-blue-500
+          text-sm font-medium
+        "
+      >
+        {/* ESQUERDA: ícone + texto juntos */}
+        <span className="flex items-center gap-3 text-blue-500">
+          <span className="w-5 flex justify-center">
+            {icon}
+          </span>
+          <span>{label}</span>
+        </span>
+
+        {/* DIREITA: seta */}
+        <span className="text-xs opacity-50">
+          {open ? "▲" : "▼"}
+        </span>
       </button>
+
       {open && <div className="ml-6 space-y-1">{children}</div>}
     </div>
   );
 }
 
+
 function SubItem({ icon, label, onClick }) {
   return (
-    <button onClick={onClick} className="flex items-center gap-3 px-3 py-1 text-base text-blue-100 hover:bg-blue-700/30 rounded">
+    <button onClick={onClick} className="flex items-center gap-3 px-3 py-1 text-base text-blue-600 hover:bg-blue-900 rounded text-blue-500 text-sm font-medium">
       {icon}{label}
     </button>
   );
@@ -108,7 +134,7 @@ function SubItem({ icon, label, onClick }) {
 
 /* ====== ÍCONES SVG INLINE (NÃO QUEBRAM) ====== */
 
-const base = "w-7 h-7 stroke-current";
+const base = "w-5 h-5 stroke-current";
 const IconHome = () => (<svg className={base} fill="none" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M4 10v10h16V10" strokeWidth="2"/></svg>);
 const IconMoney = () => (<svg className={base} fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" strokeWidth="2"/><circle cx="12" cy="12" r="3" strokeWidth="2"/></svg>);
 const IconDoc = () => (<svg className={base} fill="none" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z" strokeWidth="2"/></svg>);
@@ -136,5 +162,34 @@ const IconCardTransaction = () => (<svg className={base} fill="none" viewBox="0 
 
     <path d="M16 15h-4" />
     <path d="M14 13l-2 2 2 2" />
+  </svg>
+);
+
+
+const IconCloud = () => (
+  <svg className={base} fill="none" viewBox="0 0 24 24">
+    <path d="M7 18h10a4 4 0 0 0 0-8 6 6 0 0 0-11-1A4 4 0 0 0 7 18z" strokeWidth="2"/>
+  </svg>
+);
+
+const IconRefresh = () => (
+  <svg className={base} fill="none" viewBox="0 0 24 24">
+    <path d="M4 4v6h6M20 20v-6h-6" strokeWidth="2"/>
+    <path d="M20 9A8 8 0 0 0 5 5M4 15a8 8 0 0 0 15 4" strokeWidth="2"/>
+  </svg>
+);
+
+
+const IconBuilding = () => (
+  <svg className={base} fill="none" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="18" height="18" strokeWidth="2"/>
+    <path d="M7 7h2M7 11h2M7 15h2M11 7h2M11 11h2M11 15h2" strokeWidth="2"/>
+  </svg>
+);
+
+const IconClipboard = () => (
+  <svg className={base} fill="none" viewBox="0 0 24 24">
+    <rect x="6" y="4" width="12" height="16" rx="2" strokeWidth="2"/>
+    <path d="M9 4h6" strokeWidth="2"/>
   </svg>
 );
