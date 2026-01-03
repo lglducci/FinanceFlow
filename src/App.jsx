@@ -56,6 +56,7 @@ import NovaModeloContabil from "./pages/NovaModeloContabil";
 import NovoDiario from "./pages/NovoDiario";
 import EditarDiario from "./pages/EditarDiario";
 import ImportarDiario from "./pages/ImportarDiario";
+import ProcessarDiario from "./pages/ProcessarDiario";
 import RelatoriosBalancete from "./pages/RelatoriosBalancete";
 
  // App.jsx
@@ -155,6 +156,7 @@ export default function App() {
   <Route path="/novo-diario" element={<NovoDiario />} />
    <Route path="/editar-diario" element={<EditarDiario />} /> 
     <Route path="/importar-diario" element={<ImportarDiario />} />
+   <Route path="/processar-diario" element={<ProcessarDiario />} />
   <Route path="/relatorios/balancete" element={<RelatoriosBalancete />} />
    <Route path="/relatorios/razao" element={<RelatoriosRazao />} />
    <Route path="/relatorios/balanco" element={<RelatoriosBalanco />} /> 
