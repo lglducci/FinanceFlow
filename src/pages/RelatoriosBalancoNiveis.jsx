@@ -84,7 +84,7 @@ useEffect(() => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
-
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
       <h2 className="text-xl font-bold mb-4">Balanço Patrimonial</h2>
 
       {/* FILTROS */}
@@ -131,9 +131,10 @@ useEffect(() => {
         >
           🖨️ Imprimir
         </button>
-     
+     </div>
      </div>
       <div id="print-area">  
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
       {/* RESULTADO */}
       {loading && <p>Carregando...</p>}
 
@@ -161,6 +162,7 @@ useEffect(() => {
        
     </div>
      </div>
+       </div>
   );
 }
 

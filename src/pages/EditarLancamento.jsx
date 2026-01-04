@@ -207,7 +207,7 @@ const salvar = async () => {
 
         {/* 1 — Tipo */}
         <div>
-          <label className="block text-base font-bold  text-[#1e40af]">Tipo</label>
+          <label   className="label label-required block font-bold text-[#1e40af]" >Tipo</label>
            <select
               name="tipo"
               value={form.tipo}
@@ -222,7 +222,7 @@ const salvar = async () => {
 
         {/* 2 — Categoria */}
         <div>
-          <label className="block text-base font-bold text-[#1e40af] ">Categoria</label>
+          <label className="label label-required block font-bold text-[#1e40af]" >Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
@@ -240,7 +240,7 @@ const salvar = async () => {
         <div className="grid grid-cols-2 gap-4">
           
           <div>
-            <label className="block text-base font-bold text-[#1e40af]">Conta Financeira</label>
+            <label  className="label label-required block font-bold text-[#1e40af]" >Conta Financeira</label>
             <select
               name="conta_id"
               value={form.conta_id}
@@ -255,7 +255,7 @@ const salvar = async () => {
           </div>
 
           <div>
-            <label className="block text-base font-bold text-[#1e40af]">Valor</label>
+            <label  className="label label-required block font-bold text-[#1e40af]" >Valor</label>
             <input
               type="number"
               name="valor"
@@ -271,7 +271,7 @@ const salvar = async () => {
         <div className="grid grid-cols-2 gap-4">
 
           <div>
-            <label className="block text-base font-bold text-[#1e40af]">Data</label>
+            <label  className="label label-required block font-bold text-[#1e40af]" >Data</label>
             <input
               type="date"
               name="data_movimento"
@@ -297,7 +297,7 @@ const salvar = async () => {
 
         {/* 5 — Descrição */}
         <div>
-          <label className="block text-base font-bold text-[#1e40af]">Descrição</label>
+          <label  className="label label-required block font-bold text-[#1e40af]"  >Descrição</label>
           <input
             type="text"
             name="descricao"

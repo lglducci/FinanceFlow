@@ -155,7 +155,8 @@ export default function Reports() {
 
   return (
     <div>
-      <div className="bg-[#ffffff] min-h-screen p-6"> 
+ 
+      <div className="bg-gray-100 min-h-screen p-6  rounded-xl shadow-lg border-[4px] border-gray-300"> 
       <h1 className="text-2xl font-bold mb-6">Relatórios</h1>
  
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"> 

@@ -62,7 +62,8 @@ const navigate = useNavigate();
 
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow">
+    <div className="p-6 bg-gray-100 rounded-lg shadow">
+      <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
 
       <h2 className="text-xl font-bold mb-4">📊 Saldo por Conta</h2>
  
@@ -135,6 +136,7 @@ const navigate = useNavigate();
       Ocultar contas sem movimento
     </label>
   </div>
+   </div>
 
 </div>
 
@@ -144,9 +146,10 @@ const navigate = useNavigate();
 
       {/* 📋 TABELA */}
         <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
+      <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-blue-600 text-white">
+          <tr className="bg-blue-900 text-white">
             <th className="p-2 text-left">Código</th>
             <th className="p-2 text-left">Conta</th>
                 <th className="p-2 text-left">Saldo Inicial</th>
@@ -187,7 +190,7 @@ const navigate = useNavigate();
           ))}
         </tbody>
       </table>
-
+       </div>
       </div>
 
     </div>

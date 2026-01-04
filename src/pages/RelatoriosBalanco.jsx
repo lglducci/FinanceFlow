@@ -75,6 +75,7 @@ const navigate = useNavigate();
 
   return (
     <div className="p-6">
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
       <h1 className="text-2xl font-bold mb-6">📊 Balanço Patrimonial</h1>
 
       {/* FILTROS */}
@@ -110,13 +111,15 @@ const navigate = useNavigate();
         >
          Voltar 
         </button>
-
+        </div>
       </div>
 
       {/* TABELA */}
+        <div id="print-area">  
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-blue-700 text-white">
+          <thead className="bg-blue-900 text-white">
             <tr>
               <th className="p-3 text-left">Grupo</th>
               <th className="p-3 text-left">Conta</th>
@@ -159,5 +162,7 @@ const navigate = useNavigate();
         )}
       </div>
     </div>
+      </div>
+        </div>
   );
 }

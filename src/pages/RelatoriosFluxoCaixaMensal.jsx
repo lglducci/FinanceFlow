@@ -44,8 +44,9 @@ export default function RelatoriosFluxoCaixaMensal() {
 
   return (
     <div className="p-6">
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
       <h1 className="text-2xl font-bold mb-6">📊 Fluxo de Caixa Mensal</h1>
-
+        
       {/* FILTROS */}
       <div className="flex gap-4 items-end bg-white p-4 rounded-lg shadow mb-6">
         <div className="flex flex-col">
@@ -88,14 +89,17 @@ export default function RelatoriosFluxoCaixaMensal() {
         >
           Voltar
         </button>
+       </div>
 
       </div>
 
       {loading && <p className="font-bold text-blue-600">Carregando...</p>}
 
       {/* TABELA */}
+       <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
       <table className="w-full border-collapse">
-        <thead className="bg-blue-700 text-white">
+        
+        <thead className="bg-blue-900 text-white">
           <tr>
             <th className="p-2">Ano</th>
             <th className="p-2">Mês</th>
@@ -135,5 +139,6 @@ export default function RelatoriosFluxoCaixaMensal() {
         </tbody>
       </table>
     </div>
+     </div>
   );
 }

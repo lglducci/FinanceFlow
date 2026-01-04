@@ -65,7 +65,7 @@ useEffect(() => {
   return (
     <div className="p-6">
 
-         
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
       <h1 className="text-2xl font-bold mb-6">📒 Balancete</h1>
 
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
@@ -111,14 +111,16 @@ useEffect(() => {
           >
           Voltar 
           </button>
-
+         </div>
       </div>
 
        <div id="print-area"> 
+       
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
 
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-blue-700 text-white">
+          <thead className="bg-blue-900 text-white">
             <tr style={{ background: "#002b80", color: "white", height: 40 }}>
               <th className="p-3 text-left">Código</th>
               <th className="p-3 text-left">Conta</th>
@@ -162,5 +164,6 @@ useEffect(() => {
       </div>
     </div>
     </div>
+     </div>
   );
 }

@@ -136,7 +136,7 @@ const [filtro, setFiltro] = useState("");
 
   return (
     <div style={{ width: "100%", padding: 20 }}>
-
+     
           <h2   style={{
         padding: 2,
         width: "55%",
@@ -160,7 +160,7 @@ const [filtro, setFiltro] = useState("");
       >
         {/* Faixa amarela token/descrição */}
 
-
+     
         
        {/* ============================================= */}
 {/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}

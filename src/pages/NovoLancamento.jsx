@@ -74,7 +74,39 @@ export default function NovoLancamento() {
   };
 
   try {
-    const url = buildWebhookUrl("novolancamento");
+    const url = buildWebhookUrl("novolancamento"); 
+
+       if (!form.tipo) {
+          alert(" Tipo  é obrigatório.");
+          return;
+        }
+       
+         const categoria = parseFloat(form.categoria_id); 
+        if  (!Number.isFinite(categoria) || categoria <= 0) {
+          alert("Categoria é obrigatório.");
+          return;
+        }
+        
+            const conta = parseFloat(form.conta_id); 
+        if  (!Number.isFinite(conta) || conta <= 0) {
+          alert("Conta Financeira é obrigatório.");
+          return;
+        }
+         
+        if (!form.data) {
+          alert(" Data de Movimento é obrigatório.");
+          return;
+        }
+
+          // ================== VALIDAÇÕES ==================
+        
+         
+        if (!form.descricao) {
+          alert(" Descricao é obrigatório.");
+          return;
+        } 
+ 
+        
 
     const resp = await fetch(url, {
       method: "POST",
@@ -124,12 +156,14 @@ export default function NovoLancamento() {
         >
           ✏️ Novo Lançamento
         </h1>
- 
+          
+
+         
 
         <div className="bg-gray-100 flex flex-col  gap-2  space-y-4 px-6">
 
           {/* Tipo */}
-          <label className="block text-base font-bold text-[#1e40af]">Tipo</label>
+          <label  className="label label-required font-bold text-[#1e40af]">Tipo</label>
            <div className="w-1/5"> 
           <select
             name="tipo"
@@ -144,7 +178,7 @@ export default function NovoLancamento() {
           </div>
 
           {/* Categoria */}
-          <label className="block text-base font-bold text-[#1e40af]">Categoria</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Categoria</label>
           <div className="w-2/3"> 
           <select
             name="categoria_id"
@@ -161,10 +195,10 @@ export default function NovoLancamento() {
            </div>
 
           {/* GRID IGUAL AO EDITAR */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
 
             <div>
-              <label className="block text-base font-bold text-[#1e40af]">Conta Financeira</label>
+              <label  className="label label-required block font-bold text-[#1e40af]">Conta Financeira</label>
               <select
                 name="conta_id"
                 value={form.conta_id}
@@ -180,7 +214,7 @@ export default function NovoLancamento() {
             </div>
 
             <div>
-              <label className="block text-base font-bold text-[#1e40af]">Valor</label>
+              <label  className="label label-required block font-bold text-[#1e40af]">Valor</label>
               <input
                 type="number"
                 name="valor"
@@ -192,10 +226,10 @@ export default function NovoLancamento() {
             </div>
 
           </div>
-
+         
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-base font-bold text-[#1e40af]">Data</label>
+              <label className="label label-required font-bold block text-[#1e40af]">Data</label>
               <input
                 type="date"
                 name="data"
@@ -222,7 +256,7 @@ export default function NovoLancamento() {
           </div>
 
           {/* Descrição */}
-          <label className="block text-base font-bold text-[#1e40af]">Descrição</label>
+          <label className="label label-required font-bold text-[#1e40af]">Descrição</label>
          
           <input
             type="text"

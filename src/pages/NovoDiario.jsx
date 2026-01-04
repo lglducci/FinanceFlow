@@ -93,6 +93,59 @@ export default function NovoDiario() {
     try {
       const url = buildWebhookUrl("inserediario");
 
+
+       if (!form.modelo_codigo) {
+          alert(" Modelo Contábil é obrigatório.");
+          return;
+        }
+      
+
+        if (!form.historico.trim()) {
+          alert("Historico é obrigatório.");
+          return;
+        }
+        
+        
+        if (!form.data_mov) {
+          alert(" Data de Movimento é obrigatório.");
+          return;
+        }
+
+          // ================== VALIDAÇÕES ==================
+      
+            const valor = parseFloat(form.valor_total);
+
+            if (!Number.isFinite(valor) || valor <= 0) {
+              alert("Valor inválido.");
+              return;
+            }
+
+
+         
+        if (!form.doc_ref) {
+          alert(" Documento é obrigatório.");
+          return;
+        } 
+
+        if (! form.parceiro_id) {
+          alert("Fornecedor é obrigatório.");
+          return;
+        }
+ 
+    
+        
+         
+        
+        if (!form.data_vencto) {
+          alert(" Vencimento é obrigatório.");
+          return;
+        }
+
+
+        
+          
+         
+
       const payload = {
         empresa_id,
         ...form,
@@ -154,7 +207,7 @@ export default function NovoDiario() {
         <div style={{ background: "white", padding: 20, borderRadius: 10 }}>
 
           {/* ================= TOKEN ================= */}
-          <label className="font-bold text-[#1e40af]" >Token do Modelo</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Token do Modelo</label>
           <input
             list="listaTokens" 
             value={form.modelo_codigo}
@@ -210,9 +263,11 @@ export default function NovoDiario() {
               </table>
             </div>
           )}
+          
+          
 
           {/* ================= CAMPOS DIÁRIO ================= */}
-          <label  className="font-bold text-[#1e40af]">Histórico</label>
+          <label   className="label label-required font-bold text-[#1e40af]" >Histórico</label>
           <input
             value={form.historico}
             className="input-premium"
@@ -220,7 +275,7 @@ export default function NovoDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label  className="font-bold text-[#1e40af]">Data Movimento</label>
+          <label   className="label label-required font-bold text-[#1e40af]" >Data Movimento</label>
           <input
             type="date"
             value={form.data_mov}
@@ -229,7 +284,7 @@ export default function NovoDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label  className="font-bold text-[#1e40af]">Documento</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Documento</label>
           <input
             value={form.doc_ref}
             className="input-premium"
@@ -237,7 +292,7 @@ export default function NovoDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label  className="font-bold text-[#1e40af]"> Parceiro</label>
+          <label  className="label label-required font-bold text-[#1e40af]" > Parceiro</label>
           <select
             value={form.parceiro_id}
             className="input-premium"
@@ -252,7 +307,7 @@ export default function NovoDiario() {
             ))}
           </select>
 
-          <label  className="font-bold text-[#1e40af]" > Data Vencimento</label>
+          <label   className="label label-required font-bold text-[#1e40af]" > Data Vencimento</label>
           <input
             type="date"
             value={form.data_vencto}
@@ -264,7 +319,7 @@ export default function NovoDiario() {
            {/* VALORES */}
                 {["valor_total"].map((campo) => (
                   <div key={campo}>
-                    <label className="font-bold text-[#1e40af]">
+                    <label  className="label label-required font-bold text-[#1e40af]">
                       {capitalizeWords(campo)}
                     </label>
 

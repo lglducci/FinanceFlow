@@ -125,6 +125,53 @@ export default function EditarDiario() {
     try {
       const url = buildWebhookUrl("salvar_diario");
 
+      
+       if (!form.modelo_codigo) {
+          alert(" Modelo Contábil é obrigatório.");
+          return;
+        }
+      
+
+        if (!form.historico.trim()) {
+          alert("Historico é obrigatório.");
+          return;
+        }
+        
+        
+        if (!form.data_mov) {
+          alert(" Data de Movimento é obrigatório.");
+          return;
+        }
+
+          // ================== VALIDAÇÕES ==================
+      
+            const valor = parseFloat(form.valor_total);
+
+            if (!Number.isFinite(valor) || valor <= 0) {
+              alert("Valor inválido.");
+              return;
+            }
+
+
+         
+        if (!form.doc_ref) {
+          alert(" Documento é obrigatório.");
+          return;
+        } 
+
+        if (! form.parceiro_id) {
+          alert("Fornecedor é obrigatório.");
+          return;
+        } 
+        
+        if (!form.data_vencto) {
+          alert(" Vencimento é obrigatório.");
+          return;
+        }
+
+
+        
+
       const payload = {
         empresa_id,
         id,
@@ -188,7 +235,7 @@ export default function EditarDiario() {
         <div style={{ background: "white", padding: 20, borderRadius: 10 }}>
 
           {/* ================= TOKEN ================= */}
-          <label className="font-bold text-[#1e40af]"> Token do Modelo</label>
+          <label  className="label label-required font-bold text-[#1e40af]"> Token do Modelo</label>
           <input
             list="listaTokens"
             value={form.modelo_codigo}
@@ -218,7 +265,7 @@ export default function EditarDiario() {
                 <b  className="font-bold text-[#003ba2]" >Nome:</b> {modeloSelecionado.nome}
               </div>
 
-              <table className="tabela tabela-mapeamento" style={{ width: "80%", borderCollapse: "collapse" }} >
+              <table className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse" }} >
                 <thead>
                   <tr   style={{ background: "#09090aff" }}>
                     <th  className="font-bold text-[#1e40af text-align: left]">ID</th>
@@ -246,7 +293,7 @@ export default function EditarDiario() {
           )}
 
           {/* ================= CAMPOS ================= */}
-          <label className="font-bold text-[#1e40af]">Histórico</label>
+          <label className="label label-required font-bold text-[#1e40af]">Histórico</label>
           <input
             value={form.historico}
             className="input-premium"
@@ -254,7 +301,7 @@ export default function EditarDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label className="font-bold text-[#1e40af]">Data Movimento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Data Movimento</label>
           <input
             type="date"
             value={form.data_mov}
@@ -263,7 +310,7 @@ export default function EditarDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label className="font-bold text-[#1e40af]">Documento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Documento</label>
           <input
             value={form.doc_ref}
             className="input-premium"
@@ -271,7 +318,7 @@ export default function EditarDiario() {
             style={{ width: "100%", padding: 10, marginBottom: 15 }}
           />
 
-          <label className="font-bold text-[#1e40af]">Parceiro</label>
+          <label className="label label-required font-bold text-[#1e40af]">Parceiro</label>
           <select
             value={form.parceiro_id}
             className="input-premium"
@@ -286,7 +333,7 @@ export default function EditarDiario() {
             ))}
           </select>
 
-          <label className="font-bold text-[#1e40af]">Data Vencimento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Data Vencimento</label>
           <input
             type="date"
             value={form.data_vencto}
@@ -296,9 +343,9 @@ export default function EditarDiario() {
           />
 
           {/* VALORES */}
-          {["valor_total", "valor_custo", "valor_imposto"].map((campo) => (
+          {["valor_total"].map((campo) => (
             <div key={campo}>
-              <label className="font-bold text-[#1e40af]">
+              <label className="label label-required font-bold text-[#1e40af]">
                 {capitalizeWords(campo)}
               </label>
 

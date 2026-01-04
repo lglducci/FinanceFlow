@@ -50,6 +50,9 @@ export default function RelatorioGerencial() {
 
   return (
     <div>
+      
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
+      
       <h1 className="text-2xl font-bold mb-6">Relatório Gerencial Mensal (KPIs Financeiros)</h1>
 
       {/* FILTROS */}
@@ -101,14 +104,14 @@ export default function RelatorioGerencial() {
             >
             Voltar 
           </button>
- 
+       </div>
       </div>
 
       {loading && <div>Carregando...</div>}
       {erro && <div className="text-red-600 font-bold">Erro ao carregar relatório</div>}
 
       {dados && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 cursor-pointer rounded-xl border border-blue-400 bg-gray-100 p-5 shadow hover:shadow-lg transition">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 cursor-pointer rounded-xl border-[4px] border-gray-500 bg-gray-100 p-5 shadow hover:shadow-lg transition">
           <Card titulo="Receita Líquida" valor={dados.receita_liquida} moeda />
           <Card titulo="CMV / CSP" valor={dados.cmv_csp} moeda />
           <Card titulo="Margem Contribuição" valor={dados.margem_contribuicao} moeda />

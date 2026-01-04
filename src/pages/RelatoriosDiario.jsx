@@ -84,6 +84,7 @@ const filtrados = dados.filter(item => {
 
   return (
     <div className="p-6">
+          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2">
       <h1 className="text-2xl font-bold mb-6">📘 Diário  Contábil</h1>
 
       {/* filtros */}
@@ -149,12 +150,13 @@ const filtrados = dados.filter(item => {
             </button>
 
       </div>
-      
+      </div>
        <div id="print-area"> 
       {/* tabela */}
+         <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-blue-700 text-white">
+          <thead className="bg-blue-900 text-white">
             <tr>
               <th className="p-3 text-left">Data</th>
               <th className="p-3 text-left">Diário</th>
@@ -197,6 +199,7 @@ const filtrados = dados.filter(item => {
           </div>
         )}
       </div>
+    </div>
     </div>
     
   );

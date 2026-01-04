@@ -53,6 +53,7 @@ export default function FluxoCaixaDetalhado() {
 
   return (
     <div className="p-6 bg-white rounded-xl shadow">
+        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
       <h1 className="text-2xl font-bold mb-6">💰 Fluxo de Caixa – Detalhado</h1>
 
       {/* FILTROS */}
@@ -98,12 +99,14 @@ export default function FluxoCaixaDetalhado() {
           Voltar
         </button>
       </div>
+       </div>
 
       {/* TABELA */}
       <div id="print-area" className="overflow-x-auto">
+         <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-blue-700 text-white">
+            <tr className="bg-blue-900 text-white">
               <th className="p-2 text-left">Data</th>
               <th className="p-2 text-left">Código</th>
               <th className="p-2 text-left">Nome</th>
@@ -154,5 +157,6 @@ export default function FluxoCaixaDetalhado() {
         )}
       </div>
     </div>
+      </div>
   );
 }
