@@ -361,7 +361,7 @@
     {
       "parameters": {
         "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
-        "height": 1148,
+        "height": 1356,
         "width": 1312
       },
       "id": "5923ce79-66e3-4387-8d70-1cd6b71fb3bc",
@@ -958,9 +958,211 @@
       "id": "d22138a0-a58e-4778-8b5b-979449cd96a3",
       "name": "DelCard",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "content": "## Cartões Compras.. \nConsultar e excluir compras (em aberto ).",
+        "height": 1356,
+        "width": 1312,
+        "color": 4
+      },
+      "id": "4cc2112a-cb62-4d59-b273-8958d708411c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2528,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1680,
+        832
+      ],
+      "id": "136bc331-5bb7-4c92-b9c7-52d6e1f9a923",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "compracartoes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2304,
+        832
+      ],
+      "id": "7142fc1f-c6e2-4350-a8d0-0331d41a69b9",
+      "name": "CompraCartoes",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT \n    c.*,\n    ca.nome     AS cartao_nome,\n    ca.numero   AS cartao_numero,\n    ca.bandeira AS cartao_bandeira,\n    f.id        AS fatura_id,\n    to_char(f.mes_referencia, 'MM/YYYY') AS mes_referencia,\n    f.status    AS status_fatura\nFROM cartoes_compras c\nJOIN cartoes ca\n  ON ca.id = c.cartao_id\nJOIN cartoes_transacoes t\n  ON t.compra_id = c.id\nJOIN cartoes_faturas f\n  ON f.id = t.fatura_id\nWHERE c.empresa_id =  {{ $json.id_empresa }} \n  AND f.empresa_id =  {{ $json.id_empresa }} \n  AND ca.empresa_id = {{ $json.id_empresa }} \n  and c.data_compra between  '{{ $json.data_ini }}' and '{{ $json.data_fim }}' ;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1888,
+        832
+      ],
+      "id": "49c51f39-1b84-475d-b57e-8b65a5fa4bd8",
+      "name": "CompraCartoes1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.body.empresa_id}} ",
+              "type": "number"
+            },
+            {
+              "id": "e92c46c0-c910-4d3b-a096-335c8b82186d",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}} ",
+              "type": "string"
+            },
+            {
+              "id": "437396c5-c5c6-49ec-9091-a65f69b15f1c",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}} ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2096,
+        832
+      ],
+      "id": "6bd1a452-4dfd-4778-b88a-15ebe54c0400",
+      "name": "CompraCartoes2"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1616,
+        1024
+      ],
+      "id": "829fa52d-967a-45c9-bd27-fef50da9e968",
+      "name": "Respond to Webhook24"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "excluircompras",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2304,
+        1024
+      ],
+      "id": "8e9e8dcc-968a-4a2a-8bd8-63fdcc3102e9",
+      "name": "ExcluirCompra",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "fce9f8e0-ff39-4e73-9ab4-7d8570f51007",
+              "name": "id",
+              "value": "={{ $json.body.compra_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2096,
+        1024
+      ],
+      "id": "e66705d5-b251-44b6-adfd-0c83ecd19939",
+      "name": "ExcluirCompraEdit"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from ff_excluir_compra_cartao(   {{ $json.empresa_id }}, {{ $json.id }} )\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1872,
+        1024
+      ],
+      "id": "c754b274-010d-40c0-924b-33fd6d37c7eb",
+      "name": "ff_excluir_compra_cartao",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "CompraCartoes2": [
+      {
+        "json": {
+          "id_empresa": 1,
+          "data_ini": "20250101",
+          "data_fim": "20261201"
+        }
+      }
+    ]
+  },
   "connections": {
     "CartãoTransacaoEdit1": {
       "main": [
@@ -1265,13 +1467,79 @@
           }
         ]
       ]
+    },
+    "CompraCartoes": {
+      "main": [
+        [
+          {
+            "node": "CompraCartoes2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CompraCartoes1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CompraCartoes2": {
+      "main": [
+        [
+          {
+            "node": "CompraCartoes1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluirCompra": {
+      "main": [
+        [
+          {
+            "node": "ExcluirCompraEdit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluirCompraEdit": {
+      "main": [
+        [
+          {
+            "node": "ff_excluir_compra_cartao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_excluir_compra_cartao": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3f48dc53-a13a-4af1-aca9-5c409da21e0b",
+  "versionId": "c201be4b-b1ee-4c60-b5b4-34e02e7a327c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
