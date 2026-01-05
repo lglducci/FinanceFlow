@@ -5,7 +5,11 @@ import { useNavigate } from "react-router-dom";
 export default function ConsultaTransacaoCartao() {
   const navigate = useNavigate();
 
-  const empresa_id = localStorage.getItem("empresa_id") || "1";
+ 
+
+    const empresa_id =
+    localStorage.getItem("empresa_id") ||
+    localStorage.getItem("id_empresa");
 
   const [cartaoId, setCartaoId] = useState("");      // <-- guarda só o ID
   const [referencia, setReferencia] = useState("");
@@ -95,6 +99,13 @@ export default function ConsultaTransacaoCartao() {
     navigate("/new-card-transaction");
   };
 
+  function compra() {
+  navigate("/compras-cartao" , {
+  state: { from: location.pathname }
+});
+}
+
+
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">Transações de Cartão</h2>
@@ -151,6 +162,17 @@ export default function ConsultaTransacaoCartao() {
                className= { `${btnPadrao} bg-green-600 hover:bg-green-700 px-4 py-2 `}>
               Nova Transação
             </button>
+          
+
+           <button
+              onClick={compra}
+              className={`${btnPadrao} bg-blue-900 hover:bg-blue-600 px-4 py-2`}
+              
+            >
+              Compra
+            </button>
+
+
           </div>
         </div>
       </div>
