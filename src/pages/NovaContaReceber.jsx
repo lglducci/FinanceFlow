@@ -7,6 +7,7 @@ import { hojeLocal, dataLocal } from "../utils/dataLocal";
 export default function NovaContaReceber() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
+   const [contas, setContas] = useState([]);
 
   const [form, setForm] = useState({
     descricao: "",
@@ -111,6 +112,51 @@ const THEME = {
   try {
     setSalvando(true);
 
+      const hoje = hojeMaisDias(0);
+
+              // ================== VALIDAÇÕES ==================
+          if (!form.descricao.trim()) {
+            alert("Descrição é obrigatória.");
+            return;
+          }
+
+          if (!form.valor || Number(form.valor) <= 0) {
+            alert("Informe um valor maior que zero.");
+            return;
+          }
+
+          if (!form.categoria_id) {
+            alert("Categoria é obrigatória.");
+            return;
+          }
+
+          if (!form.fornecedor_id) {
+            alert("Fornecedor é obrigatório.");
+            return;
+          }
+
+          if (!form.doc_ref.trim()) {
+            alert("Documento é obrigatório.");
+            return;
+          }
+
+          if (!form.parcelas || Number(form.parcelas) < 1) {
+            alert("Número de parcelas inválido.");
+            return;
+          }
+
+          // vencimento já tratado, mas reforçando
+          
+          if (form.vencimento <= hoje) {
+            alert("Vencimento deve ser maior que hoje.");
+            return;
+          }
+
+          if (!form.contanbil_id) {
+            alert("Conta contábil de despesa é obrigatório.");
+            return;
+          }
+
     const url = buildWebhookUrl("novacontareceber");
 
     const resp = await fetch(url, {
@@ -126,7 +172,8 @@ const THEME = {
         parcelas: Number(form.parcelas),
         parcela_num: Number(form.parcela_num),
         status: form.status,
-        doc_ref: form.doc_ref
+        doc_ref: form.doc_ref,
+        contabil_id:form.contabil_id
       })
     });
 
@@ -154,6 +201,26 @@ const THEME = {
 }
 
 
+    
+  useEffect(() => {
+  async function carregarContas() {
+    try {
+      const resp = await fetch(
+        "https://webhook-homolog.lglducci.com.br/webhook/contasctbreceber?empresa_id=" +
+          empresa_id,
+      );
+
+      const data = await resp.json();
+      setContas(data);
+    } catch (e) {
+      console.error("Erro ao carregar contas contábeis", e);
+    }
+  }
+
+  carregarContas();
+}, [form.empresa_id]);
+
+
   return (
  
 
@@ -175,7 +242,7 @@ const THEME = {
         {/* DESCRIÇÃO */}
         <div>
             <div className="w-4/5"> 
-          <label className="font-bold text-[#1e40af]">Descrição</label>
+          <label   className="label label-required" >Descrição</label>
           <input
             name="descricao"
             value={form.descricao}
@@ -191,7 +258,7 @@ const THEME = {
         {/* CATEGORIA */}
         <div>
             <div className="w-2/3"> 
-          <label className="font-bold text-[#1e40af]">Categoria</label>
+          <label   className="label label-required" >Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
@@ -213,7 +280,7 @@ const THEME = {
         {/* FORNECEDOR */}
         <div>
           <div className="w-2/3"> 
-          <label className="font-bold text-[#1e40af]">Fornecedor/Cliente</label>
+          <label   className="label label-required" >Fornecedor/Cliente</label>
           <select
             name="fornecedor_id"
             value={form.fornecedor_id}
@@ -236,7 +303,7 @@ const THEME = {
         {/* VALOR */}
         <div>
            <div className="w-1/2"> 
-          <label className="font-bold text-[#1e40af]">Valor</label>
+          <label   className="label label-required" >Valor</label>
           <input
             type="number"
             name="valor"
@@ -251,7 +318,7 @@ const THEME = {
         {/* VENCIMENTO */}
         <div>
             <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Vencimento</label>
+          <label   className="label label-required">Vencimento</label>
           <input
             type="date"
             name="vencimento"
@@ -270,7 +337,7 @@ const THEME = {
         <div>
             
           <div className="w-1/5"> 
-          <label className="font-bold text-[#1e40af]">Parcelas</label>
+          <label   className="label label-required">Parcelas</label>
           <input
             type="number"
             name="parcelas"
@@ -287,7 +354,7 @@ const THEME = {
             {/* Numero documento ou nota fiscal  */}
         <div>
           <div className="w-2/3"> 
-                  <label className="font-bold text-[#1e40af]">Documento</label>
+                  <label  className="label label-required">Documento</label>
                   <input
                   name="doc_ref"
                   value={form.doc_ref}
@@ -301,7 +368,7 @@ const THEME = {
         {/* STATUS */}
         <div>
            <div className="w-1/4"> 
-          <label className="font-bold text-[#1e40af]">Status</label>
+          <label   className="label label-required">Status</label>
           <select
             name="status"
             value={form.status}
@@ -314,7 +381,49 @@ const THEME = {
           </select>
         </div>
         </div>
-         
+             
+            <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                Conta Contábil *
+                <span className="relative group cursor-pointer">
+                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                    ?
+                  </span>
+
+                  {/* Tooltip */}
+                  <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                    <strong>O que é este campo?</strong>
+
+                          <p className="mt-1">
+                            Esta conta define <b>onde a receita será registrada na contabilidade</b>.
+                          </p>
+
+                          <p className="mt-1">
+                            Exemplo: Receita de Vendas, Receita de Serviços ou Outras Receitas.
+                          </p>
+
+                          <p className="mt-1 text-yellow-300">
+                            ⚠ O cliente (ativo a receber) é definido automaticamente pelo sistema.
+                          </p>
+
+                  </div>
+                </span>
+              </label>
+              
+            <select
+              name="contabil_id"
+              value={form.contabil_id || ""}
+              onChange={handleChange}
+              className="input-base w-full h-10"
+            >
+              <option value="">Selecione a conta contábil…</option>
+
+              {contas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.codigo} — {c.nome}
+                </option>
+              ))}
+            </select>
 
         {/* BOTÕES */}
             <div className="flex gap-6 pt-8 pb-8 pl-1">

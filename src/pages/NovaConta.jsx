@@ -276,7 +276,44 @@ const THEME = {
        
 
         <div>
-          <label className="label label-required block font-bold mb-1 text-[#1e40af]">Conta Contábil </label>
+              <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                Conta Contábil *
+                <span className="relative group cursor-pointer">
+                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                    ?
+                  </span>
+
+                  {/* Tooltip */}
+                  <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                   
+                    <strong>O que é este campo?</strong>
+
+                    <p className="mt-1">
+                      Esta conta representa <b>onde o dinheiro realmente entra ou sai</b>.
+                    </p>
+
+                    <p className="mt-1">
+                      Exemplo: Bradesco, Itaú, Caixa, Dinheiro em Caixa.
+                    </p>
+
+                    <p className="mt-1">
+                      Cada conta financeira possui uma <b>conta contábil equivalente</b>,
+                      que registra o saldo no balanço.
+                    </p>
+
+                    <p className="mt-1 text-yellow-300">
+                      Exemplo: Bradesco Agência X → Conta contábil <b>1.1.2.23.1</b>
+                    </p>
+
+                    <p className="mt-1 text-yellow-300">
+                      ⚠ O sistema cuida da ligação entre financeiro e contábil automaticamente.
+                    </p>
+ 
+                  </div>
+                </span>
+              </label>
+
           <input
             name="conta_contabil" 
             value={form.conta_contabil}

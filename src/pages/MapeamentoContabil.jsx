@@ -150,7 +150,7 @@ const [filtro, setFiltro] = useState("");
       {/* ============================================= */}
       <div
         style={{
-          width: "100%",
+          width: "90%",
           background: "#f7f7f7ff",      // azul grande — igual da foto
           border: "4px solid #1d1d93ff",
           borderRadius: 12,
@@ -186,6 +186,7 @@ const [filtro, setFiltro] = useState("");
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
+      
     }}
   >
     {/* INFO TOKEN + MODELO */}
@@ -218,6 +219,7 @@ const [filtro, setFiltro] = useState("");
         cursor: "pointer",
         fontSize: 15,
         boxShadow: "0 2px 4px rgba(0,0,0,0.25)",
+        
       }}
     >
       + Novo Modelo
@@ -290,7 +292,7 @@ const [filtro, setFiltro] = useState("");
       <table   className="tabela tabela-mapeamento border-[4px] border-gray-500"
       
             style={{
-            width: "100%",
+            width: "90%",
             borderCollapse: "collapse",
             fontSize: 14,
             alignItems: "left",
@@ -357,7 +359,7 @@ const [filtro, setFiltro] = useState("");
                   disabled={m.sistema}
                   onClick={() => !m.sistema && Excluir(m.id)}
                   style={{
-                    color: m.sistema ? "#7d8490ff" : "#c02525ff",
+                    color: m.sistema ? "#7d8490ff" : "#b81111ff",
                     cursor: m.sistema ? "not-allowed" : "pointer",
                     opacity: m.sistema ? 0.6 : 1,
                   }}
@@ -369,7 +371,7 @@ const [filtro, setFiltro] = useState("");
 
 
 
-               <td style={{ padding: 8, fontWeight: "bold", color: m.sistema ? "#7d8490ff" : "#2563eb" }}>
+               <td style={{ padding: 10, fontWeight: "bold", color: m.sistema ? "#f50909ff" : "#0d3488ff" }}>
                       {m.sistema ? "Sistema" : "Usuário"}
                     </td>
 

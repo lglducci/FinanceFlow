@@ -196,9 +196,36 @@ export default function NovoCardTransaction() {
           
       
            <div>
-            <label className="label label-required block font-bold mb-1 text-[#1e40af]">
-              Conta Contábil
-            </label>
+            
+                <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                Conta Contábil *
+                <span className="relative group cursor-pointer">
+                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                    ?
+                  </span>
+
+                  {/* Tooltip */}
+                  <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                    <strong>O que é este campo?</strong> 
+                      <p className="mt-1">
+                        Esta conta define <b>onde a fatura do cartão será registrada na contabilidade</b>.
+                      </p> 
+                      <p className="mt-1">
+                        Normalmente representa o <b>passivo do cartão de crédito</b>
+                        (ex: Cartão de Crédito a Pagar).
+                      </p> 
+                      <p className="mt-1 text-yellow-300">
+                        ⚠ O custo ou despesa da compra já foi reconhecido no momento da compra.
+                      </p> 
+                      <p className="mt-1 text-yellow-300">
+                        Aqui você está apenas controlando a <b>dívida do cartão</b>, não o custo.
+                      </p>
+                  </div>
+                </span>
+              </label>
+
+            
 
             <select
               name="contabil_id"
