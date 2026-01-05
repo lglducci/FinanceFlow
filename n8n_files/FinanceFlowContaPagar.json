@@ -75,7 +75,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -752,
+        -784,
         -864
       ],
       "id": "0f0b69d2-6e12-4fb1-943e-9d360b415d0e",
@@ -138,6 +138,12 @@
               "id": "1f01619a-d496-4154-8149-b4bc01bffdf7",
               "name": "doc_ref",
               "value": "={{ $json.body.doc_ref}}",
+              "type": "string"
+            },
+            {
+              "id": "b5a8de92-dfd5-4f17-81b7-ed513922b223",
+              "name": "contabil_id",
+              "value": "={{ $json.body.contabil}}",
               "type": "string"
             }
           ]
@@ -268,7 +274,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}'\n)\n  \n ",
+        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}',\n    {{ $json.contabil_id }}\n)\n  \n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1061,7 +1067,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "617983c9-f70b-4ac0-a3d0-dcd15d5e6033",
+  "versionId": "ea813d6d-ac90-41a2-81a2-f17bff107d8a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

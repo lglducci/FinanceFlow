@@ -1330,8 +1330,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        832,
-        1520
+        -544,
+        272
       ],
       "id": "bb7ce43c-c254-445b-ab2a-fde5dc9127b0",
       "name": "Respond to Webhook7"
@@ -1345,8 +1345,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        624,
-        1520
+        -752,
+        272
       ],
       "id": "148422db-4657-476f-be53-086c55cfb7bd",
       "name": "ContasContb1",
@@ -1366,8 +1366,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        224,
-        1520
+        -1152,
+        272
       ],
       "id": "56862c10-ccf1-474a-9571-e64685205539",
       "name": "ContasContabeisCartão",
@@ -1390,14 +1390,196 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        432,
-        1520
+        -944,
+        272
       ],
       "id": "c80d40fe-154d-4320-87b1-d1ad6fce2fa9",
       "name": "EditCtbContas_Cartao"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -528,
+        48
+      ],
+      "id": "afbc32cf-a315-47fb-a954-cb9c1830d362",
+      "name": "Respond to Webhook8"
+    },
+    {
+      "parameters": {
+        "path": "contascmv",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1136,
+        48
+      ],
+      "id": "f302c7dd-fba6-452d-97a8-361c57c68c89",
+      "name": "ContasCtbCMV",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "content": "## Contabil",
+        "height": 940,
+        "width": 1280
+      },
+      "id": "bf7e2a0f-5aa9-43c3-90f9-0462c4375878",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1424,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -928,
+        48
+      ],
+      "id": "a682e9b6-dcc4-4dbc-8745-b3852100aff2",
+      "name": "EditCtbCMV"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT id, codigo, nome \n  FROM contab.contas\n  WHERE empresa_id =  {{ $json.empresa_id }}\n    AND analitica = true \n    AND natureza = 'D' \n    AND codigo NOT LIKE '1.1.%' -- caixa/bancos \n    AND codigo NOT LIKE '2.%' -- passivo \n    AND codigo NOT LIKE '3.1.%' -- receitas ORDER BY codigo;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -736,
+        48
+      ],
+      "id": "a873a4b5-31af-4248-948e-518ef93e3415",
+      "name": "ContasCTBCMV",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -544,
+        496
+      ],
+      "id": "08231467-c272-408e-b94b-ddc25e1d5c93",
+      "name": "Respond to Webhook9"
+    },
+    {
+      "parameters": {
+        "path": "contasctbreceber",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1152,
+        496
+      ],
+      "id": "2beed324-fec3-4f5d-b450-d081bd62ae43",
+      "name": "ContasCtbReceber",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -944,
+        496
+      ],
+      "id": "7efad499-81ef-43e1-9126-9dbf028621ec",
+      "name": "EditCtbRcber"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT id, codigo, nome \n  FROM contab.contas\n  WHERE empresa_id =  {{ $json.empresa_id }}\n    AND analitica = true \n    AND natureza = 'C' \n   \n    AND codigo  LIKE '3.%' -- receitas \n  ORDER BY codigo;\n\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -752,
+        496
+      ],
+      "id": "482cdef6-61dd-4791-b81e-2d4d964b5e63",
+      "name": "ContasCTBreceber",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "EditCtbCMV": [
+      {
+        "json": {
+          "empresa_id": 1
+        }
+      }
+    ],
+    "EditCtbRcber": [
+      {
+        "json": {
+          "empresa_id": 1
+        }
+      }
+    ]
+  },
   "connections": {
     "modelos": {
       "main": [
@@ -1827,13 +2009,79 @@
           }
         ]
       ]
+    },
+    "ContasCtbCMV": {
+      "main": [
+        [
+          {
+            "node": "EditCtbCMV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditCtbCMV": {
+      "main": [
+        [
+          {
+            "node": "ContasCTBCMV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContasCTBCMV": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContasCtbReceber": {
+      "main": [
+        [
+          {
+            "node": "EditCtbRcber",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditCtbRcber": {
+      "main": [
+        [
+          {
+            "node": "ContasCTBreceber",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContasCTBreceber": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6edb430a-c2db-4a9d-9c8a-2c1d17ed05ec",
+  "versionId": "9fc4a27e-9da8-4c6e-86b1-46918f8f1eb7",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
