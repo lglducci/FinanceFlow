@@ -116,9 +116,10 @@ const THEME = {
   return (
         <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
        
-       <div className="w-full max-w-3xl mx-auto rounded-2xl p-4 shadow-xl bg-[#1e40af] text-white mt-1 mb-1">   
+       <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
+
         <h1
-        className="text-2xl md:text-3xl font-bold mb-6 text-center"
+          className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center"
         style={{ color: THEME.title }}
       >
         ✏️ Novo Fornecedor / Cliente

@@ -66,7 +66,7 @@ export default function NovaModeloContabil() {
 
 
   return (
-    <div
+    <div 
       style={{
         width: "100%",
         padding: 20,
@@ -75,13 +75,8 @@ export default function NovaModeloContabil() {
         marginTop: 20,
       }}
     >
-      <div
-        style={{
-          width: "420px",
-          background: "#003ba2",
-          padding: 20,
-          borderRadius: 12,
-        }}
+      <div  className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" 
+       
       >
         {/* TÍTULO */}
         <div style={{ textAlign: "center", marginBottom: 10 }}>

@@ -36,18 +36,10 @@ export default function NovaContaContabil() {
   }
 
   return (
-    <div
-      style={{
-        margin: "0 auto",
-        marginTop: 40,
-        width: "450px",
-        background: "#003ba2",
-        padding: 20,
-        borderRadius: 12,
-        color: "white",
-      }}
-    >
-      <h2 style={{ textAlign: "center", marginBottom: 20 }}>
+     <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
+
+        <h2
+          className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center">
         📘 Nova Conta Contábil
       </h2>
 

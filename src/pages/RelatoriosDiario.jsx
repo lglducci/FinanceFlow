@@ -85,7 +85,7 @@ const filtrados = dados.filter(item => {
   return (
     <div className="p-6">
           <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2">
-      <h1 className="text-2xl font-bold mb-6">📘 Diário  Contábil</h1>
+      <h1 className="text-2xl font-bold mb-6">📘 Lançamentos  Contábeis</h1>
 
       {/* filtros */}
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">

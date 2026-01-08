@@ -192,15 +192,16 @@ const salvar = async () => {
 
  
  return (
-  <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
-       <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
+      <div className="min-h-screen py-6 px-4 bg-bgSoft">
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" > 
       {/* Título */}
-      <h1
-        className="text-2xl md:text-3xl font-bold mb-6 text-center"
-        style={{ color: THEME.title }}
-      >
-        ✏️ Editar Lançamento
-      </h1> 
+        {/* TÍTULO IGUAL AO EDITAR */}
+        <h1
+          className="text-2xl md:text-3xl font-bold mb-6 text-center"
+          style={{ color: "#ff9f43" }}
+        >
+          ✏️ Editar Lançamento
+        </h1>
    
 
          <div className="bg-gray-100 flex flex-col  gap-2  space-y-6 px-6">

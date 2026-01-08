@@ -11,7 +11,7 @@ export default function MapeamentoContabil() {
   const [linhas, setLinhas] = useState([]);
 
 const [filtro, setFiltro] = useState("");
-  
+ 
  
  // const contaGerencialId = state?.conta_gerencial_id;
 

@@ -73,6 +73,7 @@ export default function NovoLancamento() {
     origem: "WebApp",
   };
 
+  
   try {
     const url = buildWebhookUrl("novolancamento"); 
 
@@ -146,9 +147,9 @@ export default function NovoLancamento() {
 
 
   return (
-         <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
-         <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
-
+          
+      <div className="min-h-screen py-6 px-4 bg-bgSoft">
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >
         {/* TÍTULO IGUAL AO EDITAR */}
         <h1
           className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -156,15 +157,13 @@ export default function NovoLancamento() {
         >
           ✏️ Novo Lançamento
         </h1>
-          
+           
 
-         
-
-        <div className="bg-gray-100 flex flex-col  gap-2  space-y-4 px-6">
+        <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
 
           {/* Tipo */}
           <label  className="label label-required font-bold text-[#1e40af]">Tipo</label>
-           <div className="w-1/5"> 
+           <div className="w-2/5"> 
           <select
             name="tipo"
             value={form.tipo}
@@ -273,12 +272,16 @@ export default function NovoLancamento() {
           <div className="flex gap-6 pt-8 pb-8 pl-1">
 
 
+          
+
             <button
+              type="button"
               onClick={handleSalvar}
               className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold"
             >
               Salvar
             </button>
+
 
             <button
               onClick={() => navigate(-1)}

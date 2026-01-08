@@ -1,6 +1,9 @@
  import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
+ 
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
+
 
 export default function Diario() {
   const navigate = useNavigate();
@@ -15,9 +18,7 @@ export default function Diario() {
   "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
   // 👉 DATA HOJE (usa global se existir, senão fallback local)
-  const hoje = typeof dataHoje === "function"
-    ? dataHoje()
-    : new Date().toISOString().split("T")[0];
+  const hoje = hojeLocal();
 
   const [lista, setLista] = useState([]);
 
@@ -82,9 +83,7 @@ async function carregar() {
             borderRadius: 8,       // ⬅️ antes era 12
             marginBottom: 12,      // ⬅️ antes era 20
           }}
-        >
-
-        
+        > 
 
         {/* CARD BRANCO */}
         <div

@@ -145,10 +145,10 @@ if (sucesso) {
  return (
      
     <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
-     
-       <h1
-        className="text-2xl md:text-3xl font-bold mb-6 text-center"
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
+
+        <h1
+          className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center"
         style={{ color: THEME.title }}
       >
         ✏️ Editar Cartão
@@ -157,7 +157,7 @@ if (sucesso) {
       <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
 
         <div>
-          <label className="font-bold text-[#1e40af]">Nome</label>
+          <label   className="label label-required font-bold text-[#1e40af]">Nome</label>
           <input
             name="nome"
             value={form.nome}
@@ -167,7 +167,7 @@ if (sucesso) {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Bandeira</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Bandeira</label>
           <input
             name="bandeira"
             value={form.bandeira}
@@ -177,7 +177,7 @@ if (sucesso) {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Limite Total</label>
+          <label  className="label label-required font-bold text-[#1e40af]">Limite Total</label>
           <input
             type="number"
             name="limite_total"
@@ -189,7 +189,7 @@ if (sucesso) {
 
         <div className="flex gap-4">
           <div className="w-1/3">
-            <label className="font-bold text-[#1e40af]">Fechamento dia</label>
+            <label   className="label label-required font-bold text-[#1e40af]" >Fechamento dia</label>
             <input
               type="number"
               name="fechamento_dia"
@@ -200,7 +200,7 @@ if (sucesso) {
           </div>
 
           <div className="w-1/3">
-            <label className="font-bold text-[#1e40af]">vencimento dia</label>
+            <label  className="label label-required font-bold text-[#1e40af]" >vencimento dia</label>
             <input
               type="number"
               name="vencimento_dia"
@@ -211,7 +211,7 @@ if (sucesso) {
           </div>
 
           <div className="w-1/3">
-            <label className="font-bold text-[#1e40af]">Vencimento (MM/AA)</label>
+            <label   className="label label-required font-bold text-[#1e40af]">Vencimento (MM/AA)</label>
             <input
               name="vencimento"
               value={form.vencimento}
@@ -222,7 +222,7 @@ if (sucesso) {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Número do Cartão</label>
+          <label   className="label label-required font-bold text-[#1e40af]" >Número do Cartão</label>
           <input
             name="numero"
             value={form.numero}
@@ -232,7 +232,7 @@ if (sucesso) {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Nome no Cartão</label>
+          <label   className="label label-required font-bold text-[#1e40af]" >Nome no Cartão</label>
           <input
             name="NomeCartao"
             value={form.nomecartao}

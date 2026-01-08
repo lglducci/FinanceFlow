@@ -3,7 +3,7 @@
 
 import { buildWebhookUrl } from "../config/globals";
 import { callApi } from "../utils/api";   
- import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 
 export default function ProcessarDiario() {

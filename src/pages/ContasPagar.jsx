@@ -160,18 +160,21 @@ useEffect(() => {
   }
 }, [periodo]);
 
+ 
 async function pagarSelecionadas() {
+  if (loading) return; // 🔒 trava dupla execução
+
   if (selecionadas.length === 0) {
     alert("Selecione ao menos 1 conta.");
     return;
   }
 
   if (!conta_id || conta_id === 0) {
-    alert("Selecione a CONTA BANCÁRIA para pagar.");
+    alert("Selecione a conta bancária.");
     return;
   }
 
-  if (!confirm(`Pagar ${selecionadas.length} conta(s) usando esta conta bancária?`)) return;
+  setLoading(true); // 🔒 trava aqui
 
   try {
     const url = buildWebhookUrl("pagar_contas");
@@ -187,14 +190,19 @@ async function pagarSelecionadas() {
 
     const data = await resp.json();
 
-    alert(data.mensagem || "Contas pagas com sucesso!");
+    if (data?.erro) {
+      alert(data.erro);
+      return;
+    }
 
+    alert("Contas pagas com sucesso!");
     setSelecionadas([]);
-    carregarLista();
+    pesquisar();
 
   } catch (err) {
-    console.error(err);
     alert("Erro ao pagar contas.");
+  } finally {
+    setLoading(false); // 🔓 libera
   }
 }
 

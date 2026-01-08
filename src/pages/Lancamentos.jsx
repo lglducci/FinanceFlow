@@ -36,7 +36,14 @@ const [fornecedores, setFornecedores] = useState([]);
   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
 
+ function formatarDataBR(data) {
+  if (!data) return "-";
 
+  // força yyyy-mm-dd
+  const [ano, mes, dia] = data.split("T")[0].split("-");
+
+  return `${dia}/${mes}/${ano}`;
+}
 
 
   // ------------------- CARREGAR SALDO DA CONTA -------------------
@@ -272,11 +279,12 @@ const [fornecedores, setFornecedores] = useState([]);
             currency: "BRL",
           }),
           // *** AQUI: sempre a data EXATA do banco ***
-          data: new Date(l.data_movimento).toLocaleDateString("pt-BR"),
+          data: formatarDataBR(l.data_movimento),
           // *** Origem com primeira maiúscula ***
           origem: l.origem
             ? l.origem.charAt(0).toUpperCase() + l.origem.slice(1)
             : "-",
+          evento_codigo: l.evento_codigo
         };
       });
        //  ✔️ EXATAMENTE AQUI  
@@ -603,6 +611,7 @@ useEffect(() => {
 
                 {/* Valor mais para esquerda */}
                 <th className="text-right py-2 px-1 w-20 text-base">Valor</th>
+                
 
                  {/* 👉 ADICIONE ESTA LINHA */}
                  <th className="text-center py-2 px-2 w-24 text-base">Ação</th>
@@ -616,6 +625,7 @@ useEffect(() => {
 
            <tbody>
               {lista.map((l, i) => (
+                
                 <tr
                   key={l.id}
                   className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
@@ -648,26 +658,42 @@ useEffect(() => {
                     {l.valor}
                   </td>
  
-
-
+                  
                   {/* AÇÕES */}
                   <td className="px-3 py-1 text-center space-x-4">
 
                     {/* EDITAR */}
                     <button
                       onClick={() => editarLancamento(l.id)}
-                      className="text-blue-600 underline font-bold"
+                      className={
+                          String(l.origem).trim().toUpperCase() === 'ESTORNO' 
+                            ? 'text-gray-400 underline font-bold cursor-not-allowed'
+                            : 'text-blue-600 underline font-bold'
+                        }
+                        disabled={
+                                String(l.origem).trim().toUpperCase() === 'ESTORNO' 
+                              }
+
                     >
                       Editar
                     </button>
 
                     {/* ESTORNAR */}
-                    <button
+                    <button  
                       onClick={() => Estornar(l.id)}
-                      className="text-red-600 underline font-bold"
+                     className={
+                        String(l.origem).trim().toUpperCase() === 'ESTORNO' 
+                          ? 'text-gray-400 underline font-bold cursor-not-allowed'
+                          : 'text-red-600 underline font-bold'
+                      }
+                         disabled={
+                            String(l.origem).trim().toUpperCase() === 'ESTORNO' 
+                          }
+
                     >
                       Estornar
                     </button>
+                     
 
                   </td>
                 </tr>

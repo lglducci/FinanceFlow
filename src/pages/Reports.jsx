@@ -102,7 +102,7 @@ export default function Reports() {
       icon: <IconCashFlow />,
     },
     {
-      title: "Diário Contábil",
+      title: "Lançamentos Contábeis",
       desc: "Lançamentos contábeis do período",
       path: "/relatorios/diario",
        icon: <IconJournal />,

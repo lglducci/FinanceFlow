@@ -159,9 +159,10 @@ const THEME = {
 
 
     <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-3xl mx-auto rounded-2xl p-4 shadow-xl bg-[#1e40af] text-white mt-1 mb-1">   
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
+
         <h1
-        className="text-2xl md:text-2xl font-bold mb-6 text-center"
+          className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center"
         style={{ color: THEME.title }}
       >
         ✏️ Editar Fornecedor / Cliente
@@ -171,7 +172,7 @@ const THEME = {
   
 
         <div>
-          <label className="font-bold text-[#1e40af]">Tipo</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Tipo</label>
           <select
             name="tipo"
             value={form.tipo}
@@ -186,7 +187,7 @@ const THEME = {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Nome</label>
+          <label   className="label label-required font-bold text-[#1e40af]" >Nome</label>
           <input
             name="nome"
             value={form.nome}
@@ -198,7 +199,7 @@ const THEME = {
 
         <div className="flex gap-4">
           <div className="w-1/2">
-            <label className="font-bold text-[#1e40af]">CPF/CNPJ</label>
+            <label   className="label label-required font-bold text-[#1e40af]">CPF/CNPJ</label>
             <input
               name="cpf_cnpj"
               value={form.cpf_cnpj}
@@ -209,7 +210,7 @@ const THEME = {
           </div>
 
           <div className="w-1/2">
-            <label className="font-bold text-[#1e40af]">RG / IE</label>
+            <label   className="label label-required font-bold text-[#1e40af]" >RG / IE</label>
             <input
               name="rg_ie"
               value={form.rg_ie}
@@ -222,7 +223,7 @@ const THEME = {
 
         <div className="flex gap-4">
           <div className="w-1/2">
-            <label className="font-bold text-[#1e40af]">Telefone</label>
+            <label  className="label label-required font-bold text-[#1e40af]">Telefone</label>
             <input
               name="telefone"
               value={form.telefone}
@@ -233,7 +234,7 @@ const THEME = {
           </div>
 
           <div className="w-1/2">
-            <label className="font-bold text-[#1e40af]">WhatsApp</label>
+            <label  className="label label-required font-bold text-[#1e40af]">WhatsApp</label>
             <input
               name="whatsapp"
               value={form.whatsapp}
@@ -245,7 +246,7 @@ const THEME = {
         </div>
 
         <div>
-          <label className="ffont-bold text-[#1e40af]">Email</label>
+          <label  className="label label-required font-bold text-[#1e40af]">Email</label>
           <input
             name="email"
             value={form.email}
@@ -256,7 +257,7 @@ const THEME = {
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Endereço</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Endereço</label>
           <input
             name="endereco"
             value={form.endereco}
@@ -268,7 +269,7 @@ const THEME = {
 
         <div className="flex gap-4">
           <div className="w-1/2">
-            <label className="font-bold text-[#1e40af]">Bairro</label>
+            <label   className="label label-required font-bold text-[#1e40af]">Bairro</label>
             <input
               name="bairro"
               value={form.bairro}
