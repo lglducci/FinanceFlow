@@ -77,8 +77,10 @@ import MapContabilImpacto from "./pages/MapContabilImpacto";
 
 import FluxoCaixaDetalhado from "./pages/FluxoCaixaDetalhado";
 import RelatoriosFluxoCaixaMensal from "./pages/RelatoriosFluxoCaixaMensal";
-
- 
+import CompraCartao from "./pages/CompraCartao";
+import LancamentosContabeis from "./pages/LancamentosContabeis";
+//import LancamentoContabilManual from "./pages/LancamentoContabilManual";
+import AlterarSaldo from "./pages/AlterarSaldo";
 
 
 
@@ -169,9 +171,11 @@ export default function App() {
     <Route path="/mapeamento-contabil/impacto" element={<MapContabilImpacto />}/>
     <Route path="/relatorios/fluxo-caixa-detalhado" element={<FluxoCaixaDetalhado />}/>
    <Route path="/relatorios/fluxo-caixa-mensal" element={<RelatoriosFluxoCaixaMensal />} />
-
-    
-
+  <Route path="/compras-cartao" element={<CompraCartao />} />
+  <Route path="/lancamentos-contabeis" element={<LancamentosContabeis />} />
+ {/*} <Route path="/lancamento-contabil-manual" element={<LancamentoContabilManual />} />*/}
+  <Route path="/alterar-saldo/:id" element={<AlterarSaldo />} />
+  <Route path="/lancamento-contabil-manual" element={<AlterarSaldo />} />
  
 </Routes>
 
