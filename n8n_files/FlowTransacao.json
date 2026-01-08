@@ -133,6 +133,7 @@
       "name": "registrar_despesa",
       "alwaysOutputData": true,
       "retryOnFail": false,
+      "executeOnce": false,
       "credentials": {
         "postgres": {
           "id": "XLdUjmOBeD6MkxJ4",
@@ -156,6 +157,7 @@
       "id": "8a104590-3be9-4f94-9872-2e6dfdeb696a",
       "name": "registrar_receita",
       "alwaysOutputData": true,
+      "executeOnce": true,
       "credentials": {
         "postgres": {
           "id": "XLdUjmOBeD6MkxJ4",
@@ -314,7 +316,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "580377bb-43da-491c-8b1f-49b611b0a02f",
+  "versionId": "f129b861-7417-49d8-985d-3b608f6f1c05",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
