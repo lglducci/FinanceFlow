@@ -81,6 +81,7 @@ import CompraCartao from "./pages/CompraCartao";
 import LancamentosContabeis from "./pages/LancamentosContabeis";
 //import LancamentoContabilManual from "./pages/LancamentoContabilManual";
 import AlterarSaldo from "./pages/AlterarSaldo";
+import TitulosVencidos from "./pages/TitulosVencidos";
 
 
 
@@ -176,7 +177,11 @@ export default function App() {
  {/*} <Route path="/lancamento-contabil-manual" element={<LancamentoContabilManual />} />*/}
   <Route path="/alterar-saldo/:id" element={<AlterarSaldo />} />
   <Route path="/lancamento-contabil-manual" element={<AlterarSaldo />} />
- 
+ <Route
+  path="/titulos-vencidos"
+  element={<TitulosVencidos />}
+/>
+
 </Routes>
 
 

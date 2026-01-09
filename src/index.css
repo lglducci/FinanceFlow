@@ -16,7 +16,7 @@ body {
     text-base 
     rounded-lg
     border-2
-    border-gray-300
+    border-gray-400
     bg-black
     text-black
     shadow-sm
@@ -37,6 +37,7 @@ body {
   height: 36px;      /* altura do campo */
   font-size: 16px;   /* tamanho da letra */
   padding: 6px 8px; /* padding vertical e horizontal */
+  
 }
 
 
