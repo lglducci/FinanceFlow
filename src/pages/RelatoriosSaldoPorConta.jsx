@@ -161,19 +161,19 @@ const navigate = useNavigate();
         <tbody>
             
           {  dados.filter((c) => mostrarZeradas || !linhaZerada(c)).map((c, idx) => (
-            <tr key={idx} className="border-b">
+            <tr key={idx}   className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
               
-              <td className="p-2">{c.codigo}</td>
-              <td className="p-2">{c.nome}</td>
-              <td className="p-2 text-right">
+              <td className="p-2 font-bold ">{c.codigo}</td>
+              <td className="p-2 font-bold ">{c.nome}</td>
+              <td className="p-2 text-right font-bold ">
                 
                    {fmt.format(c.saldo_inicial)}
               </td>
-              <td className="p-2 text-right">
+              <td className="p-2 text-right font-bold ">
                 
                    {fmt.format(c.total_debito)}
               </td>
-              <td className="p-2 text-right">
+              <td className="p-2 text-right font-bold ">
                 
                    {fmt.format( c.total_credito)}
               </td>

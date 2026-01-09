@@ -220,10 +220,9 @@ async function carregar() {
   //------------------------------------------------------------------
   return (
  
-
-    <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
-
+     <div className="min-h-screen py-6 px-4 bg-bgSoft">
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >
+    
         <h1
         className="text-2xl md:text-3xl font-bold mb-6 text-center"
         style={{ color: THEME.title }}
@@ -237,7 +236,7 @@ async function carregar() {
 
         {/* DESCRIÇÃO */}
         <div>
-          <label className="font-bold text-[#1e40af]">Descrição</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Descrição</label>
           <input
             name="descricao"
           
@@ -252,7 +251,7 @@ async function carregar() {
         {/* CATEGORIA */}
         <div>
           <div className="w-2/3"> 
-          <label className="font-bold text-[#1e40af]">Categoria</label>
+          <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
@@ -270,7 +269,7 @@ async function carregar() {
         {/* FORNECEDOR */}
         <div>
             <div className="w-2/3"> 
-          <label className="ffont-bold text-[#1e40af]">Fornecedor</label>
+          <label  className="label label-required font-bold text-[#1e40af]">Fornecedor</label>
           <select
             name="fornecedor_id"
             value={form.fornecedor_id}
@@ -289,7 +288,7 @@ async function carregar() {
          {/* VALOR */}
         <div>
               <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Valor</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Valor</label>
           <input
             type="number"
             name="valor" 
@@ -304,7 +303,7 @@ async function carregar() {
         {/* VENCIMENTO */}
         <div>
             <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Vencimento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
           <input
             type="date"
             name="vencimento"  
@@ -319,7 +318,7 @@ async function carregar() {
         {/* STATUS */}
         <div>
             <div className="w-1/3"> 
-          <label className="font-bold text-[#1e40af]">Status</label>
+          <label  className="label label-required font-bold text-[#1e40af]" >Status</label>
           <select
             name="status" 
             value={form.status}
@@ -338,7 +337,7 @@ async function carregar() {
 
         {/* documento */}
         <div>
-          <label className="font-bold text-[#1e40af]">Documento</label>
+          <label className="label label-required font-bold text-[#1e40af]">Documento</label>
           <input
             name="doc_ref"
           

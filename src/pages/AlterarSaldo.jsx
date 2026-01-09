@@ -93,7 +93,7 @@ export default function AlterarSaldo() {
   }
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
+    <div className="p-4 max-w-xl mx-auto">
 
      <div className="w-full max-w-2xl mx-auto rounded-2xl p-2 shadow-xl bg-[#1e40af]  mt-1 mb-1" >
 
@@ -170,14 +170,14 @@ export default function AlterarSaldo() {
           <button
             onClick={salvar}
             disabled={loading}
-            className="bg-blue-700 text-white px-6 py-2 rounded font-bold"
+              className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold"
           >
             Salvar
-          </button>
+          </button>  
 
           <button
             onClick={() => navigate(-1)}
-            className="bg-gray-400 text-white px-6 py-2 rounded font-bold"
+             className="flex-1 bg-gray-400 text-white px-4 py-3  rounded-lg font-semibold"
           >
             Cancelar
           </button>

@@ -251,7 +251,7 @@ async function salvar() {
               
         <button
           onClick={salvar}
-          className="flex-1  bg-green-600 text-white px-4 py-2 rounded font-semibold"
+            className="flex-1  bg-blue-600 text-white px-4 py-3 rounded font-semibold"
         >
           Salvar
         </button>

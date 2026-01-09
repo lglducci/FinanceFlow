@@ -52,9 +52,10 @@ export default function NovaContaContabil() {
         }}
       >
         {/* Código */}
-        <label>Código</label>
+        <label className="label label-required font-bold text-[#1e40af]">Código</label>
         <input
           value={form.codigo}
+           className="input-premium"
           onChange={(e) => setForm({ ...form, codigo: e.target.value })}
           placeholder="1.1.1.01"
           style={{
@@ -67,9 +68,10 @@ export default function NovaContaContabil() {
         />
 
         {/* Nome */}
-        <label>Nome</label>
+        <label className="label label-required font-bold text-[#1e40af]">Nome</label>
         <input
           value={form.nome}
+           className="input-premium"
           onChange={(e) => setForm({ ...form, nome: e.target.value })}
           placeholder="Nome da conta"
           style={{
@@ -82,9 +84,10 @@ export default function NovaContaContabil() {
         />
 
         {/* Tipo */}
-        <label>Tipo</label>
+        <label className="label label-required font-bold text-[#1e40af]" >Tipo</label>
         <select
           value={form.tipo}
+           className="input-premium"
           onChange={(e) => setForm({ ...form, tipo: e.target.value })}
           style={{
             width: "100%",
@@ -103,9 +106,10 @@ export default function NovaContaContabil() {
         </select>
 
         {/* Natureza */}
-        <label>Natureza</label>
+        <label className="label label-required font-bold text-[#1e40af]">Natureza</label>
         <select
           value={form.natureza}
+           className="input-premium"
           onChange={(e) => setForm({ ...form, natureza: e.target.value })}
           style={{
             width: "100%",
@@ -121,10 +125,11 @@ export default function NovaContaContabil() {
         </select>
 
         {/* Nível */}
-        <label>Nível</label>
+        <label className="label label-required font-bold text-[#1e40af]">Nível</label>
         <input
           type="number"
           value={form.nivel}
+           className="input-premium"
           onChange={(e) => setForm({ ...form, nivel: e.target.value })}
           placeholder="3"
           style={{
@@ -137,43 +142,24 @@ export default function NovaContaContabil() {
         />
 
         {/* BOTÕES */}
-        <div
-          style={{
-            marginTop: 20,
-            display: "flex",
-            justifyContent: "space-between",
-          }}
+           {/* BOTÕES */}
+             <div className="flex gap-6 pt-8 pb-8 pl-1">
+
+              
+        <button
+          onClick={salvar}
+            className="flex-1  bg-blue-600 text-white px-4 py-3 rounded font-semibold"
         >
-          <button
-            onClick={salvar}
-            style={{
-              width: "48%",
-              background: "#003ba2",
-              color: "white",
-              padding: 10,
-              borderRadius: 6,
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            Salvar
-          </button>
+          Salvar
+        </button>
 
           <button
-            onClick={() => navigate("/contascontabeis")}
-            style={{
-              width: "48%",
-              background: "#b0b0b0",
-              color: "black",
-              padding: 10,
-              borderRadius: 6,
-              border: "none",
-              cursor: "pointer",
-            }}
+            onClick={() => navigate( -1)}
+            className="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
           >
             Cancelar
           </button>
-        </div>
+     </div>
       </div>
     </div>
   );

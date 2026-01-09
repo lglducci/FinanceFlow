@@ -75,7 +75,7 @@ export default function NovaModeloContabil() {
         marginTop: 20,
       }}
     >
-      <div  className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" 
+      <div  className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]  mt-1 mb-1" 
        
       >
         {/* TÍTULO */}
@@ -100,10 +100,11 @@ export default function NovaModeloContabil() {
           }}
         >
           {/* CÓDIGO */}
-          <label>Código</label>
+          <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Código</label>
           <input
             type="text"
             value={form.codigo}
+               className="input-premium"
             onChange={(e) =>
               setForm((f) => ({ ...f, codigo: e.target.value }))
             }
@@ -118,10 +119,11 @@ export default function NovaModeloContabil() {
           />
 
           {/* NOME */}
-          <label>Nome</label>
+          <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Nome</label>
           <input
             type="text"
             value={form.nome}
+               className="input-premium"
             onChange={(e) =>
               setForm((f) => ({ ...f, nome: e.target.value }))
             }
@@ -136,10 +138,11 @@ export default function NovaModeloContabil() {
           />
 
           {/* TIPO */}
-          <label>Tipo Automação</label>
+          <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Tipo Automação</label>
           <input
             type="text"
             value={form.tipo_automacao}
+               className="input-premium"
               disabled
             onChange={(e) =>
               setForm((f) => ({ ...f, tipo_automacao: e.target.value }))

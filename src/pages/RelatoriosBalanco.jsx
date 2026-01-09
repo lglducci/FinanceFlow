@@ -128,7 +128,7 @@ const navigate = useNavigate();
           </thead>
         <tbody>
                 {dados.map((l, idx) => (
-                    <tr key={idx} className="border-b">
+                    <tr key={idx}  className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
                     <td className="p-3">{l.grupo}</td>
 
                     <td className="p-3">

@@ -208,12 +208,12 @@ const salvar = async () => {
 
         {/* 1 — Tipo */}
         <div>
-          <label   className="label label-required block font-bold text-[#1e40af]" >Tipo</label>
+          <label   className="label label-required block font-bold text-[#1e40af] mt-4" >Tipo</label>
            <select
               name="tipo"
               value={form.tipo}
               disabled
-              className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300 bg-gray-200 text-gray-600 cursor-not-allowed"
+              className="input-premium"
             >
               <option value="entrada">Entrada</option>
               <option value="saida">Saída</option>
@@ -228,7 +228,7 @@ const salvar = async () => {
             name="categoria_id"
             value={form.categoria_id}
             onChange={onChange}
-             className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+             className="input-premium"
           >
             <option value="">Selecione</option>
             {categorias.map((c) => (
@@ -246,7 +246,7 @@ const salvar = async () => {
               name="conta_id"
               value={form.conta_id}
               onChange={onChange}
-               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+               className="input-premium"
             >
               <option value="">Selecione</option>
               {contas.map((c) => (
@@ -262,7 +262,7 @@ const salvar = async () => {
               name="valor"
               value={form.valor}
               onChange={onChange}
-               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+              className="input-premium"
             />
           </div>
 
@@ -278,7 +278,7 @@ const salvar = async () => {
               name="data_movimento"
               value={form.data_movimento}
               onChange={onChange}
-               className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+               className="input-premium"
             />
           </div>
 
@@ -289,8 +289,8 @@ const salvar = async () => {
               name="origem"
               value={form.origem}
               onChange={onChange}
-                  disabled
-              className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300 bg-gray-200 text-gray-600 cursor-not-allowed"
+              disabled
+               className="input-premium"
             />
           </div>
 
@@ -304,7 +304,7 @@ const salvar = async () => {
             name="descricao"
             value={form.descricao}
             onChange={onChange}
-             className= "border font-bold rounded px-2 py-2  w-[680px] mb-2 border-gray-300"
+             className="input-premium"
           />
         </div>
 

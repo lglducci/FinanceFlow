@@ -231,8 +231,8 @@ if (!form.contanbil_id) {
 
 
   return ( 
-         <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-         <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
+          <div className="min-h-screen py-6 px-4 bg-bgSoft">
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >  
 
         <h1
         className="text-2xl md:text-3xl font-bold mb-6 text-center"

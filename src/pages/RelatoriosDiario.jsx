@@ -169,7 +169,7 @@ const filtrados = dados.filter(item => {
           </thead>
           <tbody>
             {filtrados.map((l, i) => (
-              <tr key={i} className="border-b">
+              <tr key={i}   className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"} >
                  {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
                  <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data_mov)}</td>  
                 <td   className="p-2 font-bold text-left font-size: 16px">{l.diario_id}</td>

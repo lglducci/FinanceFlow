@@ -479,33 +479,25 @@ async function pagarSelecionadas() {
         {/* ------------------------- */}
         {/* 🟦 COLUNA 2 — CARD SALDO */}
         {/* ------------------------- */}
-        <div className="bg-gray-100 rounded-xl shadow p-5 border w-full flex justify-left items-start">
+       
+       <div className="bg-gray-100 rounded-xl shadow p-4 border-l-4 border-blue-900 h-100 w-[500px] mt-5"> 
+        {dadosConta && (
+          <>
+            <h3 className="font-bold text-xl text-blue-700 mb-4">
+              🏦 {dadosConta.conta_nome}
+            </h3>
 
-          
+            <p  className="text-gray-700 font-bold text-bas mt-2"><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
+            <p className="text-gray-700 font-bold text-base mt-2"><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
+            <p className="text-gray-700 font-bold text-base mt-2"><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p> 
+            <p className="text-green-700 font-bold text-xl mt-4">
+              Saldo final: R$
+              {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
+            </p>
+          </>
+        )}
 
-          {!dadosConta && (
-            <p className="text-gray-500 font-bold">Selecione uma conta</p>
-          )}
-
-          {dadosConta && (
-            <div className="bg-gray-100 rounded-xl shadow p-4 border-l-4 border-blue-700 w-[560px] h-fit ">
-              <h3 className="font-bold text-lg text-blue-700 mb-2">🏦 {dadosConta.conta_nome}</h3>
-
-              <p className="text-sm"><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-              <p className="text-sm"><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-              <p className="text-sm"><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p>
-              <p className="text-sm"><strong>Conjunta:</strong> {dadosConta.conjunta ? "Sim" : "Não"}</p>
-              <p className="text-sm"><strong>Jurídica:</strong> {dadosConta.juridica ? "Sim" : "Não"}</p> 
-              <p className="text-green-700 font-bold text-lg mt-3">
-                Saldo final: R$ {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-              </p> 
-
-
-
-            </div>
-          )}
-
-        </div>
+      </div>
 
       </div>
     </div>

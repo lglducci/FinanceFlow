@@ -23,7 +23,7 @@ const [saldoFinal, setSaldoFinal] = useState(0);
 const [contas, setContas] = useState([0]);
 const [loading, setLoading] = useState(false);
 
-  const empresa_id = localStorage.getItem("empresa_id") || 1;
+  const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
   const navigate = useNavigate();
 
   const [contaId, setContaId] = useState("");
@@ -214,11 +214,7 @@ const [fornecedores, setFornecedores] = useState([]);
     
   }, [empresa_id]);
   // ⭐ AQUI EMBAIXO
-      useEffect(() => {
-        if (contas.length > 0 && !contaId) {
-          setContaId(contas[0].id);
-        }
-      }, [contas]);
+   
 
 
       useEffect(() => {
@@ -371,37 +367,37 @@ useEffect(() => {
       <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
 
-    {/* COLUNA 1 - FILTROS  
-    <div className="bg-gray-100 p-6 rounded-xl shadow border-[1px] border-gray-300">*/}
-       <div className="bg-gray-100 rounded-xl shadow p-2 border w-full h-fit">
+                {/* COLUNA 1 - FILTROS  
+                <div className="bg-gray-100 p-6 rounded-xl shadow border-[1px] border-gray-300">*/}
+                  <div className="bg-gray-100 rounded-xl shadow p-2 border w-full h-fit">
 
-        {/* linha 1 - períodos */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-col">
-            <span className="text-base font-bold mb-1 text-[#1e40af]">Períodos</span>
+                    {/* linha 1 - períodos */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div className="flex flex-col">
+                        <span className="text-base font-bold mb-1 text-[#1e40af]">Períodos</span>
 
-            <div className="flex gap-4 text-base font-bold flex-wrap text-[#1e40af]">
-              {["mes", "15", "semana", "hoje"].map((tipo) => (
-                <label key={tipo}>
-                  <input
-                    type="checkbox"
-                    checked={periodo === tipo}
-                    onChange={() => handlePeriodoChange(tipo)}
-                    className="mr-1"
-                  />
-                  {tipo === "mes"
-                    ? "Mês"
-                    : tipo === "15"
-                    ? "Últimos 15 dias"
-                    : tipo === "semana"
-                    ? "Semana"
-                    : "Hoje"}
-                </label>
-              ))}
-            </div>
+                        <div className="flex gap-4 text-base font-bold flex-wrap text-[#1e40af]">
+                          {["mes", "15", "semana", "hoje"].map((tipo) => (
+                            <label key={tipo}>
+                              <input
+                                type="checkbox"
+                                checked={periodo === tipo}
+                                onChange={() => handlePeriodoChange(tipo)}
+                                className="mr-1"
+                              />
+                              {tipo === "mes"
+                                ? "Mês"
+                                : tipo === "15"
+                                ? "Últimos 15 dias"
+                                : tipo === "semana"
+                                ? "Semana"
+                                : "Hoje"}
+                            </label>
+                          ))}
+                        </div>
 
-          </div>
-        </div>
+                      </div>
+                 </div>
 
         {/* linha 2 */}
         <div className="bg-gray-100 shadow rounded-lg p-4 border-l-4 border-gray-300 mt-4">
@@ -500,28 +496,24 @@ useEffect(() => {
    
 
     {/* COLUNA 2 - DADOS DA CONTA */}
-    <div className="bg-white rounded-xl shadow p-4 border-l-4 border-blue-900 h-fit">
-
+    <div className="bg-gray-100 rounded-xl shadow p-4 border-l-4 border-blue-900 h-100 w-[500px] mt-5"> 
         {dadosConta && (
           <>
-            <h3 className="font-bold text-lg text-blue-700 mb-2">
+            <h3 className="font-bold text-xl text-blue-700 mb-4">
               🏦 {dadosConta.conta_nome}
             </h3>
 
-            <p><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-            <p><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-            <p><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p>
-            <p><strong>Conjunta:</strong> {dadosConta.conjunta ? "Sim" : "Não"}</p>
-            <p><strong>Jurídica:</strong> {dadosConta.juridica ? "Sim" : "Não"}</p>
-
-            <p className="text-green-700 font-bold text-lg mt-3">
+            <p  className="text-gray-700 font-bold text-base mt-2"><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
+            <p className="text-gray-700 font-bold text-base mt-2"><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
+            <p className="text-gray-700 font-bold text-base mt-2"><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p> 
+            <p className="text-green-700 font-bold text-xl mt-4">
               Saldo final: R$
               {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
             </p>
           </>
         )}
 
-    </div>
+      </div>
 </div>
 </div>
 </div>
@@ -598,7 +590,7 @@ useEffect(() => {
         {lista.length === 0 ? (
           <p className="text-gray-600 text-base">Nenhum lançamento encontrado.</p>
         ) : (
-          <table className="w-full text-sm">
+          <table className="w-full border-separate border-spacing-y-2">
             <thead>
               <tr className="border-b bg-blue-900 text-base text-white">
                 <th className="text-left py-2 px-2 w-10 text-base">ID</th>
@@ -634,7 +626,7 @@ useEffect(() => {
                   {/* REMOVE COMPLETAMENTE A COLUNA DO ID */}
                 <td className="px-3 font-bold ">{l.id}</td>
                   <td className="px-3 font-bold truncate max-w-xs text-base ">{l.descricao}</td>
-                  <td className="px-3 font-semibold text-sm ">{l.categoria_nome}</td>
+                  <td className="px-3 font-semibold text-base ">{l.categoria_nome}</td>
                   <td className="px-3 font-bold text-base">{l.conta_nome}</td>
 
                   <td

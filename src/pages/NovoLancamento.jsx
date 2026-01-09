@@ -167,9 +167,10 @@ export default function NovoLancamento() {
           <select
             name="tipo"
             value={form.tipo}
+            
             onChange={handleChange}
              placeholder="Tipo"
-            className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300"
+             className="input-premium"
           >
             <option value="entrada">Entrada</option>
             <option value="saida">Saída</option>
@@ -184,7 +185,7 @@ export default function NovoLancamento() {
             value={form.categoria_id}
             onChange={handleChange}
                placeholder="Categoria"
-              className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+               className="input-premium"
           >
             <option value="">Selecione</option>
             {categorias.map((c) => (
@@ -203,7 +204,7 @@ export default function NovoLancamento() {
                 value={form.conta_id}
                 onChange={handleChange}
                     placeholder="Conta Gerencial"
-                 className= "border font-bold rounded px-2 py-2  w-[380px]  mb-2 border-gray-300"
+                   className="input-premium"
               >
                 <option value="">Selecione</option>
                 {contas.map((c) => (
@@ -220,7 +221,7 @@ export default function NovoLancamento() {
                 value={form.valor}
                 onChange={handleChange}
                   placeholder="00,00"
-                 className= "border font-bold rounded px-2 py-2 w-52 mb-2 border-gray-300"
+                   className="input-premium"
               />
             </div>
 
@@ -234,7 +235,7 @@ export default function NovoLancamento() {
                 name="data"
                 value={form.data}
                 onChange={handleChange}
-                 className= "border font-bold rounded px-2 py-2 w-52 mb-2 border-gray-300"
+                 className="input-premium"
               />
             </div>
 
@@ -264,7 +265,7 @@ export default function NovoLancamento() {
             onChange={handleChange}
             placeholder="Descricao"
             rows="2"
-             className= "border font-bold rounded px-2 py-2 w-[680px] mb-4 border-gray-300"
+               className="input-premium"
           /> 
 
           {/* Botões */}

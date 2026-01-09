@@ -265,7 +265,8 @@ function linhaZerada(l) {
             <tbody>
                { dados.filter((l) => mostrarZeradas || !linhaZerada(l)).map((l, idx) => (
 
-                <tr key={idx} className="border-b"> 
+                <tr key={idx}  className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}  > 
+                
 
                  {tipo !== "m" && (<td   className="p-2 font-bold font-size: 16px">{formatarData(l.data_mov)}</td>)} 
                    {tipo === "m" && (<td    className={`p-2 font-bold ${

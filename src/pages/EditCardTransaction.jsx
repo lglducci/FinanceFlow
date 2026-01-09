@@ -143,9 +143,8 @@ const salvar = async () => {
 
 
   return (
-      <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
-    
+      <div className="min-h-screen py-6 px-4 bg-bgSoft">
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >
     
      <h2
           className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -154,7 +153,7 @@ const salvar = async () => {
           ✏️  Editar Transação de Cartão
         </h2>
 
-       <div className="bg-gray-100 flex flex-col  gap-2  space-y-4 px-6"> 
+       <div className="bg-gray-100 flex flex-col  gap-2   px-3"> 
 
       {/* CARTÃO */}
       <div className="mb-4">
@@ -172,7 +171,7 @@ const salvar = async () => {
           type="text"
           value={form.data_parcela}
           readOnly
-          className="border p-2 rounded w-[280px] bg-gray-200 w-[280px] text-gray-600 border-gray-300"
+           className="input-premium"
         />
       </div>
 
@@ -182,7 +181,7 @@ const salvar = async () => {
           type="text"
           value={form.valor}
           readOnly
-          className="border p-2 rounded  w-[280px]  bg-gray-200 text-gray-600 border-gray-300"
+            className="input-premium"
         />
       </div>
 
@@ -203,7 +202,8 @@ const salvar = async () => {
           type="text"
           value={form.descricao}
           onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-          className="border p-2 rounded w-[680px] border-gray-300"
+            className="input-premium"
+            rows={2}
         />
       </div>
 
@@ -213,6 +213,7 @@ const salvar = async () => {
           onClick={salvar}
           disabled={loading}
           className="flex-1 bg-blue-600 text-white px-4 py-3 rounded font-bold"
+          
         >
           Salvar
         </button>

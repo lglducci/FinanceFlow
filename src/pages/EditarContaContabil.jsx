@@ -80,24 +80,27 @@ export default function EditarContaContabil() {
         }}
       > 
           {/* CAMPOS */}
-          <label>Código</label>
+          <label className="label label-required font-bold text-[#1e40af]">Código</label>
           <input
             style={input}
             value={form.codigo}
+             className="input-premium"
             onChange={(e) => setForm({ ...form, codigo: e.target.value })}
           />
 
-          <label>Nome</label>
+          <label className="label label-required font-bold text-[#1e40af]">Nome</label>
           <input
             style={input}
             value={form.nome}
+             className="input-premium"
             onChange={(e) => setForm({ ...form, nome: e.target.value })}
           />
 
-          <label>Tipo</label>
+          <label className="label label-required font-bold text-[#1e40af]">Tipo</label>
           <select
             style={input}
             value={form.tipo}
+             className="input-premium"
             onChange={(e) => setForm({ ...form, tipo: e.target.value })}
           >
             <option value="">Selecione...</option>
@@ -108,10 +111,11 @@ export default function EditarContaContabil() {
             <option value="PL">PL</option>
           </select>
 
-          <label>Natureza</label>
+          <label className="label label-required font-bold text-[#1e40af]">Natureza</label>
           <select
             style={input}
             value={form.natureza}
+             className="input-premium"
             onChange={(e) => setForm({ ...form, natureza: e.target.value })}
           >
             <option value="">Selecione...</option>
@@ -119,10 +123,11 @@ export default function EditarContaContabil() {
             <option value="C">C</option>
           </select>
 
-          <label>Nível</label>
+          <label className="label label-required font-bold text-[#1e40af]">Nível</label>
           <input
             style={input}
             value={form.nivel}
+             className="input-premium"
             onChange={(e) => setForm({ ...form, nivel: e.target.value })}
           />
 

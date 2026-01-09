@@ -446,7 +446,7 @@ async function gerarContabil() {
               <tr
                 key={l.id}
                 style={{
-                  background: l.status === "erro" ? "#f64949ff" : "#19d357ff",
+                  background: l.status === "erro" ? "#f64949ff" : "#a4cdb2ff",
                   borderBottom: "1px solid rgba(187, 187, 204, 1)",
                 }}
               >

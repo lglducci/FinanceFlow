@@ -223,10 +223,8 @@ const THEME = {
 
   return (
  
-
-
-         <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-3xl mx-auto rounded-2xl p-6 shadow-xl bg-[#1e40af] text-white">  
+  <div className="min-h-screen py-6 px-4 bg-bgSoft">
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >  
 
         <h1
         className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -382,7 +380,7 @@ const THEME = {
         </div>
         </div>
              
-            <label className="font-bold text-[#1e40af] flex items-center gap-2">
+            <label className="font-bold text-[#1e40af] flex items-center gap-2 label label-required block ">
                 Conta Contábil *
                 <span className="relative group cursor-pointer">
                   <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">

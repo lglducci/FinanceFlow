@@ -113,9 +113,8 @@ export default function NovoCardTransaction() {
 
 
   return (
-     <div className="min-h-screen py-8 px-4 bg-bgSoft"> 
-      <div className="w-full max-w-4xl mx-auto rounded-xl p-6 shadow-xl bg-[#1e40af] text-blue">  
- 
+      <div className="min-h-screen py-6 px-4 bg-bgSoft">
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >
      <h2
           className="text-2xl md:text-3xl font-bold mb-6 text-center"
           style={{ color: "#ff9f43" }}
@@ -124,13 +123,13 @@ export default function NovoCardTransaction() {
         </h2>
 
 
-     <div className="bg-gray-100 flex flex-col  gap-2  space-y-4 px-6"> 
+     <div className="bg-gray-100 flex flex-col  gap-2  px-3"> 
       
 
       {/* Cartão */}
-      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Cartão</label>
+      <label className="block label label-required">Cartão</label>
       <select
-          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+            className="input-premium w-[480px]"
         value={cartaoSelecionado}
         onChange={(e) => setCartaoSelecionado(e.target.value)}
          placeholder="Nome do Cartão"
@@ -144,19 +143,19 @@ export default function NovoCardTransaction() {
       </select>
 
        {/* Data */}
-      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Data da Compra</label>
+      <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Data da Compra</label>
       <input
         type="date"
         name="data_parcela"
         value={form.data_parcela}
         onChange={handleChange}
-             placeholder="data compra"
-          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2  border-gray-300"
+         placeholder="data compra"
+           className="input-premium"
       />
 
       
       {/* Parcelas */}
-      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Parcelas</label>
+      <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Parcelas</label>
       <input
         type="number"
         name="parcelas"
@@ -164,18 +163,18 @@ export default function NovoCardTransaction() {
         value={form.parcelas}
         onChange={handleChange}
           placeholder="parcela"
-          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+            className="input-premium"
       />
 
       {/* Valor */}
-      <label className="block mb-1 text-base font-bold  text-[#1e40af]">Valor</label>
+      <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Valor</label>
       <input
         type="number"
         name="valor"
         value={form.valor}
         onChange={handleChange}
           placeholder="valor"
-          className= "border font-bold rounded px-2 py-2  w-[280px] mb-2 border-gray-300"
+           className="input-premium"
       />
  
 
@@ -183,21 +182,22 @@ export default function NovoCardTransaction() {
 
 
       {/* Descrição */}
-      <label className="block mb-1 text-base  font-bold  text-[#1e40af]">Descrição</label>
+      <label className="block mb-1 text-base  font-bold  text-[#1e40af] label label-required ">Descrição</label>
       <input
         type="text"
         name="descricao"
         value={form.descricao}
         onChange={handleChange}
         placeholder="descricao"
-          className="border font-bold rounded px-2 py-2 w-42 mb-2 border-gray-300"
+         className="input-premium"
+         rows={3}
       />
 
           
       
            <div>
             
-                <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                <label className="font-bold text-[#1e40af] flex items-center gap-2 label label-required">
                 Conta Contábil *
                 <span className="relative group cursor-pointer">
                   <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">

@@ -131,7 +131,7 @@ useEffect(() => {
           </thead>
           <tbody>
             {dados.map((l, idx) => (
-              <tr key={idx} className="border-b">
+              <tr key={idx}   className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
                 <td className="p-2 font-bold font-size: 16px">{l.codigo}</td>
                 <td className="p-2 font-bold font-size: 16px">{l.conta_nome}</td>
                 <td className="p-2 text-right font-bold font-size: 16px">{fmt.format(l.total_debito)}</td>
