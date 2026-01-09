@@ -37,7 +37,10 @@ export default function Sidebar() {
           <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />
           <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
-           <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />  
+           <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
+          <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} />
+         
+
  
         </MenuGroup>
 
