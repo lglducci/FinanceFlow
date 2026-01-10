@@ -1616,7 +1616,7 @@
             "conta_id": "={{ $json.conta_id }}",
             "historico": "={{ $json.historico }}",
             "credito": "={{ $json.valor_credito }}",
-            "ORIGEM": "MANUAL"
+            "origem": "MANUAL"
           },
           "matchingColumns": [
             "id"
@@ -1716,8 +1716,8 @@
               "removed": true
             },
             {
-              "id": "ORIGEM",
-              "displayName": "ORIGEM",
+              "id": "origem",
+              "displayName": "origem",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -2128,7 +2128,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "98bbe009-169e-4e3c-9c0b-a92bc6d1d1d5",
+  "versionId": "49fd9326-c5a3-41c2-ac0e-b21f1b3999b0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

@@ -143,7 +143,7 @@
             {
               "id": "b5a8de92-dfd5-4f17-81b7-ed513922b223",
               "name": "contabil_id",
-              "value": "={{ $json.body.contabil}}",
+              "value": "={{ $json.body.contabil_id}}",
               "type": "string"
             }
           ]
@@ -1067,7 +1067,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ea813d6d-ac90-41a2-81a2-f17bff107d8a",
+  "versionId": "d87dd8b3-844d-4641-9eab-cfcad89c5618",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

@@ -55,7 +55,7 @@
     {
       "parameters": {
         "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
-        "height": 1324,
+        "height": 1436,
         "width": 1328,
         "color": 4
       },
@@ -64,8 +64,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        32,
+        16
       ]
     },
     {
@@ -475,7 +475,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        416,
+        384,
         1072
       ],
       "id": "f29f342c-e12f-40de-9f2e-1b8763b27bfb",
@@ -501,6 +501,127 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1104,
+        1280
+      ],
+      "id": "86e0b0c6-bba9-4f5b-8c5a-5d1d15eced4a",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lancto_modelo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        1280
+      ],
+      "id": "7361d6e4-0779-4f4c-b93e-64f3e73601ba",
+      "name": "PartidaDobrada",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "c41666a4-f294-4f09-9bff-30c3673a3f29",
+              "name": "debito_id",
+              "value": "={{ $json.body.debito_id}}",
+              "type": "string"
+            },
+            {
+              "id": "e32d3677-2d6e-4c94-9ad2-489605ba8e2b",
+              "name": "credito_id",
+              "value": "={{ $json.body.credito_id}}",
+              "type": "string"
+            },
+            {
+              "id": "ba2d4fbe-252d-4841-a1e3-b8ee7ea4764e",
+              "name": "valor",
+              "value": "={{ $json.body.valor}}",
+              "type": "string"
+            },
+            {
+              "id": "b9fc7bbf-f777-4d8d-a46c-c756bf9274ca",
+              "name": "historico",
+              "value": "={{ $json.body.historico}}",
+              "type": "string"
+            },
+            {
+              "id": "a2282206-098b-4d5a-8195-35ed8041d618",
+              "name": "data_lancto",
+              "value": "={{ $json.body.data_lancto}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        1280
+      ],
+      "id": "438739c8-8303-48b3-9465-e95aa1faef04",
+      "name": "EditPartidaDobrada"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        1280
+      ],
+      "id": "8b8d8d97-38cf-4f9e-a53e-50bd00b6ae47",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  contab.ff_lancamento_partida_dobrada (\n    {{ $json.empresa_id }} , {{ $json.debito_id }},  {{ $json.credito_id }} , {{ $json.valor}} , '{{ $json.historico }}' , '{{ $json.data_lancto}}' )",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        672,
+        1280
+      ],
+      "id": "cb1fd4d5-7bc8-42b3-9f35-bd62dfa6e5ce",
+      "name": "ff_lancamento_partida_dobrada",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -509,6 +630,18 @@
         "json": {
           "empresa_id": 1,
           "dias": 15
+        }
+      }
+    ],
+    "EditPartidaDobrada": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "debito_id": 1,
+          "credito_id": 13,
+          "valor": null,
+          "historico": "stestes",
+          "data_lancto": null
         }
       }
     ]
@@ -711,13 +844,57 @@
           }
         ]
       ]
+    },
+    "PartidaDobrada": {
+      "main": [
+        [
+          {
+            "node": "EditPartidaDobrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditPartidaDobrada": {
+      "main": [
+        [
+          {
+            "node": "ff_lancamento_partida_dobrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_lancamento_partida_dobrada": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "c662f38d-50a8-468c-ac7a-7ae08fe8f0dd",
+  "versionId": "bd097c46-814f-4590-8803-21f845e095a2",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

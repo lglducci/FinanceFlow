@@ -714,7 +714,7 @@
         400
       ],
       "id": "f8d4358c-b0e8-432c-94ed-e14c91afea4e",
-      "name": "Insert rows in a table",
+      "name": "Cria Saldo Inicial",
       "credentials": {
         "postgres": {
           "id": "XLdUjmOBeD6MkxJ4",
@@ -828,14 +828,14 @@
       "main": [
         [
           {
-            "node": "Insert rows in a table",
+            "node": "Cria Saldo Inicial",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Insert rows in a table": {
+    "Cria Saldo Inicial": {
       "main": [
         [
           {
@@ -851,7 +851,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "66b27608-94e9-4b7e-9cbe-94fc48e6865a",
+  "versionId": "67793e34-d3c4-4395-8d19-e5f6a11bfbc6",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

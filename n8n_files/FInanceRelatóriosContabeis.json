@@ -1263,6 +1263,95 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        1952
+      ],
+      "id": "012a9dcd-6945-4572-962a-0e0998741d7e",
+      "name": "Respond to Webhook28"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        1952
+      ],
+      "id": "def231d2-5c33-4ec7-b3aa-4074512d811c",
+      "name": "Editflxcaixamensal1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM  contab.sp_fluxo_caixa_consolidado (\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        672,
+        1952
+      ],
+      "id": "8421a055-a5ad-41b8-9d72-f3fb5705cd54",
+      "name": "sp_fluxo_caixa_consolidado",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gera_fluxo_caixa_consolidado",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        1952
+      ],
+      "id": "7f895b43-190b-4f20-bac7-bf5f6235dd37",
+      "name": "Fluxo_Caixa_consolidado",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {
@@ -1738,13 +1827,46 @@
           }
         ]
       ]
+    },
+    "Editflxcaixamensal1": {
+      "main": [
+        [
+          {
+            "node": "sp_fluxo_caixa_consolidado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_fluxo_caixa_consolidado": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook28",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo_Caixa_consolidado": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixamensal1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "fd44b1c4-4b86-45b1-945d-5003c0ae2736",
+  "versionId": "d7e80ac8-a776-48c1-ac86-50ae9b3e5058",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
