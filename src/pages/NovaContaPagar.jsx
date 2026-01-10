@@ -20,6 +20,7 @@ export default function NovaContaPagar() {
   parcela_num: 1,
   status: "aberto",
   doc_ref: "",
+  contabil_id:0
 });
 
 
@@ -154,7 +155,7 @@ if (form.vencimento <= hoje) {
   return;
 }
 
-if (!form.contanbil_id) {
+if (!form.contabil_id) {
   alert("Conta contábil de despesa é obrigatório.");
   return;
 }

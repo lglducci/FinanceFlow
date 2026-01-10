@@ -74,26 +74,27 @@ export default function Reports() {
   const navigate = useNavigate();
 
   const cards = [
-    {
-      title: "Fluxo de Caixa Consolidado",
-      desc: "Entradas e saídas consolidado",
-      path: "/relatorios/fluxo-caixa",
-       icon: <IconCash />,
-    },
+    //{
+   //   title: "Fluxo de Caixa Consolidado",
+   //   desc: "Entradas e saídas consolidado",
+   //   path: "/relatorios/fluxo-caixa",
+   //    icon: <IconCash />,
+  //  },
 
     {
-      title: "Fluxo de Caixa Detalhado",
-      desc: "Entradas e saídas no período",
-      path: "/relatorios/fluxo-caixa-detalhado",
-       icon: <IconBook />,
-    },
-
-    {
-      title: "Fluxo de Caixa Mensal",
-      desc: "Entradas e saídas mensal",
-      path: "/relatorios/fluxo-caixa-mensal",
+      title: "Fluxo de Caixa",
+      desc: "Entradas e saídas no período, mensal e consolidado",
+     // path: "/relatorios/fluxo-caixa-detalhado",
+        path: "/relatorios/fluxo-caixa",
        icon: <IconChart />,
     },
+
+   // {
+ //     title: "Fluxo de Caixa Mensal",
+   //   desc: "Entradas e saídas mensal",
+//path: "/relatorios/fluxo-caixa-mensal",
+   //    icon: <IconChart />,
+   // },
 
     {
       title: "Saldos por Conta",
@@ -120,7 +121,7 @@ export default function Reports() {
         icon: <IconSigma />,
     },
     {
-      title: "Apuração PIS/COFINS",
+      title: "Apuração Tributacao",
       desc: "Resumo fiscal por período",
       path: "/relatorios/piscofins",
       icon: <IconReport />,

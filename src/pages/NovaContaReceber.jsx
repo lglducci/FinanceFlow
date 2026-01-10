@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
-import { hojeLocal, dataLocal } from "../utils/dataLocal";
+ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 
 export default function NovaContaReceber() {
   const navigate = useNavigate();
-  const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
+  const empresa_id = Number(localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa"));
    const [contas, setContas] = useState([]);
 
   const [form, setForm] = useState({
@@ -18,7 +18,8 @@ export default function NovaContaReceber() {
     parcelas: 1,
     parcela_num: 1,
     status: "aberto",
-    doc_ref:""
+    doc_ref:"",
+    contabil_id: 0 
   });
 
 
@@ -113,7 +114,7 @@ const THEME = {
     setSalvando(true);
 
       const hoje = hojeMaisDias(0);
-
+         
               // ================== VALIDAÇÕES ==================
           if (!form.descricao.trim()) {
             alert("Descrição é obrigatória.");
@@ -152,13 +153,13 @@ const THEME = {
             return;
           }
 
-          if (!form.contanbil_id) {
+          if (!form.contabil_id) {
             alert("Conta contábil de despesa é obrigatório.");
             return;
           }
-
+          
     const url = buildWebhookUrl("novacontareceber");
-
+ 
     const resp = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

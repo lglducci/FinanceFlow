@@ -88,7 +88,7 @@ const btnPadrao =
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         empresa_id,
-        faturas: selecionadas,
+        contas: selecionadas,
         conta_id,
       }),
     });

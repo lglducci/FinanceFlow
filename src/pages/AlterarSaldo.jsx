@@ -148,10 +148,11 @@ export default function AlterarSaldo() {
           <label className="label label-required font-bold text-[#1e40af]">Valor</label>
           <input
             type="number"
-            step="0.01"
+            step="0.10"
             value={valor}
             onChange={e => setValor(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded" 
+            placeholder="00,00"
           />
         </div>
 

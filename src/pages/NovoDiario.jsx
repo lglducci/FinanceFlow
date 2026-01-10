@@ -197,14 +197,16 @@ export default function NovoDiario() {
   // -----------------------------------------------------
 
   return (
-    <div style={{ padding: 20, display: "flex", justifyContent: "center" }}>
-      <div style={{ width: 600, background: "#003ba2", padding: 20, borderRadius: 12 }}>
+ 
+     <div className="p-4 max-w-xl mx-auto">
+
+     <div className="w-full max-w-2xl mx-auto rounded-2xl p-2 shadow-xl bg-[#1e40af]  mt-1 mb-1" >
         
         <div style={{ textAlign: "center", color: "white", marginBottom: 15 }}>
-          <h2>📝 Novo Lançamento  Diário</h2>
+          <h2>📝 Novo Lançamento Diário</h2>
         </div>
 
-        <div style={{ background: "white", padding: 20, borderRadius: 10 }}>
+        <div style={{ background: "white", padding: 20, borderRadius: 8 }}>
 
           {/* ================= TOKEN ================= */}
           <label  className="label label-required font-bold text-[#1e40af]" >Token do Modelo</label>

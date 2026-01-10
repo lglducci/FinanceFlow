@@ -217,8 +217,8 @@ async function carregar() {
                {/*} <td>{l.parcelado ? "Sim" : "Não"}</td> 
                 <td>{l.numero_parcelas}</td>
                    <td>{l.parcela_atual}</td>*/}
-                <td style={{ display: "flex", gap: "28px" }} >
-                  <button
+                  <td style={{ display: "flex", gap: "28px" }} >
+                  <button 
                     onClick={() => 
                       navigate("/editar-diario", { state: { id: l.id } })
                     }
@@ -227,9 +227,9 @@ async function carregar() {
                     Editar
                   </button>
 
-                  <button style={{ color: "red" }}
+                   {/* <button style={{ color: "red" }}
                   >Excluir
-                  </button>
+                  </button>*/}
 
                 </td>
               </tr>

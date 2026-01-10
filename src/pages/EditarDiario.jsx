@@ -225,8 +225,9 @@ export default function EditarDiario() {
   // TELA
   // ===========================================================
   return (
-    <div style={{ padding: 20, display: "flex", justifyContent: "center" }}>
-      <div style={{ width: 600, background: "#003ba2", padding: 20, borderRadius: 12 }}>
+      <div className="p-4 max-w-xl mx-auto">
+
+     <div className="w-full max-w-2xl mx-auto rounded-2xl p-2 shadow-xl bg-[#1e40af]  mt-1 mb-1" >
 
         <div style={{ textAlign: "center", color: "white", marginBottom: 15 }}>
           <h2>📝 Editar Lançamento do Diário</h2>
