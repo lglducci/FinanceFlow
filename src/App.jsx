@@ -75,8 +75,8 @@ import  RelatoriosBalancoNiveis from "./pages/RelatoriosBalancoNiveis";
 import MapContabilImpacto from "./pages/MapContabilImpacto";
 
 
-import FluxoCaixaDetalhado from "./pages/FluxoCaixaDetalhado";
-import RelatoriosFluxoCaixaMensal from "./pages/RelatoriosFluxoCaixaMensal";
+//import FluxoCaixaDetalhado from "./pages/FluxoCaixaDetalhado";
+//import RelatoriosFluxoCaixaMensal from "./pages/RelatoriosFluxoCaixaMensal";
 
 import RelatorioFluxoCaixa from "./pages/RelatorioFluxoCaixa";
 
@@ -87,7 +87,7 @@ import AlterarSaldo from "./pages/AlterarSaldo";
 import TitulosVencidos from "./pages/TitulosVencidos";
 import LancamentoPartidaDobrada from "./pages/LancamentoPartidaDobrada";
 import LancamentoPartidaDobradaModelo from "./pages/LancamentoPartidaDobradaModelo";
-
+import TributosApuracao from "./pages/TributosApuracao";
 
 
 export default function App() {
@@ -174,9 +174,9 @@ export default function App() {
     <Route path="/relatorios/balanco-niveis" element={<RelatoriosBalancoNiveis />} />
     <Route path="/relatorios/gerencial" element={<RelatorioGerencial />} />
     <Route path="/mapeamento-contabil/impacto" element={<MapContabilImpacto />}/>
-    <Route path="/relatorios/fluxo-caixa-detalhado" element={<FluxoCaixaDetalhado />}/>
+    
       <Route path="/relatorios/fluxo-caixa" element={<RelatorioFluxoCaixa />}/>
-   <Route path="/relatorios/fluxo-caixa-mensal" element={<RelatoriosFluxoCaixaMensal />} />
+   
   <Route path="/compras-cartao" element={<CompraCartao />} />
   <Route path="/lancamentos-contabeis" element={<LancamentosContabeis />} />
  {/*} <Route path="/lancamento-contabil-manual" element={<LancamentoContabilManual />} />*/}
@@ -197,6 +197,10 @@ export default function App() {
   element={<LancamentoPartidaDobradaModelo />}
 />
 
+ <Route
+  path="/tributos/apuracao"
+  element={<TributosApuracao />}
+/>
 
 </Routes>
 
