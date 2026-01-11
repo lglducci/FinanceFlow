@@ -55,11 +55,23 @@ export default function Sidebar() {
            <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />
               
          <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
-  onClick={() => navigate("/lancamentos-contabeis")}
-/>
-
-     
+            onClick={() => navigate("/lancamentos-contabeis")}
+          /> 
         </MenuGroup>
+
+
+         <MenuGroup
+          icon={<IconBuilding />}
+          label="Apuração de tributos"
+          open={open === "tributos"}
+          onClick={() => toggle("tributos")}
+        >
+          <SubItem icon={<IconClipboard  />} label="Apuração de Tributos" onClick={() => navigate("/tributos/apuracao")} />
+         
+              
+         
+        </MenuGroup>
+
 
         <MenuGroup
           icon={<IconFolder />}
