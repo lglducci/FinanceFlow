@@ -980,7 +980,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza,\n    nivel,\n   sistema\nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND ( {{ $json.id }} IS NULL OR {{ $json.id }} = 0 OR id = {{ $json.id }} )\n  AND ( '{{ $json.dc }}' IS NULL OR '{{ $json.dc }}' = '' OR natureza = '{{ $json.dc }}' )\nORDER BY codigo;\n",
+        "query": " SELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza,\n    nivel,\n   sistema \nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND ( {{ $json.id }} IS NULL OR {{ $json.id }} = 0 OR id = {{ $json.id }} )\n  AND ( '{{ $json.dc }}' IS NULL OR '{{ $json.dc }}' = '' OR natureza = '{{ $json.dc }}' )\nORDER BY codigo;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -2081,7 +2081,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "9fc4a27e-9da8-4c6e-86b1-46918f8f1eb7",
+  "versionId": "03cce9c6-ea82-4dc3-9681-e4216b612261",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

@@ -1398,7 +1398,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT * from  contab.ff_razao_sintetico_mensal(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n   '{{ $json.filtro }}' \n);  \n",
+        "query": " SELECT * from  contab.ff_razao_sintetico_mensal(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n   '{{ $json.filtro }}' \n) \nleft join contab.contas  as c\non id = conta_id;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1545,29 +1545,6 @@
       "id": "73c5748b-1ac0-438f-a3ad-e639ee1f0aa6",
       "name": "LanctoContabil1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " Select  id, codigo, nome \n   from contab.contas \nwhere empresa_id = {{ $json.empresa_id }} order by codigo",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -1008,
-        912
-      ],
-      "id": "1cc183fa-2bf9-4fec-9122-5fc514ce9b9f",
-      "name": "ff_razao_sintetico_mensal (lancto Contabeis)1",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
-          "name": "FinanceFlow"
-        }
-      },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1745,6 +1722,29 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " Select  id, codigo, nome \n   from contab.contas \nwhere empresa_id = {{ $json.empresa_id }} \n   and analitica = true order by codigo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1008,
+        912
+      ],
+      "id": "1cc183fa-2bf9-4fec-9122-5fc514ce9b9f",
+      "name": "Contas Contabeis",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -2090,22 +2090,11 @@
         ]
       ]
     },
-    "ff_razao_sintetico_mensal (lancto Contabeis)1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook5",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Editcontas_contabeis_lancaveis": {
       "main": [
         [
           {
-            "node": "ff_razao_sintetico_mensal (lancto Contabeis)1",
+            "node": "Contas Contabeis",
             "type": "main",
             "index": 0
           }
@@ -2122,13 +2111,24 @@
           }
         ]
       ]
+    },
+    "Contas Contabeis": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "49fd9326-c5a3-41c2-ac0e-b21f1b3999b0",
+  "versionId": "b9569c2c-f1a8-41d4-8a33-945a50e763df",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
