@@ -250,7 +250,8 @@ export default function LancamentosContabeis() {
             )}
 
             {listaFiltrada.map((l, i) => (
-              
+                 
+  
               <tr
                 key={l.id}
                 className={i % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
@@ -259,6 +260,7 @@ export default function LancamentosContabeis() {
                 <td className="px-3 py-2 font-bold  text-center">{l.mes_ano}</td>
                 <td className="px-3 py-2 font-bold">{l.conta_codigo}</td>
                 <td className="px-3 py-2 font-bold">{l.conta_nome}</td>
+                  
                 <td className="px-3 py-2 text-right font-bold">
                   {Number(l.saldo_inicial).toLocaleString("pt-BR", {
                     style: "currency",
@@ -285,20 +287,31 @@ export default function LancamentosContabeis() {
                     currency: "BRL"
                   })}
                 </td>
+
+                <td className="font-bold text-center">
+                    {l.analitica == true || l.analitica == 1 ? "Sim" : "Não"}
+                  </td>
                 <td className="px-3 py-2 text-center">
-                  <button
-                    onClick={() => 
-                      navigate(`/alterar-saldo/${l.conta_id}`, {
+                 <button
+                        onClick={() =>
+                          l.analitica &&
+                          navigate(`/alterar-saldo/${l.conta_id}`, {
                             state: {
                               conta_codigo: l.conta_codigo,
-                              conta_nome: l.conta_nome
-                            }
-                          })  
-                    }
-                    className="text-blue-700 underline font-bold"
-                  >
-                    Alterar Saldo
-                  </button>
+                              conta_nome: l.conta_nome,
+                            },
+                          })
+                        }
+                        disabled={!l.analitica}
+                        className={`font-bold underline
+                          ${l.analitica
+                            ? "text-blue-700 hover:text-blue-900 cursor-pointer"
+                            : "text-gray-600 cursor-not-allowed opacity-60"}
+                        `}
+                      >
+                        Alterar Saldo
+</button>
+
                 </td>
               </tr>
             ))}

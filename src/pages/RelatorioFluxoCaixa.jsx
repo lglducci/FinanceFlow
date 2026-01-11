@@ -144,7 +144,7 @@ const dadosRender = dados.map((l) => {
             <tr className="bg-blue-900 text-white">
               <th className="text-left font-bold"> Data</th>
               <th>Código</th>
-              <th  className="text-left font-bold">Nome</th>
+              <th  className="text-left font-bold text-sm">Nome</th>
               <th  className="text-left font-bold">Histórico</th>
               <th   className="text-right font-bold">Entrada</th>
               <th  className="text-right font-bold">Saída</th>
@@ -158,13 +158,13 @@ const dadosRender = dados.map((l) => {
 
                 key={l.id}
                   className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6] border-b"}>
-                <td  className="text-left font-bold">{fmtData(l.data_mov)}</td>
-                <td  className="text-left font-bold">{l.conta_codigo}</td>
-                <td  className="text-left font-bold">{l.conta_nome}</td>
-                <td className="text-left font-bold">{l.historico}</td>
-                <td className="text-right text-green-600 font-bold">{fmt.format(l.entrada)}</td>
-                <td className="text-right text-red-600 font-bold">{fmt.format(l.saida)}</td>
-                <td className="text-right font-bold">{fmt.format(l.saldo_acumulado)}</td>
+                <td  className="text-left font-bold text-sm">{fmtData(l.data_mov)}</td>
+                <td  className="text-left font-bold text-sm">{l.conta_codigo}</td>
+                <td  className="text-left font-bold text-sm">{l.conta_nome}</td>
+                <td className="text-left  font-bold text-sm">{l.historico}</td>
+                <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.entrada)}</td>
+                <td className="text-right text-red-600 font-bold text-sm">{fmt.format(l.saida)}</td>
+                <td className="text-right font-bold text-sm">{fmt.format(l.saldo_acumulado)}</td>
               </tr>
             ))}
           </tbody>
@@ -187,12 +187,12 @@ const dadosRender = dados.map((l) => {
           <tbody>
             {dados.map((l, i) => (
               <tr key={i}>
-                <td className="text-left text-green-600" >{l.ano}</td>
-                <td className="text-left text-green-600">{l.mes}</td>
-                <td className="text-right text-green-600">{fmt.format(l.saldo_inicial)}</td>
-                <td className="text-right text-green-600">{fmt.format(l.entrada)}</td>
-                <td className="text-right text-red-600">{fmt.format(l.saida)}</td>
-                <td className="text-right font-bold">{fmt.format(l.saldo_final)}</td>
+                <td className="text-left text-green-600 font-bold text-sm" >{l.ano}</td>
+                <td className="text-left text-green-600 font-bold text-sm">{l.mes}</td>
+                <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.saldo_inicial)}</td>
+                <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.entrada)}</td>
+                <td className="text-right text-red-600 font-bold text-sm">{fmt.format(l.saida)}</td>
+                <td className="text-right font-bold text-sm">{fmt.format(l.saldo_final)}</td>
               </tr>
             ))}
           </tbody>

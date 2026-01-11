@@ -191,9 +191,36 @@ return (
 
         {/* MODELO */}
         <div className="space-y-2">
-          <label className="label label-required font-bold text-[#1e40af]">
-            Token do Modelo
-          </label>
+          
+
+
+             <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                  Token do Modelo*
+                <span className="relative group cursor-pointer">
+                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                    ?
+                  </span>
+                  <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                    <strong>O que é este campo?</strong>
+
+                    <p className="mt-2">
+                      Define o <b>modelo contábil</b> que será usado no lançamento.
+                    </p>
+
+                    <p className="mt-2">
+                      Ao escolher um modelo, o sistema já sabe quais contas serão usadas
+                      para <b>débito e crédito</b>.
+                    </p>
+
+                    <p className="mt-2 text-yellow-300">
+                      ⚠ Você não precisa selecionar as contas manualmente.
+                      O modelo funciona como um <b>template pronto de lançamento</b>.
+                    </p>
+                  </div> 
+                </span>
+              </label>
+
           <input
             list="listaTokens"
             value={form.modelo_codigo}
@@ -243,9 +270,41 @@ return (
 
         {/* TIPO */}
         <div className="space-y-2">
-          <label className="label label-required font-bold text-[#1e40af]">
-            Tipo do Lançamento
-          </label>
+
+
+
+          
+        
+            <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                  Tipo do Lançamento *
+                <span className="relative group cursor-pointer">
+                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                    ?
+                  </span>
+
+                  <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                            bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                        <strong>O que é este campo?</strong>
+
+                        <p className="mt-2">
+                          Define se o lançamento seguirá o <b>modelo original</b> ou se será um
+                          <b> estorno do modelo</b>.
+                        </p>
+
+                        <p className="mt-2">
+                          • <b>Normal</b>: aplica o débito e crédito exatamente como definidos no modelo.<br/>
+                          • <b>Estorno</b>: inverte as contas do modelo.
+                        </p>
+
+                        <p className="mt-2 text-yellow-300">
+                          ⚠ No estorno, o débito vira crédito e o crédito vira débito.
+                        </p>
+                      </div>
+
+                </span>
+              </label>
+
+
           <select
             className="input-premium"
             value={form.tipo_lancamento}
