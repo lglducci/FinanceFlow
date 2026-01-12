@@ -1,5 +1,6 @@
  import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { buildWebhookUrl } from "../config/globals";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function Sidebar() {
     localStorage.removeItem("ff_token");
     window.location.reload();
   };
+
 
   return (
     <aside className="w-60 bg-[#ffffffff]  text-blue-500 text-base font-medium  flex flex-col h-screen  8px border  border-blue-800/100">
@@ -62,7 +64,7 @@ export default function Sidebar() {
 
          <MenuGroup
           icon={<IconBuilding />}
-          label="Apuração de tributos"
+          label="Apurações e Obrigações"
           open={open === "tributos"}
           onClick={() => toggle("tributos")}
         >
@@ -88,8 +90,17 @@ export default function Sidebar() {
         </MenuGroup>
 
         <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />
-        <MenuItem icon={<IconSettings />} label="Configurações" onClick={() => navigate("/settings")} />
 
+         <MenuGroup
+          icon={<IconBuilding />}
+          label="Configurações"
+          open={open === "Configurações"}
+          onClick={() => toggle("Configurações")}
+        >
+
+ 
+         <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />
+          </MenuGroup>
       </nav>
 
       <div className="px-4 py-3 border 12px  border-blue-800/40  text-blue-600 font-bold ">
