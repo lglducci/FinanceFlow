@@ -12,6 +12,16 @@ export default function TributosApuracao() {
   const [lista, setLista] = useState([]);
   const [loading, setLoading] = useState(false);
 
+
+   // 👉 FORMATA DATA DA TABELA (remove horário)
+  const formatarData = (d) => {
+    if (!d) return "";
+    const dt = d.split("T")[0]; // só AAAA-MM-DD
+    const [ano, mes, dia] = dt.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
+
   async function apurar() {
     setLoading(true);
     try {
@@ -39,6 +49,47 @@ export default function TributosApuracao() {
       setLoading(false);
     }
   }
+ 
+
+  async function gerarObrigacao(apuracao_id) {
+
+ 
+
+  try {
+    const resp = await fetch(
+      buildWebhookUrl("gerarobrigacao"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+           empresa_id,
+        }),
+      }
+    );
+
+    const text = await resp.text();
+    let json = null;
+
+    try {
+      json = text ? JSON.parse(text) : null;
+    } catch {
+      throw new Error("Resposta inválida do servidor.");
+    }
+
+    if (!resp.ok || json?.ok === false) {
+      throw new Error(json?.message || "Erro ao gerar obrigação.");
+    }
+
+    return json; // { ok: true, obrigacao_id: X }
+
+  } catch (e) {
+    console.error("Erro gerarObrigacao:", e);
+    alert(e.message || "Erro de comunicação.");
+    return null;
+  }
+}
 
   return (
     <div className="p-4">
@@ -73,8 +124,19 @@ export default function TributosApuracao() {
           className="h-12 px-8 bg-blue-600 text-white font-bold rounded-lg"
           disabled={loading}
         >
-          {loading ? "Apurando..." : "Apurar"}
+          {loading ? "Apurando..." : "Apurar Tributos"}
         </button>
+
+
+        
+        <button
+          onClick={gerarObrigacao}
+          className="h-12 px-8 bg-red-600 text-white font-bold rounded-lg"
+          disabled={loading}
+        >
+          {loading ? "Gerando Obrigações..." : "Gerar Obrigação"}
+        </button>
+
       </div>
 
       {/* TABELA */}
@@ -83,6 +145,7 @@ export default function TributosApuracao() {
           <thead className="bg-blue-900 text-white text-sm">
   <tr>
     <th className="px-3 py-2 text-left font-semibold">Tributo</th>
+      <th className="px-3 py-2 text-left font-semibold">Nome</th>
     <th className="px-3 py-2 text-right font-semibold">Alíquota</th>
     <th className="px-3 py-2 text-right font-semibold">Base</th>
     <th className="px-3 py-2 text-right font-semibold">Valor</th>
@@ -106,17 +169,22 @@ export default function TributosApuracao() {
       className={i % 2 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
     >
       {/* DESCRIÇÃO */}
-      <td className="px-3 py-2 text-left font-semibold">
+      <td className="px-3 py-2 text-left font-bold">
         {l.tributo}
       </td>
 
+       {/* DESCRIÇÃO */}
+      <td className="px-3 py-2 text-left font-bold">
+        {l.codigo}
+      </td>
+
       {/* ALÍQUOTA */}
-      <td className="px-3 py-2 text-right font-semibold">
-        {Number(l.aliquota).toLocaleString("pt-BR")}%
+      <td className="px-3 py-2 text-right font-bold">
+        {Number(l. aliquota_apurada ).toLocaleString("pt-BR")}%
       </td>
 
       {/* BASE */}
-      <td className="px-3 py-2 text-right font-semibold">
+      <td className="px-3 py-2 text-right font-bold">
         {Number(l.base_calculo).toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
@@ -124,7 +192,7 @@ export default function TributosApuracao() {
       </td>
 
       {/* VALOR */}
-      <td className="px-3 py-2 text-right font-semibold">
+      <td className="px-3 py-2 text-right font-bold">
         {Number(l.valor_apurado).toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
@@ -132,13 +200,13 @@ export default function TributosApuracao() {
       </td>
 
       {/* PERÍODO */}
-      <td className="px-3 py-2 text-center font-semibold">
-        {dataIni} a {dataFim}
+      <td className="px-3 py-2 text-center font-bold">
+        {formatarData(l.data_final)} a {formatarData(dataFim)}
       </td>
 
       {/* STATUS */}
-      <td className="px-3 py-2 text-center font-semibold">
-        {l.status}
+      <td className="px-3 py-2 text-center font-bold">
+        {l.situacao}
       </td>
     </tr>
   ))}
