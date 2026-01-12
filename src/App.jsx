@@ -88,6 +88,8 @@ import TitulosVencidos from "./pages/TitulosVencidos";
 import LancamentoPartidaDobrada from "./pages/LancamentoPartidaDobrada";
 import LancamentoPartidaDobradaModelo from "./pages/LancamentoPartidaDobradaModelo";
 import TributosApuracao from "./pages/TributosApuracao";
+import Tributos from "./pages/Tributos";
+
 
 
 export default function App() {
@@ -200,6 +202,12 @@ export default function App() {
  <Route
   path="/tributos/apuracao"
   element={<TributosApuracao />}
+/>
+
+
+ <Route
+  path="/tributos/tributos"
+  element={<Tributos />}
 />
 
 </Routes>
