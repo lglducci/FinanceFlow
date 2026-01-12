@@ -29,12 +29,6 @@
             },
             {
               "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
-              "name": "data_inicio",
-              "value": "={{ $json.body.data_ini}}",
-              "type": "string"
-            },
-            {
-              "id": "be293112-684a-4018-8725-f24be9beedf3",
               "name": "data_fim",
               "value": "={{ $json.body.data_fim}}",
               "type": "string"
@@ -88,7 +82,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n\nSELECT * \nFROM   contab.apurar_tributos_periodo (\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}'\n);\n",
+        "query": " \n\nSELECT * \nFROM   contab.apurar_tributos_periodo (\n  {{ $json.empresa_id }},\n  '{{ $json.data_fim }}' \n);\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -105,9 +99,270 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        256
+      ],
+      "id": "d39e9d0f-785c-4fdd-944d-2b2b092f84ba",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        256
+      ],
+      "id": "0307a905-7927-4a4b-904e-fdea76740877",
+      "name": "Editflxcaixamensal"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gerarobrigacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        256
+      ],
+      "id": "a4480b34-8e6b-43b6-b390-0b9639b9c63f",
+      "name": "GeraObrigacaoe",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM   contab.gerar_obrigacoes_apuradas (\n  {{ $json.empresa_id }} \n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        256
+      ],
+      "id": "13f8d96e-f991-4952-805f-24bbff1b0234",
+      "name": "gerar_obrigacoes_apuradas",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        512
+      ],
+      "id": "1d777105-819d-48b1-a6e4-47979def3a50",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n  t.id,\n  t.codigo,\n  t.nome,\n  t.tipo,\n  t.ativo,\n  a.aliquota\nFROM contab.tributos t\nLEFT JOIN contab.tributo_aliquotas a\n  ON a.tributo_id = t.id\n AND a.empresa_id = t.empresa_id\n AND CURRENT_DATE BETWEEN a.data_ini AND COALESCE(a.data_fim, CURRENT_DATE)\nWHERE t.empresa_id =  {{ $json.empresa_id }}\nORDER BY t.tipo, t.codigo;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        512
+      ],
+      "id": "17769fcf-844f-4d3f-8b8a-31595b044ad7",
+      "name": "tributos",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "tributos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        512
+      ],
+      "id": "c7446a28-c8c3-4fd3-937c-ae9e471660eb",
+      "name": "Tributos",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        512
+      ],
+      "id": "68f36922-a7d8-4141-b06b-91b9f0ac178a",
+      "name": "EditTributos"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        720
+      ],
+      "id": "96156da1-7b78-4a97-bff5-6be335260bd4",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "c2906546-dfe8-4733-8f57-61fc605f229e",
+              "name": "tributo_id",
+              "value": "={{ $json.body.tributo_id}}",
+              "type": "string"
+            },
+            {
+              "id": "88b5d62c-008d-4398-9461-432dbf15c3b6",
+              "name": "ativo",
+              "value": "={{ $json.body.ativo}}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        720
+      ],
+      "id": "8b68bf01-44fa-4e80-8018-7dabc8845d82",
+      "name": "EditTributos1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from contab.ativar_tributo(\n  {{ $json.empresa_id }} ,\n  {{ $json.tributo_id }} ,\n  {{ $json.ativo }}\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        720
+      ],
+      "id": "a081dc23-f1d4-4300-97f1-69710c19a7a2",
+      "name": "ff_ativar_tributo",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ativatributo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        720
+      ],
+      "id": "f51c24f2-7167-489f-99ab-8417b703c8fa",
+      "name": "ativatributo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "EditTributos": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": null,
+          "data_fim": null
+        }
+      }
+    ],
+    "EditTributos1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "tributo_id": 1,
+          "ativo": true
+        }
+      }
+    ]
+  },
   "connections": {
     "Editflxcaixamensal1": {
       "main": [
@@ -141,13 +396,112 @@
           }
         ]
       ]
+    },
+    "Editflxcaixamensal": {
+      "main": [
+        [
+          {
+            "node": "gerar_obrigacoes_apuradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GeraObrigacaoe": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixamensal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gerar_obrigacoes_apuradas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tributos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tributos": {
+      "main": [
+        [
+          {
+            "node": "EditTributos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditTributos": {
+      "main": [
+        [
+          {
+            "node": "tributos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditTributos1": {
+      "main": [
+        [
+          {
+            "node": "ff_ativar_tributo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_ativar_tributo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ativatributo": {
+      "main": [
+        [
+          {
+            "node": "EditTributos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d9e35b61-16ce-4e2c-8730-961714d9f5b0",
+  "versionId": "332380eb-c19c-4d92-abd2-807d079a3a5a",
   "meta": {
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
