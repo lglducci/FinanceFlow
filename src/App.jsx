@@ -90,6 +90,8 @@ import LancamentoPartidaDobradaModelo from "./pages/LancamentoPartidaDobradaMode
 import TributosApuracao from "./pages/TributosApuracao";
 import Tributos from "./pages/Tributos";
 
+import ConfiguracaoMeuNegocio from "./pages/ConfiguracaoMeuNegocio";
+
 
 
 export default function App() {
@@ -208,6 +210,11 @@ export default function App() {
  <Route
   path="/tributos/tributos"
   element={<Tributos />}
+/>
+
+ <Route
+  path="/meunegocio/meunegocio"
+  element={<ConfiguracaoMeuNegocio />}
 />
 
 </Routes>
