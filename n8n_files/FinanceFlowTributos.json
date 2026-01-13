@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        256,
-        -16
+        400,
+        -112
       ],
       "id": "012d7b0d-8631-48b1-a803-d4c04543c11f",
       "name": "Respond to Webhook28"
@@ -40,8 +40,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -144,
-        -16
+        0,
+        -112
       ],
       "id": "9992e58e-c01b-43de-9e13-137f199601e4",
       "name": "Editflxcaixamensal1"
@@ -56,8 +56,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -368,
-        -16
+        -224,
+        -112
       ],
       "id": "69f0bf99-6f55-4830-b556-434abac53339",
       "name": "ApuracaoTributos",
@@ -66,8 +66,8 @@
     {
       "parameters": {
         "content": "## Apuração de Triputos\nRelativo a processo de apuração de tributos.",
-        "height": 1164,
-        "width": 1328,
+        "height": 924,
+        "width": 1248,
         "color": 3
       },
       "id": "5487063f-06f9-492a-8405-8d27ea8277d6",
@@ -88,8 +88,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        48,
-        -16
+        192,
+        -112
       ],
       "id": "89a567e5-bc01-46d6-999e-c696936ad17c",
       "name": "apurar_tributos_periodo",
@@ -110,8 +110,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        240,
-        256
+        416,
+        80
       ],
       "id": "d39e9d0f-785c-4fdd-944d-2b2b092f84ba",
       "name": "Respond to Webhook"
@@ -133,8 +133,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -160,
-        256
+        16,
+        80
       ],
       "id": "0307a905-7927-4a4b-904e-fdea76740877",
       "name": "Editflxcaixamensal"
@@ -149,8 +149,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -384,
-        256
+        -208,
+        80
       ],
       "id": "a4480b34-8e6b-43b6-b390-0b9639b9c63f",
       "name": "GeraObrigacaoe",
@@ -165,8 +165,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        32,
-        256
+        208,
+        80
       ],
       "id": "13f8d96e-f991-4952-805f-24bbff1b0234",
       "name": "gerar_obrigacoes_apuradas",
@@ -187,8 +187,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        240,
-        512
+        416,
+        272
       ],
       "id": "1d777105-819d-48b1-a6e4-47979def3a50",
       "name": "Respond to Webhook1"
@@ -202,8 +202,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        32,
-        512
+        208,
+        272
       ],
       "id": "17769fcf-844f-4d3f-8b8a-31595b044ad7",
       "name": "tributos",
@@ -223,8 +223,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -384,
-        512
+        -208,
+        272
       ],
       "id": "c7446a28-c8c3-4fd3-937c-ae9e471660eb",
       "name": "Tributos",
@@ -247,8 +247,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -160,
-        512
+        16,
+        272
       ],
       "id": "68f36922-a7d8-4141-b06b-91b9f0ac178a",
       "name": "EditTributos"
@@ -263,8 +263,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        240,
-        720
+        416,
+        480
       ],
       "id": "96156da1-7b78-4a97-bff5-6be335260bd4",
       "name": "Respond to Webhook2"
@@ -298,8 +298,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -160,
-        720
+        16,
+        480
       ],
       "id": "8b68bf01-44fa-4e80-8018-7dabc8845d82",
       "name": "EditTributos1"
@@ -313,8 +313,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        32,
-        720
+        208,
+        480
       ],
       "id": "a081dc23-f1d4-4300-97f1-69710c19a7a2",
       "name": "ff_ativar_tributo",
@@ -335,11 +335,217 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -384,
-        720
+        -208,
+        480
       ],
       "id": "f51c24f2-7167-489f-99ab-8417b703c8fa",
       "name": "ativatributo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1120,
+        -80
+      ],
+      "id": "70c59061-239b-4ac4-8995-7006677e91ad",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "content": "## Apuração de Triputos\nRelativo a processo de apuração de tributos.",
+        "height": 924,
+        "width": 1248,
+        "color": 4
+      },
+      "id": "3c725778-f205-4dc6-9843-75966f53652e",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2016,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1088,
+        160
+      ],
+      "id": "7a25302d-094b-427a-b375-b083443e7c1b",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "apuracao_analitico",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1744,
+        -80
+      ],
+      "id": "d0a3e081-0a7f-4e29-8745-2aec48a0827b",
+      "name": "relapuracaoanalitico",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "c4459b54-c489-4957-8784-ae9d8bf5f83f",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "4c3dfa1e-3757-451d-ab13-27853190004d",
+              "name": "status",
+              "value": "={{ $json.body.status}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1536,
+        -80
+      ],
+      "id": "141dce47-eab5-439b-9fec-ad5900c15d91",
+      "name": "EditApuranalitico"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    ta.empresa_id,\n    ta.tributo_id tributo,\n    t.codigo, \n    ta.data_ini,\n    ta.data_fim data_final,\n    ta.base_calculo,\n    ta.aliquota aliquota_apurada,\n    ta.valor_apurado  ,\n    ta.status situacao\nFROM contab.tributo_apuracao ta\ninner join contab.tributos t \non t.id =ta.tributo_id \nand t.empresa_id  = ta.empresa_id\nWHERE ta.empresa_id = 1\n  AND ta.data_ini >=  '{{ $json.data_ini }}'\n  AND ta.data_fim <= '{{ $json.data_fim }}'  \nand (  status = '{{ $json.status }}' or status  IS null  or status = '')\n  order by ta.data_ini, t.codigo  asc",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1296,
+        -80
+      ],
+      "id": "dfae2d2a-e1d1-4497-98ec-b414ce29129c",
+      "name": "ConsultaApuracaoAnalitico",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n    ta.empresa_id, \n    ta.data_ini,\n    ta.data_fim data_final,\n    \n    (sum(ta.valor_apurado)  \n  /  max( ta.base_calculo) ) * 100 aliquota_apurada,        \n   max( ta.base_calculo) base_calculo, \n    sum(ta.valor_apurado) valor_apurado,\n    ta.status situacao\nFROM contab.tributo_apuracao ta\ninner join contab.tributos t \non t.id =ta.tributo_id \nand t.empresa_id  = ta.empresa_id\nWHERE ta.empresa_id = 1\n  AND ta.data_ini >=  '{{ $json.data_ini }}'\n  AND ta.data_fim <= '{{ $json.data_fim }}'  \nand (  status = '{{ $json.status }}' or status  IS null  or status = '')\n\ngroup by  ta.empresa_id, \n    ta.data_ini,\n    ta.data_fim, \n      ta.status\n  order by ta.data_ini asc",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1296,
+        160
+      ],
+      "id": "552f1d6f-f885-4a5c-bb6e-35dc46d7a2dd",
+      "name": "ConsultaApuracaoSintetico",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "c4459b54-c489-4957-8784-ae9d8bf5f83f",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "4c3dfa1e-3757-451d-ab13-27853190004d",
+              "name": "status",
+              "value": "={{ $json.body.status}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1536,
+        160
+      ],
+      "id": "916d9d82-d088-4a44-a60e-b95042846486",
+      "name": "EditConsultaApuracaoAnalitico"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "apuracao_sintetico",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1744,
+        160
+      ],
+      "id": "5c8756d3-f065-49d4-8fcb-56a3251b0e02",
+      "name": "relConsultaApuracaosintetico",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
@@ -359,6 +565,26 @@
           "empresa_id": 1,
           "tributo_id": 1,
           "ativo": true
+        }
+      }
+    ],
+    "EditApuranalitico": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20251201",
+          "data_fim": "20260112",
+          "status": "OBRIGACAO_GERADA"
+        }
+      }
+    ],
+    "EditConsultaApuracaoAnalitico": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20251201",
+          "data_fim": "20260112",
+          "status": "OBRIGACAO_GERADA"
         }
       }
     ]
@@ -495,14 +721,81 @@
           }
         ]
       ]
+    },
+    "relapuracaoanalitico": {
+      "main": [
+        [
+          {
+            "node": "EditApuranalitico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditApuranalitico": {
+      "main": [
+        [
+          {
+            "node": "ConsultaApuracaoAnalitico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultaApuracaoAnalitico": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultaApuracaoSintetico": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditConsultaApuracaoAnalitico": {
+      "main": [
+        [
+          {
+            "node": "ConsultaApuracaoSintetico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "relConsultaApuracaosintetico": {
+      "main": [
+        [
+          {
+            "node": "EditConsultaApuracaoAnalitico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "332380eb-c19c-4d92-abd2-807d079a3a5a",
+  "versionId": "9054ae3a-256b-4cf6-84a5-c42660fd04f2",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
   "id": "Lh9JS6zoHwDwtRmy",

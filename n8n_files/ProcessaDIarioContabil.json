@@ -196,13 +196,15 @@
       ],
       "id": "c6607975-044f-4676-9db1-0adcfb61861f",
       "name": "ff_consolidar_diario_staging",
-      "executeOnce": true,
+      "executeOnce": false,
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "XLdUjmOBeD6MkxJ4",
           "name": "FinanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -610,7 +612,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4efebd52-7e79-48bb-893f-6c37aa41e3ae",
+  "versionId": "a26719ae-b546-42b7-80b4-81abd5557a9e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

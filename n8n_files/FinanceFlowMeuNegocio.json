@@ -1,0 +1,284 @@
+{
+  "name": "FinanceFlowMeuNegocio",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        192,
+        -192
+      ],
+      "id": "0af1ba36-5bf0-478e-a548-efe7a1cd63fe",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
+        "height": 940,
+        "width": 1248,
+        "color": 5
+      },
+      "id": "3ad300de-d3e7-420d-b1f9-9e632352fbce",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        192,
+        0
+      ],
+      "id": "c1e53c01-ab81-4b0e-aa02-364e14e22f4f",
+      "name": "Respond to Webhook47"
+    },
+    {
+      "parameters": {
+        "path": "listameunegocio",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        -192
+      ],
+      "id": "05a47c87-f229-486e-8049-d9a4fb64017a",
+      "name": "MeuNegocio",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "ab75b3da-4e6f-4c36-b9f3-48901a8a1717",
+              "name": "meunegocio",
+              "value": "={{ $json.query.meunegocio}}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -192
+      ],
+      "id": "86b774cc-142e-4a18-8418-baa4501e667b",
+      "name": "EditMeuNegocio"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT *\nFROM categorias_gerenciais\nWHERE empresa_id = {{ $json.id_empresa }}\n  AND  tipo =  'entrada' and  \n   meu_negocio = {{ $json.meunegocio }}\n     order by nome asc;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -32,
+        -192
+      ],
+      "id": "4196958b-c21e-4024-a318-d70cae0e7baa",
+      "name": "categorias_meunegocio",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "transferir_meu_negocio",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        0
+      ],
+      "id": "31b53197-c277-40f1-a4ef-d557a15fc042",
+      "name": "AdicionaMeuNegocio",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4b91aa0f-87b4-4157-a7ef-0f95d3d0cfb7",
+              "name": "id",
+              "value": "={{ $json.body.categoria_id}}",
+              "type": "string"
+            },
+            {
+              "id": "734ab06a-f8ee-4e83-89d4-460333a027a1",
+              "name": "meunegocio",
+              "value": "={{ $json.body.meunegocio}}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "1e581e04-24b3-44ba-8981-b3604596e443",
+      "name": "EdittransMeuNegocio"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "update \n categorias_gerenciais\nset   meu_negocio = {{ $json.meunegocio }}\nWHERE empresa_id =  {{ $json.empresa_id }}\n  AND  tipo =  'entrada' and  \n  id =  {{ $json.id }};\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "808b15b4-c995-456d-bba8-0eac3933e542",
+      "name": "AdicionaMeuNegocio1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {
+    "EditMeuNegocio": [
+      {
+        "json": {
+          "id_empresa": 1,
+          "meunegocio": false
+        }
+      }
+    ]
+  },
+  "connections": {
+    "MeuNegocio": {
+      "main": [
+        [
+          {
+            "node": "EditMeuNegocio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditMeuNegocio": {
+      "main": [
+        [
+          {
+            "node": "categorias_meunegocio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "categorias_meunegocio": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AdicionaMeuNegocio": {
+      "main": [
+        [
+          {
+            "node": "EdittransMeuNegocio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EdittransMeuNegocio": {
+      "main": [
+        [
+          {
+            "node": "AdicionaMeuNegocio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AdicionaMeuNegocio1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook47",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dc11d559-f7e0-4e50-8724-0fb6411965c0",
+  "meta": {
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "i0ztXVVu03seGopK",
+  "tags": []
+}

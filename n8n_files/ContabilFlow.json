@@ -186,7 +186,7 @@
       "typeVersion": 1.4,
       "position": [
         928,
-        880
+        992
       ],
       "id": "55c6f946-1b24-48b9-851b-39f18e2b72bb",
       "name": "Respond to Webhook1"
@@ -221,7 +221,7 @@
       "typeVersion": 3.4,
       "position": [
         496,
-        880
+        992
       ],
       "id": "0f9b3721-d101-41a9-90df-32a09ea1f06f",
       "name": "EditModeloslinha1"
@@ -236,7 +236,7 @@
       "typeVersion": 2.6,
       "position": [
         704,
-        880
+        992
       ],
       "id": "7ac326ba-3507-43e8-a194-414fe5f1474d",
       "name": "BuscarContas",
@@ -257,7 +257,7 @@
       "typeVersion": 2.1,
       "position": [
         288,
-        880
+        992
       ],
       "id": "3358f9aa-8696-4184-80dd-c4d01861b287",
       "name": "Contas",
@@ -274,7 +274,7 @@
       "typeVersion": 1.4,
       "position": [
         1056,
-        1104
+        1216
       ],
       "id": "9273391e-54cd-45e3-b30d-121a44f449fc",
       "name": "Respond to Webhook2"
@@ -309,7 +309,7 @@
       "typeVersion": 3.4,
       "position": [
         464,
-        1104
+        1216
       ],
       "id": "a7eadbcc-d55e-465c-8d64-7a2c4b1f5114",
       "name": "Edit_PagarFatura"
@@ -324,7 +324,7 @@
       "typeVersion": 2.6,
       "position": [
         816,
-        1104
+        1216
       ],
       "id": "b7d2ed70-81eb-4b69-82e1-ae53203f6a02",
       "name": "AutalizaModelLinha",
@@ -347,7 +347,7 @@
       "typeVersion": 2.1,
       "position": [
         256,
-        1104
+        1216
       ],
       "id": "6fb8d94f-5109-4f51-b701-f44d1d45beb1",
       "name": "SalvaMapeamento",
@@ -361,7 +361,7 @@
       "typeVersion": 2,
       "position": [
         640,
-        1104
+        1216
       ],
       "id": "424a4626-766f-4fe5-94da-c63d099372f9",
       "name": "Code in JavaScript"
@@ -377,7 +377,7 @@
       "typeVersion": 1.4,
       "position": [
         832,
-        1328
+        1440
       ],
       "id": "f396117b-4a4d-41c9-ba8c-7a9a8aa40122",
       "name": "Respond to Webhook3"
@@ -412,7 +412,7 @@
       "typeVersion": 3.4,
       "position": [
         432,
-        1328
+        1440
       ],
       "id": "6135f3c7-c126-4fb8-a7a8-42cbef6d869f",
       "name": "EditModeloslinha2"
@@ -427,7 +427,7 @@
       "typeVersion": 2.1,
       "position": [
         224,
-        1328
+        1440
       ],
       "id": "051f76c0-01ae-433b-acbf-627dfa412730",
       "name": "ContasContabeis",
@@ -483,13 +483,15 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "analitica": false,
+            "analitica": true,
             "codigo": "={{ $json.codigo }}",
             "empresa_id": "={{ $json.empresa_id }}",
             "nome": "={{ $json.nome }}",
             "natureza": "={{ $json.natureza }}",
             "nivel": "={{ $json.nivel }}",
-            "tipo": "={{ $json.tipo }}"
+            "tipo": "={{ $json.tipo }}",
+            "conta_pai_id": "={{ $json.conta_pai }}",
+            "sistema": false
           },
           "matchingColumns": [
             "id"
@@ -567,7 +569,7 @@
               "display": true,
               "type": "number",
               "canBeUsedToMatch": true,
-              "removed": true
+              "removed": false
             },
             {
               "id": "analitica",
@@ -577,6 +579,16 @@
               "display": true,
               "type": "boolean",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "sistema",
+              "displayName": "sistema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -637,6 +649,12 @@
               "id": "d3ca6286-f7ad-4dc0-ad96-005a511cd64d",
               "name": "tipo",
               "value": "={{ $json.query.tipo}}",
+              "type": "string"
+            },
+            {
+              "id": "17f85d3a-ae36-4991-b3ef-b99fe7041704",
+              "name": "conta_pai",
+              "value": "={{ $json.query.conta_pai_id}}",
               "type": "string"
             }
           ]
@@ -933,7 +951,7 @@
     {
       "parameters": {
         "content": "## Contabil",
-        "height": 716,
+        "height": 860,
         "width": 1280,
         "color": 3
       },
@@ -943,13 +961,13 @@
       "typeVersion": 1,
       "position": [
         0,
-        0
+        -16
       ]
     },
     {
       "parameters": {
         "content": "## Contabil",
-        "height": 940,
+        "height": 796,
         "width": 1280
       },
       "id": "48fed976-479f-4a2c-9ba0-0e3bd9a5ccb5",
@@ -958,13 +976,13 @@
       "typeVersion": 1,
       "position": [
         0,
-        800
+        912
       ]
     },
     {
       "parameters": {
         "content": "## Modelos   e Modelo Linhas ( Mapeamento de lancamentos contabeis)",
-        "height": 716,
+        "height": 748,
         "width": 1280,
         "color": 7
       },
@@ -973,8 +991,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1344,
-        800
+        1408,
+        896
       ]
     },
     {
@@ -987,7 +1005,7 @@
       "typeVersion": 2.6,
       "position": [
         624,
-        1328
+        1440
       ],
       "id": "4ffe32d1-cb96-4c17-89fa-d88aacfd3294",
       "name": "ContasContb",
@@ -1008,8 +1026,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1472,
-        912
+        1536,
+        1008
       ],
       "id": "e64ca5c2-63e1-4cea-a327-66746c059e86",
       "name": "NovoModelo",
@@ -1022,8 +1040,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2128,
-        912
+        2192,
+        1008
       ],
       "id": "ca652410-1eb3-4e5e-a962-abf9e42892cf",
       "name": "Code in JavaScript1"
@@ -1038,8 +1056,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        912
+        2400,
+        1008
       ],
       "id": "8048d052-2a69-4a76-ad2d-05f10b6966bf",
       "name": "Respond to Webhook13"
@@ -1067,8 +1085,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1680,
-        1168
+        1744,
+        1264
       ],
       "id": "7f2352a5-55d0-46ea-b526-760ce7b66c9a",
       "name": "Edit_PagarFatura2"
@@ -1080,8 +1098,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2128,
-        1168
+        2192,
+        1264
       ],
       "id": "3e3376b1-ce16-400d-9138-721d7a9f2737",
       "name": "Code in JavaScript2"
@@ -1096,8 +1114,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        1168
+        2400,
+        1264
       ],
       "id": "b540bf5b-7497-4427-9930-baf35b0aedb6",
       "name": "Respond to Webhook14"
@@ -1112,8 +1130,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1472,
-        1168
+        1536,
+        1264
       ],
       "id": "feae7b4e-7434-4946-b9db-dd36f6337a47",
       "name": "ExcluirModelo",
@@ -1128,8 +1146,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1888,
-        1168
+        1952,
+        1264
       ],
       "id": "af780bc8-8bf7-4d5a-b946-0da0b24886e0",
       "name": "ff_excluir_modelo",
@@ -1176,8 +1194,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1680,
-        912
+        1744,
+        1008
       ],
       "id": "289eb803-5bc4-43b2-aa7d-4fbecf9a5e94",
       "name": "EditNovoModelo"
@@ -1191,8 +1209,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1920,
-        912
+        1984,
+        1008
       ],
       "id": "035a3257-d926-4c87-a8c7-66bb8d33a14d",
       "name": "ff_criar_modelo",
@@ -1439,7 +1457,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1424,
+        -1440,
         -64
       ]
     },
@@ -1562,6 +1580,102 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1024,
+        688
+      ],
+      "id": "a4244b23-4d2e-47ee-9b76-e403ef4f2ab3",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "resolver_hierarquia_conta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        688
+      ],
+      "id": "cd49bde4-5557-4ed8-a3a6-4d8923332f92",
+      "name": "HierarquiaContaCtb",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c58a210-2ff6-4980-96ef-623ea84092a0",
+              "name": "codigo",
+              "value": "={{ $json.body.codigo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        496,
+        688
+      ],
+      "id": "bf7d838c-50da-421d-85ad-27fee56851fd",
+      "name": "Editresolver_hierarquia_conta"
+    },
+    {
+      "parameters": {
+        "jsCode": " function resolverPai(codigo) {\n  if (!codigo) return null;\n\n  const partes = codigo.split(\".\");\n  if (partes.length <= 1) return null;\n\n  partes.pop(); // remove o último nível\n  return partes.join(\".\");\n}\n\n// EXEMPLO DE USO\nconst codigo = $json.codigo; // ex: \"5.2.1.2\"\nconst codigoPai = resolverPai(codigo);\n\nreturn [\n  {\n    json: {\n      ...$json,\n      codigo_pai: codigoPai\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        688
+      ],
+      "id": "989bff42-6669-4dd3-9b6e-678c7a132275",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select id from contab.contas where empresa_id = {{ $json.empresa_id }} and codigo = '{{ $json.codigo_pai }}'\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        848,
+        688
+      ],
+      "id": "57125770-f13a-4a50-b24f-77e4429e7686",
+      "name": "HierarqiaContaPai",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
     }
   ],
   "pinData": {
@@ -1576,6 +1690,14 @@
       {
         "json": {
           "empresa_id": 1
+        }
+      }
+    ],
+    "Editresolver_hierarquia_conta": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "codigo": "5.1.1"
         }
       }
     ]
@@ -2075,13 +2197,57 @@
           }
         ]
       ]
+    },
+    "HierarquiaContaCtb": {
+      "main": [
+        [
+          {
+            "node": "Editresolver_hierarquia_conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editresolver_hierarquia_conta": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "HierarqiaContaPai",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HierarqiaContaPai": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "03cce9c6-ea82-4dc3-9681-e4216b612261",
+  "versionId": "75a62308-fa31-46cc-afe1-8a5c8e92002e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

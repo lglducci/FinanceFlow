@@ -160,12 +160,6 @@
               "name": "grupo_contabil",
               "value": "={{ $json.body.grupo_contabil }}",
               "type": "string"
-            },
-            {
-              "id": "dc4222af-9795-4872-a3ae-1aaa0641c467",
-              "name": "",
-              "value": "",
-              "type": "string"
             }
           ]
         },
@@ -200,6 +194,10 @@
             {
               "fieldId": "grupo_contabil",
               "fieldValue": "={{ $json.grupo_contabil }}"
+            },
+            {
+              "fieldId": "meu_negocio",
+              "fieldValue": "false"
             }
           ]
         }
@@ -364,7 +362,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
+        928,
         720
       ],
       "id": "9d7a02c3-9b85-4c91-a2b2-e3875b163f61",
@@ -379,7 +377,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        640,
+        688,
         720
       ],
       "id": "c93b170f-6f88-4c27-93b5-e5feff7ce86a",
@@ -415,7 +413,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        416,
+        464,
         720
       ],
       "id": "5a4b3079-a4c5-45ae-92e1-2c19de09ab72",
@@ -578,7 +576,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b9e31356-109d-48c1-8485-837ff7f8aea8",
+  "versionId": "54deac20-c98a-4629-8794-98571f561a77",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
