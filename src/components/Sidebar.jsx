@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-60 bg-[#ffffffff]  text-blue-500 text-base font-medium  flex flex-col h-screen  8px border  border-blue-800/100">
-      
+                                                              {/* #0D94E8*/} 
       <div className="px-6 py-6 border-b border-blue-800/100 bg-[#061f4aff] text-white font-bold text-base">
        
  
@@ -100,6 +100,7 @@ export default function Sidebar() {
 
  
          <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />
+         <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} />
           </MenuGroup>
       </nav>
 
