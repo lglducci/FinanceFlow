@@ -105,21 +105,21 @@ export default function ContasContabeis() {
     }}
   />
 
-  {/* ➕ NOVA CONTA */}
-  <button
-    onClick={() => navigate("/nova-conta-contabil")}
-    style={{
-      padding: "8px 8px",
-      background: "#003ba2",
-      color: "white",
-      border: "none",
-      borderRadius: 10,
-      fontWeight: "bold",
-      cursor: "pointer",
-    }}
-  >
-    + Nova Conta
-  </button>
+        {/* ➕ NOVA CONTA */}
+        <button
+          onClick={() => navigate("/nova-conta-contabil")}
+          style={{
+            padding: "8px 8px",
+            background: "#003ba2",
+            color: "white",
+            border: "none",
+            borderRadius: 10,
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          + Nova Conta
+        </button>
         <button
           onClick={() => window.print()}
           className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"

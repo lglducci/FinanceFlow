@@ -11,7 +11,16 @@ export default function TributosApuracao() {
   const [dataFim, setDataFim] = useState(hojeLocal());
   const [lista, setLista] = useState([]);
   const [loading, setLoading] = useState(false);
+ 
+ 
+const [tipoRelatorio, setTipoRelatorio] = useState("ANALITICO"); 
+// ANALITICO | SINTETICO
 
+ const [status, setStatus] = useState(null); 
+// null | APURADO | OBRIGACAO_GERADA
+
+ 
+ 
 
    // 👉 FORMATA DATA DA TABELA (remove horário)
   const formatarData = (d) => {
@@ -50,6 +59,42 @@ export default function TributosApuracao() {
     }
   }
  
+ async function pesquisar() {
+  setLoading(true);
+
+  try {
+    // 🔑 ESCOLHA DO WEBHOOK
+    const webhook =
+      tipoRelatorio === "SINTETICO"
+        ? "apuracao_sintetico"
+        : "apuracao_analitico";
+
+    const response = await fetch(
+      buildWebhookUrl(webhook),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id,
+          data_ini: dataIni,
+          data_fim: dataFim,
+          status // null = todos
+        }),
+      }
+    );
+
+    const dados = await response.json();
+
+    setLista(Array.isArray(dados) ? dados : []);
+
+  } catch (e) {
+    console.error("Erro ao buscar relatório:", e);
+    setLista([]);
+  } finally {
+    setLoading(false);
+  }
+}
+
 
   async function gerarObrigacao(apuracao_id) {
 
@@ -135,6 +180,48 @@ export default function TributosApuracao() {
           disabled={loading}
         >
           {loading ? "Gerando Obrigações..." : "Gerar Obrigação"}
+        </button>
+                
+                <div className="flex gap-6 items-center mb-4">
+          <label className="flex items-center gap-2 font-bold">
+            <input
+              type="radio"
+              name="tipoRelatorio"
+              checked={tipoRelatorio === "ANALITICO"}
+              onChange={() => setTipoRelatorio("ANALITICO")}
+            />
+            Relatório Analítico
+          </label>
+
+          <label className="flex items-center gap-2 font-bold">
+            <input
+              type="radio"
+              name="tipoRelatorio"
+              checked={tipoRelatorio === "SINTETICO"}
+              onChange={() => setTipoRelatorio("SINTETICO")}
+            />
+            Relatório Sintético
+          </label>
+        </div>
+          
+          <select
+            value={status ?? ""}
+            onChange={(e) =>
+              setStatus(e.target.value === "" ? null : e.target.value)
+            }
+            className="input-premium w-30"
+          >
+            <option value="">Todos</option>
+            <option value="APURADO">Apurado</option>
+            <option value="OBRIGACAO_GERADA">Obrigação Gerada</option>
+          </select>
+
+        <button
+          onClick={pesquisar}
+          className="h-12 px-8 bg-blue-900 text-white font-bold rounded-lg"
+          disabled={loading}
+        >
+          {loading ? "Pesquisar..." : "Pesquisar"}
         </button>
 
       </div>

@@ -1,39 +1,92 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import { useLocation } from "react-router-dom";
 
 export default function NovaContaContabil() {
   const navigate = useNavigate();
-  const empresa_id = localStorage.getItem("empresa_id") || "1";
+  const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa") ;
+  const location = useLocation();
+  const contexto = location.state;
 
-  const [form, setForm] = useState({
+ const [tipo, setTipo] = useState(contexto?.tipo ?? "");
+const [natureza, setNatureza] = useState(contexto?.natureza ?? "");
+const [nivel, setNivel] = useState(contexto?.nivel ?? "");
+const [contaPai, setContaPai] = useState(contexto?.conta_pai_codigo ?? "");
+const [nome, setNome] = useState(""); // 👈 sempre vazio
+
+
+  {/*const [form, setForm] = useState({
     codigo: "",
     nome: "",
     tipo: "",
     natureza: "",
     nivel: "",
-  });
+  });*/}
 
-  async function salvar() {
-    try {
-      const url = buildWebhookUrl("novacontacontabil", {
-        empresa_id,
-        codigo: form.codigo,
-        nome: form.nome,
-        tipo: form.tipo,
-        natureza: form.natureza,
-        nivel: form.nivel,
-      });
+  const [form, setForm] = useState({
+  codigo: "",
+  nome: "",
 
-      await fetch(url, { method: "POST" });
+  // 👇 ESTES VÊM DO CONTEXTO (SE EXISTIR)
+  tipo: contexto?.tipo ?? "",
+  natureza: contexto?.natureza ?? "",
+  nivel: contexto?.nivel ?? "",
+  conta_pai: contexto?.conta_pai_codigo ?? ""
+});
 
-      alert("Conta cadastrada com sucesso!");
-      navigate("/contascontabeis");
-    } catch (e) {
-      console.log("ERRO SALVAR:", e);
-      alert("Erro ao salvar a conta!");
+
+async function salvar() {
+  try {
+    // 1️⃣ Resolver hierarquia (descobrir conta pai)
+    const rHierarquia = await fetch(
+      buildWebhookUrl("resolver_hierarquia_conta"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id,
+          codigo: form.codigo
+        })
+      }
+    );
+
+    const hierarquia = await rHierarquia.json();
+
+    const contaPaiId = Array.isArray(hierarquia)
+  ? hierarquia[0]?.id
+  : hierarquia?.id;
+
+    if (hierarquia.erro) {
+      alert(hierarquia.erro);
+      return;
     }
+
+    // 2️⃣ Salvar conta já com conta_pai_id resolvido
+    const url = buildWebhookUrl("novacontacontabil", {
+      empresa_id,
+      codigo: form.codigo,
+      nome: form.nome,
+      tipo: form.tipo,
+      natureza: form.natureza,
+      nivel: form.nivel,
+      conta_pai_id: contaPaiId ?? null
+    });
+
+    await fetch(url, { method: "POST" });
+
+    alert("Conta cadastrada com sucesso!");
+    navigate(-1);
+
+  } catch (e) {
+    console.log("ERRO SALVAR:", e);
+    alert("Erro ao salvar a conta!");
   }
+}
+
+ 
+
+
 
   return (
      <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
@@ -82,7 +135,9 @@ export default function NovaContaContabil() {
             borderRadius: 6,
           }}
         />
+  
 
+  
         {/* Tipo */}
         <label className="label label-required font-bold text-[#1e40af]" >Tipo</label>
         <select

@@ -309,7 +309,7 @@ async function pagarSelecionadas() {
     
 
     {/* CONTAINER PRINCIPAL */}
-    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-4">
+    <div className="max-w-full mx-auto bg-gray-200 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-4">
 
       {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

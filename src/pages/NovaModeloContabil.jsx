@@ -55,7 +55,7 @@ export default function NovaModeloContabil() {
     // sucesso
     alert("Modelo criado com sucesso!");
      alert("Configure as contas para este novo modelo em editar mapeameto.");
-    navigate("/mapeamento-contabil");
+    navigate(-1);
 
   } catch (e) {
     console.log("ERRO REQUEST:", e);
@@ -185,7 +185,7 @@ export default function NovaModeloContabil() {
 
             {/* CANCELAR */}
             <button
-              onClick={() => navigate("/mapeamento-contabil")}
+              onClick={() => navigate(-1)}
               style={{
                 padding: "10px 20px",
                 background: "rgba(92, 87, 87, 0.82)",

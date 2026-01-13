@@ -134,103 +134,103 @@ const [filtro, setFiltro] = useState("");
   m.tipo_automacao?.toLowerCase().includes(filtro.toLowerCase())
 );
 
-  return (
+  return ( 
     <div style={{ width: "100%", padding: 20 }}>
-     
-          <h2   style={{
-        padding: 2,
-        width: "55%",
-        maxWidth: 1250, 
-        marginTop: 10,
-      }} className="text-xl font-bold mb-4 text-[#1d1d93ff]"> Modelo Contábil</h2>
+      
     
 
-      {/* ============================================= */}
+            {/* ============================================= */}
+            {/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}
+            {/* ============================================= */}
+            <div
+              style={{
+                width: "90%",
+                background: "#f7f7ff",      // azul grande — igual da foto
+                border: "4px  solid #1d1d93ff",
+                borderRadius: 12,
+                padding: 4,
+                marginBottom: 16,
+              }}
+            >
+              {/* Faixa amarela token/descrição */}
+
+            <h2   style={{
+              padding: 2,
+              width: "100%",
+            
+              marginTop: 10,
+            }} className="text-xl font-bold mb-4 text-[#1d1d93ff]"> Modelo Contábil</h2>
+          
+              
+            {/* ============================================= */}
       {/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}
       {/* ============================================= */}
-      <div
+          <div
         style={{
-          width: "90%",
-          background: "#f7f7f7ff",      // azul grande — igual da foto
-          border: "4px solid #1d1d93ff",
+          width: "83%",
+          background: "#f7f9ff", // azul MUITO claro (quase branco)
+          border: "4px solid #eff1f7ff", // borda azul clara
           borderRadius: 12,
-          padding: 4,
+          padding: 10,
           marginBottom: 16,
         }}
       >
-        {/* Faixa amarela token/descrição */}
 
-     
-        
-       {/* ============================================= */}
-{/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}
-{/* ============================================= */}
-     <div
-  style={{
-    width: "83%",
-    background: "#f7f9ff", // azul MUITO claro (quase branco)
-    border: "4px solid #eff1f7ff", // borda azul clara
-    borderRadius: 12,
-    padding: 10,
-    marginBottom: 16,
-  }}
->
+        {/* QUADRO INTERNO BRANCO COM O BOTÃO */}
+        <div
+          style={{ width: "100%",
+            background: "#b7d5f0ff",
+            border: "4px solid #1d1d93ff",
+            padding: 10,
+            borderRadius: 10,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            
+          }}
+        >
+          {/* INFO TOKEN + MODELO */}
+          <div>
+            <h3 style={{ margin: 0 ,fontWeight: "bold", background: "#b7d5f0ff" }}>
+              <b>Token:</b> {selecionado?.codigo}
+            </h3>
 
-  {/* QUADRO INTERNO BRANCO COM O BOTÃO */}
-  <div
-    style={{
-      background: "#b7d5f0ff",
-      border: "4px solid #1d1d93ff",
-      padding: 10,
-      borderRadius: 10,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      
-    }}
-  >
-    {/* INFO TOKEN + MODELO */}
-    <div>
-      <h3 style={{ margin: 0 ,fontWeight: "bold", background: "##1414d2ff" }}>
-        <b>Token:</b> {selecionado?.codigo}
-      </h3>
+            <h3 style={{ marginTop: 8 , fontWeight: "bold", background: "#b7d5f0ff" }}>
+              <b>Nome do Modelo:</b> {selecionado?.nome}
+            </h3>
 
-      <h3 style={{ marginTop: 8 , fontWeight: "bold", background: "##1414d2ff" }}>
-        <b>Nome do Modelo:</b> {selecionado?.nome}
-      </h3>
+            <h3 style={{ marginTop: 16 , fontWeight: "bold", background: "#b7d5f0ff" }}>
+              <b>Tipo Automação:</b> {selecionado?.tipo}
+            </h3>
 
-       <h3 style={{ marginTop: 16 , fontWeight: "bold", background: "##1414d2ff" }}>
-        <b>Tipo Automação:</b> {selecionado?.tipo}
-      </h3>
+          </div>
 
-    </div>
+          {/* BOTÃO NOVO MODELO */}
+          <button
+          
+            onClick={() => navigate("/novo-modelo")}
+            style={{
+              padding: "12px 22px",
+              background: "#1414d2ff",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              fontWeight: "bold",
+              cursor: "pointer",
+              fontSize: 15,
+              boxShadow: "0 2px 4px rgba(0,0,0,0.25)",
+              
+            }}
+          >
+            + Novo Modelo
+          </button>
+        </div>
 
-    {/* BOTÃO NOVO MODELO */}
-    <button
-     
-       onClick={() => navigate("/novo-modelo")}
-      style={{
-        padding: "8px 22px",
-        background: "#1414d2ff",
-        color: "white",
-        border: "none",
-        borderRadius: 8,
-        fontWeight: "bold",
-        cursor: "pointer",
-        fontSize: 15,
-        boxShadow: "0 2px 4px rgba(0,0,0,0.25)",
-        
-      }}
-    >
-      + Novo Modelo
-    </button>
-  </div>
-
-</div>
+      </div>
 
               {/* 🔍 FILTRO DE PESQUISA */}
               <div
-                className="bg-gray-100 rounded-xl shadow p-6 border-[3px] border-blue-800 mb-4 flex items-center gap-6 w-4/5 ml-4" 
+                className="bg-gray-100 rounded-xl shadow p-6 border-[3px] border-blue-800 mb-4 flex items-center gap-6 w-5/6 ml-4" 
 
               >
                 <label className="font-bold text-[#1414d2ff]">
@@ -250,7 +250,7 @@ const [filtro, setFiltro] = useState("");
 
         {/* TABELA DE LINHAS DENTRO DO BLOCO AZUL */}
         {linhas.length > 0 && (
-          <table  className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse"  }}> 
+          <table  className="tabela tabela-mapeamento" style={{ width: "84%", borderCollapse: "collapse" ,   border: "1px solid #1d1d93ff", }}> 
             
             <thead>
               <tr>
@@ -268,7 +268,7 @@ const [filtro, setFiltro] = useState("");
                 <tr
                   key={i}
                   style={{
-                    backgroundColor: i % 2 === 0 ? "#f2f2f2" : "#a59e9eff",       
+                    backgroundColor: i % 2 === 0 ? "#f2f2f2" : "rgb(200, 195, 195)",       
                   }}
                 >
                   <td>{l.conta_id}</td>

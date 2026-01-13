@@ -1,7 +1,7 @@
  import React, { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
-
+ 
 /* 🎨 Tema azul coerente */
 const THEME = {
   title: "#ff9f43",
@@ -10,7 +10,7 @@ const THEME = {
 export default function ContasGerenciaisNovo() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
-
+ 
   /* ===============================
      ESTADO DO FORMULÁRIO
   ================================== */
@@ -82,7 +82,7 @@ export default function ContasGerenciaisNovo() {
 
     if (Array.isArray(json) && json.length > 0 && json[0].id) {
       alert("Categoria criada!");
-      navigate("/contasgerenciais");
+      navigate(-1);
       return;
     }
 
@@ -110,7 +110,7 @@ export default function ContasGerenciaisNovo() {
         <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
 
           {/* NOME */}
-          <label className="font-bold text-[#1e40af]">Nome</label>
+          <label className="label label-required font-bold text-[#1e40af]">Nome</label>
           <input
             className="input-premium"
             value={form.nome}
@@ -119,7 +119,7 @@ export default function ContasGerenciaisNovo() {
           />
 
           {/* TIPO */}
-          <label className="font-bold text-[#1e40af]">Tipo</label>
+          <label className=" label label-required font-bold text-[#1e40af]">Tipo</label>
           <select
             className="input-premium"
             value={form.tipo}
@@ -129,8 +129,12 @@ export default function ContasGerenciaisNovo() {
             <option value="saida">Saída</option>
           </select>
 
+
+
+          
+
           {/* GRUPO CONTÁBIL (TOKENS DO MODELO) */}
-          <label className="font-bold text-[#1e40af]">Grupo Contábil</label>
+          <label className="label label-required font-bold text-[#1e40af]">Grupo Contábil</label>
 
           <select
             className="input-premium"
@@ -208,7 +212,7 @@ export default function ContasGerenciaisNovo() {
 
             <button
               type="button"
-              onClick={() => navigate("/contasgerenciais")}
+              onClick={() => navigate(-1)}
               className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
             >
               Cancelar

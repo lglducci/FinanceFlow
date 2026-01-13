@@ -10,7 +10,8 @@ export default function ContasGerenciais() {
   const [lista, setLista] = useState([]);
   const [loading, setLoading] = useState(false);
   const [filtro, setFiltro] = useState("");
-    const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+  const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+
   const listaFiltrada = lista.filter((l) =>
   l.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
   l.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
