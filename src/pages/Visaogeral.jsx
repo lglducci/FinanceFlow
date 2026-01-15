@@ -94,10 +94,10 @@ export default function Visaogeral() {
 {/*<div className="bg- blue p-6 rounded-xl shadow mb-10 flex flex-col gap-2">*/}
 
   
-<div className="bg-[#061f4aff] rounded-xl shadow p-5    border-[8px] border-[#061f4aff] mb-4 w-full flex items-center h-fit"> 
+<div className="bg-white rounded-xl shadow p-5    border-[8px] border-[#061f4aff] mb-4 w-full flex items-center h-fit"> 
 
      <div className="grid grid-cols-1 gap-4"> 
-       <h2 className="text-3xl font-bold mb-4 text-white ">Visão Geral</h2>
+       <h2 className="text-3xl font-bold mb-4 text-[#061f4aff] ">Visão Geral</h2>
 
   <div className="bg-gray-200 p-6 rounded-xl   border-[2px] border-gray-300 shadow mb-8 flex flex-col gap-2"> 
  

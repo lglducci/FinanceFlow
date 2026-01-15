@@ -172,7 +172,7 @@ export default function ConfiguracaoMeuNegocio() {
             <button
             onClick={() => navigate("/crianegocio/crianegocio")}
             //className="bg-green-600 text-white px-5 py-2 rounded font-bold shadow">
-                className= { `${btnPadrao} bg-green-600 hover:bg-green-700 px-4 py-2 `}
+                className= { `${btnPadrao} bg-[#061f4aff] hover:bg-blue-500 px-4 py-2 `}
             >
             + Cria Negócio
             </button>
@@ -197,7 +197,7 @@ export default function ConfiguracaoMeuNegocio() {
       <div className="grid grid-cols-2 gap-6 bg-white p-4 rounded-xl">
 
         {/* ESQUERDA */}
-        <div className="bg-gray-100 rounded-xl p-4  border-[4px] border-[#061f4aff]">
+        <div className="bg-gray-100 rounded-xl p-2  border-[4px] border-[#061f4aff]">
           <h2 className="font-semibold text-lg mb-4">
             Categorias Gerenciais (Entradas)
           </h2>
@@ -212,7 +212,7 @@ export default function ConfiguracaoMeuNegocio() {
                   className="flex items-center justify-between border rounded-lg px-4 py-2"
                   style={{ backgroundColor: ja ? "#16a34a" : "#eaeaf3" }}
                 >
-                  <span>{cat.nome}</span>
+                  <span className="font-bold">{cat.nome}</span>
 
                   <button
                     disabled={ja}
@@ -232,7 +232,7 @@ export default function ConfiguracaoMeuNegocio() {
         </div>
 
         {/* DIREITA */}
-        <div className="bg-gray-100 rounded-xl p-4 border-[4px] border-[#061f4aff]">
+        <div className="bg-gray-100 rounded-xl p-2 border-[4px] border-[#061f4aff]">
           <h2 className="font-semibold text-lg mb-4">
             O Meu Negócio
           </h2>
@@ -241,9 +241,9 @@ export default function ConfiguracaoMeuNegocio() {
             {meuNegocio.map(cat => (
               <div
                 key={cat.id}
-                className="flex items-center justify-between border rounded-lg px-4 py-2 bg-white"
+                className="flex items-center justify-between border rounded-lg px-2 py-2 bg-white"
               >
-                <span>{cat.nome}</span>
+                <span className=" font-bold">{cat.nome}</span>
 
                 <button
                   onClick={() => removerDoMeuNegocio(cat.id)}
