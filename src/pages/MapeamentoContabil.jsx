@@ -145,8 +145,8 @@ const [filtro, setFiltro] = useState("");
             <div
               style={{
                 width: "90%",
-                background: "#f7f7ff",      // azul grande — igual da foto
-                border: "4px  solid #1d1d93ff",
+                background: "rgb(236, 239, 243)",      // azul grande — igual da foto
+                border: "8px  solid #061f4aff",
                 borderRadius: 12,
                 padding: 4,
                 marginBottom: 16,
@@ -159,7 +159,7 @@ const [filtro, setFiltro] = useState("");
               width: "100%",
             
               marginTop: 10,
-            }} className="text-xl font-bold mb-4 text-[#1d1d93ff]"> Modelo Contábil</h2>
+            }} className="text-xl font-bold mb-4 text-[#061f4aff]"> Modelo Contábil</h2>
           
               
             {/* ============================================= */}
@@ -169,7 +169,7 @@ const [filtro, setFiltro] = useState("");
         style={{
           width: "83%",
           background: "#f7f9ff", // azul MUITO claro (quase branco)
-          border: "4px solid #eff1f7ff", // borda azul clara
+          border: "2px solid #eff1f7ff", // borda azul clara
           borderRadius: 12,
           padding: 10,
           marginBottom: 16,
@@ -179,8 +179,8 @@ const [filtro, setFiltro] = useState("");
         {/* QUADRO INTERNO BRANCO COM O BOTÃO */}
         <div
           style={{ width: "100%",
-            background: "#b7d5f0ff",
-            border: "4px solid #1d1d93ff",
+            background: "rgb(230, 237, 243)",
+            border: "3px solid #061f4aff",
             padding: 10,
             borderRadius: 10,
             display: "flex",
@@ -191,15 +191,15 @@ const [filtro, setFiltro] = useState("");
         >
           {/* INFO TOKEN + MODELO */}
           <div>
-            <h3 style={{ margin: 0 ,fontWeight: "bold", background: "#b7d5f0ff" }}>
+            <h3 style={{ margin: 0 ,fontWeight: "bold", background: "#ffffffff" }}>
               <b>Token:</b> {selecionado?.codigo}
             </h3>
 
-            <h3 style={{ marginTop: 8 , fontWeight: "bold", background: "#b7d5f0ff" }}>
+            <h3 style={{ marginTop: 8 , fontWeight: "bold", background: "#ffffffff" }}>
               <b>Nome do Modelo:</b> {selecionado?.nome}
             </h3>
 
-            <h3 style={{ marginTop: 16 , fontWeight: "bold", background: "#b7d5f0ff" }}>
+            <h3 style={{ marginTop: 16 , fontWeight: "bold", background: "#ffffffff" }}>
               <b>Tipo Automação:</b> {selecionado?.tipo}
             </h3>
 
@@ -211,7 +211,7 @@ const [filtro, setFiltro] = useState("");
             onClick={() => navigate("/novo-modelo")}
             style={{
               padding: "12px 22px",
-              background: "#1414d2ff",
+              background: "#061f4aff",
               color: "white",
               border: "none",
               borderRadius: 8,
@@ -230,10 +230,10 @@ const [filtro, setFiltro] = useState("");
 
               {/* 🔍 FILTRO DE PESQUISA */}
               <div
-                className="bg-gray-100 rounded-xl shadow p-6 border-[3px] border-blue-800 mb-4 flex items-center gap-6 w-5/6 ml-4" 
+                className="bg-[#061f4aff] rounded-xl shadow p-6 border-[8px] border-[#061f4aff] mb-4 flex items-center gap-6 w-5/6 ml-4" 
 
               >
-                <label className="font-bold text-[#1414d2ff]">
+                <label className="font-bold text-white">
                   Buscar:
                 </label>
 

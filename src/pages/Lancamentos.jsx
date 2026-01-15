@@ -301,6 +301,10 @@ const [fornecedores, setFornecedores] = useState([]);
     navigate("/new-transaction");
   }
 
+    function abrirNovaReceita() {
+    navigate("/registrareceitarapida");
+  }
+
   function editarLancamento(id) {
     navigate("/editar-lancamento", {
       state: { id_lancamento: id, empresa_id: empresa_id }
@@ -356,27 +360,26 @@ useEffect(() => {
 
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Lançamentos</h2> 
+    <div className="p-2">
+ 
 
-      {/* FILTROS   */}
-
-
+      {/* FILTROS   */} 
       <div className="mb-2 grid grid-cols-1 lg:grid-cols-1 gap-4"> 
       
-      <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
-       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
+      <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg p-2 border-[8px] border-[#061f4aff] mb-1 "> 
+              <h2 className="text-2xl font-bold mb-1 text-[#061f4aff]">Lançamentos</h2> 
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-1">
 
                 {/* COLUNA 1 - FILTROS  
                 <div className="bg-gray-100 p-6 rounded-xl shadow border-[1px] border-gray-300">*/}
-                  <div className="bg-gray-100 rounded-xl shadow p-2 border w-full h-fit">
+                  <div className="bg-white rounded-xl shadow p-2   w-full h-fit">
 
                     {/* linha 1 - períodos */}
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className=" bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                       <div className="flex flex-col">
-                        <span className="text-base font-bold mb-1 text-[#1e40af]">Períodos</span>
+                        <span className="text-base font-bold mb-1 text-[#061f4aff]">Períodos</span>
 
-                        <div className="flex gap-4 text-base font-bold flex-wrap text-[#1e40af]">
+                        <div className=" bg-white flex gap-2 text-base font-bold flex-wrap text-[#061f4aff]">
                           {["mes", "15", "semana", "hoje"].map((tipo) => (
                             <label key={tipo}>
                               <input
@@ -400,12 +403,12 @@ useEffect(() => {
                  </div>
 
         {/* linha 2 */}
-        <div className="bg-gray-100 shadow rounded-lg p-4 border-l-4 border-gray-300 mt-4">
+        <div className="bg-white shadow rounded-lg p-2    mt-2">
 
             <div className="flex flex-wrap items-end gap-4">
 
                 <div className="flex flex-col">
-                    <label className="font-bold text-base block mb-1 text-[#1e40af]">Data início</label>
+                    <label className="font-bold text-base block mb-1 text-[#061f4aff]">Data início</label>
                     <input
                       type="date"
                       value={dataIni}
@@ -415,7 +418,7 @@ useEffect(() => {
                 </div>
 
                 <div className="flex flex-col">
-                    <label className="font-bold text-base block mb-1 text-[#1e40af]">Data fim</label>
+                    <label className="font-bold text-base block mb-1 text-[#061f4aff]">Data fim</label>
                     <input
                       type="date"
                       value={dataFim}
@@ -425,7 +428,7 @@ useEffect(() => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="font-bold text-base block mb-1 text-[#1e40af]">Conta</label>
+                  <label className="font-bold text-base block mb-1 text-[#061f4aff]">Conta</label>
                     <select
                       value={contaId}
                       onChange={(e) => setContaId(Number(e.target.value))}
@@ -441,7 +444,7 @@ useEffect(() => {
 
                               {/* CATEGORIA */}
                 <div className="flex flex-col">
-                  <label className="font-bold text-base block mb-1 text-[#1e40af]">Categoria</label>
+                  <label className="font-bold text-base block mb-1 text-[#061f4aff]">Categoria</label>
                   <select
                     value={categoriaId}
                     onChange={(e) => setCategoriaId(e.target.value)}
@@ -476,6 +479,14 @@ useEffect(() => {
                 >
                   Novo
                 </button>
+
+                <button
+                  onClick={abrirNovaReceita}
+                 // className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32"
+                    className= { `${btnPadrao} bg-gray-900 hover:bg-gray-500`}
+                >
+                 💰  Nova Receita 
+                </button>
                 
 
                  <button
@@ -496,22 +507,22 @@ useEffect(() => {
    
 
     {/* COLUNA 2 - DADOS DA CONTA */}
-    <div className="bg-gray-100 rounded-xl shadow p-4 border-l-4 border-blue-900 h-100 w-[500px] mt-5"> 
-        {dadosConta && (
-          <>
-            <h3 className="font-bold text-xl text-blue-700 mb-4">
-              🏦 {dadosConta.conta_nome}
-            </h3>
+        <div className="bg-gray-100 rounded-xl shadow p-6 border-l-4 border-blue-900 h-50 w-[500px] mt-[70px]"> 
+            {dadosConta && (
+              <>
+                <h3 className="font-bold text-xl text-blue-700 mb-4">
+                  🏦 {dadosConta.conta_nome}
+                </h3>
 
-            <p  className="text-gray-700 font-bold text-base mt-2"><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-            <p className="text-gray-700 font-bold text-base mt-2"><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-            <p className="text-gray-700 font-bold text-base mt-2"><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p> 
-            <p className="text-green-700 font-bold text-xl mt-4">
-              Saldo final: R$
-              {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-            </p>
-          </>
-        )}
+                <p  className="text-gray-700 font-bold text-base mt-1"><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
+                <p className="text-gray-700 font-bold text-base mt-1"><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
+                <p className="text-gray-700 font-bold text-base mt-1"><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p> 
+                <p className="text-green-700 font-bold text-xl mt-2">
+                  Saldo final: R$
+                  {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
+                </p>
+              </>
+            )}
 
       </div>
 </div>
@@ -586,7 +597,7 @@ useEffect(() => {
       
       <div className="bg-white rounded-xl shadow p-4">* 
        <div className="bg-gray-300 p-4 rounded-xl shadow">*/}
-           <div className="bg-gray-200 p-4 rounded-xl shadow border-[4px] border-gray-500"> 
+           <div className="bg-gray-200 p-44 rounded-xl shadow border-[4px] border-gray-500"> 
         {lista.length === 0 ? (
           <p className="text-gray-600 text-base">Nenhum lançamento encontrado.</p>
         ) : (

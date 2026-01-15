@@ -94,24 +94,22 @@ function novoCartao() {
 
 
 return (
-  <div className="p-6">
+  <div className="p-2">
 
     {/* Título + Botão */}
-    <div className="flex justify-between items-center mb-10">
-      <h2 className="text-2xl font-bold">Cartões</h2>
-
-       
-    </div>
+    
 
     {/* FILTROS */}
      
-      <div className="bg-gray-100 rounded-xl shadow p-5  border-[4px] border-blue-800 mb-6 w-[1850px] flex items-center"> 
+         <div className="bg-white p-5 rounded-xl shadow border border-[8px] border-[#061f4aff] gap-2 mb-10 max-w-[100%]">
     
-
+         <h2 className="text-2xl font-bold mb-2 text-[#061f4aff]">Cartóes</h2>
+        
+         <div className="flex gap-2 text-base  font-bold  mb-2"> 
       <div>
-        <label className="text-base font-bold block mb-1 font-bold text-[#1e40af]">Status</label>
+        <label className="text-base font-bold block mb-1 font-bold text-[#061f4aff]">Status</label>
         <select
-          className=   "border font-bold rounded px-4 py-3 w-[380px] mb-4 border-gray-300"
+          className=   "border font-bold rounded px-4 py-3 w-[380px] mb-2 border-gray-300"
           value={statusFiltro}
           onChange={(e) => setStatusFiltro(e.target.value)}
         >
@@ -139,6 +137,7 @@ return (
             </button> 
           </div>
       </div>
+    </div>
     </div>
 
     {/* DASHBOARD DE CARTÕES */}

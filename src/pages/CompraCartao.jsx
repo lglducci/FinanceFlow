@@ -97,7 +97,7 @@ function isHoje(data) {
   return (
     <div className="p-6">
      <h2 className="text-2xl font-bold mb-4">Compras no Cartão</h2>
-     <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl mb-4 border border-[4px] border-blue-900">
+     <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl mb-4 border border-[8px] border-[#061f4aff]">
 
  
       {/* FILTROS */}

@@ -75,7 +75,7 @@ export default function NovaModeloContabil() {
         marginTop: 20,
       }}
     >
-      <div  className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]  mt-1 mb-1" 
+      <div  className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]  mt-1 mb-1" 
        
       >
         {/* TÍTULO */}
@@ -171,7 +171,7 @@ export default function NovaModeloContabil() {
               onClick={salvar}
               style={{
                 padding: "10px 20px",
-                background: "#003ba2",
+                background: "#061f4aff",
                 color: "white",
                 border: "none",
                 borderRadius: 8,

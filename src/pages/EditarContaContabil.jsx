@@ -64,7 +64,7 @@ export default function EditarContaContabil() {
   }
 
   return (
-       <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
+       <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
 
         <h2
           className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center">
@@ -143,7 +143,7 @@ export default function EditarContaContabil() {
           
             <button   onClick={salvar} style={{
               width: "48%",
-              background: "#003ba2",
+              background: "#061f4aff",
               color: "white",
               padding: 10,
               borderRadius: 6,
@@ -157,7 +157,7 @@ export default function EditarContaContabil() {
             onClick={() => navigate("/contascontabeis")}
             style={{
               width: "48%",
-              background: "#b0b0b0",
+              background: "#747272",
               color: "black",
               padding: 10,
               borderRadius: 6,

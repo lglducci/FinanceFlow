@@ -65,32 +65,34 @@ export default function ContasContabeis() {
 
   return (
 
-   <div className="p-1">
+   <div className="p-2">
 
      
     <div
       style={{
+         background: "rgb(234, 236, 239)",
         padding: 20,
         width: "100%", 
         margin: "0 auto",
         marginTop: 20,
         borderRadius: 12,
-         border: "4px solid #003ba2",
+         border: "6px solid #061f4aff",
       }}
     >
 
-      <h1 className="text-2xl font-bold mb-6 text-[#1e40af]">Contas Contábeis</h1>
+      <h1 className="text-2xl font-bold mb-6 text-[#061f4aff]">Contas Contábeis</h1>
 
       {/* 🔵 CARD DO TOPO */}
     <div
   style={{
+    
     display: "flex",
     alignItems: "center",
     gap: "10px",   // 👈 CONTROLA O ESPAÇO ENTRE ELES
     marginBottom: 15 
   }}
 >
-        <h2 style={{ marginBottom: 10, fontWeight: "bold", fontSize: 15  }}  className="tabela tabela-mapeamento text-[#1e40af]" >Plano de Contas</h2>
+        <h2 style={{ marginBottom: 10, fontWeight: "bold", fontSize: 15  }}  className="tabela tabela-mapeamento text-[#061f4aff]" >Plano de Contas</h2>
 
   {/* 🔍 BUSCA */}
   <input
@@ -100,17 +102,17 @@ export default function ContasContabeis() {
     style={{
       width: "300px",
       padding: "4px",
-      border: "1px solid #999",
+      border: "1px solid #434040",
       borderRadius: 8,
     }}
-  />
+  />    
 
         {/* ➕ NOVA CONTA */}
         <button
           onClick={() => navigate("/nova-conta-contabil")}
           style={{
             padding: "8px 8px",
-            background: "#003ba2",
+            background: "rgb(23, 106, 16)",
             color: "white",
             border: "none",
             borderRadius: 10,

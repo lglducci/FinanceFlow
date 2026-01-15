@@ -89,7 +89,7 @@ export default function LancamentoPartidaDobrada() {
      
       <div className="p-4 max-w-xl mx-auto">
 
-     <div className="w-full max-w-2xl mx-auto rounded-2xl p-2 shadow-xl bg-[#1e40af]  mt-1 mb-1" >
+     <div className="w-full max-w-2xl mx-auto rounded-2xl p-2 shadow-xl bg-[#061f4aff]  mt-1 mb-1" >
         
         <div style={{ textAlign: "center", color: "white", marginBottom: 15 }}>
           <h2 className="text-2xl font-bold"> ✏️ Lançamento Contábil – Partida Dobrada</h2>
@@ -185,14 +185,14 @@ export default function LancamentoPartidaDobrada() {
             <button
               onClick={salvar}
               disabled={salvando}
-              className="flex-1 bg-blue-600 text-white px-4 py-3 rounded font-bold"
+              className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded font-bold"
             >
               {salvando ? "Salvando..." : "Salvar"}
             </button>
 
             <button
               onClick={() => navigate(-1)}
-              className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
+              className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-bold"
             >
               Cancelar
             </button>

@@ -153,19 +153,22 @@ export default function TitulosVencidos() {
 
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4 text-[#1e40af]">
+    <div className="p-2">
+      
+
+      {/* ===== BLOCO FIXO (NÃO SE MOVE) ===== */}
+      <div className="bg-white rounded-xl shadow p-2 border-[10px] border-[#061f4aff] mb-2">
+
+         <h2 className="text-2xl font-bold mb-1 text-[#061f4aff]">
        Títulos Vencidos e a Vencer
       </h2>
 
-      {/* ===== BLOCO FIXO (NÃO SE MOVE) ===== */}
-      <div className="bg-gray-100 rounded-xl shadow p-4 border-[4px] border-blue-800 mb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 items-stretch">
 
           {/* FILTROS */}
-          <div className="lg:col-span-3 flex flex-wrap items-center gap-6">
+          <div className="lg:col-span-3 flex flex-wrap items-center gap-2">
             <div>
-              <label className="font-bold text-[#1e40af] block mb-1">Período</label>
+              <label className="font-bold text-[#061f4aff] block mb-1">Período</label>
               <select
                 value={modo}
                 onChange={(e) => setModo(e.target.value)}
@@ -177,7 +180,7 @@ export default function TitulosVencidos() {
             </div>
 
             <div>
-              <label className="font-bold text-[#1e40af] block mb-1">Dias</label>
+              <label className="font-bold text-[#061f4aff] block mb-1">Dias</label>
               <select
                 value={dias}
                 disabled={modo === "vencidos"}
@@ -191,7 +194,7 @@ export default function TitulosVencidos() {
             </div>
 
             <div>
-              <label className="font-bold text-[#1e40af] block mb-1">Conta</label>
+              <label className="font-bold text-[#061f4aff] block mb-1">Conta</label>
               <select
                 value={contaId}
                 onChange={(e) => setContaId(Number(e.target.value))}

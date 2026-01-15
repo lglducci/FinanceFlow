@@ -93,55 +93,69 @@ export default function FornecedorCliente() {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Fornecedores / Clientes</h2>
-
+    <div className="p-2">
       
-
+     
       {/* FILTRO */}
-       
-       <div className="bg-gray-50 p-5 rounded-xl shadow border border flex items-end border-[4px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
-            <div>
-              <label className="text-base font-bold block mb-1 text-[#1e40af]">Tipo</label>
-              <select
-                className="border font-bold rounded-lg px-3 py-2 w-48 text-base border-yellow-500"
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value)}
-              >   
-                <option value="fornecedor">Fornecedor</option>
-                <option value="cliente">Cliente</option> 
-                <option value="ambos">Ambos</option>
-              </select>
-            </div>
-       
-          <div>
-          <label  className="block font-bold text-[#1e40af]" > Pesquisa - Nome ou CNPJ </label>
-        <input
-            type="text"
-            placeholder="Buscar por nome, tipo, grupo..."
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)} 
-             className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
-          />
-           </div>
-       
+          
+<div className="bg-white p-5 rounded-xl shadow border border-[8px] border-[#061f4aff] gap-6 mb-10 max-w-[100%]">
 
-        <button
-          onClick={carregar}
-          className={ `${btnPadrao} bg-blue-600 hover:bg-blue-700`}
-                                
-        >
-          {carregando ? "Carregando..." : "Pesquisar"}
-        </button>
+  {/* TÍTULO EM CIMA */}
+  <h2 className="text-2xl font-bold mb-4 text-[#061f4aff]">
+    Fornecedores / Clientes
+  </h2>
 
-        <button
-          onClick={novo}
-          className={ `${btnPadrao} bg-green-600  hover:green-600`}
-        >
-          Novo
-        </button>
-      </div>
+  {/* LINHA DE CONTROLES */}
+  <div className="flex items-end gap-6">
 
+    <div>
+      <label className="text-base font-bold block mb-1 text-[#061f4aff]">
+        Tipo
+      </label>
+      <select
+        className="border font-bold rounded-lg px-3 py-2 w-48 border-yellow-500"
+        value={tipo}
+        onChange={(e) => setTipo(e.target.value)}
+      >
+        <option value="fornecedor">Fornecedor</option>
+        <option value="cliente">Cliente</option>
+        <option value="ambos">Ambos</option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block font-bold text-[#061f4aff] mb-1">
+        Pesquisa - Nome ou CNPJ
+      </label>
+      <input
+        type="text"
+        placeholder="Buscar por nome, tipo, grupo..."
+        value={filtro}
+        onChange={(e) => setFiltro(e.target.value)}
+        className="border rounded-xl px-4 py-2 border-yellow-500 w-[620px]"
+      />
+    </div>
+
+    <button
+      onClick={carregar}
+      className={`${btnPadrao} bg-blue-600 hover:bg-blue-700`}
+    >
+      {carregando ? "Carregando..." : "Pesquisar"}
+    </button>
+
+    <button
+      onClick={novo}
+      className={`${btnPadrao} bg-green-600 hover:bg-green-700`}
+    >
+      Novo
+    </button>
+
+  </div>
+</div>
+
+
+        
+       
       {/* LISTAGEM EM TABELA (FIGURA 2) */} 
       
       <div className="bg-gray-300 shadow rounded-lg overflow-hidden mt-6 border-[4px] border-gray-500">

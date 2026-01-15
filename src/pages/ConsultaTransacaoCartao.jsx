@@ -107,14 +107,15 @@ export default function ConsultaTransacaoCartao() {
 
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Transações de Cartão</h2>
+    <div className="p-2">
+      
 
       {/* FILTROS  */}
-      <div className="bg-gray-100 p-2.5 rounded-xl shadow-xl mb-4 border border-[4px] border-blue-900">
-        <div className="bg-gray-100 p-2.5 rounded-lg mb-4 flex flex-col md:flex-row md:items-end gap-2">
+      <div className="bg-white p-2.5 rounded-xl shadow-xl mb-4 border border-[8px] border-[#061f4aff]">
+         <h2 className="text-2xl font-bold mb-4 text-[#061f4aff]">Transações de Cartão</h2>
+        <div className="bg-white p-2.5 rounded-lg mb-4 flex flex-col md:flex-row md:items-end gap-2">
           <div className="flex flex-col">
-            <label className="font-bold mb-1 text-[#1e40af]">Cartão</label>
+            <label className="font-bold mb-1 text-[#061f4aff]">Cartão</label>
             <select
               className="border font-bold px-3 py-1.5 rounded w-78 h-10 border-yellow-500"
               value={cartaoId}                      // <-- trabalha com ID
@@ -136,7 +137,7 @@ export default function ConsultaTransacaoCartao() {
           </div>
 
           <div className="flex flex-col">
-            <label className="font-bold mb-1 text-[#1e40af]">
+            <label className="font-bold mb-1 text-[#061f4aff]">
               Mês referência
             </label>
             <input

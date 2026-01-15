@@ -295,26 +295,26 @@ async function receberSelecionadas() {
   //------------------------------------------------------------------
 
   return (
-  <div className="p-4">
+  <div className="p-2">
 
-    <h2 className="text-xl font-bold mb-4">Contas a Receber</h2>
+    
 
     {/* CONTAINER PRINCIPAL */}
-       <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[2px] border-blue-900 mb-4">
-
+       <div className="max-w-full mx-auto bg-[#ffffffff] rounded-xl shadow-lg p-2 border-[8px] border-[#061f4aff] mb-2">
+     <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">Contas a Receber</h2>
       {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* ------------------------- */}
         {/* 🟥 COLUNA 1 — FILTROS     */}
         {/* ------------------------- */}
-        <div className="bg-gray-100 rounded-xl shadow p-3 border w-full h-fit">
+        <div className="bg-[#ffffffff] rounded-xl shadow p-2  w-full h-fit">
 
           {/* PERÍODO + STATUS + DATA + FORNECEDOR + CONTA */}
            <div className="grid grid-cols-1 md:grid-cols-3 gap-3"> 
                 {/* DATA INÍCIO */}
             <div>
-              <label className="font-bold text-base block mb-1 text-[#1e40af]"> Data início</label>  
+              <label className="font-bold text-base block mb-1 text-[#061f4aff]"> Data início</label>  
             <input
               type="date"
               value={dataIni}
@@ -328,7 +328,7 @@ async function receberSelecionadas() {
 
             {/* DATA FIM */}
             <div>
-              <label  className="text-sm font-semibold text-[#1e40af] mb-1 block"> Data fim</label>
+              <label  className="text-base font-semibold text-[#061f4aff] mb-1 block"> Data fim</label>
               <input
                 type="date"
                 value={dataFim}
@@ -341,7 +341,7 @@ async function receberSelecionadas() {
 
             {/* STATUS */}
             <div>
-                 <label className="text-sm font-semibold text-[#1e40af] mb-1 block"> Status</label>
+                 <label className="text-base font-semibold text-[#061f4aff] mb-1 block"> Status</label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
@@ -356,7 +356,7 @@ async function receberSelecionadas() {
 
             {/* FORNECEDOR */}
             <div>
-                <label className="text-sm font-semibold text-[#1e40af] mb-1 block"> Fornecedor</label>
+                <label className="text-base font-bold text-[#061f4aff] mb-1 block"> Fornecedor</label>
               <select
                 value={fornecedor_id}
                 onChange={e => setFornecedorId(Number(e.target.value))}
@@ -371,7 +371,7 @@ async function receberSelecionadas() {
 
             {/* CONTA BANCÁRIA */}
             <div className="col-span-2">
-                <label className="text-sm font-semibold text-[#1e40af] mb-1 block"> Conta bancária</label>
+                <label className="text-base font-bold text-[#061f4aff] mb-1 block"> Conta bancária</label>
               <select
                 value={conta_id}
                 onChange={async (e) => {
@@ -412,7 +412,7 @@ async function receberSelecionadas() {
                   checked={somenteVencidas}
                   onChange={e => setSomenteVencidas(e.target.checked)}
                 />
-                <label className="font-bold text-base block mb-2 text-[#1e40af]">
+                <label className="font-bold text-base block mb-2 text-[#061f4aff]">
                   Somente vencidas
                 </label>
               </div>
@@ -456,7 +456,7 @@ async function receberSelecionadas() {
         {/* ------------------------- */}
         {/* 🟦 COLUNA 2 — CARD SALDO */}
         {/* ------------------------- */}
-       <div className="bg-gray-100 rounded-xl shadow p-4 border-l-4 border-blue-900 h-100 w-[500px] mt-5"> 
+          <div className="bg-gray-100 rounded-xl shadow p-11 border-l-4 border-blue-900 h-[px840] w-[500px] mt-[20px]"> 
         {dadosConta && (
           <>
             <h3 className="font-bold text-xl text-blue-700 mb-4">

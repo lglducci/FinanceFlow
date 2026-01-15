@@ -12,7 +12,7 @@ export default function TributosApuracao() {
   const [lista, setLista] = useState([]);
   const [loading, setLoading] = useState(false);
  
- 
+ const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 const [tipoRelatorio, setTipoRelatorio] = useState("ANALITICO"); 
 // ANALITICO | SINTETICO
 
@@ -137,94 +137,102 @@ const [tipoRelatorio, setTipoRelatorio] = useState("ANALITICO");
 }
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-[#1e40af] mb-4">
-        📊 Apuração de Tributos
-      </h2>
+    <div className="p-2">
+     
 
       {/* FILTROS */}
-      <div className="bg-gray-100 rounded-xl shadow p-4 border-[4px] border-blue-800 mb-4 flex gap-4 items-end">
-        <div>
-          <label className="font-bold text-[#1e40af]">Data Inicial</label>
-          <input
-            type="date"
-            className="input-premium"
-            value={dataIni}
-            onChange={(e) => setDataIni(e.target.value)}
-          />
-        </div>
+      <div className="bg-white rounded-xl shadow p-2 border-[8px] border-[#061f4aff] mb-4 flex gap-4 items-end">
 
-        <div>
-          <label className="font-bold text-[#1e40af]">Data Final</label>
-          <input
-            type="date"
-            className="input-premium"
-            value={dataFim}
-            onChange={(e) => setDataFim(e.target.value)}
-          />
-        </div>
+          <div className="grid grid-cols-1 gap-4"> 
+                
+              
+              <h2 className="text-2xl font-bold text-[#061f4aff] mb-4">
+              📊 Apuração de Tributos
+            </h2>
+           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+ 
+                <div>
+                  <label className="font-bold text-[#061f4aff]">Data Inicial</label>
+                  <input
+                    type="date"
+                    className="input-premium"
+                    value={dataIni}
+                    onChange={(e) => setDataIni(e.target.value)}
+                  />
+                </div>
 
-        <button
-          onClick={apurar}
-          className="h-12 px-8 bg-blue-600 text-white font-bold rounded-lg"
-          disabled={loading}
-        >
-          {loading ? "Apurando..." : "Apurar Tributos"}
-        </button>
+                  <div>
+                    <label className="font-bold text-[#061f4aff]">Data Final</label>
+                    <input
+                      type="date"
+                      className="input-premium"
+                      value={dataFim}
+                      onChange={(e) => setDataFim(e.target.value)}
+                    />
+                  </div>
+
+                <button
+                  onClick={apurar} 
+                    className={ `${btnPadrao} bg-blue-600  hover:blue-600`}
+                  disabled={loading}
+                >
+                  {loading ? "Apurando..." : "Apurar Tributos"}
+                </button>
 
 
-        
-        <button
-          onClick={gerarObrigacao}
-          className="h-12 px-8 bg-red-600 text-white font-bold rounded-lg"
-          disabled={loading}
-        >
-          {loading ? "Gerando Obrigações..." : "Gerar Obrigação"}
-        </button>
+                
+                <button
+                  onClick={gerarObrigacao}
+                      className={ `${btnPadrao} bg-red-800  hover:blue-400`}
+                  disabled={loading}
+                >
+                  {loading ? "Gerando Obrigações..." : "Gerar Obrigação"}
+                </button>
                 
                 <div className="flex gap-6 items-center mb-4">
-          <label className="flex items-center gap-2 font-bold">
-            <input
-              type="radio"
-              name="tipoRelatorio"
-              checked={tipoRelatorio === "ANALITICO"}
-              onChange={() => setTipoRelatorio("ANALITICO")}
-            />
-            Relatório Analítico
-          </label>
+                  <label className="flex items-center gap-2 font-bold text-[#061f4aff]">
+                    <input
+                      type="radio"
+                      name="tipoRelatorio"
+                      checked={tipoRelatorio === "ANALITICO"}
+                      onChange={() => setTipoRelatorio("ANALITICO")}
+                    />
+                    Relatório Analítico
+                  </label>
 
-          <label className="flex items-center gap-2 font-bold">
-            <input
-              type="radio"
-              name="tipoRelatorio"
-              checked={tipoRelatorio === "SINTETICO"}
-              onChange={() => setTipoRelatorio("SINTETICO")}
-            />
-            Relatório Sintético
-          </label>
-        </div>
-          
-          <select
-            value={status ?? ""}
-            onChange={(e) =>
-              setStatus(e.target.value === "" ? null : e.target.value)
-            }
-            className="input-premium w-30"
-          >
-            <option value="">Todos</option>
-            <option value="APURADO">Apurado</option>
-            <option value="OBRIGACAO_GERADA">Obrigação Gerada</option>
-          </select>
+                <label className="flex items-center gap-2 font-bold text-[#061f4aff]">
+                  <input
+                    type="radio"
+                    name="tipoRelatorio"
+                    checked={tipoRelatorio === "SINTETICO"}
+                    onChange={() => setTipoRelatorio("SINTETICO")}
+                  />
+                  Relatório Sintético
+                </label>
+              </div> 
+                <select
+                  value={status ?? ""}
+                  onChange={(e) =>
+                    setStatus(e.target.value === "" ? null : e.target.value)
+                  }
+                  className="input-premium w-30"
+                >
+                  <option value="">Todos</option>
+                  <option value="APURADO">Apurado</option>
+                  <option value="OBRIGACAO_GERADA">Obrigação Gerada</option>
+                </select>
 
-        <button
-          onClick={pesquisar}
-          className="h-12 px-8 bg-blue-900 text-white font-bold rounded-lg"
-          disabled={loading}
-        >
-          {loading ? "Pesquisar..." : "Pesquisar"}
-        </button>
+              <button
+                onClick={pesquisar}
+                  className={ `${btnPadrao} bg-blue-800  hover:blue-400`}
+                disabled={loading}
+              >
+                {loading ? "Pesquisar..." : "Pesquisar"}
+              </button>
+            </div>
 
       </div>
+       </div>
 
       {/* TABELA */}
       <div className="bg-gray-100 rounded-xl p-4 shadow border-[2px] border-gray-500">

@@ -221,7 +221,7 @@ async function carregar() {
   return (
  
      <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
     
         <h1
         className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -356,14 +356,14 @@ async function carregar() {
           <button
             onClick={salvar}
             disabled={salvando}
-            className="flex-1  bg-blue-600 text-white px-4 py-3 rounded font-semibold"
+            className="flex-1  bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
           >
             {salvando ? "Salvando..." : "Salvar"}
           </button>
 
           <button
             onClick={() => navigate("/contas-receber")}
-            className="flex-1  bg-gray-400 text-white px-4 py-3 rounded font-semibold"
+            className="flex-1  bg-gray-500 text-white px-4 py-3 rounded font-semibold"
           >
             Cancelar
           </button>

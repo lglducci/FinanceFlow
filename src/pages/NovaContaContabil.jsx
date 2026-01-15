@@ -89,7 +89,7 @@ async function salvar() {
 
 
   return (
-     <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
+     <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
 
         <h2
           className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center">
@@ -203,14 +203,14 @@ async function salvar() {
               
         <button
           onClick={salvar}
-            className="flex-1  bg-blue-600 text-white px-4 py-3 rounded font-semibold"
+            className="flex-1  bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
         >
           Salvar
         </button>
 
           <button
             onClick={() => navigate( -1)}
-            className="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+            className="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold"
           >
             Cancelar
           </button>

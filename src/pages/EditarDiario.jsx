@@ -227,7 +227,7 @@ export default function EditarDiario() {
   return (
       <div className="p-4 max-w-xl mx-auto">
 
-     <div className="w-full max-w-2xl mx-auto rounded-2xl p-2 shadow-xl bg-[#1e40af]  mt-1 mb-1" >
+     <div className="w-full max-w-2xl mx-auto rounded-2xl p-2 shadow-xl bg-[#061f4aff]  mt-1 mb-1" >
 
         <div style={{ textAlign: "center", color: "white", marginBottom: 15 }}>
           <h2>📝 Editar Lançamento do Diário</h2>
@@ -367,7 +367,7 @@ export default function EditarDiario() {
               onClick={salvar}
                  style={{
               width: "48%",
-              background: "#003ba2",
+              background: "#061f4aff",
               color: "white",
               padding: 10,
               borderRadius: 6,
@@ -382,7 +382,7 @@ export default function EditarDiario() {
               onClick={() => navigate("/diario")}
                style={{
               width: "48%",
-              background: "#b0b0b0",
+              background: "#646262",
               color: "black",
               padding: 10,
               borderRadius: 6,

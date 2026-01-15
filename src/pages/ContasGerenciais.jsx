@@ -11,6 +11,7 @@ export default function ContasGerenciais() {
   const [loading, setLoading] = useState(false);
   const [filtro, setFiltro] = useState("");
   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+  
 
   const listaFiltrada = lista.filter((l) =>
   l.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
@@ -96,16 +97,25 @@ export default function ContasGerenciais() {
 
 
   return (
-    <div className="p-6">
+    <div>
     
-         <h2 className="text-2xl font-bold mb-4"> Contas Gerenciais </h2> 
+         
        
 
       {/* FILTRO */}
+
+ 
       
-        <div className="bg-gray-150 p-5 rounded-xl shadow border border  flex items-end border-[4px] border-blue-800  gap-6 mb-10 max-w-[100%]"> 
+        <div className="bg-white p-5 rounded-xl shadow border border-[8px] border-[#061f4aff] gap-6 mb-10 max-w-[100%]">
+          
+             
+           <h2 className="text-2xl font-bold mb-4 text-[#061f4aff]">  
+            Contas Gerenciais </h2> 
+
+           
+            <div className="flex items-end gap-6">
            <div> 
-             <label className="block font-bold text-[#1e40af]"> Tipo </label>
+             <label className="block font-bold text-[#061f4aff]"> Tipo </label>
             <select 
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
@@ -117,7 +127,7 @@ export default function ContasGerenciais() {
             </select>
           </div>
               <div> 
-             <label className="block font-bold text-[#1e40af]"> Nome ou Tipo </label>
+             <label className="block font-bold text-[#061f4aff]"> Nome ou Tipo </label>
             <input
               type="text"
               placeholder="Buscar por nome, tipo, grupo..."
@@ -142,7 +152,8 @@ export default function ContasGerenciais() {
                 Novo
               </button>
  
-
+        </div>
+ 
           </div>
 
     

@@ -46,13 +46,18 @@ export default function Tributos() {
   );
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4 text-[#1e40af]">
+    <div className="p-2">
+       
+         
+      <div className="bg-white rounded-xl shadow p-8 border-[8px] border-[#061f4aff] mb-2">
+       
+             <h2 className="text-2xl font-bold mb-4 text-[#061f4aff] mt-2 ">
         🧾 Tributos da Empresa
       </h2>
 
-      <div className="bg-gray-100 rounded-xl shadow p-4 border-[4px] border-blue-800 mb-4">
-        <input
+         <label className="font-bold text-[#061f4aff] mt-2 ">Pesquisa    </label>
+         <input
+         
           className="border rounded px-3 py-2 w-96 border-yellow-500"
           placeholder="Buscar por código ou nome..."
           value={filtro}

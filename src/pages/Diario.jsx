@@ -65,26 +65,21 @@ async function carregar() {
   return (
 
 
-    <div className="p-4">
-
- 
-
-     
-    <h2 className="text-xl font-bold mb-4"> Diário Contábil </h2>
-
+    <div className="p-4"> 
 
     <div style={{ width: "100%", padding: 20 }}>
 
       {/* CABEÇALHO AZUL */}
       <div
           style={{
-            background: "#003ba2",
+            background: "#061f4aff",
             padding: "4px 4px",   // ⬅️ antes era 20
             borderRadius: 8,       // ⬅️ antes era 12
             marginBottom: 12,      // ⬅️ antes era 20
+              border: "6px solid #061f4aff", // 👈 AQUI
           }}
         > 
-
+    <h2 className="text-xl font-bold mb-4 text-white"> Diário Contábil </h2>
         {/* CARD BRANCO */}
         <div
           style={{

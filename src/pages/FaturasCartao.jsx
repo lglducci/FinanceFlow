@@ -120,24 +120,24 @@ const btnPadrao =
   // ============================================================
 
   return (
-    <div className="p-4">
+    <div className="p-2">
 
-    <h2 className="text-xl font-bold mb-4"> Pagar Faturas </h2>
+    
 
     {/* CONTAINER PRINCIPAL */}
-    <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-6 border-[4px] border-blue-900 mb-2">
-
+    <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg p-2 border-[8px] border-[#061f4aff] mb-2">
+      <h2 className="text-xl font-bold mb-2 text-[#061f4aff]"> Pagar Faturas </h2>
       {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
     {/* ===================== COLUNA 1 ===================== */}
-    <div className="bg-white rounded-xl shadow p-5 border w-full">
+    <div className="bg-white  rounded-xl shadow p-5   w-full">
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* CARTÃO */}
             <div>
-                 <label className="font-bold text-base block mb-1 text-[#1e40af]">Cartão</label>
+                 <label className="font-bold text-base block mb-1 text-[#061f4aff]">Cartão</label>
                 <select
                   value={cartao_id}
                   onChange={(e) => setCartaoId(Number(e.target.value))}
@@ -152,7 +152,7 @@ const btnPadrao =
 
             {/* STATUS */}
             <div>
-                <label className="font-bold text-base block mb-1 text-[#1e40af]"> Status</label>
+                <label className="font-bold text-base block mb-1 text-[#061f4aff]"> Status</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
@@ -166,7 +166,7 @@ const btnPadrao =
 
             {/* MÊS */}
             <div>
-                  <label className="font-bold text-base block mb-1 text-[#1e40af]"> Mês referência</label>
+                  <label className="font-bold text-base block mb-1 text-[#061f4aff]"> Mês referência</label>
                 <input
                   type="month"
                   value={mes}
@@ -177,7 +177,7 @@ const btnPadrao =
 
             {/* CONTA BANCÁRIA */}
             <div>
-                  <label className="font-bold text-base block mb-1 text-[#1e40af]"> Conta bancária</label>
+                  <label className="font-bold text-base block mb-1 text-[#061f4aff]"> Conta bancária</label>
                 <select
                   value={conta_id}
                   onChange={(e) => {
@@ -230,7 +230,7 @@ const btnPadrao =
             {/* ===================== COLUNA 2 ===================== */}
             <div className="bg-white rounded-xl shadow p-5 border w-full">
                 {dadosConta && (
-                    <div className="bg-white rounded-xl shadow p-4 border-l-4 border-blue-700 w-full">
+                    <div className="bg-white rounded-xl shadow p-4 border-l-4 border-[#061f4aff] w-full">
                         <h3 className="font-bold text-lg text-blue-700 mb-2">
                             🏦 {dadosConta.conta_nome}
                         </h3>

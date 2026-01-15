@@ -149,7 +149,7 @@ export default function NovoLancamento() {
   return (
           
       <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
         {/* TÍTULO IGUAL AO EDITAR */}
         <h1
           className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -278,7 +278,7 @@ export default function NovoLancamento() {
             <button
               type="button"
               onClick={handleSalvar}
-              className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg font-semibold"
+              className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded-lg font-semibold"
             >
               Salvar
             </button>
@@ -286,7 +286,7 @@ export default function NovoLancamento() {
 
             <button
               onClick={() => navigate(-1)}
-              className="flex-1 bg-gray-400 text-white px-4 py-3  rounded-lg font-semibold"
+              className="flex-1 bg-gray-500 text-white px-4 py-3  rounded-lg font-semibold"
             >
               Voltar
             </button>

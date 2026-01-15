@@ -90,14 +90,14 @@ export default function EditaMapeamento() {
   return (
     <div style={{ padding: 10,
                   background: "#cdd5dfff",
-                    border: "2px solid #0c079fff",
+                    border: "2px solid #061f4aff",
                 }}>
       <h2>Editar Mapeamento</h2>
 
                     {/* CABEÇALHO DO MODELO */}
                  <div
                     style={{
-                        background: "#0a0a7aff",
+                        background: "#061f4aff",
                         padding: 15,
                         border: "2px solid #f7f1f5ff",
                         borderRadius: 8,

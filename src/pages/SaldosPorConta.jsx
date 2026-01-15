@@ -99,16 +99,20 @@ const editarConta = (conta) => {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Contas Financeiras e Saldos</h2>
+    <div className="p-2">
      
-      <div className="bg-gray-100 p-6 rounded shadow mb-6  border-[4px] border-blue-800 ">
-        <p className="font-bold text-base gray-100 mb-2  text-[#1e40af]">Períodos</p>
+     
+      
+        <div className="bg-white p-5 rounded-xl shadow border border-[8px] border-[#061f4aff] gap-6 mb-10 max-w-[100%]">
+          
+          <h2 className="text-2xl font-bold mb-4 text-[#061f4aff]">Contas Financeiras e Saldos</h2>
+
+        <p className="font-bold text-base gray-100 mb-2  text-[#061f4aff]">Períodos</p>
         <div className="flex gap-6 text-base  font-bold  mb-4">
          
            
           {["mes", "15", "semana", "hoje"].map((tipo) => (
-            <label key={tipo} className="flex text-base items-center gap-2  text-[#1e40af]">
+            <label key={tipo} className="flex text-base items-center gap-2  text-[#061f4aff]">
               <input
                 type="checkbox"
                 checked={periodo === tipo}
@@ -120,9 +124,9 @@ const editarConta = (conta) => {
         </div>
 
         
-         <div className="flex gap-4 bg-white shadow rounded-lg p-4 border-l-4 border-gray-600 items-end">
+         <div className="flex gap-4 bg-gray-200 shadow rounded-lg p-4 border-l-4 border-gray-600 items-end">
           <div className="flex flex-col">
-            <label className="text-base font-bold  text-[#1e40af] ">Data início</label>
+            <label className="text-base font-bold  text-[#061f4aff] ">Data início</label>
             <input
               type="date"
               value={inicio}

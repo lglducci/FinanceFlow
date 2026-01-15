@@ -181,7 +181,7 @@ async function salvar() {
   /* ================= UI ================= */
 return (
   <div className="min-h-screen py-6 px-4 bg-bgSoft">
-    <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]">
+    <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]">
 
       <h1 className="text-2xl font-bold mb-6 text-center text-white">
         ✏️ Lançamento Contábil – Modelo Token
@@ -367,14 +367,14 @@ return (
         <div className="flex gap-4 pt-4">
           <button
             onClick={salvar}
-            className="flex-1 bg-blue-600 text-white px-4 py-3 rounded font-bold"
+            className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded font-bold"
           >
             Salvar
           </button>
 
           <button
             onClick={() => navigate(-1)}
-            className="flex-1 bg-gray-400 text-white px-4 py-3 rounded font-bold"
+            className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-bold"
           >
             Cancelar
           </button>

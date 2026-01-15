@@ -106,7 +106,7 @@ export default function ContasGerenciaisEditar() {
 
   return (
     <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af] text-white mt-1 mb-1" >
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
 
         <h1
           className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center"
@@ -206,14 +206,14 @@ export default function ContasGerenciaisEditar() {
           <div className="flex gap-6 pt-8 pb-8 pl-1">
             <button
               onClick={salvar}
-              className="flex-1 bg-blue-600 text-white px-5 py-2 rounded font-bold"
+              className="flex-1 bg-[#061f4aff] text-white px-5 py-2 rounded font-bold"
             >
               Salvar
             </button>
 
             <button
               onClick={() => navigate("/contasgerenciais")}
-              className="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+              className="flex-1 bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold"
             >
               Voltar
             </button>
