@@ -1,9 +1,11 @@
  export default function Header() {
   return (
-    <header className="h-24 border-b flex items-left justify-between px-10 bg-[#061f4aff]">
+    <header className="h-24 border-b flex items-center justify-between px-6 bg-[#061f4aff]">
       <div>
-        <h1 className="text-xl font-bold text-white pt-8">Finance-Flow</h1>
-        <p className="text- base  text-gray-100">
+          <h1 className="text-lg font-bold text-white leading-tight mt-3">
+            Dashboard
+          </h1>
+         <p className="text-sm text-gray-200 leading-tight">
           Acompanhamento rápido das suas finanças.
         </p>
       </div>
@@ -13,3 +15,5 @@
     </header>
   );
 }
+
+ 

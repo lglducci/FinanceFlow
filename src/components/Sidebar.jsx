@@ -21,10 +21,10 @@ export default function Sidebar() {
        
  
         <h2 className="text-xl font-bold">Finance-Flow</h2>
-        <p className="text-xs text-blue-600 font-bold  text-white font-bold text-base">Painel pessoal</p>
+        <p className="text-xs text-blue-900 font-bold  text-white font-bold text-base">Painel pessoal</p>
       </div>
 
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-400 text-sm">
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold">
 
         <MenuItem icon={<IconHome />} label="Visão Geral" onClick={() => navigate("/dashboard")} />
 
@@ -35,14 +35,14 @@ export default function Sidebar() {
           onClick={() => toggle("financeiro")}
         >
           
-          <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}   className="!text-blue-400" />
+          <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
           <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />
           <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
            <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
           <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} />
-         
-
+          <SubItem icon={<IconBook />} label="Receita Rapida" onClick={() => navigate("/registrareceitarapida")} />
+        
  
         </MenuGroup>
 
@@ -64,7 +64,7 @@ export default function Sidebar() {
 
          <MenuGroup
           icon={<IconBuilding />}
-          label="Apurações e Obrigações"
+          label="Apurações/Obrigações"
           open={open === "tributos"}
           onClick={() => toggle("tributos")}
         >
@@ -105,7 +105,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="px-4 py-3 border 12px  border-blue-800/40  text-blue-600 font-bold ">
-        <button onClick={logout} className="flex items-center gap-2 text-base text-red-200 hover:text-red-800   font-mediun  ">
+        <button onClick={logout} className="flex items-center gap-2 text-base text-red-200 hover:text-red-800 font-bold  ">
           <IconLogout /> Sair
         </button>
       </div>
@@ -117,7 +117,7 @@ export default function Sidebar() {
 
 function MenuItem({ icon, label, onClick }) {
   return (
-    <button onClick={onClick} className="flex items-left gap-3 px-3 py-2 rounded-lg hover:bg-blue-800 text-blue-500 text-sm">
+    <button onClick={onClick} className="flex items-left gap-3 px-3 py-2 rounded-lg hover:bg-blue-300 text-[#061f4aff] text-sm font-bold">
       {icon}{label}
     </button>
   );
@@ -132,13 +132,14 @@ function MenuItem({ icon, label, onClick }) {
           flex items-center justify-between
           w-full px-3 py-2
           rounded-lg
-          hover:bg-blue-800
-         text-blue-500
-          text-sm font-medium
+          hover:bg-blue-300
+          text-blue-900
+          text-sm font-bold
+          font-bold
         "
       >
         {/* ESQUERDA: ícone + texto juntos */}
-        <span className="flex items-center gap-3 text-blue-500">
+        <span className="flex items-center gap-3 text-blue-900 font-bold">
           <span className="w-5 flex justify-center">
             {icon}
           </span>
@@ -159,7 +160,7 @@ function MenuItem({ icon, label, onClick }) {
 
 function SubItem({ icon, label, onClick }) {
   return (
-    <button onClick={onClick} className="flex items-center gap-3 px-3 py-1 text-base text-blue-600 hover:bg-blue-900 rounded text-blue-500 text-sm font-medium">
+    <button onClick={onClick} className="flex items-center gap-3 px-3 py-1 text-base text-blue-900 hover:bg-blue-300 rounded text-blue-900 text-sm font-bold ">
       {icon}{label}
     </button>
   );
