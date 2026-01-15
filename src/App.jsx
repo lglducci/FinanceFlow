@@ -93,6 +93,9 @@ import Tributos from "./pages/Tributos";
 import ConfiguracaoMeuNegocio from "./pages/ConfiguracaoMeuNegocio";
 
 
+import CriarModeloMeuNegocio from "./pages/CriarModeloMeuNegocio";
+import  RegistroReceitaRapida  from "./pages/RegistroReceitaRapida";                       
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -216,6 +219,18 @@ export default function App() {
   path="/meunegocio/meunegocio"
   element={<ConfiguracaoMeuNegocio />}
 />
+
+<Route
+  path="/crianegocio/crianegocio"
+  element={<CriarModeloMeuNegocio />}
+/>
+
+ 
+<Route
+  path="/registrareceitarapida"
+  element={<RegistroReceitaRapida />}
+/>
+
 
 </Routes>
 
