@@ -53,7 +53,7 @@ export default function Sidebar() {
           onClick={() => toggle("contabil")}
         >
           <SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />
-          <SubItem icon={<IconRefresh />} label="Processar e Importar" onClick={() => navigate("/importar-diario")} />
+          {/*<SubItem icon={<IconRefresh />} label="Processar e Importar" onClick={() => navigate("/importar-diario")} />*/}
            <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />
               
          <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
