@@ -27,6 +27,9 @@ export default function Sidebar() {
       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold">
 
         <MenuItem icon={<IconHome />} label="Visão Geral" onClick={() => navigate("/dashboard")} />
+        
+         <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
+         
 
         <MenuGroup
           icon={<IconMoney />}
