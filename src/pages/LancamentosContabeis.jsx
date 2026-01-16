@@ -204,6 +204,14 @@ export default function LancamentosContabeis() {
             + Novo Lancto Modelo
           </button>
            
+             <button
+            onClick={() => 
+                      navigate( "/lancamentocontabilrapido")  
+                    }
+            className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
+          >
+            ⚡ Novo Lancto Rapido
+          </button>
           
         <label className="flex items-center gap-2 cursor-pointer">
           <input

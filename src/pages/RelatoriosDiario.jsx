@@ -158,9 +158,9 @@ const filtrados = dados.filter(item => {
         <table className="w-full text-sm">
           <thead className="bg-blue-900 text-white">
             <tr>
-              <th className="p-3 text-left">Data</th>
-              <th className="p-3 text-left">Diário</th>
-              <th className="p-3 text-left">Modelo</th>
+              
+              <th className="p-3 text-left">Lançamento</th>
+               <th className="p-3 text-left">Data</th> 
               <th className="p-3 text-left">Conta</th>
               <th className="p-3 text-left">Histórico</th>
               <th className="p-3 text-right">Débito</th>
@@ -169,11 +169,10 @@ const filtrados = dados.filter(item => {
           </thead>
           <tbody>
             {filtrados.map((l, i) => (
-              <tr key={i}   className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"} >
+              <tr key={i}   className={i % 2 === 0 ? "bg-100" : "bg-blue-200"} >
                  {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
-                 <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data_mov)}</td>  
-                <td   className="p-2 font-bold text-left font-size: 16px">{l.diario_id}</td>
-                <td   className="p-2 font-bold text-left font-size: 16px">{l.modelo_codigo}</td>
+                 <td   className="p-2 font-bold text-left font-size: 16px">{l.id}</td>
+                 <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data_mov)}</td>   
                 <td    className="p-2 font-bold text-left font-size: 16px">
                   {l.conta_codigo} – {l.conta_nome}
                 </td>
