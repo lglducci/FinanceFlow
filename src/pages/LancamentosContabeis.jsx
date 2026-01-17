@@ -103,7 +103,7 @@ export default function LancamentosContabeis() {
 
         
       <h2 className="text-xl font-bold mb-2 text-white">
-        Lançamentos Contábeis
+        Lançamentos Contábeis - Visão Saldo
       </h2>
 
  
