@@ -1,10 +1,13 @@
- import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+ import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+
+
 
 export default function Sidebar() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(null);
+  const [menuContabil, setMenuContabil] = useState([]);
 
   const toggle = (m) => setOpen(open === m ? null : m);
 
@@ -12,6 +15,32 @@ export default function Sidebar() {
     localStorage.removeItem("ff_token");
     window.location.reload();
   };
+
+
+async function carregarMenuContabil() {
+  try {
+    const empresa_id =
+      localStorage.getItem("empresa_id") ||
+      localStorage.getItem("id_empresa");
+
+    const resp = await fetch(buildWebhookUrl("menu_contabil"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ empresa_id })
+    });
+
+    const json = await resp.json();
+    setMenuContabil(Array.isArray(json) ? json : []);
+  } catch (e) {
+    console.error("Erro ao carregar menu contábil", e);
+  }
+}
+
+useEffect(() => {
+  carregarMenuContabil();
+}, []);
+
+
 
 
   return (
@@ -56,7 +85,7 @@ export default function Sidebar() {
           onClick={() => toggle("contabil")}
         >
           <SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />
-          {/*<SubItem icon={<IconRefresh />} label="Processar e Importar" onClick={() => navigate("/importar-diario")} />*/}
+           
            <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />
               
          <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
