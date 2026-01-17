@@ -95,7 +95,8 @@ import ConfiguracaoMeuNegocio from "./pages/ConfiguracaoMeuNegocio";
 
 import CriarModeloMeuNegocio from "./pages/CriarModeloMeuNegocio";
 import  RegistroReceitaRapida  from "./pages/RegistroReceitaRapida";                       
-
+import LancamentoContabilRapido  from "./pages/LancamentoContabilRapido"
+import DashboardContabil from "./pages/DashboardContabil"
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -230,6 +231,20 @@ export default function App() {
   path="/registrareceitarapida"
   element={<RegistroReceitaRapida />}
 />
+
+ 
+<Route
+  path="/lancamentocontabilrapido"
+  element={<LancamentoContabilRapido />}
+/>
+
+
+<Route
+  path="/dashboardcontabil"
+  element={<DashboardContabil />}
+/>
+
+
 
 
 </Routes>
