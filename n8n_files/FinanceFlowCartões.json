@@ -118,7 +118,8 @@
         0
       ],
       "id": "5f8e35ad-c300-4b28-8dad-1f5328b36baa",
-      "name": "Sim"
+      "name": "Sim",
+      "disabled": true
     },
     {
       "parameters": {
@@ -131,7 +132,8 @@
         256
       ],
       "id": "f823b7b3-df42-4068-908f-bc77179033ac",
-      "name": "Não"
+      "name": "Não",
+      "disabled": true
     },
     {
       "parameters": {
@@ -164,7 +166,8 @@
           "id": "GfCFzcpZSxkxWy1M",
           "name": "FinanceFlow"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -190,7 +193,7 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "login",
+        "path": "logi",
         "responseMode": "responseNode",
         "options": {}
       },
@@ -202,7 +205,8 @@
       ],
       "id": "3dbfe472-0236-4ae1-85c0-eaf16a353d8b",
       "name": "Login",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb",
+      "disabled": true
     },
     {
       "parameters": {
@@ -246,7 +250,8 @@
         112
       ],
       "id": "bef3c8d8-a7fe-4daf-8b5d-d3e1ad652a4d",
-      "name": "If2"
+      "name": "If2",
+      "disabled": true
     },
     {
       "parameters": {},
@@ -301,7 +306,8 @@
         112
       ],
       "id": "444cb90d-a7b0-4eaf-841d-7855cc0356e8",
-      "name": "Usuario"
+      "name": "Usuario",
+      "disabled": true
     },
     {
       "parameters": {
@@ -1539,7 +1545,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "c201be4b-b1ee-4c60-b5b4-34e02e7a327c",
+  "versionId": "d3201487-4dc0-430d-9252-bb12ccea745f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

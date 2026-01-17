@@ -1355,15 +1355,6 @@
     }
   ],
   "pinData": {
-    "EditKpis": [
-      {
-        "json": {
-          "empresa_id": 1,
-          "ano": 2025,
-          "mes": 11
-        }
-      }
-    ],
     "Edtranscartao1": [
       {
         "json": {
@@ -1866,7 +1857,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d7e80ac8-a776-48c1-ac86-50ae9b3e5058",
+  "versionId": "b97ef70e-f641-4ef7-b1c6-45f897fea8ce",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

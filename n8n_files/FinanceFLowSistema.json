@@ -1,0 +1,517 @@
+{
+  "name": "FinanceFLowSistema",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { success: true, message: 'usuario ok' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -96
+      ],
+      "id": "f2bb4f5f-7776-4870-8311-1d096f988712",
+      "name": "Sim"
+    },
+    {
+      "parameters": {
+        "jsCode": "  return [{ json: { success: false, message: 'usuario invalido' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        160
+      ],
+      "id": "9730909e-e47a-4c37-92a5-28381a5760bf",
+      "name": "Não"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "usuarios",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "keyValue": "={{$json.email}}"
+            },
+            {
+              "keyName": "senha_hash",
+              "keyValue": "={{ $json.password }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        16
+      ],
+      "id": "33664880-cbfd-43f2-b2a9-311157e44fad",
+      "name": "DadosUsuario",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "GfCFzcpZSxkxWy1M",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n * \n  FROM usuario_empresa ue\nJOIN usuarios u ON u.id = ue.usuario_id \n  WHERE u.email= '{{ $('DadosUsuario').item.json.email }}' AND \n  u.senha_hash = '{{ $('DadosUsuario').item.json.senha_hash }}';\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        176,
+        0
+      ],
+      "id": "c9a7e313-f1eb-4455-81ff-10485699f7c4",
+      "name": "DadosEmpresa",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "login",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1424,
+        16
+      ],
+      "id": "15f962f4-8c72-4bde-86fb-904d832ef237",
+      "name": "Login",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "059b3d30-905f-4038-b8c1-9582bae19867",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "91d4813d-55f8-40af-a588-cc77a7b30153",
+              "leftValue": "= {{ $('Usuario').item.json.password }}",
+              "rightValue": "={{ $json.senha_hash }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -720,
+        16
+      ],
+      "id": "8a80f3dd-39f6-4023-a449-34c1f5b08415",
+      "name": "If2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "ddacec62-efaf-4792-b468-8005220f3e29",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        0
+      ],
+      "id": "19da1092-7db7-4d4d-8e83-ed8b51a74d0b",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "807e4143-d55c-420c-b026-90bb242e057f",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "password",
+              "value": "={{ $json.body.senha}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1216,
+        16
+      ],
+      "id": "4713b606-8183-4b3c-aa53-e46ee4f62cc9",
+      "name": "Usuario"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "perfil",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1424,
+        336
+      ],
+      "id": "7c0bdcda-3946-4b0a-addf-e7565eb3fa9c",
+      "name": "Perfil",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -624,
+        336
+      ],
+      "id": "060be98f-3047-4bfa-acb2-fb72db53ef67",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n    p.codigo AS perfil_codigo,\n    p.nome   AS perfil_nome\nFROM public.usuario_empresa_perfil uep\nJOIN public.perfis p ON p.id = uep.perfil_id\nWHERE  uep.empresa_id = {{ $json.empresa_id }};\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -992,
+        336
+      ],
+      "id": "97f57ba6-9913-4107-a5ef-df6064535329",
+      "name": "PerfilUsuario",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1216,
+        336
+      ],
+      "id": "17fddb20-03e3-4e99-8bcf-366d9244940f",
+      "name": "EditPerfil_usario"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -720,
+        576
+      ],
+      "id": "442cf837-1a98-4d02-8ef5-a41c8b18af13",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "perfilsidebar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1424,
+        576
+      ],
+      "id": "0edc28b1-394c-4485-b114-1c1d6f02df5a",
+      "name": "PerfilSidebar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "807e4143-d55c-420c-b026-90bb242e057f",
+              "name": "codigo",
+              "value": "={{ $json.body.codigo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1216,
+        576
+      ],
+      "id": "9d8714ec-209d-46f6-983d-041c8739422b",
+      "name": "EditPerfilSidebar"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT\n    s.codigo,\n    s.titulo,\n    s.rota,\n    s.modulo,\n    s.ordem\nFROM public.sidebar_itens s\nJOIN public.perfil_sidebar ps ON ps.sidebar_item_id = s.id\nJOIN public.perfis p ON p.id = ps.perfil_id\nWHERE p.codigo =  '{{ $json.perfil_codigo }}'\n  AND s.ativo = TRUE\nORDER BY s.ordem;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -800,
+        336
+      ],
+      "id": "9e6c25ed-0697-4289-8724-8c5813cc71bd",
+      "name": "QueryPerfilSidebar",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Sim": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Não": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "DadosUsuario": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DadosEmpresa": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login": {
+      "main": [
+        [
+          {
+            "node": "Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Sim",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Não",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "DadosEmpresa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usuario": {
+      "main": [
+        [
+          {
+            "node": "DadosUsuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perfil": {
+      "main": [
+        []
+      ]
+    },
+    "EditPerfil_usario": {
+      "main": [
+        [
+          {
+            "node": "PerfilUsuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PerfilUsuario": {
+      "main": [
+        [
+          {
+            "node": "QueryPerfilSidebar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PerfilSidebar": {
+      "main": [
+        [
+          {
+            "node": "EditPerfilSidebar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditPerfilSidebar": {
+      "main": [
+        []
+      ]
+    },
+    "QueryPerfilSidebar": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "69b7cce6-8563-4b6e-ba1b-cb4aa0be8086",
+  "meta": {
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "KkQ8ZKfiQJIIeUQ3",
+  "tags": []
+}
