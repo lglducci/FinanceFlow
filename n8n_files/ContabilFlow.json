@@ -892,7 +892,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        928,
+        1040,
         512
       ],
       "id": "06b23087-f502-482f-a095-c14f132f0bd6",
@@ -930,13 +930,13 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "delete  from contab.contas\n  where empresa_id = {{ $json.empresa_id }}  and id =   {{ $json.id }}  ;",
+        "query": "delete  from contab.contas\n  where empresa_id =  {{ $('EditExcluirContaCtb').item.json.empresa_id }}  and id =     {{ $('EditExcluirContaCtb').item.json.id }} ;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        704,
+        864,
         512
       ],
       "id": "2e9c7a8c-6d39-411c-bb9c-ba942b3aa8e1",
@@ -961,7 +961,7 @@
       "typeVersion": 1,
       "position": [
         0,
-        -16
+        16
       ]
     },
     {
@@ -1186,6 +1186,18 @@
               "name": "tipo_automacao",
               "value": "={{ $json.body.tipo}}",
               "type": "string"
+            },
+            {
+              "id": "f36aca13-911c-4e21-a145-04c658316b1b",
+              "name": "creditoId",
+              "value": "={{ $json.body.credito_id}}",
+              "type": "string"
+            },
+            {
+              "id": "e4e3ae5b-2c31-47cf-9d2f-25994629d78e",
+              "name": "debito_id",
+              "value": "={{ $json.body.debito_id}}",
+              "type": "string"
             }
           ]
         },
@@ -1203,7 +1215,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n\nselect * from contab.ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}', '{{ $json.tipo_automacao }}')\n",
+        "query": " \n\nselect * from contab.ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}' ,  {{ $json.creditoId }},  {{ $json.debito_id }}  , '{{ $json.tipo_automacao }}')\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1676,23 +1688,106 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -560,
+        704
+      ],
+      "id": "d3f437f2-69b5-46ff-9e80-fd753ab9e970",
+      "name": "Respond to Webhook11"
+    },
+    {
+      "parameters": {
+        "path": "contabanco",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1168,
+        704
+      ],
+      "id": "557c742d-6b52-49da-a181-fc1bef6dca97",
+      "name": "ContasBanco",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -960,
+        704
+      ],
+      "id": "3c2b6005-fe07-466a-8b74-cea43c44267a",
+      "name": "EditCtbbanco"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT id, codigo, nome\nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND analitica = true\n  AND natureza = 'D'\n  AND tipo IN ('ATIVO')\n AND (\n  codigo LIKE '1.1.1%' OR\n  codigo LIKE '1.1.2%' OR\n  codigo LIKE '1.1.3%'\n)\nORDER BY codigo;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -768,
+        704
+      ],
+      "id": "0e5ecbcc-ade4-4a35-8cef-10b7e394e5d7",
+      "name": "ContasCTBanco",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "delete  from contab.saldos_iniciais\n  where empresa_id = {{ $json.empresa_id }}  and conta_id =   {{ $json.id }}  ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        672,
+        512
+      ],
+      "id": "36129fe2-8a7c-4c86-85c2-19f535d124c7",
+      "name": "ExcluirContaCtb1",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
     }
   ],
   "pinData": {
-    "EditCtbCMV": [
-      {
-        "json": {
-          "empresa_id": 1
-        }
-      }
-    ],
-    "EditCtbRcber": [
-      {
-        "json": {
-          "empresa_id": 1
-        }
-      }
-    ],
     "Editresolver_hierarquia_conta": [
       {
         "json": {
@@ -1927,7 +2022,7 @@
       "main": [
         [
           {
-            "node": "ExcluirContaCtb",
+            "node": "ExcluirContaCtb1",
             "type": "main",
             "index": 0
           }
@@ -2241,13 +2336,57 @@
           }
         ]
       ]
+    },
+    "ContasBanco": {
+      "main": [
+        [
+          {
+            "node": "EditCtbbanco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditCtbbanco": {
+      "main": [
+        [
+          {
+            "node": "ContasCTBanco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContasCTBanco": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluirContaCtb1": {
+      "main": [
+        [
+          {
+            "node": "ExcluirContaCtb",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "75a62308-fa31-46cc-afe1-8a5c8e92002e",
+  "versionId": "ba78f671-3483-47f0-ad76-f94274be9d71",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

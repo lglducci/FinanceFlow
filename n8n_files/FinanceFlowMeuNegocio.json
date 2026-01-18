@@ -29,8 +29,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -704,
-        -352
+        -608,
+        -368
       ]
     },
     {
@@ -191,6 +191,116 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        400,
+        224
+      ],
+      "id": "3d193668-0f92-4863-8a9f-1cfea973ee1b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "criamodelonegocio",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        224
+      ],
+      "id": "5930579c-dffc-4ea2-8eb3-89f4ea22b1d3",
+      "name": "CriaModelo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4b91aa0f-87b4-4157-a7ef-0f95d3d0cfb7",
+              "name": "categoria_nome",
+              "value": "={{ $json.body.categoria_nome}}",
+              "type": "string"
+            },
+            {
+              "id": "734ab06a-f8ee-4e83-89d4-460333a027a1",
+              "name": "token_modelo",
+              "value": "={{ $json.body.token_modelo}}",
+              "type": "string"
+            },
+            {
+              "id": "8423e970-bcfb-445d-bc5d-1e4d9daafff6",
+              "name": "conta_debito_id",
+              "value": "= {{ $json.body.conta_debito_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        224
+      ],
+      "id": "2f83eade-de2f-43bc-8978-730cf1696e32",
+      "name": "EditCriaModelo"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        224
+      ],
+      "id": "846f3878-6024-47fb-95cc-f4709207d19e",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "call  contab.criar_receita_meu_negocio (\n    {{ $json.empresa_id }},\n    '{{ $json.categoria_nome }}',\n    '{{ $json.token_modelo }}',\n    {{ $json.conta_debito_id }}\n)\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -32,
+        224
+      ],
+      "id": "29c31d58-11ad-4987-93a8-45ecb1f4b45c",
+      "name": "criar_receita_meu_negocio",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -269,13 +379,57 @@
           }
         ]
       ]
+    },
+    "CriaModelo": {
+      "main": [
+        [
+          {
+            "node": "EditCriaModelo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditCriaModelo": {
+      "main": [
+        [
+          {
+            "node": "criar_receita_meu_negocio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "criar_receita_meu_negocio": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "dc11d559-f7e0-4e50-8724-0fb6411965c0",
+  "versionId": "0b049f05-e1bc-4c54-83b9-6467631d27f4",
   "meta": {
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },

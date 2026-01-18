@@ -199,23 +199,6 @@
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "perfil",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1424,
-        336
-      ],
-      "id": "7c0bdcda-3946-4b0a-addf-e7565eb3fa9c",
-      "name": "Perfil",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
         "options": {
           "responseCode": 200
         }
@@ -228,28 +211,6 @@
       ],
       "id": "060be98f-3047-4bfa-acb2-fb72db53ef67",
       "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " SELECT\n    p.codigo AS perfil_codigo,\n    p.nome   AS perfil_nome\nFROM public.usuario_empresa_perfil uep\nJOIN public.perfis p ON p.id = uep.perfil_id\nWHERE  uep.empresa_id = {{ $json.empresa_id }};\n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -992,
-        336
-      ],
-      "id": "97f57ba6-9913-4107-a5ef-df6064535329",
-      "name": "PerfilUsuario",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
-          "name": "FinanceFlow"
-        }
-      }
     },
     {
       "parameters": {
@@ -276,69 +237,14 @@
     },
     {
       "parameters": {
-        "options": {
-          "responseCode": 200
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        -720,
-        576
-      ],
-      "id": "442cf837-1a98-4d02-8ef5-a41c8b18af13",
-      "name": "Respond to Webhook1"
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "perfilsidebar",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1424,
-        576
-      ],
-      "id": "0edc28b1-394c-4485-b114-1c1d6f02df5a",
-      "name": "PerfilSidebar",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "807e4143-d55c-420c-b026-90bb242e057f",
-              "name": "codigo",
-              "value": "={{ $json.body.codigo }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -1216,
-        576
-      ],
-      "id": "9d8714ec-209d-46f6-983d-041c8739422b",
-      "name": "EditPerfilSidebar"
-    },
-    {
-      "parameters": {
         "operation": "executeQuery",
-        "query": " \nSELECT\n    s.codigo,\n    s.titulo,\n    s.rota,\n    s.modulo,\n    s.ordem\nFROM public.sidebar_itens s\nJOIN public.perfil_sidebar ps ON ps.sidebar_item_id = s.id\nJOIN public.perfis p ON p.id = ps.perfil_id\nWHERE p.codigo =  '{{ $json.perfil_codigo }}'\n  AND s.ativo = TRUE\nORDER BY s.ordem;\n",
+        "query": " select codigo from empresa_perfil as  e \n   inner join perfis  as p on     p.id = e.perfil_id WHERE empresa_id = {{ $json.empresa_id }} and p.ativo = true",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -800,
+        -928,
         336
       ],
       "id": "9e6c25ed-0697-4289-8724-8c5813cc71bd",
@@ -350,6 +256,23 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "perfil",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1424,
+        336
+      ],
+      "id": "7c0bdcda-3946-4b0a-addf-e7565eb3fa9c",
+      "name": "Menu",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {},
@@ -449,23 +372,7 @@
         ]
       ]
     },
-    "Perfil": {
-      "main": [
-        []
-      ]
-    },
     "EditPerfil_usario": {
-      "main": [
-        [
-          {
-            "node": "PerfilUsuario",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "PerfilUsuario": {
       "main": [
         [
           {
@@ -474,22 +381,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "PerfilSidebar": {
-      "main": [
-        [
-          {
-            "node": "EditPerfilSidebar",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "EditPerfilSidebar": {
-      "main": [
-        []
       ]
     },
     "QueryPerfilSidebar": {
@@ -502,13 +393,24 @@
           }
         ]
       ]
+    },
+    "Menu": {
+      "main": [
+        [
+          {
+            "node": "EditPerfil_usario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "69b7cce6-8563-4b6e-ba1b-cb4aa0be8086",
+  "versionId": "41e5070b-3b4c-4ccb-8d10-07e803e5f493",
   "meta": {
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },

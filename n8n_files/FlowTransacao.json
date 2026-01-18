@@ -176,8 +176,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1168,
-        240
+        1184,
+        256
       ],
       "id": "482f5e34-d549-4912-9e84-520cbadec44f",
       "name": "Respond to Webhook13"
@@ -316,7 +316,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f129b861-7417-49d8-985d-3b608f6f1c05",
+  "versionId": "4df4e8f1-14b4-4710-8eb2-95698b350a81",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

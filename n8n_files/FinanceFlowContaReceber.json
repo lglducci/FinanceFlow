@@ -93,8 +93,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        48,
+        16
       ]
     },
     {
@@ -177,6 +177,24 @@
               "name": "contabil_id",
               "value": "={{ $json.body.contabil_id}}",
               "type": "string"
+            },
+            {
+              "id": "e0435548-c62a-412e-8f8c-25feb81faa27",
+              "name": "=forma_recebimento",
+              "value": "={{ $json.body.forma_recebimento}}",
+              "type": "string"
+            },
+            {
+              "id": "62ea54ea-a3df-4f43-ae02-27fe0a6e4da3",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta}}",
+              "type": "string"
+            },
+            {
+              "id": "fa3dc129-33df-4aa1-95e2-f0eff47a7200",
+              "name": "canal",
+              "value": "={{ $json.body.canal}}",
+              "type": "string"
             }
           ]
         },
@@ -194,7 +212,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}',\n   {{ $json.contabil_id }}\n)\n  \n ",
+        "query": " select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}',\n   {{ $json.contabil_id }},\n      {{ $json.conta_id }},\n   '{{ $json.forma_recebimento}}',\n   '{{ $json.canal }}'\n)\n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1068,7 +1086,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "976890bc-af8a-4f96-8d2c-149fd037da83",
+  "versionId": "706ad975-304e-4f3b-906e-ada769682d4d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

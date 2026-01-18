@@ -35,25 +35,8 @@
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "gerar_contabil",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        176,
-        496
-      ],
-      "id": "a15a8e7f-c7d2-4a55-a313-378bb6deec48",
-      "name": "ExcluirLote",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
         "content": "## Diário",
-        "height": 1084,
+        "height": 1340,
         "width": 1280,
         "color": 3
       },
@@ -62,8 +45,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        144,
+        -32
       ]
     },
     {
@@ -438,21 +421,135 @@
       "id": "40f4d7ef-6492-4af9-ba91-37e2ffd3eb21",
       "name": "voltadiaroo",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gerar_contabil",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        176,
+        496
+      ],
+      "id": "a15a8e7f-c7d2-4a55-a313-378bb6deec48",
+      "name": "geractbfinal",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1024,
+        1104
+      ],
+      "id": "1b1f32a1-9a4a-460c-9c78-e2b51b56e678",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "e9b5eb72-5abd-4439-a777-7a9bd194dab8",
+              "name": "lote_id",
+              "value": "={{ $json.body.lote_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        1104
+      ],
+      "id": "942f7ba2-e743-4b56-9868-de1cf7ab098a",
+      "name": "EditUltimo_process2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  contab.ff_excluir_lancamentos_lote( \n {{ $json.empresa_id }}, {{ $json.lote_id }})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        672,
+        1104
+      ],
+      "id": "ac0e4b58-92d3-4bd2-a5f1-c634a05ccf76",
+      "name": "Ultimo_processamento2",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "excluilanctolote",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        1104
+      ],
+      "id": "9c3b89c4-b009-4caf-a01d-dfe61fa7ee19",
+      "name": "ExcluiLanctoLote",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        1104
+      ],
+      "id": "d05b9c8b-33fd-4daa-ab9f-160f732a88f0",
+      "name": "Code in JavaScript2"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "EditUltimo_process2": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "lote_id": 22
+        }
+      }
+    ]
+  },
   "connections": {
-    "ExcluirLote": {
-      "main": [
-        [
-          {
-            "node": "EditStaging1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "GeraStaging": {
       "main": [
         [
@@ -606,13 +703,68 @@
           }
         ]
       ]
+    },
+    "geractbfinal": {
+      "main": [
+        [
+          {
+            "node": "EditStaging1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditUltimo_process2": {
+      "main": [
+        [
+          {
+            "node": "Ultimo_processamento2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ultimo_processamento2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExcluiLanctoLote": {
+      "main": [
+        [
+          {
+            "node": "EditUltimo_process2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a26719ae-b546-42b7-80b4-81abd5557a9e",
+  "versionId": "37790329-7907-4080-97f1-c57567544401",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
