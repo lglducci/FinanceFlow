@@ -88,9 +88,9 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
            open={open === "contabil"}
            onClick={() => toggle("contabil")}
          >
-           <SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />
+              {ehFinanceiro && (<SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />)}
             
-            <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />
+                {ehFinanceiro && ( <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />)}
                
           <SubItem icon={<IconDoc />} label="Lanctos Ctb - Saldo"
              onClick={() => navigate("/lancamentos-contabeis")}
@@ -141,7 +141,7 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
            onClick={() => toggle("Configurações")}
          > 
           <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />
-          <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} />
+          {ehContabil && (<SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} />)}
            </MenuGroup> 
        </nav>
  
