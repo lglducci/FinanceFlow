@@ -220,7 +220,7 @@ export default function LancamentoContabilRapido() {
                           <td className="text-[#061f4aff]">{l.nome}</td>
                           <td className="text-[#061f4aff]">{l.tipo}</td>
                           <td className="text-[#061f4aff]">{l.natureza}</td>
-                          <td className="font-bold">{l.dc}</td>
+                          <td className="font-bold text-[#061f4aff]">{l.dc}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -235,7 +235,7 @@ export default function LancamentoContabilRapido() {
           <>
           <div className="mb-4">
               <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-                Entrada
+                Saida
               </label>
             <select
               className="input-premium"
@@ -254,7 +254,7 @@ export default function LancamentoContabilRapido() {
             
             <div className="mb-4">
               <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-                Saida
+                Entrada
               </label>
 
             <select
@@ -294,7 +294,7 @@ export default function LancamentoContabilRapido() {
         <input
           type="number"
           className="input-premium"
-          placeholder="Valor"
+          placeholder="00,00"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
         />

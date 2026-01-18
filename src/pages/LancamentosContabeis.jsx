@@ -208,11 +208,11 @@ export default function LancamentosContabeis() {
             onClick={() => 
                       navigate( "/lancamentocontabilrapido")  
                     }
-            className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
-          >
-            ⚡ Novo Lancto Rapido
-          </button>
-          
+                  className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
+                >
+                  ⚡ Novo Lancto Rapido
+                </button>
+                
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -322,7 +322,7 @@ export default function LancamentosContabeis() {
                         `}
                       >
                         Alterar Saldo
-</button>
+                     </button>
 
                 </td>
               </tr>

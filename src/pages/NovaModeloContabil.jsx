@@ -1,18 +1,29 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import { hojeLocal, dataLocal } from "../utils/dataLocal";
 
 export default function NovaModeloContabil() {
   const navigate = useNavigate();
-  const empresa_id = localStorage.getItem("empresa_id") || "1";
-
+  const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
+  const [contas, setContas] = useState([]);
+  const [debitoId, setDebitoId] = useState("");
+  const [creditoId, setCreditoId] = useState("");
   const [form, setForm] = useState({
     codigo: "",
     nome: "",
     tipo_automacao:"FINANCEIRO_PADRAO"
   });
 
-
+  useEffect(() => {
+    async function carregarContas() {
+      const url = buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id:empresa_id });
+      const r = await fetch(url);
+      const j = await r.json();
+      setContas(Array.isArray(j) ? j : []);
+    }
+    carregarContas();
+  }, [empresa_id]);
  
 
  async function salvar() {
@@ -26,8 +37,10 @@ export default function NovaModeloContabil() {
         empresa_id: empresa_id,
         codigo: form.codigo,
         nome: form.nome,
-        tipo: form.tipo_automacao,
-        dc: ""
+        tipo: 'FINANCEIRO_PADRAO',
+        dc: "", 
+        credito_id:creditoId ,
+        debito_id:debitoId,
       }),
     });
 
@@ -137,7 +150,7 @@ export default function NovaModeloContabil() {
             }}
           />
 
-          {/* TIPO */}
+          {/* TIPO  
           <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Tipo Automação</label>
           <input
             type="text"
@@ -155,7 +168,46 @@ export default function NovaModeloContabil() {
               borderRadius: 6,
               border: "1px solid #ccc",
             }}
-          />
+          /> */}
+
+           {/* DÉBITO */}
+          <div className="mb-4">
+            <label className="label label-required font-bold text-[#1e40af]">
+              Conta Contábil – Débito (Saida)
+            </label>
+            <select
+              value={debitoId}
+              onChange={(e) => setDebitoId(e.target.value)}
+              className="input-premium"
+            >
+              <option value="">Selecione</option>
+              {contas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.codigo} - {c.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* CRÉDITO */}
+          <div className="mb-4">
+            <label className="label label-required font-bold text-[#1e40af]">
+              Conta Contábil – Crédito (Entrada)
+            </label>
+            <select
+              value={creditoId}
+              onChange={(e) => setCreditoId(e.target.value)}
+              className="input-premium"
+            >
+              <option value="">Selecione</option>
+              {contas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.codigo} - {c.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+
 
 
           {/* BOTÕES */}

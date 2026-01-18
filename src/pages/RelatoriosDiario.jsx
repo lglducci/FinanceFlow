@@ -15,6 +15,9 @@ export default function RelatoriosDiario() {
     const [filtro, setFiltro] = useState("");
 
   const navigate = useNavigate();
+    const btnPadrao =
+  "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+
 
   useEffect(() => {
     const id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
@@ -45,7 +48,7 @@ function formatarDataBR(data) {
     if (!empresaId) return alert("Empresa não carregada");
 
     setLoading(true);
-    setDados([]);
+   // setDados([]);
 
     try {
       const r = await fetch(buildWebhookUrl("diario_contabil"), {
@@ -79,6 +82,46 @@ const filtrados = dados.filter(item => {
     (item.modelo_codigo || "").toLowerCase().includes(f)
   );
 });
+
+
+ async function Estornar(lote_id) {
+  if (!confirm("Tem certeza que deseja estornar este lote de lançamento?")) return;
+
+  try {
+    const url = buildWebhookUrl("excluilanctolote");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ empresa_id: empresaId, lote_id }),
+    });
+
+    const texto = await resp.text();
+    const arr = JSON.parse(texto);
+
+    const resultado = arr?.[0]?.data?.ff_excluir_lancamentos_lote;
+
+    if (!resultado) {
+      alert("Resposta inválida do servidor");
+      return;
+    }
+
+    if (!resultado.success) {
+      alert(resultado.message || "Erro ao excluir lote");
+      return;
+    }
+
+    alert("Lote excluído com sucesso!");
+
+    // ✅ RECARREGA A LISTA COM dataIni / dataFim ATUAIS
+    consultar();
+
+  } catch (e) {
+    console.error("ERRO Estornar:", e);
+    alert("Erro ao estornar.");
+  }
+}
+
 
    
 
@@ -130,24 +173,44 @@ const filtrados = dados.filter(item => {
 
         <button
           onClick={consultar}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
+          className= { `${btnPadrao}  bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold `}  
         >
           Consultar
         </button>
 
         <button
           onClick={() => window.print()}
-          className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
+          className=  { `${btnPadrao} bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold `}        
         >
           🖨️ Imprimir
         </button>
 
           <button
-          onClick={() =>   navigate("/reports") }
-          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
-            >
-            Voltar 
-            </button>
+            onClick={() => 
+                      navigate( "/lancamentocontabilrapido")  
+                    }
+                  className= { `${btnPadrao} bg-green-700 hover:bg-green-500 px-4 py-2 `}
+                >
+                  ⚡ + Lancto Rapido
+                </button> 
+          <button
+            onClick={() => 
+                      navigate( "/contabil/lancamento-partida-dobrada")  
+                    }
+            className= { `${btnPadrao} bg-blue-800 hover:bg-blue-400 px-4 py-2 `}
+          >
+            + Novo Partida Dobrada
+          </button>
+
+            <button
+            onClick={() => 
+                      navigate( "/lancamento-partida-dobrada-modelo")  
+                    }
+            className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
+          >
+            + Novo Lancto Modelo
+          </button>
+           
 
       </div>
       </div>
@@ -165,6 +228,8 @@ const filtrados = dados.filter(item => {
               <th className="p-3 text-left">Histórico</th>
               <th className="p-3 text-right">Débito</th>
               <th className="p-3 text-right">Crédito</th>
+              <th className="p-3 text-center">Lote</th>
+               <th className="p-3 text-center">Ação</th>
             </tr>
           </thead>
           <tbody>
@@ -179,6 +244,24 @@ const filtrados = dados.filter(item => {
                 <td  className="p-2 font-bold text-left font-size: 16px left">{l.historico}</td>
                 <td  className="p-2 font-bold text-right font-size: 16px text-right">{fmt.format(l.debito)}</td>
                 <td   className="p-2 font-bold text-right font-size: 16px text-right">{fmt.format(l.credito)}</td>
+                <td   className="p-2 font-bold text-center font-size: 16px">{l.lote}</td>
+
+                
+                  {/* AÇÕES */}
+                  <td className="px-3 py-1 text-center space-x-4">
+
+             {/* ESTORNAR */}
+                    <button  
+                     className=  "text-blue-600 underline font-bold"
+                         
+                      onClick={() => Estornar(l.lote)} 
+
+                    >
+                      Exclui Lote
+                    </button>
+                     
+            </td>
+
               </tr>
             ))}
 
@@ -188,7 +271,7 @@ const filtrados = dados.filter(item => {
                   Nenhum lançamento encontrado
                 </td>
               </tr>
-            )}
+            )} 
           </tbody>
         </table>
         </div>

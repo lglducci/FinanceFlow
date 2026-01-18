@@ -337,15 +337,18 @@ return (
             Valor
           </label>
           <input
-            className="input-premium"
-            value={form.valor_total}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, valor_total: maskValor(e.target.value) }))
-            
-            }     
-            type="number"
-            placeholder="00,00"
-          />
+              className="input-premium"
+              type="text"
+              placeholder="0,00"
+              value={form.valor_total || ""}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  valor_total: maskValor(e.target.value),
+                }))
+              }
+            />
+
         </div>
 
         {/* DATA */}

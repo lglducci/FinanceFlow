@@ -1,6 +1,6 @@
  import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
-import CardDRE from "../components/CardDRE";
+ 
  import {PieChart, BarChart,  Pie, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell , LineChart, Line   } from "recharts";
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
@@ -161,7 +161,7 @@ function agruparAtivoParaPizza(balanco) {
 
     const nome = l.conta_nome;
     const valor = Math.abs(Number(l.saldo || 0));
-
+    
     if (valor === 0) continue;
 
     if (!mapa[nome]) mapa[nome] = 0;
@@ -170,7 +170,7 @@ function agruparAtivoParaPizza(balanco) {
 
   return Object.entries(mapa).map(([label, valor]) => ({
     label,
-    valor
+    valor 
   }));
 }
 
@@ -180,13 +180,10 @@ function agruparPassivoParaPizza(balanco) {
   const mapa = {};
 
   for (const l of balanco) {
-    if (l.grupo !== "PASSIVO") continue;
-
+    if (l.grupo !== "PASSIVO") continue; 
     const nome = l.conta_nome;
-    const valor = Math.abs(Number(l.saldo || 0));
-
-    if (valor === 0) continue;
-
+    const valor = Math.abs(Number(l.saldo || 0)); 
+    if (valor === 0) continue; 
     if (!mapa[nome]) mapa[nome] = 0;
     mapa[nome] += valor;
   }
@@ -246,9 +243,27 @@ function somarGrupo(balanco, grupo) {
 
 const diasPeriodo = diferencaDias(dataIni, dataFim);
 
-  
+  const ativosNegativos = balanco.filter(
+  l => l.grupo === "ATIVO" && Number(l.saldo) < 0
+);
+
+const totalAtivoNegativo = ativosNegativos.reduce(
+  (s, l) => s + Number(l.saldo),
+  0
+);
+
+const passivosDevedores = balanco.filter(
+  l => l.grupo === "PASSIVO" && Number(l.saldo) > 0
+);
+
+const totalPassivoInvertido = passivosDevedores.reduce(
+  (s, l) => s + Number(l.saldo || 0),
+  0
+);
+
+
   return (
-    <div className="p-6 bg-white min-h-screen">
+    <div className="p-6 bg-blue-100 min-h-screen">
 
       {/* HEADER */}
       <div className="bg-[#061f4aff] text-white rounded-xl p-6 mb-6">
@@ -282,19 +297,31 @@ const diasPeriodo = diferencaDias(dataIni, dataFim);
       </div>
 
       {/* KPIs */}
-            <div className="grid grid-cols-4 gap-6 mb-8">
-              <Kpi titulo="Ativo" valor={formatarMoeda(totalAtivo)} />
-              <Kpi titulo="Passivo" valor={formatarMoeda(totalPassivo)} />
-              <Kpi titulo="Patrimônio Líquido" valor={formatarMoeda(patrimonioLiquido)} />
-              <Kpi titulo="Resultado" valor={formatarMoeda(resultadoDre)} />
-            </div>
+         <div className="grid grid-cols-4 gap-6 mb-8 bg-white">
+          <div className="border-l-8 border-blue-600 rounded-xl shadow bg-blue-100 p-4">
+            <Kpi titulo="Ativo" valor={formatarMoeda(totalAtivo)} />
+          </div>
 
+          <div className="border-l-8 border-red-600 rounded-xl shadow bg-red-100 p-4">
+            <Kpi titulo="Passivo" valor={formatarMoeda(totalPassivo)} />
+          </div>
+
+          <div className="border-l-8 border-purple-600 rounded-xl shadow bg-purple-200 p-4">
+            <Kpi titulo="Patrimônio Líquido" valor={formatarMoeda(patrimonioLiquido)} />
+          </div>
+
+          <div className="border-l-8 border-green-600 rounded-xl shadow bg-green-100 p-4">
+            <Kpi titulo="Resultado" valor={formatarMoeda(resultadoDre)} />
+          </div>
+        </div>
+
+      
 
       {/* PIZZAS */}
       <div className="grid grid-cols-2 gap-6 mb-8">
         <Card titulo="Composição do Ativo">
           {/* COMPOSIÇÃO DO ATIVO */}
-            <div className="bg-[#9acbdc] rounded-xl shadow p-6 border border-gray-200 mt-6">
+            <div className="bg-[#9acbdc] rounded-xl shadow p-6 border border-gray-100 mt-6">
 
               <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
                 Composição do Ativo
@@ -338,11 +365,33 @@ const diasPeriodo = diferencaDias(dataIni, dataFim);
                     />
                   </PieChart>
                 </ResponsiveContainer>
+
+                {ativosNegativos.length > 0 && (
+                    <div className="bg-yellow-100 mt-12 bg-red-50 border-l-4 border-red-600 p-3 rounded">
+                      <div className="font-bold text-red-700">
+                        ⚠ Ativos com saldo negativo
+                      </div>
+
+                      <div className="text-sm text-red-700">
+                        Total comprometido:{" "}
+                        {Number(totalAtivoNegativo).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL"
+                        })}
+                      </div>
+
+                      <div className="text-xs text-gray-600 mt-1">
+                        ({ativosNegativos.length} contas)
+                      </div>
+                    </div>
+                  )}
+
               </div>
             )}
           </div>
 
         </Card>
+ 
 
         <Card titulo="Composição do Passivo">
         
@@ -392,6 +441,22 @@ const diasPeriodo = diferencaDias(dataIni, dataFim);
                         />
                       </PieChart>
                     </ResponsiveContainer>
+                    {passivosDevedores.length > 0 && (
+                      <div className="bg-yellow-100 border-l-4 border-yellow-600 text-yellow-900 p-4 rounded-lg mt-14">
+                        <strong>⚠ Passivos com saldo devedor</strong>
+
+                        <div className="mt-1 text-sm">
+                          Total invertido:{" "}
+                          <b>
+                            {Number(totalPassivoInvertido).toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            })}
+                          </b>
+                        </div>
+                      </div>
+                    )}
+
                   </div>
                 )}
               </div>
@@ -407,9 +472,10 @@ const diasPeriodo = diferencaDias(dataIni, dataFim);
             </div> 
       </Card>*/}
 
+      <div className="my-10 border-t border-blue-300"></div>
 
       {/* RESULTADO MENSAL */}
-      <Card titulo="Resultado Mensal">
+      <Card titulo="Resultado Mensal" className="mt-16">
        <div className="bg-white rounded-xl shadow p-6 border border-gray-200 mt-6">
             <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
               Resultado Mensal (12 meses)

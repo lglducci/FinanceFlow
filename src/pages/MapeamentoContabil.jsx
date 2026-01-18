@@ -206,6 +206,8 @@ const [filtro, setFiltro] = useState("");
           </div>
 
           {/* BOTÃO NOVO MODELO */}
+
+           <div style={{ display: "flex", gap: 12 }}>
           <button
           
             onClick={() => navigate("/novo-modelo")}
@@ -224,6 +226,24 @@ const [filtro, setFiltro] = useState("");
           >
             + Novo Modelo
           </button>
+
+          
+        {/* ➕ NOVA CONTA */}
+        <button
+          onClick={() => navigate("/nova-conta-contabil")}
+          style={{
+            padding: "12px 22px",
+            background: "rgb(23, 106, 16)",
+            color: "white",
+            border: "none",
+            borderRadius: 8,
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          + Nova Conta Ctb
+        </button>
+        </div> 
         </div>
 
       </div>

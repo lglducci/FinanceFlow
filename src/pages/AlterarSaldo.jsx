@@ -62,8 +62,17 @@ export default function AlterarSaldo() {
       return;
     }
 
-    const valor_debito  = tipo === "entrada" ? Number(valor) : 0;
-    const valor_credito = tipo === "saida"   ? Number(valor) : 0;
+    const valorNumerico = Number(
+  valor.replace(/\./g, "").replace(",", ".")
+);
+
+    const valor_debito  = tipo === "entrada" ? Number(valorNumerico) : 0;
+    const valor_credito = tipo === "saida"   ? Number(valorNumerico) : 0;
+    
+    if (isNaN(valorNumerico) || valorNumerico <= 0) {
+          alert("Valor inválido.");
+          return;
+     }
 
     setLoading(true);
 
@@ -76,8 +85,8 @@ export default function AlterarSaldo() {
         body: JSON.stringify({
           empresa_id,
           conta_id: Number(contaId),
-          valor_debito,
-          valor_credito,
+          valor_debito:valor_debito,
+          valor_credito:valor_credito,
           historico
         })
       });
@@ -147,13 +156,19 @@ export default function AlterarSaldo() {
         <div>
           <label className="label label-required font-bold text-[#1e40af]">Valor</label>
           <input
-            type="number"
-            step="0.10"
-            value={valor}
-            onChange={e => setValor(e.target.value)}
-            className="w-full border px-3 py-2 rounded" 
-            placeholder="00,00"
-          />
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]*"
+              value={valor}
+              onChange={(e) => {
+                const v = e.target.value.replace(/[^\d,]/g, "");
+                setValor(v);
+              }}
+              className="w-full border px-3 py-2 rounded"
+              placeholder="0,00"
+            />
+
+          
         </div>
 
         {/* HISTÓRICO */}

@@ -102,12 +102,12 @@ export default function Reports() {
       path: "/relatorios/saldoporconta",
       icon: <IconCashFlow />,
     },
-    {
-      title: "Lançamentos Contábeis",
-      desc: "Lançamentos contábeis do período",
-      path: "/relatorios/diario",
-       icon: <IconJournal />,
-    },
+   // {
+   //   title: "Lançamentos Contábeis",
+   //   desc: "Lançamentos contábeis do período",
+   //   path: "/relatorios/diario",
+   //    icon: <IconJournal />,
+   // },
     {
       title: "Balancete",
       desc: "Débito e crédito por conta contábil",
