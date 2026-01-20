@@ -70,17 +70,17 @@ export default function ContasContabeis() {
      
     <div
       style={{
-         background: "rgb(234, 236, 239)",
+         background: " #061f4aff",
         padding: 20,
         width: "100%", 
         margin: "0 auto",
         marginTop: 20,
         borderRadius: 12,
-         border: "6px solid #061f4aff",
+         border: "8px solid #061f4aff",
       }}
     >
 
-      <h1 className="text-2xl font-bold mb-6 text-[#061f4aff]">Contas Contábeis</h1>
+      <h1 className="text-2xl font-bold mb-6 text-white">Contas Contábeis</h1>
 
       {/* 🔵 CARD DO TOPO */}
     <div
@@ -92,7 +92,7 @@ export default function ContasContabeis() {
     marginBottom: 15 
   }}
 >
-        <h2 style={{ marginBottom: 10, fontWeight: "bold", fontSize: 15  }}  className="tabela tabela-mapeamento text-[#061f4aff]" >Plano de Contas</h2>
+        <h2 style={{ marginBottom: 10, fontWeight: "bold", fontSize: 15  }}  className="tabela tabela-mapeamento text-white" >Plano de Contas</h2>
 
   {/* 🔍 BUSCA */}
   <input
@@ -102,7 +102,7 @@ export default function ContasContabeis() {
     style={{
       width: "300px",
       padding: "4px",
-      border: "1px solid #434040",
+      border: "1px solid #f9f6f6",
       borderRadius: 8,
     }}
   />    

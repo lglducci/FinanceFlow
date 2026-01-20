@@ -126,12 +126,12 @@ const filtrados = dados.filter(item => {
    
 
   return (
-    <div className="p-6">
-          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2">
-      <h1 className="text-2xl font-bold mb-6">📘 Lançamentos  Contábeis</h1>
+    <div className="p-2">
+          <div className="max-w-full mx-auto bg-[#838FA5] rounded-xl shadow-lg p-2 border-[2px] border-blue-900 mb-2">
+      <h1 className="text-2xl font-bold mb-6 text-bg-[#061F4A] ">📘 Lançamentos Contábeis (Detalhes) </h1>
 
       {/* filtros */}
-      <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
+      <div className="bg-white rounded-xl p-4 shadow mb-4 flex gap-4 items-end">
         <div>
           <label className=" block font-bold text-[#1e40af]">
              Data inicial 
@@ -173,7 +173,7 @@ const filtrados = dados.filter(item => {
 
         <button
           onClick={consultar}
-          className= { `${btnPadrao}  bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold `}  
+               className= { `${btnPadrao} bg-blue-900 hover:bg-blue-700 px-4 py-2 `} 
         >
           Consultar
         </button>
@@ -192,8 +192,10 @@ const filtrados = dados.filter(item => {
                   className= { `${btnPadrao} bg-green-700 hover:bg-green-500 px-4 py-2 `}
                 >
                   ⚡ + Lancto Rapido
-                </button> 
-          <button
+           </button> 
+
+
+          {/*<button
             onClick={() => 
                       navigate( "/contabil/lancamento-partida-dobrada")  
                     }
@@ -209,7 +211,7 @@ const filtrados = dados.filter(item => {
             className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
           >
             + Novo Lancto Modelo
-          </button>
+          </button>*/}
            
 
       </div>
@@ -234,7 +236,7 @@ const filtrados = dados.filter(item => {
           </thead>
           <tbody>
             {filtrados.map((l, i) => (
-              <tr key={i}   className={i % 2 === 0 ? "bg-100" : "bg-blue-200"} >
+              <tr key={i}   className={i % 2 === 0 ? "bg-100" : "bg-[#C1C7D2]"} >
                  {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
                  <td   className="p-2 font-bold text-left font-size: 16px">{l.id}</td>
                  <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data_mov)}</td>   

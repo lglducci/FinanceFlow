@@ -85,33 +85,18 @@ export default function LancamentosContabeis() {
 }
 
   return (
-    <div className="p-4">
- 
-
-          <div style={{ width: "100%", padding: 20 }}>
-
-      {/* CABEÇALHO AZUL */}
-      <div
-          style={{
-            background: "#061f4aff",
-            padding: "4px 4px",   // ⬅️ antes era 20
-            borderRadius: 8,       // ⬅️ antes era 12
-            marginBottom: 12,      // ⬅️ antes era 20
-              border: "6px solid #061f4aff", // 👈 AQUI
-          }}
-        > 
-
+     <div className="p-2">
+          <div className="max-w-full mx-auto bg-[#838FA5] rounded-xl shadow-lg p-2 border-[2px] border-blue-900 mb-2"> 
         
-      <h2 className="text-xl font-bold mb-2 text-white">
-        Lançamentos Contábeis - Visão Saldo
-      </h2>
+        <h1 className="text-2xl font-bold mb-6 text-bg-[#061F4A] ">📘   Lançamentos Contábeis - Visão Saldo </h1>
 
+         <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
  
         {/* CARD BRANCO */}
         <div
           style={{
             background: "white",
-            padding: 20,
+            padding: 12,
             borderRadius: 10,
             display: "flex",
             flexDirection: "column",
@@ -119,7 +104,7 @@ export default function LancamentosContabeis() {
           }}
         >
           {/* LINHA 1 — DATA INICIAL / FINAL / TOKEN */}
-          <div style={{ display: "flex", gap: 20 }}>
+          <div style={{ display: "flex", gap: 18 }}>
             <div style={{ display: "flex", flexDirection: "column" }}> 
 
             <label className="font-bold block text-blue-800">Data Inicial</label>
@@ -151,23 +136,10 @@ export default function LancamentosContabeis() {
               placeholder="Ativo ou 1.1.1   "
                 className="border rounded-lg px-3 py-2 border-yellow-500 w-520"
             />
-          </div>
-            
-             
-           
-         {/*} <div>
-            <label className="font-bold text-blue-800">Buscar</label>
-            <input
-              type="text"
-              value={busca}
-              onChange={e => setBusca(e.target.value)}
-              placeholder="Histórico / Documento / Parceiro"
-              className="border rounded px-3 py-2 w-full border-yellow-500"
-            />
-          </div>*/}
-        </div>
+          </div> 
+        
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 mt-3">
           <div style={{ display: "flex", gap: 15, marginTop: 10 }}> 
           <button
             onClick={pesquisar}
@@ -186,7 +158,7 @@ export default function LancamentosContabeis() {
             + Novo Lancto Saldo
           </button>
 
-          <button
+         {/* <button
             onClick={() => 
                       navigate( "/contabil/lancamento-partida-dobrada")  
                     }
@@ -202,7 +174,7 @@ export default function LancamentosContabeis() {
             className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
           >
             + Novo Lancto Modelo
-          </button>
+          </button>*/}
            
              <button
             onClick={() => 
@@ -212,7 +184,7 @@ export default function LancamentosContabeis() {
                 >
                   ⚡ Novo Lancto Rapido
                 </button>
-                
+         </div>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -225,7 +197,7 @@ export default function LancamentosContabeis() {
           </div>
         </div>
       </div>
-        </div>
+       </div>
         </div>  
 
 
@@ -266,7 +238,7 @@ export default function LancamentosContabeis() {
   
               <tr
                 key={l.id}
-                className={i % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
+                className={i % 2 === 0 ? "bg-gray-100" : "bg-gray-300"}
               >
                 
                 <td className="px-3 py-2 font-bold  text-center">{l.mes_ano}</td>
