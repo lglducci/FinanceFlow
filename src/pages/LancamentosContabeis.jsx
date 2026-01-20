@@ -86,11 +86,11 @@ export default function LancamentosContabeis() {
 
   return (
      <div className="p-2">
-          <div className="max-w-full mx-auto bg-[#838FA5] rounded-xl shadow-lg p-2 border-[2px] border-blue-900 mb-2"> 
+          <div className="max-w-full mx-auto bg-[#445777] rounded-xl shadow-lg p-2 border-[6px] border-blue-900 mb-2"> 
         
-        <h1 className="text-2xl font-bold mb-6 text-bg-[#061F4A] ">📘   Lançamentos Contábeis - Visão Saldo </h1>
+        <h1 className="text-2xl font-bold mb-6 text-white ">📘   Lançamentos Contábeis - Visão Saldo </h1>
 
-         <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
+         <div className="bg-[#838FA5] rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
  
         {/* CARD BRANCO */}
         <div

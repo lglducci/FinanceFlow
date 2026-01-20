@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function NovaContaContabil() {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const [nome, setNome] = useState(""); // 👈 sempre vazio
   nivel: contexto?.nivel ?? "",
   conta_pai: contexto?.conta_pai_codigo ?? ""
 });
+
 
 
 async function salvar() {
@@ -84,9 +86,28 @@ async function salvar() {
   }
 }
 
- 
+ function tipoContaPorCodigo(codigo) {
+  if (!codigo) return null;
+
+  const raiz = codigo.split(".")[0];
+
+  const mapa = {
+    "1": { tipo: "ATIVO",    natureza: "D" },
+    "2": { tipo: "PASSIVO",  natureza: "C" },
+    "3": { tipo: "PL",       natureza: "C" },
+    "4": { tipo: "RECEITA",  natureza: "C" },
+    "5": { tipo: "CUSTO",    natureza: "D" },
+    "6": { tipo: "DESPESA",  natureza: "D" }
+  };
+
+  return mapa[raiz] || null;
+}
 
 
+
+useEffect(() => {
+  console.log("FORM ATUAL:", form);
+}, [form]);
 
   return (
      <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
@@ -104,13 +125,59 @@ async function salvar() {
           color: "black",
         }}
       >
+        <label className="label label-required font-bold text-[#1e40af] flex items-center gap-2">
+              Código
+
+              <span className="relative group cursor-pointer">
+                <span className="w-5 h-5 flex items-center justify-center rounded-full bg-[#445777] text-white text-xs">
+                  ?
+                </span>
+
+                {/* Tooltip */}
+                <div
+                  className="
+                    absolute left-6 top-0 z-50 hidden group-hover:block
+                    bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg
+                  "
+                >
+                  <strong>Regra do código contábil</strong>
+                  <p className="mt-1">O primeiro número define o tipo da conta:</p>
+
+                  <ul className="mt-2 space-y-1">
+                    <li>1 – Ativo (D)</li>
+                    <li>2 – Passivo (C)</li>
+                    <li>3 – Patrimônio Líquido (C)</li>
+                    <li>4 – Receita (C)</li>
+                    <li>5 – Custo (D)</li>
+                    <li>6 – Despesa (D)</li>
+                  </ul>
+
+                  <p className="mt-2 text-yellow-300">
+                    ⚠ O tipo e a natureza são definidos automaticamente e não podem ser alterados.
+                  </p>
+                </div>
+              </span>
+            </label>
+
         {/* Código */}
-        <label className="label label-required font-bold text-[#1e40af]">Código</label>
+      
         <input
-          value={form.codigo}
-           className="input-premium"
-          onChange={(e) => setForm({ ...form, codigo: e.target.value })}
-          placeholder="1.1.1.01"
+            value={form.codigo}
+            className="input-premium"
+            
+              onChange={(e) => {
+                const codigo = e.target.value;
+                const regra = tipoContaPorCodigo(codigo);
+              
+                setForm(f => ({
+                  ...f,
+                  codigo,
+                  tipo: regra?.tipo || f.tipo,
+                  natureza: regra?.natureza || f.natureza,
+                }));
+              }}
+
+            placeholder="1.1.1.01"  
           style={{
             width: "100%",
             padding: 8,
@@ -143,6 +210,7 @@ async function salvar() {
         <select
           value={form.tipo}
            className="input-premium"
+           disabled
           onChange={(e) => setForm({ ...form, tipo: e.target.value })}
           style={{
             width: "100%",
@@ -158,6 +226,8 @@ async function salvar() {
           <option value="RECEITA">RECEITA</option>
           <option value="DESPESA">DESPESA</option>
           <option value="PL">PATRIMÔNIO LÍQUIDO</option>
+          <option value="CUSTO">CUSTO</option>
+
         </select>
 
         {/* Natureza */}
@@ -165,13 +235,14 @@ async function salvar() {
         <select
           value={form.natureza}
            className="input-premium"
+             disabled
           onChange={(e) => setForm({ ...form, natureza: e.target.value })}
           style={{
             width: "100%",
             padding: 8,
             marginBottom: 12,
             border: "1px solid #ccc",
-            borderRadius: 6,
+            borderRadius: 6, 
           }}
         >
           <option value="">Selecione...</option>
@@ -184,6 +255,7 @@ async function salvar() {
         <input
           type="number"
           value={form.nivel}
+          
            className="input-premium"
           onChange={(e) => setForm({ ...form, nivel: e.target.value })}
           placeholder="3"

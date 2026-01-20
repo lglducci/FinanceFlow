@@ -145,7 +145,7 @@ const [filtro, setFiltro] = useState("");
             <div
               style={{
                 width: "90%",
-                background: "rgb(236, 239, 243)",      // azul grande — igual da foto
+                background: "#445777",      // azul grande — igual da foto
                 border: "8px  solid #061f4aff",
                 borderRadius: 12,
                 padding: 4,
@@ -159,7 +159,7 @@ const [filtro, setFiltro] = useState("");
               width: "100%",
             
               marginTop: 10,
-            }} className="text-xl font-bold mb-4 text-[#061f4aff]"> Modelo Contábil</h2>
+            }} className="text-xl font-bold mb-4 text-white"> Modelo Contábil</h2>
           
               
             {/* ============================================= */}

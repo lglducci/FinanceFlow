@@ -124,15 +124,29 @@ const filtrados = dados.filter(item => {
 
 
    
-
+ 
   return (
     <div className="p-2">
-          <div className="max-w-full mx-auto bg-[#838FA5] rounded-xl shadow-lg p-2 border-[2px] border-blue-900 mb-2">
-      <h1 className="text-2xl font-bold mb-6 text-bg-[#061F4A] ">📘 Lançamentos Contábeis (Detalhes) </h1>
+          <div className="max-w-full mx-auto bg-[#445777] rounded-xl shadow-lg p-2 border-[6px] border-blue-900 mb-2">
+      <h1 className="text-2xl font-bold mb-6 text-white ">📘 Lançamentos Contábeis (Detalhes) </h1>
 
       {/* filtros */}
-      <div className="bg-white rounded-xl p-4 shadow mb-4 flex gap-4 items-end">
-        <div>
+         <div className="bg-[#838FA5] rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
+        {/* CARD BRANCO */}
+        <div
+          style={{
+            background: "white",
+            padding: 12,
+            borderRadius: 10,
+            display: "flex",
+            flexDirection: "column",
+            gap: 12,
+          }}
+        >
+          {/* LINHA 1 — DATA INICIAL / FINAL / TOKEN */}
+          <div style={{ display: "flex", gap: 18 }}>
+            <div style={{ display: "flex", flexDirection: "column" }}> 
+
           <label className=" block font-bold text-[#1e40af]">
              Data inicial 
              </label>
@@ -169,11 +183,12 @@ const filtrados = dados.filter(item => {
             className="border rounded px-3 py-2 border-yellow-500 w-64"
           />
         </div>
+        
 
-
+          <div className="flex gap-3 mt-3"> 
         <button
           onClick={consultar}
-               className= { `${btnPadrao} bg-blue-900 hover:bg-blue-700 px-4 py-2 `} 
+               className= { `${btnPadrao} bg-blue-900 hover:bg-blue-700 px-4 py-3 `} 
         >
           Consultar
         </button>
@@ -212,8 +227,9 @@ const filtrados = dados.filter(item => {
           >
             + Novo Lancto Modelo
           </button>*/}
-           
-
+           </div>
+        </div>
+        </div>
       </div>
       </div>
        <div id="print-area"> 

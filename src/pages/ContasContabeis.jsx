@@ -70,7 +70,7 @@ export default function ContasContabeis() {
      
     <div
       style={{
-         background: " #061f4aff",
+         background: "#445777",
         padding: 20,
         width: "100%", 
         margin: "0 auto",
