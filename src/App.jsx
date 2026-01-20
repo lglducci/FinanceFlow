@@ -1,7 +1,9 @@
- import { BrowserRouter, Routes, Route } from "react-router-dom";
+  import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Login from "./pages/Login";
+import RedefinirSenha from "./pages/RedefinirSenha";
+
 
 import Dashboard from "./pages/Dashboard";
 import Lancamentos from "./pages/Lancamentos";
@@ -13,7 +15,7 @@ import NovoPagarReceber from "./pages/NovoPagarReceber";
 import Cartoes from "./pages/Cartoes";
 import NovaConta from "./pages/NovaConta";
 import EditarConta from "./pages/EditarConta";
-import Visaogeral from './pages/Visaogeral'; //
+import Visaogeral from './pages/Visaogeral'; //a
 import EditarLancamento from "./pages/EditarLancamento";
 import EditCardTransaction from "./pages/EditCardTransaction";
 import NovoCardTransaction from "./pages/NovoCardTransaction";
@@ -101,12 +103,22 @@ import DashboardContabil from "./pages/DashboardContabil"
 export default function App() {
   const token = localStorage.getItem("ff_token");
 
+  
   if (!token) {
-    return <Login onLogin={() => window.location.reload()} />;
-  }
+  return (
+    <Routes>
+      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="/login" element={<Login onLogin={() => window.location.reload()} />} />
+      <Route path="*" element={<Login onLogin={() => window.location.reload()} />} />
+    </Routes>
+  );
+}
+
+
+  
 
   return (
-    <BrowserRouter>
+    
       <div className="min-h-screen flex bg-bgSoft">
         <Sidebar />
 
@@ -236,9 +248,7 @@ export default function App() {
 <Route
   path="/lancamentocontabilrapido"
   element={<LancamentoContabilRapido />}
-/>
-
-
+/> 
 <Route
   path="/dashboardcontabil"
   element={<DashboardContabil />}
@@ -256,7 +266,8 @@ export default function App() {
           </main>
         </div>
       </div>
-    </BrowserRouter>
+    
   );
 }
  
+
