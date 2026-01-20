@@ -39,7 +39,7 @@
             },
             {
               "keyName": "senha_hash",
-              "keyValue": "={{ $json.password }}"
+              "keyValue": "={{ $json.senha_hash }}"
             }
           ]
         }
@@ -91,7 +91,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1424,
+        -1712,
         16
       ],
       "id": "15f962f4-8c72-4bde-86fb-904d832ef237",
@@ -180,7 +180,7 @@
             },
             {
               "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
-              "name": "password",
+              "name": "senha",
               "value": "={{ $json.body.senha}}",
               "type": "string"
             }
@@ -191,7 +191,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1216,
+        -1472,
         16
       ],
       "id": "4713b606-8183-4b3c-aa53-e46ee4f62cc9",
@@ -273,9 +273,330 @@
       "id": "7c0bdcda-3946-4b0a-addf-e7565eb3fa9c",
       "name": "Menu",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "usuarios",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "keyValue": "={{$json.email}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        736
+      ],
+      "id": "859a08d3-41a2-4a1e-b301-a9643bcf0eb6",
+      "name": "DadosUsuario1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "GfCFzcpZSxkxWy1M",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "059b3d30-905f-4038-b8c1-9582bae19867",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -768,
+        736
+      ],
+      "id": "3e00477b-5c68-4c74-83d1-47df8c16b9d1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "807e4143-d55c-420c-b026-90bb242e057f",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1232,
+        736
+      ],
+      "id": "7977c0a2-07cf-4b77-8715-12029a79cbb4",
+      "name": "Usuario1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "esqueci_senha",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1440,
+        736
+      ],
+      "id": "a23d3c49-47c6-4e1d-8fc0-5a12aebf40ee",
+      "name": "EsqueciSenha",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from gerar_token_recuperacao('{{ $json.email }}');\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -512,
+        496
+      ],
+      "id": "5dcc945d-c810-403e-adb7-817bf4ebbf9e",
+      "name": "RecuperaSenha",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select\n  r.token,\n  u.email,*\nfrom recuperacao_senha r\njoin public.usuarios u on u.id = r.usuario_id\n  where u.email = '{{ $('Usuario1').item.json.email }}'\n  and r.usado = false\n   AND r.expira_em > now()\norder by r.criado_em desc\nlimit 1;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -320,
+        496
+      ],
+      "id": "747e6cf3-8923-4a9d-b515-cfdcea661e8f",
+      "name": "RetornaToken",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": " const token =$input.first().json.token; \n\nconst link = `http://localhost:5173/redefinir-senha?token=${token}`;\n\nreturn [{\n  json: {\n    email: $input.first().json.email ,\n    link\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        496
+      ],
+      "id": "5f8d3ac0-c906-4b16-b886-1ae17d864e6c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "fromEmail": "lglducci@lglducciautomacoesia.me",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Recuperação de senha – Finance Flow",
+        "html": "=<div style=\"font-family: Arial, sans-serif; font-size:14px\">\n  <p>Olá,</p>\n\n  <p>Recebemos uma solicitação para redefinir sua senha.</p>\n\n  <p>\n    <a href=\"{{ $json.link }}\"\n       style=\"background:#2563eb;color:#fff;padding:10px 16px;\n              border-radius:6px;text-decoration:none;\">\n      Redefinir senha\n    </a>\n  </p>\n\n  <p>Ou copie e cole no navegador:</p>\n  <p>{{ $json.link }}</p>\n\n  <p>Este link expira em 1 hora.</p>\n\n  <p>Se você não solicitou, ignore este e-mail.</p>\n\n  <hr/>\n  <small>Finance-Flow</small>\n</div>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        496
+      ],
+      "id": "b5f47945-caea-4fae-b9c7-feba0021a103",
+      "name": "Send email",
+      "webhookId": "8b95b66e-abfc-43fd-9e1b-bed12c8da574",
+      "credentials": {
+        "smtp": {
+          "id": "9MsZAm8XS8R1UHqM",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        336,
+        736
+      ],
+      "id": "d98e6640-7dbe-4b8f-8be5-2c8efa6d6886",
+      "name": "Respond to Webhook13"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "redefinir_senha",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1408,
+        960
+      ],
+      "id": "06dc834d-a7ed-4bd2-92d2-123d9460998f",
+      "name": "EsqueciSenha1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from public.ff_redefinir_senha  ('{{ $json.token }}' ,'{{ $json.senha_hash }}') ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -704,
+        960
+      ],
+      "id": "35ba2a16-90b1-42e4-8e22-75f9f4f5277a",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "807e4143-d55c-420c-b026-90bb242e057f",
+              "name": "token",
+              "value": "={{ $json.body.token }}",
+              "type": "string"
+            },
+            {
+              "id": "d5a8cbc0-68ec-4e6e-b259-2311d2246733",
+              "name": "senha",
+              "value": "={{ $json.body.senha }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1200,
+        960
+      ],
+      "id": "18a27da9-3506-442c-8994-999e42515b7f",
+      "name": "UsarioSenha"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -496,
+        960
+      ],
+      "id": "5077f2dc-fecd-42a4-a054-d82dc3e5bbe3",
+      "name": "Respond to Webhook14"
+    },
+    {
+      "parameters": {
+        "jsCode": " const crypto = require(\"crypto\");\n$input.first().json.senha\nconst senha = $input.first().json.senha  || $input.first().json.senha  || \"\";\nconst hash = crypto.createHash(\"sha256\").update(senha, \"utf8\").digest(\"hex\");\n\nreturn [{\n  ...$json,\n  senha_hash: hash\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -928,
+        960
+      ],
+      "id": "2713de2b-294f-4697-a77f-c2f1c42ba482",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": " const crypto = require(\"crypto\");\n$input.first().json.senha\nconst senha = $input.first().json.senha  || $input.first().json.senha  || \"\";\nconst hash = crypto.createHash(\"sha256\").update(senha, \"utf8\").digest(\"hex\");\n\nreturn [{\n  ...$json,\n  senha_hash: hash\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1216,
+        16
+      ],
+      "id": "e030d0bd-f1d2-49dc-848c-cc30a58210ea",
+      "name": "Code in JavaScript2"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Usuario1": [
+      {
+        "json": {
+          "email": "lglducci@hotmail.com"
+        }
+      }
+    ],
+    "UsarioSenha": [
+      {
+        "json": {
+          "token": "170c0b71-48ee-437f-a643-4fd5dc3ea92d",
+          "senha": "aprumabatata"
+        }
+      }
+    ]
+  },
   "connections": {
     "Sim": {
       "main": [
@@ -365,7 +686,7 @@
       "main": [
         [
           {
-            "node": "DadosUsuario",
+            "node": "Code in JavaScript2",
             "type": "main",
             "index": 0
           }
@@ -404,14 +725,165 @@
           }
         ]
       ]
+    },
+    "DadosUsuario1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "RecuperaSenha",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usuario1": {
+      "main": [
+        [
+          {
+            "node": "DadosUsuario1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EsqueciSenha": {
+      "main": [
+        [
+          {
+            "node": "Usuario1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RecuperaSenha": {
+      "main": [
+        [
+          {
+            "node": "RetornaToken",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RetornaToken": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EsqueciSenha1": {
+      "main": [
+        [
+          {
+            "node": "UsarioSenha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UsarioSenha": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "DadosUsuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "41e5070b-3b4c-4ccb-8d10-07e803e5f493",
+  "versionId": "b15c688b-4d9b-415f-83f1-819c1ac3381d",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
   "id": "KkQ8ZKfiQJIIeUQ3",
