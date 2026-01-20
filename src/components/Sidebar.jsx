@@ -13,7 +13,10 @@
  
    const logout = () => {
      localStorage.removeItem("ff_token");
-     window.location.reload();
+     localStorage.removeItem("force_reset_password");
+
+     localStorage.removeItem("ff_token");
+     window.location.href = "/login";
    };
  
  async function carregaPerfil() {
