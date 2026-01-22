@@ -144,7 +144,7 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
            onClick={() => toggle("Configurações")}
          > 
           <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />
-          {ehContabil && (<SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} />)}
+        {ehFinanceiro && (<SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} />)}
            </MenuGroup> 
        </nav>
  
