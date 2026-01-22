@@ -85,6 +85,7 @@ export default function EditarContaContabil() {
             style={input}
             value={form.codigo}
              className="input-premium"
+             disabled
             onChange={(e) => setForm({ ...form, codigo: e.target.value })}
           />
 
@@ -100,6 +101,7 @@ export default function EditarContaContabil() {
           <select
             style={input}
             value={form.tipo}
+             disabled
              className="input-premium"
             onChange={(e) => setForm({ ...form, tipo: e.target.value })}
           >
@@ -115,6 +117,7 @@ export default function EditarContaContabil() {
           <select
             style={input}
             value={form.natureza}
+             disabled
              className="input-premium"
             onChange={(e) => setForm({ ...form, natureza: e.target.value })}
           >
@@ -127,6 +130,7 @@ export default function EditarContaContabil() {
           <input
             style={input}
             value={form.nivel}
+             disabled
              className="input-premium"
             onChange={(e) => setForm({ ...form, nivel: e.target.value })}
           />

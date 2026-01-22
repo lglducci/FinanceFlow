@@ -27,6 +27,10 @@ export default function LancamentoContabilRapido() {
   const [dataLancto, setDataLancto] = useState(hojeLocal());
   const [salvando, setSalvando] = useState(false);
 
+  
+const [debitoConta, setDebitoConta] = useState(null);
+const [creditoConta, setCreditoConta] = useState(null);
+
   /* ================== LOAD CONTAS ================== */
   useEffect(() => {
     async function carregarContas() {
@@ -148,6 +152,84 @@ export default function LancamentoContabilRapido() {
     }
   }
 
+
+
+  function tipoContaPorCodigo(codigo) {
+  if (!codigo) return null;
+
+  const raiz = codigo.split(".")[0];
+
+  const mapa = {
+    "1": { tipo: "ATIVO",    natureza: "D" },
+    "2": { tipo: "PASSIVO",  natureza: "C" },
+    "3": { tipo: "PL",       natureza: "C" },
+    "4": { tipo: "RECEITA",  natureza: "C" },
+    "5": { tipo: "CUSTO",    natureza: "D" },
+    "6": { tipo: "DESPESA",  natureza: "D" }
+  };
+
+  return mapa[raiz] || null;
+}
+
+
+ function explicacaoConta(codigo) {
+  const regra = tipoContaPorCodigo(codigo);
+  if (!regra) return null;
+
+  const textos = {
+    ATIVO: "(ATIVO). Representa bens e direitos da empresa (caixa, bancos, estoque). Não afeta o DRE.",
+    PASSIVO: "(PASSIVO). Representa obrigações e dívidas da empresa. Não afeta o DRE.",
+    PL: "(PL). Representa o patrimônio dos sócios e resultados acumulados. Não afeta o DRE.",
+    RECEITA: "(RECEITA). Representa ganhos da empresa. Impacta positivamente o resultado.",
+    CUSTO: "(CUSTO). Representa custos diretamente ligados à produção/venda. Reduz o resultado DRE.",
+    DESPESA: "(DESPESA). Representa gastos operacionais. Reduz o resultado DRE."
+  };
+
+  return {
+    tipo: regra.tipo,
+    natureza: regra.natureza,
+    texto: textos[regra.tipo]
+  };
+}
+
+  function explicacaoContatooltip(codigo) {
+  if (!codigo) return null;
+
+  const raiz = codigo.split(".")[0];
+
+  const mapa = {
+    "1": "ATIVO → Débito AUMENTA o ativo",
+    "2": "PASSIVO → Débito DIMINUI o passivo",
+    "3": "PATRIMÔNIO LÍQUIDO → Débito DIMINUI o PL",
+    "4": "RECEITA → Débito DIMINUI a receita",
+    "5": "CUSTO → Débito AUMENTA o custo",
+    "6": "DESPESA → Débito AUMENTA a despesa"
+  };
+
+  return mapa[raiz] || "Tipo de conta não identificado";
+}
+
+
+
+function explicacaoContaCredito(codigo) {
+  if (!codigo) return null;
+
+  const raiz = codigo.split(".")[0];
+
+  const mapa = {
+    "1": "ATIVO → Crédito DIMINUI o ativo",
+    "2": "PASSIVO → Crédito AUMENTA o passivo",
+    "3": "PATRIMÔNIO LÍQUIDO → Crédito AUMENTA o PL",
+    "4": "RECEITA → Crédito AUMENTA a receita",
+    "5": "CUSTO → Crédito DIMINUI o custo",
+    "6": "DESPESA → Crédito DIMINUI a despesa"
+  };
+
+  return mapa[raiz] || "Tipo de conta não identificado";
+}
+
+
+
   /* ================== UI ================== */
   return (
     <div className="max-w-2xl mx-auto p-2">
@@ -233,14 +315,51 @@ export default function LancamentoContabilRapido() {
         {/* MANUAL */}
         {!usarModelo && (
           <>
-          <div className="mb-4">
-              <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-                Saida
-              </label>
+          <div className="mb-4">  
+
+              <label className="flex items-center gap-2 text-sm font-bold text-[#061f4aff] mb-1 relative">
+                  Saída (Débito)
+
+                  {debitoId && (
+                    <div className="group relative">
+                      {/* ÍCONE */}
+                      <span
+                        className="inline-flex items-center justify-center
+                                  w-5 h-5 rounded-full
+                                  bg-[#061f4a] text-white
+                                  text-xs font-bold cursor-pointer"
+                      >
+                        ?
+                      </span>
+
+                      {/* TOOLTIP */}
+                      <div
+                        className="absolute left-1/2 -translate-x-1/2 top-7
+                                  hidden group-hover:block
+                                  bg-black text-white text-xs
+                                  px-3 py-2 rounded-lg
+                                  whitespace-nowrap z-50 shadow-lg"
+                      >
+                        {explicacaoContatooltip(
+                          contas.find(c => c.id == debitoId)?.codigo
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </label>
+
+
+
             <select
               className="input-premium"
               value={debitoId}
-              onChange={(e) => setDebitoId(e.target.value)}
+              onChange={(e) => {
+              const id = e.target.value;
+              setDebitoId(id);
+
+              const conta = contas.find(c => String(c.id) === String(id));
+              setDebitoConta(conta || null);
+            }}
             >
               <option value="">Débito</option>
               {contas.map((c) => (
@@ -249,18 +368,59 @@ export default function LancamentoContabilRapido() {
                 </option>
               ))}
             </select>
+            {debitoConta && (
+              <div className="mt-1 text-xs text-blue-900 bg-gray-200 p-2 rounded">
+                📌 {explicacaoConta(debitoConta.codigo)?.texto}
+              </div>
+            )}
 
             </div>
             
             <div className="mb-4">
-              <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-                Entrada
-              </label>
+             
+              <label className="flex items-center gap-2 text-sm font-bold text-[#061f4aff] mb-1 relative">
+                    Entrada (Crédito)
+
+                    {creditoId && (
+                      <div className="group relative">
+                        {/* ÍCONE */}
+                        <span
+                          className="inline-flex items-center justify-center
+                                    w-5 h-5 rounded-full
+                                    bg-[#061f4a] text-white
+                                    text-xs font-bold cursor-pointer"
+                        >
+                          ?
+                        </span>
+
+                        {/* TOOLTIP */}
+                        <div
+                          className="absolute left-1/2 -translate-x-1/2 top-7
+                                    hidden group-hover:block
+                                    bg-black text-white text-xs
+                                    px-3 py-2 rounded-lg
+                                    whitespace-nowrap z-50 shadow-lg"
+                        >
+                          {explicacaoContaCredito(
+                            contas.find(c => c.id == creditoId)?.codigo
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </label>
+
+
 
             <select
               className="input-premium"
               value={creditoId}
-              onChange={(e) => setCreditoId(e.target.value)}
+               onChange={(e) => {
+                  const id = e.target.value;
+                  setCreditoId(id);
+
+                  const conta = contas.find(c => String(c.id) === String(id));
+                  setCreditoConta(conta || null);
+                }}
             >
               <option value="">Crédito</option>
               {contas.map((c) => (
@@ -269,7 +429,15 @@ export default function LancamentoContabilRapido() {
                 </option>
               ))}
             </select>
-                </div>
+
+              {creditoConta && (
+              <div className="mt-1 text-xs text-blue-900 bg-gray-200 p-2 rounded">
+                📌 {explicacaoConta(creditoConta.codigo)?.texto}
+              </div>
+            )}
+
+
+          </div>
           </>
         )}
            

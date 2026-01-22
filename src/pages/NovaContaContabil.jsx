@@ -109,6 +109,26 @@ useEffect(() => {
   console.log("FORM ATUAL:", form);
 }, [form]);
 
+
+function calcularNivel(codigo) {
+  if (!codigo) return null;
+
+  return codigo
+    .split(".")
+    .filter(p => p.trim() !== "")
+    .length;
+}
+
+function codigoValido(codigo) {
+  return /^[0-9]+(\.[0-9]+)*$/.test((codigo || "").trim());
+}
+
+function calcularPaiCodigo(codigo) {
+  if (!codigo) return "";
+  return codigo.replace(/\.[^.]+$/, ""); // 6.1.1.11 -> 6.1.1
+}
+
+
   return (
      <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
 
@@ -162,13 +182,12 @@ useEffect(() => {
         {/* Código */}
       
         <input
-            value={form.codigo}
-            className="input-premium"
-            
+              value={form.codigo}
+              className="input-premium"
               onChange={(e) => {
                 const codigo = e.target.value;
                 const regra = tipoContaPorCodigo(codigo);
-              
+
                 setForm(f => ({
                   ...f,
                   codigo,
@@ -176,16 +195,34 @@ useEffect(() => {
                   natureza: regra?.natureza || f.natureza,
                 }));
               }}
+              onBlur={() => {
+                const codigo = (form.codigo || "").trim();
 
-            placeholder="1.1.1.01"  
-          style={{
-            width: "100%",
-            padding: 8,
-            marginBottom: 12,
-            border: "1px solid #ccc",
-            borderRadius: 6,
-          }}
-        />
+                if (!codigo) return;
+
+                // opcional: valida formato (só números e pontos)
+                if (!codigoValido(codigo)) {
+                  alert("Código inválido. Use apenas números e pontos (ex: 6.1.1.11).");
+                  return;
+                }
+
+                setForm(f => ({
+                  ...f,
+                  nivel: calcularNivel(codigo),
+                  // opcional: se você guarda pai por código na UI
+                  pai_codigo: calcularPaiCodigo(codigo),
+                }));
+              }}
+              placeholder="1.1.1.01"
+              style={{
+                width: "100%",
+                padding: 8,
+                marginBottom: 12,
+                border: "1px solid #ccc",
+                borderRadius: 6,
+              }}
+            />
+
 
         {/* Nome */}
         <label className="label label-required font-bold text-[#1e40af]">Nome</label>
@@ -255,7 +292,7 @@ useEffect(() => {
         <input
           type="number"
           value={form.nivel}
-          
+          disabled
            className="input-premium"
           onChange={(e) => setForm({ ...form, nivel: e.target.value })}
           placeholder="3"

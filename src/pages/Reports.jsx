@@ -146,12 +146,12 @@ export default function Reports() {
         icon: <IconChart />,
     },
  
-     {
+    {/*} {
       title: "Relação Balanço Níveis",
       desc: " Balanço por níveis",
       path: "/relatorios/balanco-niveis",
         icon: <IconBalance />,
-    },
+    },*/}
   ];
 
   return (
