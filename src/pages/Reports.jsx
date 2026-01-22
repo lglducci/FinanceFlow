@@ -120,12 +120,7 @@ export default function Reports() {
       path: "/relatorios/dre",
         icon: <IconSigma />,
     },
-    {
-      title: "Apuração Tributacao",
-      desc: "Resumo fiscal por período",
-      path: "/relatorios/piscofins",
-      icon: <IconReport />,
-    },
+    
     {
       title: "Relação Razão",
       desc: " Lançamentos detalhados por conta",
@@ -151,7 +146,14 @@ export default function Reports() {
       desc: " Balanço por níveis",
       path: "/relatorios/balanco-niveis",
         icon: <IconBalance />,
-    },*/}
+    }, 
+     {
+      title: "Apuração Tributacao",
+      desc: "Resumo fiscal por período",
+      path: "/relatorios/piscofins",
+      icon: <IconReport />,
+    },
+    */}
   ];
 
   return (
