@@ -132,7 +132,7 @@ export default function App() {
 
 <Routes>
   {/* Visão Geral */}
-  <Route path="/" element={<Visaogeral />} />
+  <Route path="/" element={<DashboardContabil />} />
   <Route path="/dashboard" element={<Visaogeral />} />
 
   {/* Outras rotas permanecem */}
