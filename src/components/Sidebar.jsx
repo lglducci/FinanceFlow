@@ -107,7 +107,7 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
          </MenuGroup>
         )}
  
-          <MenuGroup
+         {ehFinanceiro && (   <MenuGroup
            icon={<IconBuilding />}
            label="Apurações/Obrigações"
            open={open === "tributos"}
@@ -117,7 +117,7 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
           
                
           
-         </MenuGroup>
+         </MenuGroup>)}
  
  
          <MenuGroup
@@ -137,15 +137,15 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
  
        {ehContabil && ( <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
  
-          <MenuGroup
+         {ehFinanceiro && (  <MenuGroup
            icon={<IconBuilding />}
            label="Configurações"
            open={open === "Configurações"}
            onClick={() => toggle("Configurações")}
          > 
           <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />
-        {ehFinanceiro && (<SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} />)}
-           </MenuGroup> 
+          <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> 
+           </MenuGroup> )}
        </nav>
  
        <div className="px-4 py-3 border 12px  border-blue-800/40  text-blue-600 font-bold ">
