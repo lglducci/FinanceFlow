@@ -102,7 +102,11 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
             <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
              onClick={() => navigate("/relatorios/diario")}
            /> 
-  
+            
+            <SubItem icon={<IconDoc />} label="Apura Resultado"
+             onClick={() => navigate("/apuracaoresultado")}
+           /> 
+             
             
          </MenuGroup>
         )}
