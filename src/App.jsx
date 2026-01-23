@@ -99,6 +99,7 @@ import CriarModeloMeuNegocio from "./pages/CriarModeloMeuNegocio";
 import  RegistroReceitaRapida  from "./pages/RegistroReceitaRapida";                       
 import LancamentoContabilRapido  from "./pages/LancamentoContabilRapido"
 import DashboardContabil from "./pages/DashboardContabil"
+import ApuracaoResultado from "./pages/ApuracaoResultado"
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -252,6 +253,11 @@ export default function App() {
 <Route
   path="/dashboardcontabil"
   element={<DashboardContabil />}
+/>
+
+<Route
+  path="/apuracaoresultado"
+  element={<ApuracaoResultado />}
 />
 
 
