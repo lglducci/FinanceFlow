@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function ContasContabeis() {
   const navigate = useNavigate();
-  const empresa_id = localStorage.getItem("empresa_id") || "1";
+  const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
 
   const [lista, setLista] = useState([]);
   const [filtro, setFiltro] = useState("");
@@ -12,7 +12,7 @@ export default function ContasContabeis() {
   async function carregar() {
     try {
       const url = buildWebhookUrl("contascontabeis", {
-        empresa_id,
+        empresa_id:empresa_id,
         dc: "",
         id: 0,
       });
@@ -80,7 +80,7 @@ export default function ContasContabeis() {
       }}
     >
 
-      <h1 className="text-2xl font-bold mb-6 text-white">Contas Contábeis</h1>
+      <h1 className="text-2xl font-bold mb-6 text-white">Contas aa Contábeis</h1>
 
       {/* 🔵 CARD DO TOPO */}
     <div

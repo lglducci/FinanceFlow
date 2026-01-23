@@ -24,7 +24,7 @@ export default function DashboardContabil() {
   const [passivoPizza, setPassivoPizza] = useState([]);
   const [resultadoMensal, setResultadoMensal] = useState([]);
   const [balancete, setBalancete] = useState([]);
-  
+  const [historico, setHistorico] = useState([]);
 
 
 
@@ -48,7 +48,11 @@ const CORES_ATIVO = [
   "#9ca3af"
 ];
 
-  
+  const historicoFormatado = historico.map(h => ({
+  ...h,
+  mes_ano: `${String(h.mes).padStart(2, "0")}/${h.ano}`
+}));
+
 
   function formatarMoeda(valor) {
   return Number(valor).toLocaleString("pt-BR", {
@@ -92,22 +96,16 @@ setPassivoPizza(agruparPassivoParaPizza(balancoSeguro));
 
  
   // RESULTADO MENSAL (12 MESES)
-const rMensal = await fetch(buildWebhookUrl("razao_mensal"), {
+const rMensal = await fetch(buildWebhookUrl("historico_apuracao"), {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({  empresa_id: empresa_id,
-          data_ini: hojeMaisDias(-365),
-          data_fim: dataFim, filtro:"" })
+  body: JSON.stringify({ empresa_id: empresa_id })
 });
 
- 
-const jMensal = await rMensal.json();
-
-const resultadoMensal = calcularResultadoMensal(
-  Array.isArray(jMensal) ? jMensal : []
-);
-
-setResultadoMensal(resultadoMensal);
+ const jzon = await rMensal.json();
+    setHistorico(Array.isArray(jzon) ? jzon : []);
+  
+  
 
  
    const rBal = await fetch(buildWebhookUrl("balancete"), {
@@ -194,32 +192,7 @@ function agruparPassivoParaPizza(balanco) {
   }));
 }
 
-
-function calcularResultadoMensal(razao) {
-  const mapa = {};
-
-  for (const l of razao) {
-    const mes = l.mes_ano;
-
-    const debito = Number(l.debito || 0);
-    const credito = Number(l.credito || 0);
-
-    if (!mapa[mes]) {
-      mapa[mes] = 0;
-    }
-
-    // REGRA CONTÁBIL:
-    // crédito aumenta resultado
-    // débito reduz resultado
-    mapa[mes] += credito - debito;
-  }
-
-  return Object.entries(mapa).map(([mes, resultado]) => ({
-    mes,
-    resultado
-  }));
-}
-
+ 
 
 const resultadoDre =  (
   dre.find(l => l.grupo === "RESULTADO_LIQUIDO")?.valor_periodo || 0) ;
@@ -273,43 +246,33 @@ const totalPassivoInvertido = passivosDevedores.reduce(
           <div className="text-white font-semibold text-sm px-3 py-2 bg-black/30 rounded-lg">
             Período: {diasPeriodo} dias
           </div>
-
-
+ 
         <div className="flex gap-4 mt-4">
           <input type="date" className="input-premium"
             value={dataIni} onChange={e => setDataIni(e.target.value)} />
           <input type="date" className="input-premium"
-            value={dataFim} onChange={e => setDataFim(e.target.value)} />
-
-         
-
+            value={dataFim} onChange={e => setDataFim(e.target.value)} />  
 
            <button
             onClick={carregar}
             className="bg-yellow-400 px-6 rounded font-bold text-black"
             >
             Atualizar
-            </button>
-
-
-        </div>
-
+            </button>  
+        </div> 
       </div>
 
       {/* KPIs */}
          <div className="grid grid-cols-4 gap-6 mb-8 bg-white">
           <div className="border-l-8 border-blue-600 rounded-xl shadow bg-blue-100 p-4">
             <Kpi titulo="Ativo" valor={formatarMoeda(totalAtivo)} />
-          </div>
-
+          </div> 
           <div className="border-l-8 border-red-600 rounded-xl shadow bg-red-100 p-4">
             <Kpi titulo="Passivo" valor={formatarMoeda(totalPassivo)} />
-          </div>
-
+          </div> 
           <div className="border-l-8 border-purple-600 rounded-xl shadow bg-purple-200 p-4">
             <Kpi titulo="Patrimônio Líquido" valor={formatarMoeda(patrimonioLiquido)} />
-          </div>
-
+          </div> 
           <div className="border-l-8 border-green-600 rounded-xl shadow bg-green-100 p-4">
             <Kpi titulo="Resultado" valor={formatarMoeda(resultadoDre)} />
           </div>
@@ -321,12 +284,10 @@ const totalPassivoInvertido = passivosDevedores.reduce(
       <div className="grid grid-cols-2 gap-6 mb-8">
         <Card titulo="Composição do Ativo">
           {/* COMPOSIÇÃO DO ATIVO */}
-            <div className="bg-[#9acbdc] rounded-xl shadow p-6 border border-gray-100 mt-6">
-
+            <div className="bg-[#9acbdc] rounded-xl shadow p-6 border border-gray-100 mt-6"> 
               <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
                 Composição do Ativo
-              </h2>
-
+              </h2> 
             {ativoPizza.length === 0 ? (
               <p className="text-gray-500 text-sm">Sem dados de ativo.</p>
             ) : (
@@ -660,7 +621,51 @@ const totalPassivoInvertido = passivosDevedores.reduce(
             </div>
 
 
-     
+      {/* HISTÓRICO */}
+<div className="bg-white rounded-xl shadow p-6">
+  <h2 className="font-bold text-lg mb-4">
+    Evolução do Resultado
+  </h2>
+
+  <ResponsiveContainer width="60%" height={220}>
+    <BarChart data={historicoFormatado}>
+      
+      {/* 📅 MÊS/ANO */}
+      <XAxis 
+        dataKey="mes_ano"
+        tick={{ fontSize: 12 }}
+      />
+
+      {/* 💰 VALORES */}
+      <YAxis
+        tickFormatter={(v) =>
+          Number(v).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            maximumFractionDigits: 0
+          })
+        }
+      />
+
+      {/* 🧠 TOOLTIP */}
+      <Tooltip
+        formatter={(value) =>
+          Number(value).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+          })
+        }
+        labelFormatter={(label) => `Competência: ${label}`}
+      />
+
+      <Bar
+        dataKey="resultado"
+        fill="#061f4aff"
+        radius={[6, 6, 0, 0]}
+      />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
 
     </div>
   );

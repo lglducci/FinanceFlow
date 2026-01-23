@@ -6,7 +6,7 @@ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 export default function LancamentosContabeis() {
   const navigate = useNavigate();
-  const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
+  const empresa_id = Number(localStorage.getItem("empresa_id") || Number(localStorage.getItem("id_empresa")));
 
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");

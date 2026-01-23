@@ -4,7 +4,7 @@ import { buildWebhookUrl } from "../config/globals";
 
 export default function MapeamentoContabil() {
   const navigate = useNavigate();
-  const empresa_id = localStorage.getItem("empresa_id") || "1";
+  const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa") ;
 
   const [lista, setLista] = useState([]);
   const [selecionado, setSelecionado] = useState(null);

@@ -59,6 +59,8 @@ export default function Login({ onLogin }) {
       localStorage.setItem("ff_token", data.token || "dummy");
       localStorage.setItem("id_usuario", data.usuario_id);
       localStorage.setItem("id_empresa", data.empresa_id);
+       localStorage.setItem("empresa_id", data.empresa_id);
+      
 
       onLogin();
     } catch (err) {

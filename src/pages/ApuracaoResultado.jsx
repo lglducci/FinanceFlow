@@ -20,10 +20,9 @@ export default function ApuracaoResultado() {
   const [dre, setDre] = useState([]);
   const [resultadoAnterior, setResultadoAnterior] = useState(null);
   const [historico, setHistorico] = useState([]);
-
   const [status, setStatus] = useState("idle"); 
   // idle | aberto | ja_apurado | pronto
-
+ 
   /* ================== LOAD INICIAL ================== */
   useEffect(() => {
     carregarStatus();
@@ -36,17 +35,18 @@ export default function ApuracaoResultado() {
  // carregarApuracoes?.();  // ✅ se você tiver uma função pra buscar histórico/apurações
 }, [ano, mes]);
 
-
   async function carregarStatus() {
-    const r = await fetch(buildWebhookUrl("status_apuracao"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id, ano, mes }),
-    });
+  const r = await fetch(buildWebhookUrl("status_apuracao"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ empresa_id, ano, mes }),
+  });
 
-    const j = await r.json();
-    setStatus(j.status); 
-  }
+  const j = await r.json(); 
+  setStatus(j?.[0]?.data?.status ?? "INDEFINIDO");
+}
+
+
 
   async function carregarResultadoAnterior() {
     const r = await fetch(buildWebhookUrl("ultima_apuracao"), {
@@ -55,9 +55,7 @@ export default function ApuracaoResultado() {
       body: JSON.stringify({ empresa_id }),
     });
 
-    const j = await r.json();
-
-    
+    const j = await r.json(); 
 
     setResultadoAnterior(Number(j?.[0]?.data?.resultado ?? 0));
 
@@ -93,20 +91,44 @@ export default function ApuracaoResultado() {
     setDre(j);
   }
 
-  async function apurar() {
-    if (status !== "pronto") return;
+ async function apurar() {
+  if (status !== "ABERTO") return;
 
-    await fetch(buildWebhookUrl("apuracao_resultado"), {
+  try {
+    const r = await fetch(buildWebhookUrl("apuracao_resultado"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id, ano, mes }),
+      body: JSON.stringify({
+        empresa_id,
+        ano,
+        mes,
+        usuario: 1
+      }),
     });
 
+    const j = await r.json();
+
+    if (!r.ok || j?.[0]?.ok === false) {
+      alert(
+        j?.[0]?.message ||
+        "Erro ao apurar resultado. Verifique os parâmetros."
+      );
+      console.error("ERRO APURAÇÃO:", j);
+      return; // ⛔ PARA TUDO AQUI
+    }
+
+    // ✅ só continua se deu certo
     await carregarStatus();
     await carregarResultadoAnterior();
     await carregarHistorico();
     await carregarDre();
+
+  } catch (err) {
+    console.error("ERRO GERAL:", err);
+    alert("Erro inesperado ao apurar resultado.");
   }
+}
+
 
 const historicoFormatado = historico.map(h => ({
   ...h,
@@ -141,11 +163,11 @@ const historicoFormatado = historico.map(h => ({
           />
 
           <button
-            disabled={status !== "pronto"}
+            disabled={status !== "ABERTO"}
             onClick={apurar}
             className={`px-6 rounded font-bold ${
-              status === "pronto"
-                ? "bg-green-500 text-white"
+              status === "ABERTO"
+                ? "bg-green-600 text-white"
                 : "bg-gray-400 text-gray-700 cursor-not-allowed"
             }`}
           >

@@ -3,7 +3,7 @@ import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 
 export default function RelatorioGerencial() {
-  const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
+  const empresa_id = Number(localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa"));
 
   const hoje = new Date();
   const [ano, setAno] = useState(hoje.getFullYear());
