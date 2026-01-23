@@ -617,7 +617,7 @@ const totalPassivoInvertido = passivosDevedores.reduce(
                 {dre.length === 0 ? (
                     <p className="text-gray-500">Nenhum dado para o período.</p>
                 ) : (
-                     <ResponsiveContainer width="60%" height={180}>
+                     <ResponsiveContainer width="50%" height={180}>
 
                     <BarChart data={dre}>
                         <XAxis dataKey="grupo" />

@@ -8,6 +8,7 @@ export default function LancamentoContabilRapido() {
   const empresa_id =
     localStorage.getItem("empresa_id") ||
     localStorage.getItem("id_empresa");
+ const [historicoEditado, setHistoricoEditado] = useState(false);
 
   /* ================== STATES ================== */
   const [usarModelo, setUsarModelo] = useState(false);
@@ -30,6 +31,12 @@ export default function LancamentoContabilRapido() {
   
 const [debitoConta, setDebitoConta] = useState(null);
 const [creditoConta, setCreditoConta] = useState(null);
+
+
+const [debitoTexto, setDebitoTexto] = useState("");
+ 
+const [creditoTexto, setCreditoTexto] = useState("");
+
 
   /* ================== LOAD CONTAS ================== */
   useEffect(() => {
@@ -73,7 +80,37 @@ const [creditoConta, setCreditoConta] = useState(null);
     );
     const j = await r.json();
     setLinhasModelo(j || []);
-  }
+  
+
+
+const linhas = j || [];
+setLinhasModelo(linhas);
+
+// 🔹 identificar débito e crédito
+const linhaDeb = linhas.find(l => l.dc === "D");
+const linhaCred = linhas.find(l => l.dc === "C");
+
+const nomeDeb = linhaDeb?.nome;
+const nomeCred = linhaCred?.nome;
+  
+// 🔹 montar histórico automático
+const histAuto = montarHistoricoPorNomes(nomeDeb, nomeCred);
+ 
+ if (histAuto) {
+  setHistorico(histAuto);
+} 
+
+}
+ 
+function montarHistoricoPorNomes(nomeDeb, nomeCred) {
+  if (!nomeDeb && !nomeCred) return "";
+  if (nomeDeb && !nomeCred) return `Movimento em ${nomeDeb}`;
+  if (!nomeDeb && nomeCred) return `Movimento – origem ${nomeCred}`;
+
+  return `Movimento em ${nomeDeb} – origem ${nomeCred}`;
+}
+
+
 
   /* ================== RESOLVER D/C ================== */
   function resolverDebitoCredito() {
@@ -229,6 +266,31 @@ function explicacaoContaCredito(codigo) {
 }
 
 
+function getContaById(id) {
+  const n = Number(id);
+  if (!n) return null;
+  return contas.find((c) => Number(c.id) === n) || null;
+}
+
+function limparNomeConta(nome) {
+  return (nome || "").trim();
+}
+
+
+function montarHistorico(debitoId, creditoId) {
+  const deb = getContaById(debitoId);
+  const cred = getContaById(creditoId);
+
+  const nomeDeb = limparNomeConta(deb?.nome);
+  const nomeCred = limparNomeConta(cred?.nome);
+
+  if (!nomeDeb && !nomeCred) return "";
+  if (nomeDeb && !nomeCred) return `Movimento em ${nomeDeb}`;
+  if (!nomeDeb && nomeCred) return `Origem ${nomeCred}`;
+
+  return `Movimento em ${nomeDeb} – origem ${nomeCred}`;
+}
+
 
   /* ================== UI ================== */
   return (
@@ -318,7 +380,7 @@ function explicacaoContaCredito(codigo) {
           <div className="mb-4">  
 
               <label className="flex items-center gap-2 text-sm font-bold text-[#061f4aff] mb-1 relative">
-                  Saída (Débito)
+                  Entrada (Débito)
 
                   {debitoId && (
                     <div className="group relative">
@@ -350,26 +412,44 @@ function explicacaoContaCredito(codigo) {
 
 
 
-            <select
-              className="input-premium"
-              value={debitoId}
-              onChange={(e) => {
-              const id = e.target.value;
-              setDebitoId(id);
+             <input
+                list="contasDebito"
+                className="input-premium"
+                placeholder="Digite código ou nome da conta"
+                value={debitoTexto}
+                onChange={(e) => {
+                  const texto = e.target.value;
+                  setDebitoTexto(texto);
 
-              const conta = contas.find(c => String(c.id) === String(id));
-              setDebitoConta(conta || null);
-            }}
-            >
-              <option value="">Débito</option>
-              {contas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.codigo} - {c.nome}
-                </option>
-              ))}
-            </select>
+                  // 🔍 resolve conta pelo código digitado
+                  const conta = contas.find(
+                    c => `${c.codigo} - ${c.nome}` === texto
+                        || c.codigo === texto
+                  );
+
+                  if (conta) {
+                    setDebitoId(conta.id);          // ID interno
+                    setDebitoConta(conta);          // objeto completo
+
+                    const novoHist = montarHistorico(conta.id, creditoId);
+                    if (novoHist) setHistorico(novoHist);
+                  }
+                }}
+              />
+
+              <datalist id="contasDebito">
+                {contas.map((c) => (
+                  <option
+                    key={c.id}
+                    value={`${c.codigo} - ${c.nome}`}
+                  />
+                ))}
+              </datalist>
+
+
+         
             {debitoConta && (
-              <div className="mt-1 text-xs text-blue-900 bg-gray-200 p-2 rounded">
+              <div className="mt-1 text-xs text-blue-900  bg-yellow-100 p-2 rounded">
                 📌 {explicacaoConta(debitoConta.codigo)?.texto}
               </div>
             )}
@@ -379,7 +459,7 @@ function explicacaoContaCredito(codigo) {
             <div className="mb-4">
              
               <label className="flex items-center gap-2 text-sm font-bold text-[#061f4aff] mb-1 relative">
-                    Entrada (Crédito)
+                    Saida (Crédito)
 
                     {creditoId && (
                       <div className="group relative">
@@ -410,28 +490,43 @@ function explicacaoContaCredito(codigo) {
                   </label>
 
 
+              <input
+                  list="contasCredito"
+                  className="input-premium"
+                  placeholder="Digite código ou nome da conta"
+                  value={creditoTexto}
+                  onChange={(e) => {
+                    const texto = e.target.value;
+                    setCreditoTexto(texto);
 
-            <select
-              className="input-premium"
-              value={creditoId}
-               onChange={(e) => {
-                  const id = e.target.value;
-                  setCreditoId(id);
+                    // 🔍 resolve conta pelo texto digitado
+                    const conta = contas.find(
+                      c =>
+                        `${c.codigo} - ${c.nome}` === texto ||
+                        c.codigo === texto
+                    );
 
-                  const conta = contas.find(c => String(c.id) === String(id));
-                  setCreditoConta(conta || null);
-                }}
-            >
-              <option value="">Crédito</option>
-              {contas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.codigo} - {c.nome}
-                </option>
-              ))}
-            </select>
+                    if (conta) {
+                      setCreditoId(conta.id);
+                      setCreditoConta(conta);
+
+                      const novoHist = montarHistorico(debitoId, conta.id);
+                      if (novoHist) setHistorico(novoHist);
+                    }
+                  }}
+                />
+
+                <datalist id="contasCredito">
+                  {contas.map((c) => (
+                    <option
+                      key={c.id}
+                      value={`${c.codigo} - ${c.nome}`}
+                    />
+                  ))}
+                </datalist>
 
               {creditoConta && (
-              <div className="mt-1 text-xs text-blue-900 bg-gray-200 p-2 rounded">
+              <div className="mt-1 text-xs text-blue-900 bg-yellow-100 p-2 rounded">
                 📌 {explicacaoConta(creditoConta.codigo)?.texto}
               </div>
             )}
@@ -450,7 +545,10 @@ function explicacaoContaCredito(codigo) {
           className="input-premium"
           placeholder="Histórico"
           value={historico}
-          onChange={(e) => setHistorico(e.target.value)}
+          onChange={(e) => {
+              setHistorico(e.target.value);
+              setHistoricoEditado(true);
+            }}
         />
          </div>
 
@@ -491,7 +589,7 @@ function explicacaoContaCredito(codigo) {
 
         <button
           onClick={() => navigate(-1)}
-          className="w-full bg-gray-400 text-white font-bold py-2 rounded"
+          className="w-full bg-gray-600 text-white font-bold py-2 rounded"
         >
           Voltar
         </button>
