@@ -1352,6 +1352,83 @@
       "id": "7f895b43-190b-4f20-bac7-bf5f6235dd37",
       "name": "Fluxo_Caixa_consolidado",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        2208
+      ],
+      "id": "a0c49c92-fc2a-4d74-b6ea-31def0333c57",
+      "name": "EditDer1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "historico_apuracao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        2208
+      ],
+      "id": "6f3e1448-d2fa-47e6-b9b7-121ba22f4e4d",
+      "name": "HistoricoApuracao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * from contab.ff_historico_apuracao(\n  {{ $json.empresa_id }} \n);\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        672,
+        2208
+      ],
+      "id": "70f8743c-53f1-4a50-a8c0-bb8ee2d57797",
+      "name": "ff_historico_apuracao",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        864,
+        2208
+      ],
+      "id": "303a3bbd-15bd-4943-a18a-556b699f0f02",
+      "name": "Respond to Apuracao Historico"
     }
   ],
   "pinData": {
@@ -1851,13 +1928,46 @@
           }
         ]
       ]
+    },
+    "EditDer1": {
+      "main": [
+        [
+          {
+            "node": "ff_historico_apuracao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HistoricoApuracao": {
+      "main": [
+        [
+          {
+            "node": "EditDer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_historico_apuracao": {
+      "main": [
+        [
+          {
+            "node": "Respond to Apuracao Historico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b97ef70e-f641-4ef7-b1c6-45f897fea8ce",
+  "versionId": "cb659261-1e6c-41c4-8a3f-f16696f2e9fc",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
