@@ -97,9 +97,9 @@ export default function Login({ onLogin }) {
     {/* LADO ESQUERDO – FUNDO / MARCA */}
     <div className="hidden md:flex bg-[#061f4aff] text-white items-center justify-center p-12">
       <div className="max-w-md">
-        <h1 className="text-5xl font-bold mb-4">Finance-Flow</h1>
+        <h1 className="text-5xl font-bold mb-4">Contábil-Flow</h1>
         <p className="text-lg opacity-90">
-          Controle financeiro simples, seguro e profissional.
+          Controle Contábil simples, seguro e profissional.
         </p>
       </div>
     </div>
@@ -109,7 +109,7 @@ export default function Login({ onLogin }) {
       <div className="w-full max-w-md bg-[#838FA5] rounded-2xl shadow-xl p-8">
 
         <h1 className="text-3xl font-bold text-center mb-2 text-gray-900 text-bg[#445777]">
-          Finance-Flow
+          Contábil-Flow
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -80,7 +80,7 @@ export default function ContasContabeis() {
       }}
     >
 
-      <h1 className="text-2xl font-bold mb-6 text-white">Contas aa Contábeis</h1>
+      <h1 className="text-2xl font-bold mb-6 text-white">Contas Contábeis</h1>
 
       {/* 🔵 CARD DO TOPO */}
     <div

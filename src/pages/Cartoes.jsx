@@ -2,7 +2,7 @@
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 export default function Cartoes({ setPage }) {
-  const id_empresa = Number(localStorage.getItem("id_empresa") || 1);
+  const id_empresa = Number(localStorage.getItem("id_empresa") || Number(localStorage.getItem("empresa_id")));
 
   const [lista, setLista] = useState([]);
   const [statusFiltro, setStatusFiltro] = useState("ativo");
