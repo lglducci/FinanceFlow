@@ -101,6 +101,10 @@ import LancamentoContabilRapido  from "./pages/LancamentoContabilRapido"
 import DashboardContabil from "./pages/DashboardContabil"
 import ApuracaoResultado from "./pages/ApuracaoResultado"
 
+ 
+ 
+
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 
@@ -114,11 +118,12 @@ export default function App() {
     </Routes>
   );
 }
-
-
+ 
   
 
   return (
+
+    
     
       <div className="min-h-screen flex bg-bgSoft">
         <Sidebar />
