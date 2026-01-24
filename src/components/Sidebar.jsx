@@ -43,9 +43,26 @@
  }, []);
  
  
- const ehContabil   = perfil === "CONTABIL" || perfil === "TODOS";
-const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
+ const MENU_PERMISSOES = {
+  visao_geral: ["FINANCEIRO", "TODOS"],
+  dashboard_contabil: ["CONTABIL", "TODOS"],
+
+  transacoes_financeiras: ["FINANCEIRO", "VENDAS", "TODOS"],
+
+  diario_contabil: ["CONTABIL", "TODOS"],
+  apuracao_resultado: ["CONTABIL", "TODOS"],
+
+  cadastro: ["FINANCEIRO", "CONTABIL", "TODOS"],
+  configuracoes: ["TODOS"]
+};
+
+function podeVer(menuKey) {
+  const permitidos = MENU_PERMISSOES[menuKey] || [];
+  return permitidos.includes(perfil);
+}
+
  
+
  
    return (
      <aside className="w-60 bg-[#ffffffff]  text-blue-500 text-base font-medium  flex flex-col h-screen  8px border  border-blue-800/100">
@@ -53,19 +70,19 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
        <div className="px-6 py-6 border-b border-blue-800/100 bg-[#061f4aff] text-white font-bold text-base">
         
   
-         <h2 className="text-xl font-bold">Finance-Flow</h2>
+         <h2 className="text-xl font-bold">Contábil-Flow</h2>
          <p className="text-xs text-blue-900 font-bold  text-white font-bold text-base">Painel pessoal</p>
        </div>
  
        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold">
  
-        {ehFinanceiro && (
+        {podeVer("visao_geral") && (
            <MenuItem icon={<IconHome />} label="Visão Geral" onClick={() => navigate("/dashboard")} />
         )}
          
           <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
           
-         {ehFinanceiro && (
+          {podeVer("visao_geral") && (
          <MenuGroup
            icon={<IconMoney />}
            label="Transações Financeiras"
@@ -84,16 +101,16 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
          )}
 
          
-       {ehContabil && (
+        {podeVer("diario_contabil") && (
          <MenuGroup
            icon={<IconBuilding />}
            label="Contábil"
            open={open === "contabil"}
            onClick={() => toggle("contabil")}
          >
-              {ehFinanceiro && (<SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />)}
+              {podeVer("visao_geral") && (<SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />)}
             
-                {ehFinanceiro && ( <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />)}
+                {podeVer("visao_geral")  && ( <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />)}
                
           <SubItem icon={<IconDoc />} label="Lanctos Ctb - Saldo"
              onClick={() => navigate("/lancamentos-contabeis")}
@@ -111,7 +128,7 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
          </MenuGroup>
         )}
  
-         {ehFinanceiro && (   <MenuGroup
+         {podeVer("visao_geral") && (   <MenuGroup
            icon={<IconBuilding />}
            label="Apurações/Obrigações"
            open={open === "tributos"}
@@ -130,18 +147,18 @@ const ehFinanceiro = perfil === "FINANCEIRO" || perfil === "TODOS";
            open={open === "cadastro"}
            onClick={() => toggle("cadastro")}
          >
-               {ehFinanceiro &&  (<SubItem icon={<IconUsers />} label="Fornecedores/Clientes" onClick={() => navigate("/providers-clients")} />)}
+                {podeVer("visao_geral") &&  (<SubItem icon={<IconUsers />} label="Fornecedores/Clientes" onClick={() => navigate("/providers-clients")} />)}
 
-                {ehFinanceiro &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)}
-                {ehFinanceiro &&   (<SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
-                 {ehFinanceiro &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)}
+                 {podeVer("visao_geral") &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)}
+                 {podeVer("visao_geral") &&   (<SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
+                 {podeVer("visao_geral")  &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)}
               <SubItem icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
               <SubItem icon={<IconMap />} label="Modelo Contabil" onClick={() => navigate("/mapeamento-contabil")} />
          </MenuGroup>
  
-       {ehContabil && ( <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
+         {podeVer("diario_contabil") && ( <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
  
-         {ehFinanceiro && (  <MenuGroup
+         {podeVer("visao_geral") && (  <MenuGroup
            icon={<IconBuilding />}
            label="Configurações"
            open={open === "Configurações"}

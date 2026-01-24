@@ -6,7 +6,7 @@
             Dashboard
           </h1>
          <p className="text-sm text-gray-200 leading-tight">
-          Acompanhamento rápido das suas finanças.
+          Acompanhamento rápido da sua Contabilidade.
         </p>
       </div>
       <div className="text-base text-white  pt-8">
