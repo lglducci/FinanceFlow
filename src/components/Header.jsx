@@ -1,19 +1,52 @@
- export default function Header() {
+ import { useApp } from "../context/AppContext";
+
+export default function Header() {
+  const { empresa, usuario, documento, tipo, loading } = useApp();
+  if (loading) return null;
+
   return (
-    <header className="h-24 border-b flex items-center justify-between px-6 bg-[#061f4aff]">
-      <div>
-          <h1 className="text-lg font-bold text-white leading-tight mt-3">
-            Dashboard
-          </h1>
-         <p className="text-sm text-gray-200 leading-tight">
-          Acompanhamento rápido da sua Contabilidade.
-        </p>
+    <header className="h-24 border-b bg-[#061f4a] px-5 flex items-center justify-between">
+
+      {/* BLOCO ESQUERDO – EMPRESA + USUÁRIO */}
+      <div className="flex gap-8">
+
+        {/* EMPRESA */}
+        <div>
+          <div className="text-xs uppercase text-gray-300 font-semibold">
+            Empresa
+          </div>
+
+          <div className="text-white font-bold text-lg leading-tight">
+            {empresa}
+          </div>
+           <div className="text-sm text-gray-200 leading-tight">
+                {tipo}{" \u00A0"}·{" \u00A0"}CNPJ:{" \u00A0"}{documento}
+              </div>
+
+
+        </div>
+
+        {/* USUÁRIO */}
+        <div>
+          <div className="text-xs uppercase text-gray-300 font-semibold">
+            Usuário
+          </div>
+
+          <div className="text-white font-bold leading-tight">
+            {usuario}
+          </div>
+
+          <div className="text-sm text-gray-200 leading-tight">
+            {usuario?.email}
+          </div>
+        </div>
       </div>
-      <div className="text-base text-white  pt-8">
+
+      {/* BLOCO DIREITO – DATA */}
+      <div className="text-sm text-gray-200 self-start pt-6">
         {new Date().toLocaleDateString("pt-BR")}
       </div>
+
     </header>
   );
 }
-
- 
