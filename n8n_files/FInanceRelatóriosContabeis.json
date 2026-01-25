@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
-        "height": 1356,
+        "height": 1580,
         "width": 1328,
         "color": 4
       },
@@ -1355,29 +1355,6 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
-              "name": "empresa_id",
-              "value": "={{ $json.body.empresa_id}}",
-              "type": "number"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        480,
-        2208
-      ],
-      "id": "a0c49c92-fc2a-4d74-b6ea-31def0333c57",
-      "name": "EditDer1"
-    },
-    {
-      "parameters": {
         "httpMethod": "POST",
         "path": "historico_apuracao",
         "responseMode": "responseNode",
@@ -1429,6 +1406,126 @@
       ],
       "id": "303a3bbd-15bd-4943-a18a-556b699f0f02",
       "name": "Respond to Apuracao Historico"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        2208
+      ],
+      "id": "a0c49c92-fc2a-4d74-b6ea-31def0333c57",
+      "name": "EditHistorico"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2352,
+        1440
+      ],
+      "id": "b4cc92ad-9f67-4507-8f62-b74801263020",
+      "name": "Respond to Webhook29"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " WITH partidas AS (\n  SELECT\n    MIN(l.id)                           AS id,\n    l.data_mov::date                   AS data,\n    l.historico                        AS historico,\n\n    MAX(CASE WHEN l.debito  > 0 THEN l.conta_id END) AS conta_debito_id,\n    SUM(COALESCE(l.debito, 0))          AS debito,\n\n    MAX(CASE WHEN l.credito > 0 THEN l.conta_id END) AS conta_credito_id,\n    SUM(COALESCE(l.credito, 0))         AS credito,\n\n    l.lote_id\n  FROM contab.lancamentos l\n  WHERE l.empresa_id = {{ $json.empresa_id }}\n    AND l.data_mov::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  GROUP BY l.lote_id, l.data_mov::date, l.historico\n)\n\nSELECT\n  p.id,\n  p.data,\n  p.historico,\n\n  cd.codigo || ' - ' || cd.nome AS conta_debito,\n  p.debito,\n\n  cc.codigo || ' - ' || cc.nome AS conta_credito,\n  p.credito,\n\n  p.lote_id \nFROM partidas p\nLEFT JOIN contab.contas cd ON cd.id = p.conta_debito_id\nLEFT JOIN contab.contas cc ON cc.id = p.conta_credito_id\nORDER BY p.data DESC, p.lote_id;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2160,
+        1440
+      ],
+      "id": "c9cb1d62-ad41-4761-b0d5-d91c12f733b2",
+      "name": "ff_diario_contabil1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "bbc07985-5eb4-44e4-bd9f-594e807e884e",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1968,
+        1440
+      ],
+      "id": "5ac3dff3-497f-467a-acf3-da5d81bc2d4e",
+      "name": "EditDiario1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "movimento_contabil",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1744,
+        1440
+      ],
+      "id": "2efbcb41-749a-4edb-bbb2-26c61b72e3f3",
+      "name": "movimento_contabil",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {
@@ -1462,6 +1559,16 @@
           "data_fim": "20251231",
           "filtro": null,
           "tipo": "d"
+        }
+      }
+    ],
+    "EditDiario1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "2026-01-01",
+          "data_fim": "2026-01-31",
+          "conta_id": null
         }
       }
     ]
@@ -1929,22 +2036,11 @@
         ]
       ]
     },
-    "EditDer1": {
-      "main": [
-        [
-          {
-            "node": "ff_historico_apuracao",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "HistoricoApuracao": {
       "main": [
         [
           {
-            "node": "EditDer1",
+            "node": "EditHistorico",
             "type": "main",
             "index": 0
           }
@@ -1961,13 +2057,57 @@
           }
         ]
       ]
+    },
+    "EditHistorico": {
+      "main": [
+        [
+          {
+            "node": "ff_historico_apuracao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_diario_contabil1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook29",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditDiario1": {
+      "main": [
+        [
+          {
+            "node": "ff_diario_contabil1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "movimento_contabil": {
+      "main": [
+        [
+          {
+            "node": "EditDiario1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "cb659261-1e6c-41c4-8a3f-f16696f2e9fc",
+  "versionId": "888a4bbd-ce6d-4241-b77e-6d5430c78cdd",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

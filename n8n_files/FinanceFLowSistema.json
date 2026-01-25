@@ -421,7 +421,7 @@
     },
     {
       "parameters": {
-        "jsCode": " const token =$input.first().json.token; \n\nconst link = `http://localhost:5173/redefinir-senha?token=${token}`;\n\nreturn [{\n  json: {\n    email: $input.first().json.email ,\n    link\n  }\n}];\n"
+        "jsCode": " const token =$input.first().json.token; \n\nconst link = `https://finance-flow-woad-xi.vercel.app/redefinir-senha?token=${token}`;\n\nreturn [{\n  json: {\n    email: $input.first().json.email ,\n    link\n  }\n}];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -578,6 +578,82 @@
       ],
       "id": "e030d0bd-f1d2-49dc-848c-cc30a58210ea",
       "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dados_sessao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1552,
+        -240
+      ],
+      "id": "25a842b1-1782-4e1a-9bcd-5f9358fad443",
+      "name": "Dados Sessão",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1312,
+        -240
+      ],
+      "id": "93b3fddd-6759-40e1-bb45-96926cf4c825",
+      "name": "EditSessao"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select u.nome nome, e.tipo, e.nome nome_empresa, e.documento , email from empresas\nas e inner join usuario_empresa ue on ue.empresa_id = e.id inner join usuarios u on u.id = ue.usuario_id  where e.id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1104,
+        -240
+      ],
+      "id": "e66765e6-5383-4bfa-9e52-06edade9883c",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -880,
+        -240
+      ],
+      "id": "90a11e83-cf49-47ba-8539-8898b41cc3b6",
+      "name": "Respond to Webhook15"
     }
   ],
   "pinData": {
@@ -875,13 +951,46 @@
           }
         ]
       ]
+    },
+    "Dados Sessão": {
+      "main": [
+        [
+          {
+            "node": "EditSessao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditSessao": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b15c688b-4d9b-415f-83f1-819c1ac3381d",
+  "versionId": "6f8695e4-c9e0-4865-8c3c-6fe636fcf7ec",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

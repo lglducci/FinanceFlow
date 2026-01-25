@@ -1333,7 +1333,7 @@
       "typeVersion": 1.4,
       "position": [
         -816,
-        464
+        400
       ],
       "id": "2fcb5433-5cfb-4ad6-98d5-5621aba9ecbc",
       "name": "Respond to Webhook3"
@@ -1348,7 +1348,7 @@
       "typeVersion": 2.1,
       "position": [
         -1456,
-        464
+        400
       ],
       "id": "8865ddd3-1ef2-4c71-be97-8582576b05f2",
       "name": "LanctoContabil",
@@ -1390,7 +1390,7 @@
       "typeVersion": 3.4,
       "position": [
         -1248,
-        464
+        400
       ],
       "id": "db473653-f3f2-4e4d-b7bb-cff36289ec8e",
       "name": "EditLanct"
@@ -1405,7 +1405,7 @@
       "typeVersion": 2.6,
       "position": [
         -1024,
-        464
+        400
       ],
       "id": "bbae7045-f507-411f-9249-f138544abce9",
       "name": "ff_razao_sintetico_mensal (lancto Contabeis)",
@@ -1445,7 +1445,7 @@
       "typeVersion": 1.4,
       "position": [
         -816,
-        688
+        624
       ],
       "id": "d540557b-920c-4eee-8600-a9a2ce1e3eef",
       "name": "Respond to Webhook4"
@@ -1468,20 +1468,8 @@
             },
             {
               "id": "1604e86a-56f9-4afa-8125-8e35d289822b",
-              "name": "valor_debito",
-              "value": "={{ $json.body.valor_debito}}",
-              "type": "string"
-            },
-            {
-              "id": "07eb6d71-8aec-44a9-ab67-36c20739286d",
-              "name": "valor_credito",
-              "value": "={{ $json.body.valor_credito}}",
-              "type": "string"
-            },
-            {
-              "id": "052e0b54-24d9-41f3-9035-f3553a7bb2d5",
-              "name": "historico",
-              "value": "={{ $json.body.historico}}",
+              "name": "valor",
+              "value": "={{ $json.body.valor}}",
               "type": "string"
             }
           ]
@@ -1492,7 +1480,7 @@
       "typeVersion": 3.4,
       "position": [
         -1232,
-        688
+        624
       ],
       "id": "a89747cb-5f9f-47db-b6ae-61f96d525265",
       "name": "EditLanct1"
@@ -1508,7 +1496,7 @@
       "typeVersion": 2.1,
       "position": [
         -1440,
-        688
+        624
       ],
       "id": "8be6d81a-f24b-43de-a549-3288f504bb40",
       "name": "AlteraSaldoLancamentos",
@@ -1525,26 +1513,10 @@
       "typeVersion": 1.4,
       "position": [
         -800,
-        912
+        848
       ],
       "id": "34a44ef2-c6d4-4e2b-ad19-4ff79fca80a4",
       "name": "Respond to Webhook5"
-    },
-    {
-      "parameters": {
-        "path": "contas_contabeis_lancaveis",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -1440,
-        912
-      ],
-      "id": "73c5748b-1ac0-438f-a3ad-e639ee1f0aa6",
-      "name": "LanctoContabil1",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
@@ -1564,7 +1536,7 @@
       "typeVersion": 3.4,
       "position": [
         -1232,
-        912
+        848
       ],
       "id": "054ff9c5-a2b3-48be-8d2d-7f9ab44f60e4",
       "name": "Editcontas_contabeis_lancaveis"
@@ -1593,7 +1565,8 @@
             "conta_id": "={{ $json.conta_id }}",
             "historico": "={{ $json.historico }}",
             "credito": "={{ $json.valor_credito }}",
-            "origem": "MANUAL"
+            "origem": "MANUAL",
+            "lote_id": 0
           },
           "matchingColumns": [
             "id"
@@ -1701,6 +1674,16 @@
               "type": "string",
               "canBeUsedToMatch": true,
               "removed": false
+            },
+            {
+              "id": "lote_id",
+              "displayName": "lote_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -1711,8 +1694,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -1024,
-        688
+        -224,
+        480
       ],
       "id": "7d90b4f9-39ab-4df9-9fba-564d44ed634c",
       "name": "InsereLanctoContabilManual",
@@ -1733,7 +1716,7 @@
       "typeVersion": 2.6,
       "position": [
         -1008,
-        912
+        848
       ],
       "id": "1cc183fa-2bf9-4fec-9122-5fc514ce9b9f",
       "name": "Contas Contabeis",
@@ -1745,9 +1728,132 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  Select  id, codigo, nome \n   from contab.contas   \n  \nwhere  empresa_id = {{ $json.empresa_id }} \n    and  analitica = true order by codigo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1056,
+        1024
+      ],
+      "id": "118e1d90-6ff3-4f82-b5ab-237f4498a683",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -816,
+        1024
+      ],
+      "id": "d22167c3-2a83-427d-97af-1ec1ad68baf2",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1248,
+        1024
+      ],
+      "id": "3f007314-648b-4322-be62-077765975373",
+      "name": "Editcontas_contabeis_lancaveis1"
+    },
+    {
+      "parameters": {
+        "path": "contas_contabeis_lancaveis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1440,
+        848
+      ],
+      "id": "73c5748b-1ac0-438f-a3ad-e639ee1f0aa6",
+      "name": "Lancaveis",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "path": "contas_sem_saldo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1456,
+        1024
+      ],
+      "id": "72966082-3a04-4da9-b2e8-0af4e1d26e7c",
+      "name": "LancaveisSemSaldo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from contab.ff_implantar_saldo_inicial ({{ $json.empresa_id }},  {{ $json.conta_id }}, {{ $json.valor }}    )",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1024,
+        624
+      ],
+      "id": "695ed82e-a48d-4088-bd9d-ebd1dc7edb09",
+      "name": "ImplantaSaldoInicial",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "EditLanct1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conta_id": 1,
+          "valor": 0
+        }
+      }
+    ]
+  },
   "connections": {
     "EditModeloslinha3": {
       "main": [
@@ -2061,7 +2167,7 @@
       "main": [
         [
           {
-            "node": "InsereLanctoContabilManual",
+            "node": "ImplantaSaldoInicial",
             "type": "main",
             "index": 0
           }
@@ -2073,17 +2179,6 @@
         [
           {
             "node": "EditLanct1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "LanctoContabil1": {
-      "main": [
-        [
-          {
-            "node": "Editcontas_contabeis_lancaveis",
             "type": "main",
             "index": 0
           }
@@ -2103,13 +2198,7 @@
     },
     "InsereLanctoContabilManual": {
       "main": [
-        [
-          {
-            "node": "Respond to Webhook4",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Contas Contabeis": {
@@ -2122,13 +2211,68 @@
           }
         ]
       ]
+    },
+    "Editcontas_contabeis_lancaveis1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lancaveis": {
+      "main": [
+        [
+          {
+            "node": "Editcontas_contabeis_lancaveis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LancaveisSemSaldo": {
+      "main": [
+        [
+          {
+            "node": "Editcontas_contabeis_lancaveis1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImplantaSaldoInicial": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b9569c2c-f1a8-41d4-8a33-945a50e763df",
+  "versionId": "ca027b13-7934-4daf-9243-557b7f6b9f30",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
