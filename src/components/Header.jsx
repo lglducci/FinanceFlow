@@ -1,7 +1,7 @@
  import { useApp } from "../context/AppContext";
 
 export default function Header() {
-  const { empresa, usuario, documento, tipo, loading } = useApp();
+  const { empresa, usuario, documento, tipo, email, loading } = useApp();
   if (loading) return null;
 
   return (
@@ -37,7 +37,7 @@ export default function Header() {
           </div>
 
           <div className="text-sm text-gray-200 leading-tight">
-            {usuario?.email}
+            {email}
           </div>
         </div>
       </div>
