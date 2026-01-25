@@ -197,7 +197,7 @@ function linhaZerada(l) {
   {/* 🔹 LINHA 2 – opções do relatório */}
   <div className="flex flex-wrap gap-6 items-center text-sm">
 
-          <label className="flex items-center gap-2 cursor-pointer">
+          {/*  <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
               name="tipoRelatorio"
@@ -205,7 +205,7 @@ function linhaZerada(l) {
               onChange={() => trocarTipo("r")}
             />
             Razão detalhado
-          </label>
+          </label>*/}
 
           <label className="flex items-center gap-2 cursor-pointer">
             <input

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
-import { hojeLocal } from "../utils/dataLocal";
+ 
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+
 
 export default function LancamentoContabilRapido() {
   const navigate = useNavigate();
@@ -26,8 +28,7 @@ export default function LancamentoContabilRapido() {
   const [valor, setValor] = useState("");
   const [historico, setHistorico] = useState("");
   const [dataLancto, setDataLancto] = useState(hojeLocal());
-  const [salvando, setSalvando] = useState(false);
-
+  const [salvando, setSalvando] = useState(false); 
   
 const [debitoConta, setDebitoConta] = useState(null);
 const [creditoConta, setCreditoConta] = useState(null);
@@ -36,7 +37,7 @@ const [creditoConta, setCreditoConta] = useState(null);
 const [debitoTexto, setDebitoTexto] = useState("");
  
 const [creditoTexto, setCreditoTexto] = useState("");
-
+const [vencimento, setVencimento] = useState(hojeLocal());
 
   /* ================== LOAD CONTAS ================== */
   useEffect(() => {
@@ -575,10 +576,23 @@ function montarHistorico(debitoId, creditoId) {
           className="input-premium"
           value={dataLancto}
           onChange={(e) => setDataLancto(e.target.value)}
-        />
-
+        /> 
          </div>
 
+          
+        <div className="mb-4">
+              <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
+              Vencimento
+              </label>
+        <input
+          type="date"
+          className="input-premium"
+          value={vencimento}
+          onChange={(e) => setVencimento(e.target.value)}
+        /> 
+         </div>
+
+           
         <button
           onClick={salvar}
           disabled={salvando}

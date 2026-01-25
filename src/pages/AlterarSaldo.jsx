@@ -1,4 +1,5 @@
  import { useState, useEffect } from "react";
+ 
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
@@ -37,7 +38,7 @@ export default function AlterarSaldo() {
     if (!modoNovo) return;
 
     async function carregarContas() {
-      const url = buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id });
+      const url = buildWebhookUrl("contas_sem_saldo", { empresa_id });
       const r = await fetch(url);
       const j = await r.json();
       setContas(Array.isArray(j) ? j : []);
@@ -57,17 +58,13 @@ export default function AlterarSaldo() {
       return;
     }
 
-    if (!historico.trim()) {
-      alert("Informe o histórico.");
-      return;
-    }
+   
 
     const valorNumerico = Number(
   valor.replace(/\./g, "").replace(",", ".")
 );
 
-    const valor_debito  = tipo === "entrada" ? Number(valorNumerico) : 0;
-    const valor_credito = tipo === "saida"   ? Number(valorNumerico) : 0;
+  
     
     if (isNaN(valorNumerico) || valorNumerico <= 0) {
           alert("Valor inválido.");
@@ -85,9 +82,7 @@ export default function AlterarSaldo() {
         body: JSON.stringify({
           empresa_id,
           conta_id: Number(contaId),
-          valor_debito:valor_debito,
-          valor_credito:valor_credito,
-          historico
+          valor:valorNumerico 
         })
       });
 
@@ -101,6 +96,8 @@ export default function AlterarSaldo() {
     }
   }
 
+  
+
   return (
     <div className="p-4 max-w-xl mx-auto">
 
@@ -108,7 +105,7 @@ export default function AlterarSaldo() {
 
         <h2
           className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center" style={{ color: THEME.title }} >
-       ✏️ {modoNovo ? "Lançamento Contábil Manual" : "Alterar Saldo da Conta"}
+       ✏️  Implantação de Saldo Contábil
       </h2>
 
       <div className="bg-white rounded-xl shadow p-6 border-[3px] border-blue-900 space-y-4">
@@ -116,21 +113,32 @@ export default function AlterarSaldo() {
         {/* CONTA */}
         <div>
           <label className="label label-required font-bold text-[#1e40af]">Conta Contábil</label>
+           {modoNovo ? (
+                  <>
+                    <input
+                      list="contas-list"
+                      className="w-full border px-3 py-2 rounded"
+                      placeholder="Digite o código ou nome da conta"
+                      onChange={(e) => {
+                        const valor = e.target.value;
+                        const conta = contas.find(
+                          c => `${c.codigo} - ${c.nome}` === valor
+                        );
+                        setContaId(conta ? conta.id : "");
+                      }}
+                    />
 
-          {modoNovo ? (
-            <select
-              value={contaId}
-              onChange={e => setContaId(e.target.value)}
-              className="w-full border px-3 py-2 rounded"
-            >
-              <option value="">Selecione</option>
-              {contas.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.codigo} - {c.nome}
-                </option>
-              ))}
-            </select>
-          ) : (
+                    <datalist id="contas-list">
+                      {contas.map(c => (
+                        <option
+                          key={c.id}
+                          value={`${c.codigo} - ${c.nome}`}
+                        />
+                      ))}
+                    </datalist>
+                  </>
+                ) : (
+
             <input
               disabled
               value={`${contaCodigo} - ${contaNome}`}
@@ -139,19 +147,7 @@ export default function AlterarSaldo() {
           )}
         </div>
 
-        {/* TIPO */}
-        <div>
-          <label className="label label-required font-bold text-[#1e40af]">Tipo</label>
-          <select
-            value={tipo}
-            onChange={e => setTipo(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-          >
-            <option value="entrada">Entrada</option>
-            <option value="saida">Saída</option>
-          </select>
-        </div>
-
+     
         {/* VALOR */}
         <div>
           <label className="label label-required font-bold text-[#1e40af]">Valor</label>
@@ -171,7 +167,7 @@ export default function AlterarSaldo() {
           
         </div>
 
-        {/* HISTÓRICO */}
+        {/* HISTÓRICO  
         <div>
           <label className="label label-required font-bold text-[#1e40af]">Histórico</label>
           <input
@@ -179,7 +175,7 @@ export default function AlterarSaldo() {
             onChange={e => setHistorico(e.target.value)}
             className="w-full border px-3 py-2 rounded"
           />
-        </div>
+        </div>*/}
 
         {/* BOTÕES */}
         <div className="flex gap-3 pt-4">

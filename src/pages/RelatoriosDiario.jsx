@@ -51,7 +51,7 @@ function formatarDataBR(data) {
    // setDados([]);
 
     try {
-      const r = await fetch(buildWebhookUrl("diario_contabil"), {
+      const r = await fetch(buildWebhookUrl("movimento_contabil"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -93,7 +93,7 @@ const filtrados = dados.filter(item => {
     const resp = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id: empresaId, lote_id }),
+      body: JSON.stringify({ empresa_id: empresaId, lote_id}),
     });
 
     const texto = await resp.text();
@@ -241,11 +241,12 @@ const filtrados = dados.filter(item => {
             <tr>
               
               <th className="p-3 text-left">Lançamento</th>
-               <th className="p-3 text-left">Data</th> 
-              <th className="p-3 text-left">Conta</th>
+               <th className="p-3 text-left">Data</th>  
               <th className="p-3 text-left">Histórico</th>
-              <th className="p-3 text-right">Débito</th>
-              <th className="p-3 text-right">Crédito</th>
+                <th className="p-3 text-left">Conta Débito</th>
+              {/*<th className="p-3 text-right">Débito</th>*/}
+               <th className="p-3 text-left">Conta Crédito</th>
+              <th className="p-3 text-right">Valor </th>
               <th className="p-3 text-center">Lote</th>
                <th className="p-3 text-center">Ação</th>
             </tr>
@@ -255,14 +256,19 @@ const filtrados = dados.filter(item => {
               <tr key={i}   className={i % 2 === 0 ? "bg-100" : "bg-[#C1C7D2]"} >
                  {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
                  <td   className="p-2 font-bold text-left font-size: 16px">{l.id}</td>
-                 <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data_mov)}</td>   
-                <td    className="p-2 font-bold text-left font-size: 16px">
-                  {l.conta_codigo} – {l.conta_nome}
-                </td>
+                 <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data)}</td>   
+                 
                 <td  className="p-2 font-bold text-left font-size: 16px left">{l.historico}</td>
-                <td  className="p-2 font-bold text-right font-size: 16px text-right">{fmt.format(l.debito)}</td>
+                <td    className="p-2 font-bold text-left font-size: 16px">
+                {l.conta_debito}
+                </td>
+                 {/* <td  className="p-2 font-bold text-right font-size: 16px text-right">{fmt.format(l.debito)}</td>*/}
+                 <td    className="p-2 font-bold text-rigth font-size: 16px">
+                {l.conta_credito}
+                </td>
                 <td   className="p-2 font-bold text-right font-size: 16px text-right">{fmt.format(l.credito)}</td>
-                <td   className="p-2 font-bold text-center font-size: 16px">{l.lote}</td>
+                  
+                <td   className="p-2 font-bold text-center font-size: 16px">{l.lote_id}</td>
 
                 
                   {/* AÇÕES */}
@@ -272,7 +278,7 @@ const filtrados = dados.filter(item => {
                     <button  
                      className=  "text-blue-600 underline font-bold"
                          
-                      onClick={() => Estornar(l.lote)} 
+                      onClick={() => Estornar(l.lote_id)} 
 
                     >
                       Exclui Lote

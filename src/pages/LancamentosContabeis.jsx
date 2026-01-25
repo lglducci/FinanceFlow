@@ -155,7 +155,7 @@ export default function LancamentosContabeis() {
                     }
             className= { `${btnPadrao} bg-green-800 hover:bg-green-400 px-4 py-2 `}
           >
-            + Novo Lancto Saldo
+            + Impantar Saldo
           </button>
 
          {/* <button
