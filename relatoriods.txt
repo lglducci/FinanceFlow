@@ -1,0 +1,140 @@
+u te passei os relatórios financeiros essenciais que qualquer sistema profissional precisa, divididos por nível de importância.
+
+Aqui está a lista completa, exatamente como você pode implementar no seu FinanceFlow:
+
+✅ 1. RELATÓRIO DE CAIXA (Fluxo de Caixa Diário / Período) — o mais usado
+
+Mostra:
+
+saldo inicial
+
+entradas
+
+saídas
+
+saldo final
+
+quebra por categorias
+
+total por forma de pagamento
+
+extrato detalhado
+
+Você já tem quase tudo pronto (transações + contas_financeiras).
+
+✅ 2. RELATÓRIO CONTAS A PAGAR / A RECEBER (por período)
+
+Permite ver:
+
+vencidos
+
+a vencer
+
+pagos / recebidos
+
+fornecedores / clientes mais relevantes
+
+projeção de caixa futuro
+
+Filtros:
+
+por data
+
+por status
+
+por fornecedor / cliente
+
+✅ 3. RELATÓRIO DE EXTRATO FINANCEIRO (por conta)
+
+Extrato tipo banco:
+
+entradas e saídas ordenadas
+
+saldo após cada linha
+
+filtros por período e categoria
+
+✅ 4. RELATÓRIO DRE (Demonstração de Resultado) — Mensal, Trimestral ou Anual
+
+Estrutura:
+
+RECEITA BRUTA
+(-) Deduções
+= RECEITA LÍQUIDA
+(-) CUSTO
+= LUCRO BRUTO
+(-) DESPESAS OPERACIONAIS
+= RESULTADO OPERACIONAL
+(+/-) OUTRAS RECEITAS / DESPESAS
+= RESULTADO ANTES DO IR
+
+
+Esse você pode montar fácil usando:
+
+transações filtradas por categoria/grupo_contabil
+
+modelos contábeis (se quiser ficar mais preciso)
+
+✅ 5. RELATÓRIO DE SALDOS POR CONTA (já existe no seu app)
+
+Mostra:
+
+saldo inicial
+
+total entrada / saída
+
+saldo final
+
+por conta
+
+Você já implementou esse e está funcionando.
+
+✅ 6. RELATÓRIO DE MOVIMENTAÇÃO POR CATEGORIA
+
+Mostra no período:
+
+quanto foi gasto por categoria
+
+quanto entrou por categoria de receita
+
+ranking de maiores despesas
+
+Ideal para gráficos.
+
+✅ 7. RELATÓRIO DE CARTÕES (Mensal)
+
+Inclui:
+
+total da fatura
+
+todas transações por cartão
+
+agrupamento por categoria
+
+parcelas futuras
+
+Esse você também já tem 80% implementado (tabela cartoes_faturas e cartoes_transacoes).
+
+✅ 8. RELATÓRIO DE PROJEÇÃO DE CAIXA (30, 60, 90 dias)
+
+Com base em:
+
+contas a pagar
+
+contas a receber
+
+despesas recorrentes
+
+Ele te diz:
+
+“Em 45 dias seu caixa ficará negativo em -R$ 3.200.”
+
+📌 Se quiser eu gero AGORA os endpoints + SQL prontos para:
+✔ Fluxo de Caixa
+✔ DRE
+✔ Movimentação por categoria
+✔ Extrato por conta
+✔ Pagamentos / Recebimentos
+✔ Projeção de caixa
+
+Totalmente plug-and-play no Supabase.
