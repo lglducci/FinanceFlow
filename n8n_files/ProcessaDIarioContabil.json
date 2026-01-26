@@ -36,8 +36,8 @@
     {
       "parameters": {
         "content": "## Diário",
-        "height": 1516,
-        "width": 1280,
+        "height": 1164,
+        "width": 1248,
         "color": 3
       },
       "id": "861eac6f-b063-4cf6-843b-7e19ba8a8c0b",
@@ -246,30 +246,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": " select * from contab.controle_fechamento  where empresa_id =  {{ $json.empresa_id }} ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        656,
-        592
-      ],
-      "id": "66404e92-79b2-4ac1-a23a-871afd95d276",
-      "name": "Ultimo_processamento",
-      "executeOnce": false,
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
-          "name": "FinanceFlow"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
           "responseCode": "={{ $json.responseCode }}"
@@ -383,30 +359,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": " \nCALL contab.sp_reset_contabil_desde_data(1);",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        656,
-        784
-      ],
-      "id": "71220654-f483-4ad0-8b38-2b95465072d5",
-      "name": "Ultimo_processamento1",
-      "executeOnce": false,
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
-          "name": "FinanceFlow"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "httpMethod": "POST",
         "path": "voltadata",
         "responseMode": "responseNode",
@@ -454,35 +406,6 @@
       ],
       "id": "1b1f32a1-9a4a-460c-9c78-e2b51b56e678",
       "name": "Respond to Webhook6"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
-              "name": "empresa_id",
-              "value": "={{ $json.body.empresa_id}}",
-              "type": "string"
-            },
-            {
-              "id": "e9b5eb72-5abd-4439-a777-7a9bd194dab8",
-              "name": "lote_id",
-              "value": "={{ $json.body.lote_id}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        416,
-        960
-      ],
-      "id": "942f7ba2-e743-4b56-9868-de1cf7ab098a",
-      "name": "EditUltimo_process2"
     },
     {
       "parameters": {
@@ -548,8 +471,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1072,
-        1184
+        2432,
+        80
       ],
       "id": "2f503b0d-8d9e-4312-bdb5-2863c8ca7e0e",
       "name": "Respond to Webhook7"
@@ -561,8 +484,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        880,
-        1184
+        2240,
+        80
       ],
       "id": "c3391758-28eb-4241-bc57-004a64b74ac6",
       "name": "Code in JavaScript"
@@ -602,8 +525,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        1184
+        1760,
+        80
       ],
       "id": "03de38e1-d940-466e-bfa2-f355f0b12ec1",
       "name": "Edit_Aputracao"
@@ -617,8 +540,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        1184
+        2016,
+        80
       ],
       "id": "773908f0-5a08-4e22-90d7-330bd8b8158d",
       "name": "ff_fechar_mes",
@@ -642,8 +565,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        160,
-        1184
+        1520,
+        80
       ],
       "id": "bf6d6fa3-3dfa-417d-a570-262bfaf49a8e",
       "name": "Apura Resultado DRE contabil",
@@ -659,8 +582,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1072,
-        1376
+        2432,
+        272
       ],
       "id": "42e10467-66ce-4b2d-acb3-ff75d675ba93",
       "name": "Respond to Webhook8"
@@ -672,11 +595,68 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        880,
-        1376
+        2240,
+        272
       ],
       "id": "69df3092-132e-4d31-8b7d-45a1df9d032b",
       "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from contab.ff_ultima_apuracao(\n {{ $json.empresa_id }}\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2016,
+        272
+      ],
+      "id": "caa9e245-51c0-4af0-bf0d-42eb6bbbc976",
+      "name": "UltimoResultado",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Apurações",
+        "height": 1196,
+        "width": 1264,
+        "color": 4
+      },
+      "id": "572a3e55-7460-4b66-9962-c9d3aab7e875",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ultima_apuracao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1520,
+        272
+      ],
+      "id": "a7d9dea8-ca92-4503-8649-3f8faf7937b5",
+      "name": "Ultima Apuracao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
@@ -695,43 +675,184 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        1376
+        1760,
+        272
       ],
       "id": "2b3d9588-7a61-4386-8f7c-f288ea4a989e",
-      "name": "Edit_Aputracao1"
+      "name": "Edit_ult_apuracao"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2448,
+        464
+      ],
+      "id": "2e480485-92b1-4e28-b4b0-4ef42f82602a",
+      "name": "Respond to Webhook9"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        464
+      ],
+      "id": "e7c113a9-1f41-46c5-98a0-27de4a3b991b",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from contab.ff_status_apuracao(\n {{ $json.empresa_id }}, {{ $json.ano}} ,  {{ $json.mes }} \n)\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2032,
+        464
+      ],
+      "id": "9f124af7-b8c7-4ed0-8fc0-e7460b21a1dc",
+      "name": "UltimoResultado1",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "90a22337-aa57-47fc-a95e-89524db69172",
+              "name": "ano",
+              "value": "={{ $json.body.ano}}",
+              "type": "string"
+            },
+            {
+              "id": "d688372e-75a5-4e6b-82a3-68c5ba8b37b4",
+              "name": "mes",
+              "value": "={{ $json.body.mes}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        464
+      ],
+      "id": "461965f3-e731-4390-ac25-2d208c879647",
+      "name": "Edit_ult_apuracao1"
     },
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "ultima_apuracao",
+        "path": "status_apuracao",
         "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        160,
-        1376
+        1536,
+        464
       ],
-      "id": "a7d9dea8-ca92-4503-8649-3f8faf7937b5",
-      "name": "Apura Resultado DRE contabil1",
+      "id": "a83cd9f6-0a93-439b-8d1e-2262358277ad",
+      "name": "Saatus Apuracao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "e9b5eb72-5abd-4439-a777-7a9bd194dab8",
+              "name": "lote_id",
+              "value": "={{ $json.body.lote_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        960
+      ],
+      "id": "942f7ba2-e743-4b56-9868-de1cf7ab098a",
+      "name": "Editexclui_lote"
+    },
+    {
+      "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT\n  EXTRACT(YEAR FROM l.data_mov)::int  AS ano,\n  EXTRACT(MONTH FROM l.data_mov)::int AS mes,\n  l.data_mov                           AS data_apuracao,\n  (l.debito - l.credito)::numeric(14,2) AS resultado\nFROM contab.lancamentos l\nJOIN contab.contas c ON c.id = l.conta_id\nWHERE l.empresa_id =  {{ $json.empresa_id }}\n  AND c.codigo = '3.2.1.01'\n  AND l.historico ILIKE 'Fechamento do mês%'\nORDER BY l.data_mov DESC\nLIMIT 1;\n",
+        "query": " \nCALL contab.sp_reset_contabil_desde_data(1);",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         656,
-        1376
+        784
       ],
-      "id": "caa9e245-51c0-4af0-bf0d-42eb6bbbc976",
-      "name": "UltimoResultado",
+      "id": "71220654-f483-4ad0-8b38-2b95465072d5",
+      "name": "sp_reset_contabil_desde_data",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from contab.controle_fechamento  where empresa_id =  {{ $json.empresa_id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        656,
+        592
+      ],
+      "id": "66404e92-79b2-4ac1-a23a-871afd95d276",
+      "name": "controle_fechamento",
       "executeOnce": false,
       "alwaysOutputData": true,
       "credentials": {
@@ -744,7 +865,16 @@
     }
   ],
   "pinData": {
-    "EditUltimo_process2": [
+    "Edit_ult_apuracao1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "ano": "2026",
+          "mes": "1"
+        }
+      }
+    ],
+    "Editexclui_lote": [
       {
         "json": {
           "empresa_id": 1,
@@ -835,18 +965,7 @@
       "main": [
         [
           {
-            "node": "Ultimo_processamento",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Ultimo_processamento": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook3",
+            "node": "controle_fechamento",
             "type": "main",
             "index": 0
           }
@@ -879,18 +998,7 @@
       "main": [
         [
           {
-            "node": "Ultimo_processamento1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Ultimo_processamento1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook5",
+            "node": "sp_reset_contabil_desde_data",
             "type": "main",
             "index": 0
           }
@@ -919,17 +1027,6 @@
         ]
       ]
     },
-    "EditUltimo_process2": {
-      "main": [
-        [
-          {
-            "node": "Ultimo_processamento2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Ultimo_processamento2": {
       "main": [
         [
@@ -945,7 +1042,7 @@
       "main": [
         [
           {
-            "node": "EditUltimo_process2",
+            "node": "Editexclui_lote",
             "type": "main",
             "index": 0
           }
@@ -1018,7 +1115,29 @@
         ]
       ]
     },
-    "Edit_Aputracao1": {
+    "UltimoResultado": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ultima Apuracao": {
+      "main": [
+        [
+          {
+            "node": "Edit_ult_apuracao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_ult_apuracao": {
       "main": [
         [
           {
@@ -1029,22 +1148,77 @@
         ]
       ]
     },
-    "Apura Resultado DRE contabil1": {
+    "Code in JavaScript3": {
       "main": [
         [
           {
-            "node": "Edit_Aputracao1",
+            "node": "Respond to Webhook9",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "UltimoResultado": {
+    "UltimoResultado1": {
       "main": [
         [
           {
-            "node": "Code in JavaScript1",
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_ult_apuracao1": {
+      "main": [
+        [
+          {
+            "node": "UltimoResultado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saatus Apuracao": {
+      "main": [
+        [
+          {
+            "node": "Edit_ult_apuracao1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editexclui_lote": {
+      "main": [
+        [
+          {
+            "node": "Ultimo_processamento2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_reset_contabil_desde_data": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "controle_fechamento": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
             "type": "main",
             "index": 0
           }
@@ -1056,7 +1230,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d1d8ea88-3437-465a-bb8e-b33302fb52f8",
+  "versionId": "4ecaa721-513b-4ae9-8aa8-52e36af5eba9",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

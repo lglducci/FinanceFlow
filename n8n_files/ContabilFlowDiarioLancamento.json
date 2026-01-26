@@ -288,6 +288,16 @@
               "removed": false
             },
             {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
               "id": "outros",
               "displayName": "outros",
               "required": false,
@@ -296,6 +306,16 @@
               "type": "object",
               "canBeUsedToMatch": true,
               "removed": true
+            },
+            {
+              "id": "lote_id",
+              "displayName": "lote_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -2272,7 +2292,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "ca027b13-7934-4daf-9243-557b7f6b9f30",
+  "versionId": "1118e0de-9b82-48d8-b573-166e66ef144d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
