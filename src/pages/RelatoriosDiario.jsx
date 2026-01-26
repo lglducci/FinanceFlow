@@ -76,8 +76,8 @@ const filtrados = dados.filter(item => {
   const f = filtro.toLowerCase();
 
   return (
-    (item.conta_codigo || "").toLowerCase().includes(f) ||
-    (item.conta_nome || "").toLowerCase().includes(f) ||
+    (item.conta_credito || "").toLowerCase().includes(f) ||
+    (item.conta_debito || "").toLowerCase().includes(f) ||
     (item.historico || "").toLowerCase().includes(f) ||
     (item.modelo_codigo || "").toLowerCase().includes(f)
   );
@@ -191,15 +191,7 @@ const filtrados = dados.filter(item => {
                className= { `${btnPadrao} bg-blue-900 hover:bg-blue-700 px-4 py-3 `} 
         >
           Consultar
-        </button>
-
-        <button
-          onClick={() => window.print()}
-          className=  { `${btnPadrao} bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold `}        
-        >
-          🖨️ Imprimir
-        </button>
-
+        </button> 
           <button
             onClick={() => 
                       navigate( "/lancamentocontabilrapido")  
@@ -209,24 +201,15 @@ const filtrados = dados.filter(item => {
                   ⚡ + Lancto Rapido
            </button> 
 
+           
+        <button
+          onClick={() => window.print()}
+          className=  { `${btnPadrao} bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold `}        
+        >
+          🖨️ Imprimir
+        </button>
 
-          {/*<button
-            onClick={() => 
-                      navigate( "/contabil/lancamento-partida-dobrada")  
-                    }
-            className= { `${btnPadrao} bg-blue-800 hover:bg-blue-400 px-4 py-2 `}
-          >
-            + Novo Partida Dobrada
-          </button>
-
-            <button
-            onClick={() => 
-                      navigate( "/lancamento-partida-dobrada-modelo")  
-                    }
-            className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
-          >
-            + Novo Lancto Modelo
-          </button>*/}
+         
            </div>
         </div>
         </div>

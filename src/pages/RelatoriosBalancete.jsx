@@ -12,6 +12,7 @@ export default function RelatoriosBalancete() {
   const [dataFim, setDataFim] = useState(hojeLocal());
   const [loading, setLoading] = useState(false);
   const [dados, setDados] = useState([]);
+  const [mostrarZeradas, setMostrarZeradas] = useState(false);
   const navigate = useNavigate();
 
  const fmt = new Intl.NumberFormat("pt-BR", {
@@ -62,6 +63,17 @@ useEffect(() => {
     }
   }
 
+  function linhaZerada(l) {
+  return (
+    Number(l.saldo_inicial || 0) === 0 &&
+    Number(l.total_debito || 0) === 0 &&
+    Number(l.total_credito || 0) === 0 &&
+    Number(l.saldo_final || 0) === 0  
+  );
+}
+
+
+
   return (
     <div className="p-6">
 
@@ -95,6 +107,16 @@ useEffect(() => {
         >
           Consultar
         </button>
+      
+      
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={!mostrarZeradas}
+            onChange={() => setMostrarZeradas(!mostrarZeradas)}
+          />
+          Ocultar contas sem movimento
+        </label>
 
 
         <button
@@ -124,16 +146,26 @@ useEffect(() => {
             <tr style={{ background: "#002b80", color: "white", height: 40 }}>
               <th className="p-3 text-left">Código</th>
               <th className="p-3 text-left">Conta</th>
+                  <th className="p-3 text-right">Saldo Inicial</th>
               <th className="p-3 text-right">Débito</th>
               <th className="p-3 text-right">Crédito</th>
-              <th className="p-3 text-right">Saldo</th>
+              <th className="p-3 text-right">Saldo Final</th>
             </tr>
           </thead>
           <tbody>
-            {dados.map((l, idx) => (
+           {/*} {dados.map((l, idx) => (*/}
+
+               { dados.filter((l) => mostrarZeradas || !linhaZerada(l)).map((l, idx) => (
               <tr key={idx}   className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
                 <td className="p-2 font-bold font-size: 16px">{l.codigo}</td>
                 <td className="p-2 font-bold font-size: 16px">{l.conta_nome}</td>
+                 <td
+                  className={`p-3 text-right font-bold font-size: 16px ${
+                    l.saldo < 0 ? "text-red-600" : "text-green-700"
+                  }`}
+                >
+                  {fmt.format(l.saldo_inicial)}
+                </td>
                 <td className="p-2 text-right font-bold font-size: 16px">{fmt.format(l.total_debito)}</td>
                 <td className="p-2 text-right font-bold font-size: 16px">{fmt.format(l.total_credito)}</td>
                 <td
@@ -141,7 +173,7 @@ useEffect(() => {
                     l.saldo < 0 ? "text-red-600" : "text-green-700"
                   }`}
                 >
-                  {fmt.format(l.saldo)}
+                  {fmt.format(l.saldo_final)}
                 </td>
               </tr>
             ))}

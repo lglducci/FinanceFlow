@@ -147,7 +147,14 @@ export default function LancamentosContabeis() {
           >
             Filtrar
           </button>
-         
+               <button
+            onClick={() => 
+                      navigate( "/lancamentocontabilrapido")  
+                    }
+                  className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
+                >
+                  ⚡ Novo Lancto Rapido
+                </button>
       
           <button
             onClick={() => 
@@ -157,33 +164,8 @@ export default function LancamentosContabeis() {
           >
             + Impantar Saldo
           </button>
-
-         {/* <button
-            onClick={() => 
-                      navigate( "/contabil/lancamento-partida-dobrada")  
-                    }
-            className= { `${btnPadrao} bg-blue-800 hover:bg-blue-400 px-4 py-2 `}
-          >
-            + Novo Partida Dobrada
-          </button>
-           
-            <button
-            onClick={() => 
-                      navigate( "/lancamento-partida-dobrada-modelo")  
-                    }
-            className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
-          >
-            + Novo Lancto Modelo
-          </button>*/}
-           
-             <button
-            onClick={() => 
-                      navigate( "/lancamentocontabilrapido")  
-                    }
-                  className= { `${btnPadrao} bg-gray-700 hover:bg-gray-500 px-4 py-2 `}
-                >
-                  ⚡ Novo Lancto Rapido
-                </button>
+ 
+         
          </div>
         <label className="flex items-center gap-2 cursor-pointer">
           <input

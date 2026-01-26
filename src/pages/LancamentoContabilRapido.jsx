@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
  
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
-
+ 
 
 export default function LancamentoContabilRapido() {
   const navigate = useNavigate();
@@ -37,7 +37,15 @@ const [creditoConta, setCreditoConta] = useState(null);
 const [debitoTexto, setDebitoTexto] = useState("");
  
 const [creditoTexto, setCreditoTexto] = useState("");
-const [vencimento, setVencimento] = useState(hojeLocal());
+const [vencimento, setVencimento] = useState(hojeMaisDias(1));
+
+const [lembrar, setLembrar] = useState(false);
+ const hoje =  hojeMaisDias(1);
+
+// 🔥 Helper de consistência (alerta, não bloqueia)
+const [helperMsg, setHelperMsg] = useState(null); 
+// helperMsg = null ou { titulo: string, mensagem: string }
+
 
   /* ================== LOAD CONTAS ================== */
   useEffect(() => {
@@ -176,12 +184,15 @@ function montarHistoricoPorNomes(nomeDeb, nomeCred) {
           credito_id: contas.credito_id,
           valor: Number(valor),
           historico,
+          lembrar,
+          vencimento
         }),
       });
 
-      // 🔥 LIMPA SÓ O NECESSÁRIO
-      setValor("");
-      setCreditoId("");
+    setValor("");
+    setCreditoId("");
+    setCreditoTexto("");
+    setCreditoConta(null);
 
     } catch {
       alert("Erro ao salvar.");
@@ -277,6 +288,16 @@ function limparNomeConta(nome) {
   return (nome || "").trim();
 }
 
+useEffect(() => {
+  // só tenta validar quando os IDs existirem
+  const deb = getContaById(debitoId);
+  const cred = getContaById(creditoId);
+
+  const msg = avaliarLancamento(deb, cred);
+  setHelperMsg(msg);
+}, [debitoId, creditoId, contas]);
+
+
 
 function montarHistorico(debitoId, creditoId) {
   const deb = getContaById(debitoId);
@@ -291,9 +312,113 @@ function montarHistorico(debitoId, creditoId) {
 
   return `Movimento em ${nomeDeb} – origem ${nomeCred}`;
 }
+ 
+function avaliarLancamento(deb, cred) {
+  if (!deb || !cred) return null;
+
+  const regraDeb = tipoContaPorCodigo(deb.codigo);
+  const regraCred = tipoContaPorCodigo(cred.codigo);
+
+  if (!regraDeb || !regraCred) return null;
+
+  const d = regraDeb.tipo;
+  const c = regraCred.tipo;
+
+  const debNome = `${deb.codigo} - ${deb.nome}`;
+  const credNome = `${cred.codigo} - ${cred.nome}`;
+
+  // 1️⃣ ATIVO → PASSIVO
+  if (d === "ATIVO" && c === "PASSIVO") {
+    return {
+      titulo: "⚠️ ATIVO → PASSIVO",
+      mensagem:
+        `Você está debitando um ATIVO (${debNome}) e creditando um PASSIVO (${credNome}). ` +
+        `Isso normalmente representa empréstimo ou financiamento. Confira se esta é a intenção.`
+    };
+  }
+
+  // 2️⃣ PASSIVO → ATIVO
+  if (d === "PASSIVO" && c === "ATIVO") {
+    return {
+      titulo: "ℹ️ Pagamento de dívida?",
+      mensagem:
+        `Este lançamento parece pagamento ou baixa de obrigação (${debNome} → ${credNome}). ` +
+        `Se não for quitação de dívida, revise.`
+    };
+  }
+
+  // 3️⃣ DESPESA → DESPESA
+  if (d === "DESPESA" && c === "DESPESA") {
+    return {
+      titulo: "⚠️ Despesa contra despesa",
+      mensagem:
+        `Normalmente indica reclassificação ou ajuste interno de despesas.`
+    };
+  }
+
+  // 4️⃣ RECEITA → RECEITA
+  if (d === "RECEITA" && c === "RECEITA") {
+    return {
+      titulo: "⚠️ Receita contra receita",
+      mensagem:
+        `Este tipo de lançamento é raro e costuma ocorrer apenas em estornos ou ajustes.`
+    };
+  }
+
+  // 5️⃣ RECEITA → ATIVO
+  if (d === "RECEITA" && c === "ATIVO") {
+    return {
+      titulo: "⚠️ Receita debitada",
+      mensagem:
+        `Receitas normalmente aumentam no crédito. ` +
+        `Verifique se este lançamento não deveria ser invertido.`
+    };
+  }
+
+  // 6️⃣ ATIVO → RECEITA
+  if (d === "ATIVO" && c === "RECEITA") {
+    return {
+      titulo: "ℹ️ Entrada de receita",
+      mensagem:
+        `Entrada direta de receita em ativo (caixa/banco). ` +
+        `Caso a venda tenha sido a prazo, cartão ou boleto, avalie se deveria passar por clientes ou contas a receber.`
+    };
+  }
+
+  // 7️⃣ ATIVO → ATIVO
+  if (d === "ATIVO" && c === "ATIVO") {
+    return {
+      titulo: "ℹ️ Transferência interna",
+      mensagem:
+        `Este lançamento parece uma transferência entre contas do ativo (ex: caixa ↔ banco).`
+    };
+  }
+
+  // 8️⃣ PASSIVO → PASSIVO
+  if (d === "PASSIVO" && c === "PASSIVO") {
+    return {
+      titulo: "ℹ️ Reclassificação de dívida",
+      mensagem:
+        `Lançamento entre passivos normalmente indica renegociação ou reclassificação de obrigação.`
+    }; 
+  }
+
+  
+   // 9️⃣ ATIVO → PL
+if (d === "ATIVO" && c === "PL") {
+  return {
+    titulo: "ℹ️ Movimento patrimonial",
+    mensagem:
+      `Entrada no ativo (${debNome}) com origem no Patrimônio Líquido (${credNome}). ` +
+      `Normalmente indica aporte de capital, ajuste de saldo inicial ou correção patrimonial.`
+  };
+}
+
+  return null;
+}
 
 
-  /* ================== UI ================== */
+/* ================== UI ================== */
   return (
     <div className="max-w-2xl mx-auto p-2">
       
@@ -308,6 +433,13 @@ function montarHistorico(debitoId, creditoId) {
   
 
       <div className="bg-white rounded-xl p-6 space-y-4">
+
+        {helperMsg && (
+                    <div className="bg-yellow-50 border border-yellow-300 text-yellow-900 rounded-lg p-3 text-sm">
+                      <div className="font-bold mb-1">{helperMsg.titulo}</div>
+                      <div>{helperMsg.mensagem}</div>
+                    </div>
+                  )}
 
         {/* MODO */}
         <label className="flex items-center gap-2 font-bold text-[#1e40af]">
@@ -410,8 +542,7 @@ function montarHistorico(debitoId, creditoId) {
                     </div>
                   )}
                 </label>
-
-
+ 
 
              <input
                 list="contasDebito"
@@ -579,18 +710,35 @@ function montarHistorico(debitoId, creditoId) {
         /> 
          </div>
 
-          
-        <div className="mb-4">
+
+
+        {/* LEMBRETE */}
+          <div className="flex items-center gap-2 mt-2">
+            <input
+              type="checkbox"
+              id="lembrar"
+              checked={lembrar}
+              onChange={(e) => setLembrar(e.target.checked)}
+            />
+            <label htmlFor="lembrar" className="text-sm font-semibold text-gray-700">
+              Lembrar este lançamento
+            </label>
+          </div>
+
+       {lembrar && (
+            <div className="mb-4">
               <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-              Vencimento
+                Vencimento
               </label>
-        <input
-          type="date"
-          className="input-premium"
-          value={vencimento}
-          onChange={(e) => setVencimento(e.target.value)}
-        /> 
-         </div>
+              <input
+                type="date"
+                className="input-premium"
+                value={vencimento}
+                min={hoje}
+                onChange={(e) => setVencimento(e.target.value)}
+              />
+            </div>
+          )}
 
            
         <button
