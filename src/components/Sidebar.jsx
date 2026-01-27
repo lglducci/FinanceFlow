@@ -123,7 +123,9 @@ function podeVer(menuKey) {
             <SubItem icon={<IconDoc />} label="Apura Resultado"
              onClick={() => navigate("/apuracaoresultado")}
            /> 
-             
+             <SubItem icon={<IconDoc />} label="Lembretes Contábeis"
+             onClick={() => navigate("/lembretecontabil")}
+           /> 
             
          </MenuGroup>
         )}
