@@ -100,6 +100,7 @@ import  RegistroReceitaRapida  from "./pages/RegistroReceitaRapida";
 import LancamentoContabilRapido  from "./pages/LancamentoContabilRapido"
 import DashboardContabil from "./pages/DashboardContabil"
 import ApuracaoResultado from "./pages/ApuracaoResultado"
+import LembretesContabeis from   "./pages/LembretesContabeis"
 
  
  
@@ -265,7 +266,10 @@ export default function App() {
   element={<ApuracaoResultado />}
 />
 
-
+<Route
+  path="/lembretecontabil"
+  element={<LembretesContabeis/>}
+/>
 
 
 </Routes>
