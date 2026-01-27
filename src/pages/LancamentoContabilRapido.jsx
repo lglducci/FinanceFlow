@@ -327,6 +327,13 @@ function avaliarLancamento(deb, cred) {
   const debNome = `${deb.codigo} - ${deb.nome}`;
   const credNome = `${cred.codigo} - ${cred.nome}`;
 
+  function isEstoque(conta) {
+  if (!conta) return false;
+  const codigo = conta.codigo || "";
+  const nome = (conta.nome || "").toLowerCase();
+  return codigo.startsWith("1.2.2") || nome.includes("estoque");
+}
+
   // 1️⃣ ATIVO → PASSIVO
   if (d === "ATIVO" && c === "PASSIVO") {
     return {
@@ -413,6 +420,34 @@ if (d === "ATIVO" && c === "PL") {
       `Normalmente indica aporte de capital, ajuste de saldo inicial ou correção patrimonial.`
   };
 }
+
+// 🔟 CUSTO/DESPESA → ATIVO(ESTOQUE)
+if (
+  (d === "CUSTO" || d === "DESPESA") &&
+  c === "ATIVO" &&
+  isEstoque(creditoConta)
+) {
+  return {
+    titulo: "⚠️ Regra — Estoque não é origem",
+    mensagem:
+      `Você está debitando ${d} (${debNome}) e creditando ESTOQUE (${credNome}). ` +
+      `Esse par só faz sentido com um evento real (venda/consumo/perda/ajuste). ` +
+      `O estoque não é a origem do custo; ele é apenas a contrapartida. ` +
+      `Ajuste o histórico para refletir o evento (ex: "CMV por venda", "consumo", "perda/ajuste de inventário").`
+  }; 
+  
+}
+
+if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === "DESPESA")) {
+  return {
+    titulo: "⚠️ Custo ou despesa no crédito",
+    mensagem:
+      `Você está creditando uma conta de ${c} (${credNome}), o que é incomum. ` +
+      `Custo e despesa normalmente são debitadas, exceto em estornos ou reclassificações. ` +
+      `Verifique se há erro de sinal ou inversão de contas.`
+  };
+}
+
 
   return null;
 }

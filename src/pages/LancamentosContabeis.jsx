@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
-import { useNavigate } from "react-router-dom";
- 
+import { useNavigate } from "react-router-dom"; 
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 export default function LancamentosContabeis() {
@@ -88,7 +87,7 @@ export default function LancamentosContabeis() {
      <div className="p-2">
           <div className="max-w-full mx-auto bg-[#445777] rounded-xl shadow-lg p-2 border-[6px] border-blue-900 mb-2"> 
         
-        <h1 className="text-2xl font-bold mb-6 text-white ">📘   Lançamentos Contábeis - Visão Saldo </h1>
+        <h1 className="text-2xl font-bold mb-6 text-white ">📘  Lembrete de Lancamento Contabeis </h1>
 
          <div className="bg-[#838FA5] rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
  
@@ -199,8 +198,8 @@ export default function LancamentosContabeis() {
               <th className="px-3 py-2 text-left">Codigo Conta</th>
               <th className="px-3 py-2 text-left">Nome da Conta</th>
               <th className="px-3 py-2 text-left">Saldo Inicial</th>
-              <th className="px-3 py-2 text-right">Debito</th>
-              <th className="px-3 py-2 text-right">Credito</th>
+              <th className="px-3 py-2 text-right">Entrada (Débito)</th>
+              <th className="px-3 py-2 text-right">Saida (Crédito)</th>
               <th className="px-3 py-2 text-right">Saldo Final</th>
               <th className="px-3 py-2 text-center">Ações</th>
             </tr>
@@ -220,7 +219,7 @@ export default function LancamentosContabeis() {
   
               <tr
                 key={l.id}
-                className={i % 2 === 0 ? "bg-gray-100" : "bg-gray-300"}
+                className={i % 2 === 0 ? "bg-gray-100" : "bg-blue-200"}
               >
                 
                 <td className="px-3 py-2 font-bold  text-center">{l.mes_ano}</td>

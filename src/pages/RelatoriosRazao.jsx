@@ -197,7 +197,7 @@ function linhaZerada(l) {
   {/* 🔹 LINHA 2 – opções do relatório */}
   <div className="flex flex-wrap gap-6 items-center text-sm">
 
-          {/*  <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
               name="tipoRelatorio"
@@ -205,7 +205,7 @@ function linhaZerada(l) {
               onChange={() => trocarTipo("r")}
             />
             Razão detalhado
-          </label>*/}
+          </label> 
 
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -255,8 +255,9 @@ function linhaZerada(l) {
                  <th className="p-3 text-left">Conta</th>
                  {tipo !== "m" && (<th className="p-3 text-left">Histórico</th>)}
                   <th className="p-3 text-right">Saldo Inicial</th>
-                <th className="p-3 text-right">Débito</th>
-                <th className="p-3 text-right">Crédito</th>
+                {tipo !== "r" && (   <th className="p-3 text-right">Débito</th>)}
+                {tipo !== "r" && ( <th className="p-3 text-right">Crédito</th>)}
+                {tipo === "r" && ( <th className="p-3 text-right">Valor</th>)}
                 <th className="p-3 text-right">Saldo</th>
  
 
@@ -298,16 +299,33 @@ function linhaZerada(l) {
                           >
                             {l.historico}
                           </td>)}
-                    <td   className="p-2 font-bold text-right font-size: 16px">
+                    <td
+                    className={`p-3 text-right font-bold ${
+                      l.saldo_inicial < 0 ? "text-red-600" : "text-green-700"
+                    }`}
+                  >
                     {fmt.format(l.saldo_inicial)}
                   </td>
 
-                  <td   className="p-2 font-bold text-right font-size: 16px">
+                 {tipo !== "r" && (  <td   className="p-2 font-bold text-right font-size: 16px">
                     {fmt.format(l.debito)}
-                  </td>
-                  <td   className="p-2 font-bold text-right font-size: 16px">
+                  </td>)} 
+
+                    {tipo !== "r" && (  <td   className="p-2 font-bold text-right font-size: 16px">
                     {fmt.format(l.credito)}
-                  </td>
+                  </td>)} 
+
+                   
+                    {tipo === "r" && (   <td
+                    className={`p-3 text-right font-bold ${
+                      l.valor < 0 ? "text-red-600" : "text-green-700"
+                    }`}
+                  >
+                    {fmt.format(l.valor)}
+                  </td>)} 
+
+
+
                   <td
                     className={`p-3 text-right font-bold ${
                       l.saldo < 0 ? "text-red-600" : "text-green-700"

@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
-import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 
 export default function RelatoriosDiario() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [empresaId, setEmpresaId] = useState(null);
-  const [dataIni, setDataIni] = useState(hojeLocal());
+  const [dataIni, setDataIni] = useState(hojeMaisDias(-1));
   const [dataFim, setDataFim] = useState(hojeLocal());
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -226,9 +226,9 @@ const filtrados = dados.filter(item => {
               <th className="p-3 text-left">Lançamento</th>
                <th className="p-3 text-left">Data</th>  
               <th className="p-3 text-left">Histórico</th>
-                <th className="p-3 text-left">Conta Débito</th>
+                <th className="p-3 text-left">  Entrada (Débito)</th>
               {/*<th className="p-3 text-right">Débito</th>*/}
-               <th className="p-3 text-left">Conta Crédito</th>
+               <th className="p-3 text-left">Saida (Crédito)</th>
               <th className="p-3 text-right">Valor </th>
               <th className="p-3 text-center">Lote</th>
                <th className="p-3 text-center">Ação</th>
@@ -236,7 +236,7 @@ const filtrados = dados.filter(item => {
           </thead>
           <tbody>
             {filtrados.map((l, i) => (
-              <tr key={i}   className={i % 2 === 0 ? "bg-100" : "bg-[#C1C7D2]"} >
+              <tr key={i}   className={i % 2 === 0 ? "bg-gray-100" : "bg-blue-200"} >
                  {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
                  <td   className="p-2 font-bold text-left font-size: 16px">{l.id}</td>
                  <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data)}</td>   
