@@ -95,22 +95,40 @@ export default function Login({ onLogin }) {
   <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
 
     {/* LADO ESQUERDO – FUNDO / MARCA */}
-    <div className="hidden md:flex bg-[#061f4aff] text-white items-center justify-center p-12">
-      <div className="max-w-md">
-        <h1 className="text-5xl font-bold mb-4">Contábil-Flow</h1>
-        <p className="text-lg opacity-90">
-          Controle Contábil simples, seguro e profissional.
-        </p>
-      </div>
+    <div className="hidden md:flex bg-[#0F172A] text-white items-center justify-center p-12">
+   
+    <div className="w-2/3 bg-[#0F172A] flex items-center justify-center h-screen">
+  <div className="flex flex-col items-center justify-center w-full max-w-[800px] px-10">
+   <img
+  src="/img/logo-form-gray.png"
+  alt="Logo Contábil Flow"
+  className="w-full max-w-[600px] mb-10"
+/>
+
+   
+    <p className="text-2xl text-white text-center leading-relaxed">
+      Controle Contábil simples, seguro <br /> e aa profissional.
+    </p>
+  </div>
+</div>
+
     </div>
 
     {/* LADO DIREITO – FORMULÁRIO */}
     <div className="flex items-center justify-center bg-[#C1C7D2] px-6">
-      <div className="w-full max-w-md bg-[#838FA5] rounded-2xl shadow-xl p-8">
+     <div className="w-full max-w-md bg-[#838FA5] rounded-2xl shadow-xl p-8">
 
-        <h1 className="text-3xl font-bold text-center mb-2 text-gray-900 text-bg[#445777]">
-          Contábil-Flow
-        </h1>
+  {/* ✅ LOGO */}
+  <img
+    src="/img/logo-form-gray.png"
+    alt="Logo Contábil Flow"
+    className="w-40 mx-auto mb-4"
+  />
+
+  <h1 className="text-3xl font-bold text-center mb-2 text-gray-900">
+    Contábil-Flow
+  </h1>
+
 
         <form onSubmit={handleSubmit} className="space-y-4">
 
