@@ -1872,6 +1872,13 @@
           "valor": 0
         }
       }
+    ],
+    "Editcontas_contabeis_lancaveis": [
+      {
+        "json": {
+          "empresa_id": 1
+        }
+      }
     ]
   },
   "connections": {
@@ -2292,7 +2299,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1118e0de-9b82-48d8-b573-166e66ef144d",
+  "versionId": "c1948fde-89d7-4721-a79f-157357a99a42",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
-        "height": 1580,
+        "height": 1820,
         "width": 1328,
         "color": 4
       },
@@ -1526,6 +1526,103 @@
       "id": "2efbcb41-749a-4edb-bbb2-26c61b72e3f3",
       "name": "movimento_contabil",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2336,
+        1648
+      ],
+      "id": "5b608d78-5752-425d-8cec-fe91cfcd3ac1",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "razao_por_conta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1744,
+        1648
+      ],
+      "id": "52e11f01-88e0-4766-aa0a-7f429acb8c9d",
+      "name": "RazãoPorConta",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * from  contab.ff_relatorio_razao_por_conta(\n  {{ $json.empresa_id }},\n   {{ $json.conta_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}'\n \n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2144,
+        1648
+      ],
+      "id": "49c1b007-1c5d-4f6e-9941-803097720ac9",
+      "name": "ff_relatorio_razao_por_conta",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "1604e86a-56f9-4afa-8125-8e35d289822b",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        1648
+      ],
+      "id": "e4c52341-944e-4bce-8e56-90dc23916e94",
+      "name": "Edit_RazãoPorCont"
     }
   ],
   "pinData": {
@@ -2099,13 +2196,46 @@
           }
         ]
       ]
+    },
+    "RazãoPorConta": {
+      "main": [
+        [
+          {
+            "node": "Edit_RazãoPorCont",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_relatorio_razao_por_conta": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_RazãoPorCont": {
+      "main": [
+        [
+          {
+            "node": "ff_relatorio_razao_por_conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0ddd9e5d-59fb-4ba7-aa5b-c1ab4326b09a",
+  "versionId": "24e10726-40f7-4fbb-b95d-70ae3c310ea8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
