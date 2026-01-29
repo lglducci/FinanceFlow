@@ -171,7 +171,7 @@ export default function ContasContabeis() {
               <tr
                 key={c.id}
                 style={{
-                  background: idx % 2 === 0 ? "#f7f7f7" : "#ededed",
+                  background: idx % 2 === 0 ? "#f7f7f7" : "#adbbc9",
                   height: "38px",
                   fontWeight: "bold",
                 }}
