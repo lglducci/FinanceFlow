@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
 import { useSearchParams } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+
 
 export default function RedefinirSenha() {
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ export default function RedefinirSenha() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
   const [searchParams] = useSearchParams();
-   const token = searchParams.get("token");
+  // const token = searchParams.get("token");
 
 
   async function salvarNovaSenha(e) {
@@ -39,11 +41,30 @@ export default function RedefinirSenha() {
       
 
 
-      await fetch(buildWebhookUrl("redefinir_senha"), {
+     {/*} await fetch(buildWebhookUrl("redefinir_senha"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ senha, token :token }),
-      });
+      });*/}
+
+      const { error: sessionError } = await supabase.auth.getSession();
+
+          if (sessionError) {
+            setErro("Sessão de redefinição inválida ou expirada.");
+            setLoading(false);
+            return;
+          }
+
+      const { error } = await supabase.auth.updateUser({
+              password: senha
+            });
+
+            if (error) {
+              setErro("Erro ao redefinir senha.");
+              setLoading(false);
+              return;
+            }
+
      
       setMsg("Senha alterada com sucesso. Redirecionando...");
 

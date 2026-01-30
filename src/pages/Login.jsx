@@ -1,6 +1,7 @@
  import { useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
  
  
@@ -24,6 +25,19 @@ export default function Login({ onLogin }) {
     }
 
     try {
+
+         const { data, error } =
+            await supabase.auth.signInWithPassword({
+              email,
+              password: senha
+            });
+
+          if (error) {
+            setErro("E-mail ou senha inválidos.");
+            return;
+          }
+
+          
       const url = buildWebhookUrl("login");
 
       const resp = await fetch(url, {
@@ -32,19 +46,19 @@ export default function Login({ onLogin }) {
         body: JSON.stringify({ email, senha }),
       });
 
-      const data = await resp.json();
+      const datalogin = await resp.json();
 
       if (!resp.ok || data.erro) {
-        setErro(data.erro || "Login inválido.");
+        setErro(datalogin.erro || "Login inválido.");
         return;
       }
 
       // 🔑 VERIFICA SE O BACKEND EXIGE TROCA DE SENHA
       const precisaTrocarSenha =
-        data.trocar_senha === true ||
-        data.redefinir_senha === true ||
-        data.alterar_senha === true ||
-        data.force_reset_password === true;
+        datalogin.trocar_senha === true ||
+        datalogin.redefinir_senha === true ||
+        datalogin.alterar_senha === true ||
+        datalogin.force_reset_password === true;
 
       if (precisaTrocarSenha) {
         // NÃO grava token
@@ -56,10 +70,10 @@ export default function Login({ onLogin }) {
       }
 
       // ✅ LOGIN NORMAL
-      localStorage.setItem("ff_token", data.token || "dummy");
-      localStorage.setItem("id_usuario", data.usuario_id);
-      localStorage.setItem("id_empresa", data.empresa_id);
-       localStorage.setItem("empresa_id", data.empresa_id);
+      localStorage.setItem("ff_token", datalogin.token || "dummy");
+      localStorage.setItem("id_usuario", datalogin.usuario_id);
+      localStorage.setItem("id_empresa", datalogin.empresa_id);
+       localStorage.setItem("empresa_id", datalogin.empresa_id);
       
 
       onLogin();
@@ -76,13 +90,25 @@ export default function Login({ onLogin }) {
     }
 
     try {
-      const resp = await fetch(buildWebhookUrl("esqueci_senha"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+    //  const resp = await fetch(buildWebhookUrl("esqueci_senha"), {
+     //   method: "POST",
+     //   headers: { "Content-Type": "application/json" },
+     //   body: JSON.stringify({ email }),
+    //  });
 
-      await resp.json();
+     // await resp.json();
+
+     const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/redefinir-senha`
+        });
+
+        if (error) {
+          alert("Erro ao enviar e-mail de recuperação.");
+          return;
+        }
+
+alert("Enviamos um link de redefinição para seu e-mail.");
+
 
       alert(
         "Se este e-mail estiver cadastrado, você receberá instruções para redefinir sua senha."
