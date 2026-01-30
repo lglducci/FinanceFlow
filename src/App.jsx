@@ -1,4 +1,6 @@
-  import { BrowserRouter, Routes, Route } from "react-router-dom";
+ import { Routes, Route } from "react-router-dom";
+
+ 
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Login from "./pages/Login";
@@ -100,7 +102,10 @@ import  RegistroReceitaRapida  from "./pages/RegistroReceitaRapida";
 import LancamentoContabilRapido  from "./pages/LancamentoContabilRapido"
 import DashboardContabil from "./pages/DashboardContabil"
 import ApuracaoResultado from "./pages/ApuracaoResultado"
-import LembretesContabeis from   "./pages/LembretesContabeis"
+import LembretesContabeis from   "./pages/LembretesContabeis" 
+ import EditarEmpresa from   "./pages/EditarEmpresa"
+ import Index from "./pages/Index";
+
 
  
  
@@ -110,15 +115,17 @@ export default function App() {
   const token = localStorage.getItem("ff_token");
 
   
-  if (!token) {
+ if (!token) {
   return (
     <Routes>
-      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login onLogin={() => window.location.reload()} />} />
-      <Route path="*" element={<Login onLogin={() => window.location.reload()} />} />
+      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="*" element={<Index />} />
     </Routes>
   );
 }
+
  
   
 
@@ -271,6 +278,12 @@ export default function App() {
   element={<LembretesContabeis/>}
 />
 
+<Route
+  path="/editar-empresa"
+  element={<EditarEmpresa/>}
+/>
+
+ 
 
 </Routes>
 
