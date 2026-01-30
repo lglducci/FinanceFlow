@@ -126,7 +126,7 @@ alert("Enviamos um link de redefinição para seu e-mail.");
     <div className="w-2/3 bg-[#0F172A] flex items-center justify-center h-screen">
   <div className="flex flex-col items-center justify-center w-full max-w-[800px] px-10">
    <img
-  src="/public/img/logo-form-gray.png"
+  src="/public/img/logo.png"
   alt="Logo Contábil Flow"
   className="w-full max-w-[600px] mb-10"
 />
@@ -146,7 +146,7 @@ alert("Enviamos um link de redefinição para seu e-mail.");
 
   {/* ✅ LOGO */}
   <img
-    src="/public/img/logo-form-gray.png"
+    src="/public/img/logo.png"
     alt="Logo Contábil Flow"
     className="w-40 mx-auto mb-4"
   />
@@ -218,4 +218,5 @@ alert("Enviamos um link de redefinição para seu e-mail.");
 );
 
 }
+
 
