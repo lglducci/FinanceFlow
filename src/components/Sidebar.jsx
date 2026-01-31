@@ -160,14 +160,19 @@ function podeVer(menuKey) {
  
          {podeVer("diario_contabil") && ( <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
  
-         {podeVer("visao_geral") && (  <MenuGroup
+          {podeVer("diario_contabil") && (  <MenuGroup
            icon={<IconBuilding />}
            label="Configurações"
            open={open === "Configurações"}
            onClick={() => toggle("Configurações")}
          > 
-          <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />
-          <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> 
+           {podeVer("visao_geral") && (  <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />)}
+           {podeVer("visao_geral") && ( <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> )}
+            <SubItem icon={<IconMap />} label="Minha Empresa" onClick={() => navigate("/editar-empresa")} /> 
+
+
+ 
+
            </MenuGroup> )}
        </nav>
  
