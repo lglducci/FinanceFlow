@@ -142,13 +142,13 @@ alert("Enviamos um link de redefinição para seu e-mail.");
 
     {/* LADO DIREITO – FORMULÁRIO */}
     <div className="flex items-center justify-center bg-[#C1C7D2] px-6">
-     <div className="w-full max-w-md bg-[#838FA5] rounded-2xl shadow-xl p-8">
+     <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
 
   {/* ✅ LOGO */}
   <img
-    src="/img/logo.png"
+    src="/img/logo1.png"
     alt="Logo Contábil Flow"
-    className="w-40 mx-auto mb-4"
+    className="w-40 mx-auto mb-1"
   />
 
   <h1 className="text-3xl font-bold text-center mb-2 text-gray-900">
@@ -162,7 +162,7 @@ alert("Enviamos um link de redefinição para seu e-mail.");
             <label className="text-sm font-semibold">E-mail</label>
             <input
               type="email"
-              className="w-full mt-1 px-3 py-2 rounded-lg border"
+                className="input-premium"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -173,7 +173,7 @@ alert("Enviamos um link de redefinição para seu e-mail.");
             <div className="relative">
               <input
                 type={mostrarSenha ? "text" : "password"}
-                className="w-full mt-1 px-3 py-2 rounded-lg border pr-10"
+                  className="input-premium"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
               />

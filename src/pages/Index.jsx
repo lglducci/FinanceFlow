@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+ import { useNavigate } from "react-router-dom";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -8,16 +8,28 @@ export default function Index() {
 
       {/* HEADER */}
       <header className="flex items-center justify-between px-10 py-6">
-        <div className="text-2xl font-bold">
+        <div
+          className="text-2xl font-bold cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           Contábil Flow
         </div>
 
-        <button
-          onClick={() => navigate("/login")}
-          className="text-sm font-semibold hover:underline"
-        >
-          Entrar
-        </button>
+        <div className="flex gap-6 items-center">
+          <button
+            onClick={() => navigate("/planos")}
+            className="text-sm font-semibold hover:underline"
+          >
+            Planos
+          </button>
+
+          <button
+            onClick={() => navigate("/login")}
+            className="text-sm font-semibold hover:underline"
+          >
+            Entrar
+          </button>
+        </div>
       </header>
 
       {/* HERO */}
@@ -41,6 +53,13 @@ export default function Index() {
               className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-3 rounded-lg font-semibold"
             >
               Começar teste grátis por 7 dias
+            </button>
+
+            <button
+              onClick={() => navigate("/planos")}
+              className="border border-gray-400 px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#0F172A]"
+            >
+              Ver planos
             </button>
 
             <button
