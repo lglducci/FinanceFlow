@@ -8,6 +8,9 @@ export default function Index() {
 
       {/* HEADER */}
       <header className="flex items-center justify-between px-10 py-6">
+
+        
+  
         <div
           className="text-2xl font-bold cursor-pointer"
           onClick={() => navigate("/")}
@@ -35,6 +38,12 @@ export default function Index() {
       {/* HERO */}
       <main className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-4xl text-center">
+           <img
+            src="/img/logoi.png"
+            alt="Logo Contábil Flow"
+            className="w-full max-w-[600px] mb-10"
+          />
+
 
           <h1 className="text-5xl font-bold mb-6 leading-tight">
             Controle contábil simples, <br />
