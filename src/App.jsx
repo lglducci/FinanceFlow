@@ -105,7 +105,8 @@ import ApuracaoResultado from "./pages/ApuracaoResultado"
 import LembretesContabeis from   "./pages/LembretesContabeis" 
  import EditarEmpresa from   "./pages/EditarEmpresa"
  import Index from "./pages/Index";
-
+ import Planos from "./pages/Planos";
+ import Cadastro from "./pages/Cadastro";
 
  
  
@@ -121,6 +122,8 @@ export default function App() {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login onLogin={() => window.location.reload()} />} />
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="/planos" element={<Planos />} />
+       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="*" element={<Index />} />
     </Routes>
   );
@@ -283,7 +286,17 @@ export default function App() {
   element={<EditarEmpresa/>}
 />
 
+<Route
+  path="/planos"
+  element={<Planos/>}
+/>
  
+ <Route
+  path="/cadastro"
+  element={<Cadastro/>}
+/>
+ 
+  
 
 </Routes>
 
