@@ -1,4 +1,4 @@
-  import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
  import { useNavigate } from "react-router-dom";
  import { buildWebhookUrl } from "../config/globals";
  
@@ -160,7 +160,7 @@ function podeVer(menuKey) {
  
          {podeVer("diario_contabil") && ( <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
  
-         <MenuGroup
+          {podeVer("diario_contabil") && (  <MenuGroup
            icon={<IconBuilding />}
            label="Configurações"
            open={open === "Configurações"}
@@ -173,7 +173,7 @@ function podeVer(menuKey) {
 
  
 
-           </MenuGroup> 
+           </MenuGroup> )}
        </nav>
  
        <div className="px-4 py-3 border 12px  border-blue-800/40  text-blue-600 font-bold ">
