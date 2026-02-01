@@ -1,10 +1,14 @@
  import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
+import { buildWebhookUrl } from "../config/globals";
+ import { useNavigate } from "react-router-dom";
+
 export default function EscolhaPlano() {
   const [planos, setPlanos] = useState([]);
   const [periodo, setPeriodo] = useState("Mensal");
-  const [podeEscolher, setPodeEscolher] = useState(false); // depois será ligado pelo trial
+ const [podeEscolher, setPodeEscolher] = useState(true);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,7 +46,7 @@ export default function EscolhaPlano() {
       }
 
       // 3️⃣ depois você liga isso via trial
-      setPodeEscolher(false);
+    //  setPodeEscolher(false);
 
       setLoading(false);
     }
@@ -54,8 +58,61 @@ export default function EscolhaPlano() {
     (plano) => plano.nome === periodo
   );
 
+
+  async function fecharAssinatura(plano) {
+  const empresa_id =
+    localStorage.getItem("empresa_id") ||
+    localStorage.getItem("id_empresa");
+
+  if (!empresa_id) {
+    alert("Empresa não encontrada");
+    return;
+  }
+
+  const r = await fetch(buildWebhookUrl("fechar_assinatura"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      empresa_id,
+      plano_id: plano.id,
+       forma_pagamento: formaPagamento,
+      periodo: periodo
+    })
+  });
+
+  const res = await r.json();
+
+const retorno = res?.data;
+
+if (retorno?.status !== "OK") {
+  alert(retorno?.mensagem || "Não foi possível prosseguir");
+  return;
+}
+
+alert("Assinatura criada com sucesso");
+
+}
+ const [formaPagamento, setFormaPagamento] = useState("");
+
   return (
     <div className="min-h-screen bg-gray-100 px-6 py-12">
+
+            {/* LINK MINHAS ASSINATURAS */}
+   <div className="absolute top-28 right-12">
+      <button
+        onClick={() => window.location.href = "/minhas-assinaturas"}
+          
+        className="text-base font-bold text-blue-900 hover:underline"
+      >
+        Minhas Assinaturas
+      </button>
+
+   
+       
+    </div>
+
+
+
       <h1 className="text-2xl font-bold text-center mb-2">
         Escolha seu plano
       </h1>
@@ -119,9 +176,9 @@ export default function EscolhaPlano() {
                 <li>✔ Relatórios completos</li>
               </ul>
 
-              <button
+             {/*} <button
                 disabled={!podeEscolher}
-                className={`w-full py-2 rounded-xl font-semibold transition ${
+                className={`w-full py-2  rounded-xl font-semibold transition ${
                   podeEscolher
                     ? "bg-white text-[#0F172A] hover:opacity-90"
                     : "bg-gray-400 text-gray-700 cursor-not-allowed"
@@ -130,9 +187,37 @@ export default function EscolhaPlano() {
                 {podeEscolher
                   ? "Escolher este plano"
                   : "Disponível após o teste"}
+              </button>*/}
+
+                        {/* DROPDOWN FORMA DE PAGAMENTO */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-100">
+                  Forma de pagamento
+                </label>
+
+                <select
+                  className="w-full border rounded-lg px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#0F172A]"
+                  value={formaPagamento}
+                  onChange={(e) => setFormaPagamento(e.target.value)}
+                >
+                  <option value="">Selecione…</option>
+                  <option value="PIX">PIX</option>
+                  <option value="MP_CARTAO">Cartão / Mercado Pago</option>
+                </select>
+              </div>
+
+
+                <button
+                onClick={() => fecharAssinatura(plano)}
+                className="w-full py-2  mt-4 rounded-xl font-semibold bg-gray-300 text-[#0F172A] hover:opacity-90"
+              >
+                Fechar assinatura
               </button>
+
             </div>
           ))}
+
+         
         </div>
       )}
     </div>
