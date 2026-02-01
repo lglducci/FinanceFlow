@@ -1,5 +1,9 @@
  import { Routes, Route } from "react-router-dom";
 
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "./supabaseClient";
+
  
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -108,12 +112,16 @@ import LembretesContabeis from   "./pages/LembretesContabeis"
  import Planos from "./pages/Planos";
  import Cadastro from "./pages/Cadastro";
 
- 
- 
+ import EscolhaPlano from "./pages/EscolhaPlano";
+ import { buildWebhookUrl } from "./config/globals";
+
 
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
+const navigate = useNavigate();
+const [assinaturaAtiva, setAssinaturaAtiva] = useState(true); // FORÇADO PRA TESTE
+const [bloquearSistema, setBloquearSistema] = useState(null);
 
   
  if (!token) {
@@ -124,12 +132,58 @@ export default function App() {
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       <Route path="/planos" element={<Planos />} />
        <Route path="/cadastro" element={<Cadastro />} />
-      <Route path="*" element={<Index />} />
+      <Route path="*" element={<Index />} /> 
     </Routes>
   );
 }
 
+ useEffect(() => {
+  async function checkAssinatura() {
+    const empresa_id =
+      localStorage.getItem("empresa_id") ||
+      localStorage.getItem("id_empresa");
+
+    if (!empresa_id) return;
+
+    try {
+      const r = await fetch(buildWebhookUrl("check_assinatura"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa_id })
+      });
+
+      const res = await r.json();
+      console.log("🔍 RESPOSTA DO WEBHOOK:", res);
+
+      const bloquear = res.bloquear;
+
+      if (bloquear) {
+        setBloquearSistema(bloquear);
+      }
+
+    } catch (err) {
+      console.error("❌ Erro ao verificar assinatura:", err);
+    }
+  }
+
+  checkAssinatura();
+}, []);
+
+
+
  
+ if (bloquearSistema === true) { 
+  return (
+ 
+    <Routes>
+      
+      <Route path="/escolhaplano" element={<EscolhaPlano />} />
+      <Route path="*" element={<EscolhaPlano />} />
+    </Routes>
+  );
+}
+  
+
   
 
   return (
@@ -148,6 +202,8 @@ export default function App() {
  
 
 <Routes>
+
+  
   {/* Visão Geral */}
   <Route path="/" element={<DashboardContabil />} />
   <Route path="/dashboard" element={<Visaogeral />} />
@@ -295,8 +351,13 @@ export default function App() {
   path="/cadastro"
   element={<Cadastro/>}
 />
+
+ <Route path="/escolhaplano" element={<EscolhaPlano />} />
+
  
-  
+
+ 
+   
 
 </Routes>
 
