@@ -1,4 +1,4 @@
-   import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
  import { useNavigate } from "react-router-dom";
  import { buildWebhookUrl } from "../config/globals";
  
@@ -120,9 +120,9 @@ function podeVer(menuKey) {
              onClick={() => navigate("/relatorios/diario")}
            /> 
             
-            <SubItem icon={<IconDoc />} label="Apura Resultado"
+           {podeVer("visao_geral")  && (   <SubItem icon={<IconDoc />} label="Apura Resultado"
              onClick={() => navigate("/apuracaoresultado")}
-           /> 
+           /> )}
              <SubItem icon={<IconDoc />} label="Lembretes Contábeis"
              onClick={() => navigate("/lembretecontabil")}
            /> 
@@ -169,7 +169,7 @@ function podeVer(menuKey) {
            {podeVer("visao_geral") && (  <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />)}
            {podeVer("visao_geral") && ( <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> )}
             <SubItem icon={<IconMap />} label="Minha Empresa" onClick={() => navigate("/editar-empresa")} /> 
-
+               <SubItem icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
 
  
 
