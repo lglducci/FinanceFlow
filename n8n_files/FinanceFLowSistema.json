@@ -36,10 +36,6 @@
             {
               "keyName": "email",
               "keyValue": "={{$json.email}}"
-            },
-            {
-              "keyName": "senha_hash",
-              "keyValue": "={{ $json.senha_hash }}"
             }
           ]
         }
@@ -635,7 +631,7 @@
     {
       "parameters": {
         "content": "##Recuperaca de senha\n**  Fluxo de recuperacao de senhas , envio de senha para email",
-        "height": 1040,
+        "height": 1264,
         "width": 2480,
         "color": 3
       },
@@ -689,15 +685,15 @@
     {
       "parameters": {
         "content": "##Lembrete!!\n**Lembre de lanaçamento no Sistema (tela ) e envido de email e Zap.",
-        "height": 1200,
-        "width": 2480,
+        "height": 864,
+        "width": 1520,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -2816,
-        224
+        -2960,
+        176
       ],
       "id": "3669497f-e989-4cf9-878f-dce570bdcc15",
       "name": "Sticky Note2"
@@ -712,7 +708,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1808,
+        -1888,
         352
       ],
       "id": "287ff10b-a925-4dc6-8edf-06fef4be657d",
@@ -747,7 +743,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2336,
+        -2416,
         352
       ],
       "id": "7a490440-1a2a-4a2c-906f-9358fb6d4040",
@@ -763,7 +759,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2608,
+        -2688,
         352
       ],
       "id": "f51b289f-9577-406f-a7a5-d63d0d403d4e",
@@ -779,8 +775,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1744,
-        624
+        -1808,
+        544
       ],
       "id": "6846ae6f-aadd-4b05-88de-7acb668c6f29",
       "name": "Respond to Webhook2"
@@ -808,8 +804,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2320,
-        624
+        -2384,
+        544
       ],
       "id": "9ed703b2-0426-4462-9f46-cdad87f64dc6",
       "name": "EditPerfil_usario2"
@@ -823,7 +819,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2112,
+        -2192,
         352
       ],
       "id": "c96ed348-cbcc-4c9a-8606-dfb861080847",
@@ -845,8 +841,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2080,
-        624
+        -2144,
+        544
       ],
       "id": "3b72ced2-97ee-4fc1-9da5-3c07ad1d7a7f",
       "name": "AtualizaLembrete",
@@ -867,34 +863,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2608,
-        624
+        -2672,
+        544
       ],
       "id": "28e9aa67-a7a9-4bdc-9c47-024961cbb0ae",
       "name": "BaixarLembrete",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " WITH partidas AS (\n  SELECT\n    MIN(l.id) AS id,\n    l.lote_id,\n    l.historico,\n    MAX(CASE WHEN l.debito > 0 THEN l.conta_id END)   AS conta_debito_id,\n    SUM(COALESCE(l.debito, 0))                        AS debito,\n    MAX(CASE WHEN l.credito > 0 THEN l.conta_id END)  AS conta_credito_id,\n    SUM(COALESCE(l.credito, 0))                       AS credito\n  FROM contab.lancamentos l\n  WHERE l.empresa_id = {{ $json.empresa_id }}\n    AND l.data_mov::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  GROUP BY l.lote_id, l.historico\n)\n\nSELECT\n  p.lote_id,\n  p.historico,\n\n  -- Contas\n  cd.codigo || ' || ' || cd.nome AS conta_debito,\n  p.debito,\n\n  cc.codigo || ' || ' || cc.nome AS conta_credito,\n  p.credito valor,\n\n  -- Dados do lembrete\n  lb.id               AS lembrete_id,\n  lb.descricao        AS lembrete_descricao ,\n  lb.data_vencimento,\n  lb.enviar_email,\n  lb.enviar_whatsapp,\n  lb.status\n\nFROM partidas p\nLEFT JOIN contab.contas cd ON cd.id = p.conta_debito_id\nLEFT JOIN contab.contas cc ON cc.id = p.conta_credito_id\nLEFT JOIN contab.lembretes lb ON lb.lote_id = p.lote_id\nWHERE lb.empresa_id = {{ $json.empresa_id }}\n  AND lb.status = 'PENDENTE'\nORDER BY lb.data_vencimento DESC, p.lote_id;\n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -320,
-        640
-      ],
-      "id": "0f7a3f42-4b34-4c35-a770-d3515e730947",
-      "name": "LembretesCtb1",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
-          "name": "FinanceFlow"
-        }
-      }
     },
     {
       "parameters": {
@@ -905,8 +879,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2160,
-        928
+        -2640,
+        752
       ],
       "id": "3cc188ab-8447-498c-b0c0-1232139fbdbe",
       "name": "LembretesCtb2",
@@ -927,8 +901,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -1952,
-        928
+        -2432,
+        752
       ],
       "id": "f8d81522-8de4-4445-bd21-24c4b7da90ca",
       "name": "Execute a SQL query",
@@ -950,8 +924,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -1728,
-        928
+        -2208,
+        752
       ],
       "id": "db9f7ce8-7e6e-4474-bddd-861e3fe2ee62",
       "name": "Send email1",
@@ -1395,7 +1369,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "5ab1a876-d589-46d9-bcac-4be0ef16c8cf",
+  "versionId": "439530b0-9599-4b5d-93a1-f0dc1ceb04f3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

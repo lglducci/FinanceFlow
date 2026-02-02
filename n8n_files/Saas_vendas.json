@@ -1,0 +1,511 @@
+{
+  "name": "Saas_vendas",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        -496
+      ],
+      "id": "e3421000-4af8-493f-bbf5-646c0235d762",
+      "name": "Respond to Webhook16"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "check_assinatura",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -496
+      ],
+      "id": "d4da4e28-fb77-4970-8fcb-8006ff12d8b6",
+      "name": "ChecaAssinatura",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        -496
+      ],
+      "id": "fc5e7c19-a107-42d1-922a-c31aca4fc4a8",
+      "name": "Editproc_check_acesso"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from   saas_vendas.proc_check_assinatura ({{ $json.empresa_id }})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        -496
+      ],
+      "id": "b40f7b9c-bbb4-4e79-bbb2-0dc89457b1d2",
+      "name": "proc_check_assinatura",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "##DadosAssinatura\n**  Verifica assinatura e cria assinaturas",
+        "height": 640,
+        "width": 1584,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -560
+      ],
+      "id": "e0c4394f-7235-47de-bdd2-288c36235c3e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        544,
+        -304
+      ],
+      "id": "068926bc-8193-46a5-aae1-3773534b0ce5",
+      "name": "Respond to Webhook17"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fechar_assinatura",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -304
+      ],
+      "id": "426239db-2108-4a19-84f9-ba9aae89a98c",
+      "name": "FechaAssinatura",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "41a8ad23-3579-4074-9f21-c6047b9e130a",
+              "name": "plano_id",
+              "value": "={{ $json.body.plano_id}}",
+              "type": "string"
+            },
+            {
+              "id": "07184290-a79d-40a1-b7be-d50234a8dcde",
+              "name": "forma_pagamento",
+              "value": "={{ $json.body.forma_pagamento}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        -304
+      ],
+      "id": "07733395-c08f-4763-865c-f3d2c9b5ea34",
+      "name": "Edit_FechaAssinatura"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from    saas_vendas.proc_fechar_assinatura ({{ $json.empresa_id }}, {{ $json.plano_id }},  '{{ $json.forma_pagamento }}'  )",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        -304
+      ],
+      "id": "add84aad-a8ff-45b5-bd05-450886d22c89",
+      "name": "proc_fechar_assinatura",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        -112
+      ],
+      "id": "8a046c92-e082-4455-baa8-7d35f59b3df4",
+      "name": "Respond to Webhook18"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from   saas_vendas.proc_check_assinatura ({{ $json.empresa_id }})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        -112
+      ],
+      "id": "8a103fa6-adc1-458e-95be-04bf8b7d1998",
+      "name": "proc_fechar_assinatura1",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "historico_assinatura",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -112
+      ],
+      "id": "9d34d69f-9137-49dc-9c75-0cef113220c7",
+      "name": "minhas assinaturas",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        -112
+      ],
+      "id": "fc3555c0-e3f7-4581-b7d2-d1af413ee950",
+      "name": "Edit_historico_assinatura"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        -304
+      ],
+      "id": "12701cab-222c-46eb-9f99-5fba8ab69ef6",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        192,
+        128
+      ],
+      "id": "7f222707-b1bc-49c3-8ad1-46e78d4605ca",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "consulta_empresas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        128
+      ],
+      "id": "66d757cb-e5eb-4c82-bb9b-d840ef534cf7",
+      "name": "ConsultaEmpresa",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -752,
+        -32
+      ],
+      "id": "9c558153-4433-4ed2-b139-11760e2efc61",
+      "name": "EditEmpresas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from    public.empresas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -48,
+        128
+      ],
+      "id": "36264be0-6283-40a0-81a7-385a4acf993b",
+      "name": "Empresas",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Edit_historico_assinatura": [
+      {
+        "json": {
+          "empresa_id": 1
+        }
+      }
+    ]
+  },
+  "connections": {
+    "ChecaAssinatura": {
+      "main": [
+        [
+          {
+            "node": "Editproc_check_acesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editproc_check_acesso": {
+      "main": [
+        [
+          {
+            "node": "proc_check_assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proc_check_assinatura": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook16",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FechaAssinatura": {
+      "main": [
+        [
+          {
+            "node": "Edit_FechaAssinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_FechaAssinatura": {
+      "main": [
+        [
+          {
+            "node": "proc_fechar_assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proc_fechar_assinatura": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proc_fechar_assinatura1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "minhas assinaturas": {
+      "main": [
+        [
+          {
+            "node": "Edit_historico_assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_historico_assinatura": {
+      "main": [
+        [
+          {
+            "node": "proc_fechar_assinatura1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook17",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConsultaEmpresa": {
+      "main": [
+        [
+          {
+            "node": "Empresas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditEmpresas": {
+      "main": [
+        []
+      ]
+    },
+    "Empresas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "116f8e8d-cb4a-4ed4-bbed-51d9a0417362",
+  "meta": {
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "Lqs7i7aN2PWxCpLG",
+  "tags": []
+}

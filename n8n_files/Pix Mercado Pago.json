@@ -1,0 +1,543 @@
+{
+  "name": "Pix Mercado Pago",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "approved",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "2d74e843-126b-4877-9927-a49775791a21"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Aprovado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "00200122-5752-47c2-b571-8e270aab83f3",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "pending",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pendente"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "bd96ecde-4b9a-4d59-99e7-b38992c8c46d",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "rejected",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Rejeitado"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -272,
+        144
+      ],
+      "id": "528d6153-bf16-4649-9844-af0f9ffef163",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4ed3cf60-f355-420c-bd51-a9702c2ca8af",
+              "name": "public_Key",
+              "value": "APP_USR-369ae771-bb74-4b4a-8403-eedf26168610",
+              "type": "string"
+            },
+            {
+              "id": "0d690fec-4b00-4e32-9139-a08613f1feea",
+              "name": "access_token",
+              "value": "APP_USR-2760228741562305-020112-1272a67c2d6bb31a3fdc0cb52c335add-3170200881",
+              "type": "string"
+            },
+            {
+              "id": "7096c8a6-86dc-40ed-8a4f-c923b6d328b8",
+              "name": "preco",
+              "value": "1.20",
+              "type": "string"
+            },
+            {
+              "id": "f54fdb6d-6a82-4880-a7de-488b7b3c9d2a",
+              "name": "external_reference",
+              "value": "=CLIENTE{{ Math.floor(Math.random() * 10000) + 1 }}",
+              "type": "string"
+            },
+            {
+              "id": "e8f040ed-27d4-475e-936a-342ec94fa21b",
+              "name": "description",
+              "value": "Curso de Ingles",
+              "type": "string"
+            },
+            {
+              "id": "4802cd53-b8da-45f7-8936-e391e1a99c41",
+              "name": "email_cliente",
+              "value": "lglducci@hotmail.com",
+              "type": "string"
+            },
+            {
+              "id": "997c1ae6-d834-4cf0-9175-412188f7ba75",
+              "name": "notification_url",
+              "value": "-SEU WEBHOOK AQUI-",
+              "type": "string"
+            },
+            {
+              "id": "66c0761c-9aec-4133-9f7d-f84aea6055bc",
+              "name": "cpf",
+              "value": "12931382825",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -656,
+        160
+      ],
+      "id": "9a917785-cdc9-4284-a58e-e702d00a9b58",
+      "name": "Credenciais1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "recebe_mercado_pago",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -848,
+        160
+      ],
+      "id": "186fdcb9-d882-47ec-9c76-5fb20064e1b0",
+      "name": "Webhook1",
+      "webhookId": "920852d3-159b-4f69-8aee-22b4ed977f47",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mercadopago.com/v1/payments/{{ $('Webhook1').item.json.query.id || $('Webhook1').item.json.query['data.id'] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        160
+      ],
+      "id": "a9a59f23-984b-4bb4-b98b-27a3b5a87df6",
+      "name": "HTTP Request2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5ca2013-0b0e-4c78-ae7b-6749c5801f33",
+              "name": "pix_url",
+              "value": "={{ $json.point_of_interaction.transaction_data.qr_code }}",
+              "type": "string"
+            },
+            {
+              "id": "5a1ac43e-3672-47d3-aba9-e3527cd2588a",
+              "name": "pix_base64",
+              "value": "={{ $json.point_of_interaction.transaction_data.qr_code_base64 }}",
+              "type": "string"
+            },
+            {
+              "id": "3cb127f5-1e7d-4034-afcf-220696f5d59f",
+              "name": "id_transacao",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        416
+      ],
+      "id": "377a23bb-1bfd-4ffe-bf1a-8349da7a4ebf",
+      "name": "Separar Pix"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mercadopago.com/checkout/preferences",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer   {{ $json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"external_reference\": \"CLIENTE_001\",\n  \"notification_url\": \"https://webhook-homolog.lglducci.com.br/webhook/recebe_mercado_pago\",\n  \"payer\": {\n    \"email\": \"cliente@email.com\"\n  },\n  \"items\": [\n    {\n      \"title\": \"Curso de Inglês\",\n      \"quantity\": 1,\n      \"unit_price\":  {{ $json.preco }}\n    }\n  ],\n  \"payment_methods\": {\n    \"excluded_payment_methods\": [],\n    \"excluded_payment_types\": [],\n    \"installments\": 12\n  },\n  \"auto_return\": \"approved\",\n  \"back_urls\": {\n    \"success\": \"https://seusite.com/pagamento/sucesso\",\n    \"failure\": \"https://seusite.com/pagamento/erro\",\n    \"pending\": \"https://seusite.com/pagamento/pendente\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        416
+      ],
+      "id": "384f7dc5-8f6d-4118-ad39-bd4c0e2df07b",
+      "name": "API Mercado Pago"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4ed3cf60-f355-420c-bd51-a9702c2ca8af",
+              "name": "public_Key",
+              "value": "APP_USR-369ae771-bb74-4b4a-8403-eedf26168610",
+              "type": "string"
+            },
+            {
+              "id": "0d690fec-4b00-4e32-9139-a08613f1feea",
+              "name": "access_token",
+              "value": "APP_USR-2760228741562305-020112-1272a67c2d6bb31a3fdc0cb52c335add-3170200881",
+              "type": "string"
+            },
+            {
+              "id": "7096c8a6-86dc-40ed-8a4f-c923b6d328b8",
+              "name": "preco",
+              "value": "100",
+              "type": "string"
+            },
+            {
+              "id": "f54fdb6d-6a82-4880-a7de-488b7b3c9d2a",
+              "name": "external_reference",
+              "value": "=CLIENTE{{ Math.floor(Math.random() * 10000) + 1 }}",
+              "type": "string"
+            },
+            {
+              "id": "e8f040ed-27d4-475e-936a-342ec94fa21b",
+              "name": "description",
+              "value": "Curso de Ingles",
+              "type": "string"
+            },
+            {
+              "id": "4802cd53-b8da-45f7-8936-e391e1a99c41",
+              "name": "email_cliente",
+              "value": "lglducci@hotmail.com",
+              "type": "string"
+            },
+            {
+              "id": "997c1ae6-d834-4cf0-9175-412188f7ba75",
+              "name": "notification_url",
+              "value": "=https://webhook-homolog.lglducci.com.br/webhook/recebe_mercado_pago",
+              "type": "string"
+            },
+            {
+              "id": "66c0761c-9aec-4133-9f7d-f84aea6055bc",
+              "name": "cpf",
+              "value": "12931382825",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -672,
+        416
+      ],
+      "id": "a9d48803-433a-42c9-a1e4-6fdde4456ef1",
+      "name": "Credenciais"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "pix_base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        416
+      ],
+      "id": "7616e739-0b55-4492-93f3-e98a9a181544",
+      "name": "QRCode para Arquivo"
+    },
+    {
+      "parameters": {
+        "content": "Configurar Mercado Pago",
+        "height": 208,
+        "width": 1408
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        368
+      ],
+      "id": "fdee5fcf-8ba9-4694-b7d4-1b26397fb7b6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mercadopago.com/v1/payments",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer APP_USR-2760228741562305-020112-1272a67c2d6bb31a3fdc0cb52c335add-3170200881"
+            },
+            {
+              "name": "X-Idempotency-Key",
+              "value": "TESTE_REAL_001"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"transaction_amount\": 5,\n  \"description\": \"Teste PIX Produção\",\n  \"payment_method_id\": \"pix\",\n  \"external_reference\": \"TESTE_REAL_001\",\n  \"notification_url\": \"https://webhook-homolog.lglducci.com.br/webhook/recebe_mercado_pago\",\n  \"payer\": {\n    \"email\": \"lglducci@hotmail.com\",\n    \"identification\": {\n      \"type\": \"CPF\",\n      \"number\": \"12931382825\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -464,
+        608
+      ],
+      "id": "a85a8d8a-1ed0-4f08-8ae3-2132c5d7e65a",
+      "name": "API Mercado Pago1"
+    }
+  ],
+  "pinData": {
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "evo-youtube-n8n.3sbind.easypanel.host",
+            "user-agent": "MercadoPago WebHook v1.0 payment",
+            "content-length": "188",
+            "accept": "application/json",
+            "accept-encoding": "gzip",
+            "content-type": "application/json",
+            "referer": "https://mercadopago.com.ar",
+            "traceparent": "00-0000000000000000cba5b2d0ff4fabe6-8fd49e8efee8d53d-00",
+            "x-b3-sampled": "0",
+            "x-b3-spanid": "8fd49e8efee8d53d",
+            "x-b3-traceid": "0000000000000000cba5b2d0ff4fabe6",
+            "x-forwarded-for": "18.206.34.84",
+            "x-forwarded-host": "evo-youtube-n8n.3sbind.easypanel.host",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "c1031eb3b963",
+            "x-real-ip": "18.206.34.84",
+            "x-request-id": "7f3cea34-8a8a-42fc-97cd-cd189aaf91a9",
+            "x-rest-pool-name": "pool_unknown",
+            "x-signature": "ts=1760645466,v1=3a533ad650c37d836a57339f9b60ccb470f88b55862c5f7bf57247331c720a1a",
+            "x-socket-timeout": "25000",
+            "x-trace-digest-60": "gunGwp2CHa7JpZte+JrZnoL5/1LbxWaUqf5IlOjk45ajy3j/0AXuZHN235dWPyEYFJYxqoLZCISXajMMY22IgL1RFhj9MPW44YHsK8/z1jMpt63hpCFbGJ0nEFgo1dZF"
+          },
+          "params": {},
+          "query": {
+            "data.id": "129641609807",
+            "type": "payment"
+          },
+          "body": {
+            "action": "payment.updated",
+            "api_version": "v1",
+            "data": {
+              "id": "129641609807"
+            },
+            "date_created": "2025-10-16T23:26:05Z",
+            "id": 125600757744,
+            "live_mode": true,
+            "type": "payment",
+            "user_id": "392406490"
+          },
+          "webhookUrl": "https://evo-youtube-n8n.3sbind.easypanel.host/webhook/920852d3-159b-4f69-8aee-22b4ed977f47",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Credenciais": [
+      {
+        "json": {
+          "public_Key": "APP_USR-369ae771-bb74-4b4a-8403-eedf26168610",
+          "access_token": "APP_USR-2760228741562305-020112-1272a67c2d6bb31a3fdc0cb52c335add-3170200881",
+          "preco": "100",
+          "external_reference": "CLIENTE4812",
+          "description": "Curso de Ingles",
+          "email_cliente": "lglducci@hotmail.com",
+          "notification_url": "https://webhook-homolog.lglducci.com.br/webhook/recebe_mercado_pago",
+          "cpf": "12931382825"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Credenciais1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Credenciais1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar Pix": {
+      "main": [
+        [
+          {
+            "node": "QRCode para Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Mercado Pago": {
+      "main": [
+        [
+          {
+            "node": "Separar Pix",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Credenciais": {
+      "main": [
+        [
+          {
+            "node": "API Mercado Pago1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QRCode para Arquivo": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2c143ed0-30fb-4ad4-a804-25a1af6bbc11",
+  "meta": {
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "TFuq9BTZtgIZ1q2U",
+  "tags": []
+}
