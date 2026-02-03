@@ -169,7 +169,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        128,
+        144,
         -304
       ],
       "id": "add84aad-a8ff-45b5-bd05-450886d22c89",
@@ -196,28 +196,6 @@
       ],
       "id": "8a046c92-e082-4455-baa8-7d35f59b3df4",
       "name": "Respond to Webhook18"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "select * from   saas_vendas.proc_check_assinatura ({{ $json.empresa_id }})",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        128,
-        -112
-      ],
-      "id": "8a103fa6-adc1-458e-95be-04bf8b7d1998",
-      "name": "proc_fechar_assinatura1",
-      "credentials": {
-        "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
-          "name": "FinanceFlow"
-        }
-      },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -282,8 +260,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        192,
-        128
+        -1408,
+        -544
       ],
       "id": "7f222707-b1bc-49c3-8ad1-46e78d4605ca",
       "name": "Respond to Webhook"
@@ -298,11 +276,189 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -288,
-        128
+        -1888,
+        -544
       ],
       "id": "66d757cb-e5eb-4c82-bb9b-d840ef534cf7",
       "name": "ConsultaEmpresa",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from    public.empresas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1648,
+        -544
+      ],
+      "id": "36264be0-6283-40a0-81a7-385a4acf993b",
+      "name": "Empresas",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from    saas_vendas.assinaturas as a inner join saas_vendas.planos as p on p.id =a.plano_id  where empresa_id = {{ $json.empresa_id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        -112
+      ],
+      "id": "8a103fa6-adc1-458e-95be-04bf8b7d1998",
+      "name": "Historico_Assinaturas",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1200,
+        -352
+      ],
+      "id": "3e827189-cbee-483b-bf70-69a2f97c9f91",
+      "name": "Respond to Webhook19"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "491bc54b-c92d-48a2-a262-b34c9f6e5210",
+              "name": "status",
+              "value": "={{ $json.body.status}}",
+              "type": "string"
+            },
+            {
+              "id": "ce052aca-bb7b-4ecf-9858-5d86f049c6dc",
+              "name": "forma",
+              "value": "={{ $json.body.forma}}",
+              "type": "string"
+            },
+            {
+              "id": "0a7caf4f-0177-4448-ad64-61e26cb66c9d",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "640b9d03-5211-44fa-b882-f48947273071",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1664,
+        -352
+      ],
+      "id": "1c85e28a-7b43-4fae-bbeb-42358d148b13",
+      "name": "Edit_historico_assinatura1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "consulta_assinaturas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1872,
+        -352
+      ],
+      "id": "0b43fe7f-8cbb-4112-8695-09698a13b293",
+      "name": "AssinaturaAdmin",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1200,
+        -192
+      ],
+      "id": "aec0b13c-1410-45d3-8061-650b8fab0df7",
+      "name": "Respond to Webhook20"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  saas_vendas.consulta_assinaturas (\n {{ $json.empresa_id }} ,\n '{{ $json.status }}',\n '{{ $json.forma }}',\n   '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}'\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1424,
+        -352
+      ],
+      "id": "46949f95-3039-4e0c-8504-a04405685ed2",
+      "name": "AssinaturasAdmin",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "consulta_cobrancas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1872,
+        -192
+      ],
+      "id": "5473c435-609f-453a-a641-b463cc7b12a6",
+      "name": "CobrançaAdmin",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
@@ -314,6 +470,30 @@
               "name": "empresa_id",
               "value": "={{ $json.body.empresa_id}}",
               "type": "string"
+            },
+            {
+              "id": "491bc54b-c92d-48a2-a262-b34c9f6e5210",
+              "name": "status",
+              "value": "={{ $json.body.status}}",
+              "type": "string"
+            },
+            {
+              "id": "ce052aca-bb7b-4ecf-9858-5d86f049c6dc",
+              "name": "forma",
+              "value": "={{ $json.body.forma}}",
+              "type": "string"
+            },
+            {
+              "id": "0a7caf4f-0177-4448-ad64-61e26cb66c9d",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "640b9d03-5211-44fa-b882-f48947273071",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
             }
           ]
         },
@@ -322,32 +502,397 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -752,
-        -32
+        -1664,
+        -192
       ],
-      "id": "9c558153-4433-4ed2-b139-11760e2efc61",
-      "name": "EditEmpresas"
+      "id": "b069aeb9-6a31-4ddb-8f1d-3b2c008ddfd9",
+      "name": "Edit_Cobranca"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select * from    public.empresas",
+        "query": "select c.id, c.competencia, c.valor, c.data_vencimento, a.status, c.status status_cobranca, p.nome, e.nome as empresa_nome, e.tipo, forma_pagamento,descricao, valor_mensal   from  saas_vendas.cobrancas AS c  \n  inner join public.empresas as e on e.id = c.empresa_id \n  inner join  saas_vendas.assinaturas as a \n  on e.id = a.empresa_id AND\n     a.id = c.assinatura_id \n\n inner join  saas_vendas.planos as p\n  on p.id = a.plano_id  \n   ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -48,
-        128
+        -1424,
+        -192
       ],
-      "id": "36264be0-6283-40a0-81a7-385a4acf993b",
-      "name": "Empresas",
+      "id": "db1cf776-73d2-4324-9ada-989929d1d3af",
+      "name": "Cobranca",
       "credentials": {
         "postgres": {
           "id": "XLdUjmOBeD6MkxJ4",
           "name": "FinanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "##Administracao SAAS_VENDAS\n** Assinaturas,  cobranças e pagamentos",
+        "height": 672,
+        "width": 1584,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        -576
+      ],
+      "id": "29eeda4a-fbd4-4019-b0db-93cc748be276",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1184,
+        -32
+      ],
+      "id": "2502e019-1586-4122-b28c-070dc3a03586",
+      "name": "Respond to Webhook21"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pagamentos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1856,
+        -32
+      ],
+      "id": "dc97423f-fea1-4e57-b343-6215afb2df4c",
+      "name": "Pagamentos",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f3078e1c-88ef-46e0-8681-76c60898ac50",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "ce052aca-bb7b-4ecf-9858-5d86f049c6dc",
+              "name": "meio_pagamento",
+              "value": "={{ $json.body.meio_pagamento}}",
+              "type": "string"
+            },
+            {
+              "id": "0a7caf4f-0177-4448-ad64-61e26cb66c9d",
+              "name": "data_pagamento",
+              "value": "={{ $json.body.data_pagamento}}",
+              "type": "string"
+            },
+            {
+              "id": "518a0ad0-1dac-4527-a902-ef66e756c8e3",
+              "name": "status",
+              "value": "={{ $json.body.status}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1648,
+        -32
+      ],
+      "id": "0ee39cd1-a001-44a7-8d90-637019649800",
+      "name": "Edit_pagamentos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT *\nFROM saas_vendas.pagamentos p\nINNER JOIN public.empresas e\n  ON e.id = p.empresa_id\nWHERE\n  (\n    '{{ $json.empresa_id }}' = ''\n    OR p.empresa_id = {{ $json.empresa_id }}\n  )\n\n  AND (\n    '{{ $json.meio_pagamento }}' = ''\n    OR p.meio_pagamento = '{{ $json.meio_pagamento }}'\n  )\n\n  AND (\n  '{{ $json.data_pagamento }}' = ''\n  OR p.data_pagamento::date <= '{{ $json.data_pagamento }}'::date\n)  AND (\n    '{{ $json.status}}' = ''\n    OR p.status_gateway= '{{ $json.status}}'\n  )          ;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1408,
+        -32
+      ],
+      "id": "1555cb4e-1c85-43c9-8694-7c1e56bd4c00",
+      "name": "Sqlpagamentos",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "##Administracao SAAS_VENDAS\n** DashBoard\n",
+        "height": 672,
+        "width": 1584,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        240
+      ],
+      "id": "e3c7b82a-6cef-475f-98d9-d7519f833c84",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1312,
+        304
+      ],
+      "id": "dc0f36af-d89f-42c0-945e-e88a4e85adee",
+      "name": "Respond to Webhook22"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dashbord_card",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1776,
+        304
+      ],
+      "id": "9ea3a091-d431-4c7a-b7d9-688fd7e0ff2a",
+      "name": "DashBoard",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * FROM saas_vendas.dashboard_cards   ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1536,
+        304
+      ],
+      "id": "2655bf58-f98e-4516-a44f-e039bc2359c9",
+      "name": "DashBoarCarsSql",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1312,
+        512
+      ],
+      "id": "7cc59ace-97e1-4d1f-9456-44df7a499c6d",
+      "name": "Respond to Webhook23"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1296,
+        720
+      ],
+      "id": "d70eba1e-82a4-40be-b0a7-8dbf8772f284",
+      "name": "Respond to Webhook24"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * FROM saas_vendas.dashboard_alertas;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1520,
+        720
+      ],
+      "id": "41d0dff1-0b1b-4e84-bcdc-be48db2d4a3d",
+      "name": "DashBoardVencendo",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dashboard_vencendo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1792,
+        720
+      ],
+      "id": "50adb47b-a84e-48e4-b60a-c3e4423195a3",
+      "name": "DashVecendo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dashboard_graficos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1808,
+        512
+      ],
+      "id": "fc07ca94-dd6c-428b-bf81-fd4ff3478ce5",
+      "name": "DashGraficos",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n  (SELECT json_agg(t) FROM saas_vendas.dashboard_grafico_faturamento_mensal t)      AS faturamento_mensal,\n  (SELECT json_agg(t) FROM saas_vendas.dashboard_grafico_assinaturas_mes t)          AS assinaturas_mes,\n  (SELECT json_agg(t) FROM saas_vendas.dashboard_grafico_cobrancas_status t)         AS cobrancas_status,\n  (SELECT json_agg(t) FROM saas_vendas.dashboard_grafico_inadimplencia_mes t)        AS inadimplencia_mes;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1536,
+        512
+      ],
+      "id": "5fc660ce-fd16-4fd1-baf3-2175ac82af8a",
+      "name": "DashBoarGrafico",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "##Administracao SAAS_VENDAS\n** DashBoard\n",
+        "height": 672,
+        "width": 1584,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        224
+      ],
+      "id": "c8d4b07c-d1e7-4202-b438-829d2c6776f5",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        192,
+        432
+      ],
+      "id": "467d86d2-62a0-4409-ba95-63e5437ad6d4",
+      "name": "Respond to Webhook25"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "alertas_pendentes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        432
+      ],
+      "id": "813af8a0-2b9b-417c-8f72-ba2a12c4b339",
+      "name": "Alerta_pendente",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT * FROM saas_vendas.dashboard_alertas_pendentes;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -32,
+        432
+      ],
+      "id": "0d5e08d7-de2d-4252-bbe1-a45f612f2607",
+      "name": "SELECT * FROM saas_vendas.dashboard_alertas_pendentes",
+      "credentials": {
+        "postgres": {
+          "id": "XLdUjmOBeD6MkxJ4",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -355,6 +900,38 @@
       {
         "json": {
           "empresa_id": 1
+        }
+      }
+    ],
+    "Edit_historico_assinatura1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "status": null,
+          "forma": null,
+          "data_inicio": "20260101",
+          "data_fim": "20260208"
+        }
+      }
+    ],
+    "Edit_Cobranca": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "status": null,
+          "forma": null,
+          "data_inicio": "20260101",
+          "data_fim": "20260208"
+        }
+      }
+    ],
+    "Edit_pagamentos": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "meio_pagamento": "",
+          "data_pagamento": "20260202",
+          "status": ""
         }
       }
     ]
@@ -426,17 +1003,6 @@
         ]
       ]
     },
-    "proc_fechar_assinatura1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook18",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "minhas assinaturas": {
       "main": [
         [
@@ -452,7 +1018,7 @@
       "main": [
         [
           {
-            "node": "proc_fechar_assinatura1",
+            "node": "Historico_Assinaturas",
             "type": "main",
             "index": 0
           }
@@ -481,16 +1047,209 @@
         ]
       ]
     },
-    "EditEmpresas": {
-      "main": [
-        []
-      ]
-    },
     "Empresas": {
       "main": [
         [
           {
             "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Historico_Assinaturas": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook18",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_historico_assinatura1": {
+      "main": [
+        [
+          {
+            "node": "AssinaturasAdmin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AssinaturaAdmin": {
+      "main": [
+        [
+          {
+            "node": "Edit_historico_assinatura1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AssinaturasAdmin": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CobrançaAdmin": {
+      "main": [
+        [
+          {
+            "node": "Edit_Cobranca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_Cobranca": {
+      "main": [
+        [
+          {
+            "node": "Cobranca",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cobranca": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook20",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pagamentos": {
+      "main": [
+        [
+          {
+            "node": "Edit_pagamentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_pagamentos": {
+      "main": [
+        [
+          {
+            "node": "Sqlpagamentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sqlpagamentos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook21",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DashBoard": {
+      "main": [
+        [
+          {
+            "node": "DashBoarCarsSql",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DashBoarCarsSql": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DashBoardVencendo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DashVecendo": {
+      "main": [
+        [
+          {
+            "node": "DashBoardVencendo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DashGraficos": {
+      "main": [
+        [
+          {
+            "node": "DashBoarGrafico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DashBoarGrafico": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook23",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alerta_pendente": {
+      "main": [
+        [
+          {
+            "node": "SELECT * FROM saas_vendas.dashboard_alertas_pendentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SELECT * FROM saas_vendas.dashboard_alertas_pendentes": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook25",
             "type": "main",
             "index": 0
           }
@@ -502,7 +1261,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "116f8e8d-cb4a-4ed4-bbed-51d9a0417362",
+  "versionId": "5bbda4fb-ce8c-410d-80de-c91a454ae2b4",
   "meta": {
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
