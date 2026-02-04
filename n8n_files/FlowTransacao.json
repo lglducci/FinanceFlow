@@ -136,7 +136,7 @@
       "executeOnce": false,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -160,7 +160,7 @@
       "executeOnce": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },

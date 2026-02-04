@@ -101,7 +101,7 @@
       "name": "fn_balancete",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -197,7 +197,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -282,7 +282,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -338,7 +338,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -417,7 +417,7 @@
       "name": "ff_dre_periodo",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -551,7 +551,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT  CONTA_CODIGO CODIGO , CONTA_NOME NOME , SALDO_INICIAL, DEBITO  total_debito  , CREDITO total_credito ,  SALDO   \n  from  contab.ff_razao_sintetico_mensal(\n   {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n '{{ $json.filtro }}'\n);\n",
+        "query": "SELECT  CONTA_CODIGO CODIGO , CONTA_NOME NOME , SALDO_INICIAL, valor,  SALDO   \n  from  contab.ff_razao_sintetico_mensal(\n   {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}',\n '{{ $json.filtro }}'\n);\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -565,7 +565,7 @@
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -655,7 +655,7 @@
       "name": "Balancete1",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -727,7 +727,7 @@
       "name": "BalancoNivel",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -832,7 +832,7 @@
       "name": "sp_kpi_gerencial_mensal",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -953,7 +953,7 @@
       "name": "sp_fluxo_caixa_detalhado",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -1042,7 +1042,7 @@
       "name": "gera_fluxo_caixa_mensal",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -1138,7 +1138,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -1235,7 +1235,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -1258,7 +1258,7 @@
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -1331,7 +1331,7 @@
       "name": "sp_fluxo_caixa_consolidado",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -1386,7 +1386,7 @@
       "name": "ff_historico_apuracao",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -1463,7 +1463,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -1577,7 +1577,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },
@@ -1664,6 +1664,16 @@
           "data_ini": "20260125",
           "data_fim": "20260127",
           "filtro": ""
+        }
+      }
+    ],
+    "EditSaldoConta": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260101",
+          "data_fim": "20270101",
+          "filtro": null
         }
       }
     ]
@@ -2235,7 +2245,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "24e10726-40f7-4fbb-b95d-70ae3c310ea8",
+  "versionId": "fbfae25d-5e11-4596-aa40-a25698f57131",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"

@@ -50,7 +50,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -385,7 +385,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }

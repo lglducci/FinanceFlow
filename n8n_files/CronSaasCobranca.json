@@ -1,0 +1,191 @@
+{
+  "name": "CronSaasCobranca",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT saas_vendas.proc_gerar_cobrancas_mensais();",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1681da39-c700-466f-ac46-ed35ec0e333f",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lglducci@lglducciautomacoesia.me",
+        "toEmail": "=lglducci@hotmail.com",
+        "subject": "Recuperação de senha – Finance Flow",
+        "html": "= <div style=\"font-family: Arial, sans-serif; font-size:14px\">\n  <p>Olá Luis Gustavo Landucci ,</p>\n\n  <p>📌 Este é um lembrete de vencimento de cobrança do Contábil-Flow:</p>\n\n  <table style=\"border-collapse: collapse; margin: 16px 0;\">\n    \n    <tr>\n      <td style=\"padding: 4px 8px;\"><strong>Valor:</strong></td>\n      <td style=\"padding: 4px 8px;\">R$ 10,00</td>\n    </tr>\n  </table>\n\n  <p style=\"margin-bottom: 16px;\">\n    Caso já tenha realizado esse pagamento, desconsidere este aviso.<br/>\n    Se não, programe-se para evitar atrasos ou encargos.\n  </p>\n\n  <p style=\"margin-bottom: 16px;\">\n    Em caso de dúvidas ou divergências, entre em contato com sua contabilidade.\n  </p>\n\n  <hr/>\n  <small>Finance-Flow • Sistema de Gestão Contábil</small>\n</div>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        0
+      ],
+      "id": "15b30a03-4cf8-43dc-a23c-bfe74095c7d1",
+      "name": "Send email1",
+      "webhookId": "8b95b66e-abfc-43fd-9e1b-bed12c8da574",
+      "credentials": {
+        "smtp": {
+          "id": "9MsZAm8XS8R1UHqM",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lglducci@lglducciautomacoesia.me",
+        "toEmail": "=lglducci@hotmail.com",
+        "subject": "Recuperação de senha – Finance Flow",
+        "html": "= <div style=\"font-family: Arial, sans-serif; font-size:14px\">\n  <p>Olá Luis Gustavo Landucci ,</p>\n\n  <p>📌 Este é um lembrete de vencimento de cobrança do Contábil-Flow:</p>\n\n  <table style=\"border-collapse: collapse; margin: 16px 0;\">\n    \n    <tr>\n      <td style=\"padding: 4px 8px;\"><strong>Valor:</strong></td>\n      <td style=\"padding: 4px 8px;\">R$ 10,00</td>\n    </tr>\n  </table>\n\n  <p style=\"margin-bottom: 16px;\">\n    Caso já tenha realizado esse pagamento, desconsidere este aviso.<br/>\n    Se não, programe-se para evitar atrasos ou encargos.\n  </p>\n\n  <p style=\"margin-bottom: 16px;\">\n    Em caso de dúvidas ou divergências, entre em contato com sua contabilidade.\n  </p>\n\n  <hr/>\n  <small>Finance-Flow • Sistema de Gestão Contábil</small>\n</div>\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        208
+      ],
+      "id": "6ad548f4-7f94-4811-a5b9-e9d6834f8c17",
+      "name": "Send email",
+      "webhookId": "8b95b66e-abfc-43fd-9e1b-bed12c8da574",
+      "credentials": {
+        "smtp": {
+          "id": "9MsZAm8XS8R1UHqM",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a39d8a54-31ac-4d91-8553-e6be331e62e9",
+      "name": "CronCobranca"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        208
+      ],
+      "id": "41563f1e-5ba3-46bf-af96-2001a277b4ca",
+      "name": "CronInadinplante"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT saas_vendas.proc_verificar_inadimplencia();\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        224,
+        208
+      ],
+      "id": "9d48807d-4daf-4743-bc00-c57c9b8f2250",
+      "name": "proc_verificar_inadimplencia",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CronCobranca": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CronInadinplante": {
+      "main": [
+        [
+          {
+            "node": "proc_verificar_inadimplencia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proc_verificar_inadimplencia": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1a1acbd5-8982-4b05-9fea-a18817c75967",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "oWVrIXt6sSQxEbJj",
+  "tags": []
+}

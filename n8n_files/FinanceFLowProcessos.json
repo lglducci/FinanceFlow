@@ -84,7 +84,7 @@
       "name": "ff_pagar_contas",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -190,7 +190,7 @@
       "name": "ff_receber_contas",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -305,7 +305,7 @@
       "name": "ff_registrar_pagamento_faturas",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -415,7 +415,7 @@
       "name": "ff_estornar_transacao",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -497,7 +497,7 @@
       "name": "ff_titulos_vencidos",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -629,7 +629,7 @@
       "name": "ff_lancamento_partida_dobrada",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       },

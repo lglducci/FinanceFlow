@@ -72,7 +72,7 @@
       "name": "DadosEmpresa",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -248,7 +248,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -389,7 +389,7 @@
       "name": "RecuperaSenha",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -410,7 +410,7 @@
       "name": "RetornaToken",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -593,7 +593,7 @@
       "name": "Execute a SQL query1",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -677,7 +677,7 @@
       "name": "ff_redefinir_senha",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -827,7 +827,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -848,7 +848,7 @@
       "name": "AtualizaLembrete",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -887,7 +887,7 @@
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
@@ -908,7 +908,7 @@
       "name": "Execute a SQL query",
       "credentials": {
         "postgres": {
-          "id": "XLdUjmOBeD6MkxJ4",
+          "id": "2CNjdfsJzrRLFqHu",
           "name": "FinanceFlow"
         }
       }
