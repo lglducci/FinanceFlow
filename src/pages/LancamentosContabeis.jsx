@@ -198,10 +198,13 @@ export default function LancamentosContabeis() {
               <th className="px-3 py-2 text-left">Codigo Conta</th>
               <th className="px-3 py-2 text-left">Nome da Conta</th>
               <th className="px-3 py-2 text-left">Saldo Inicial</th>
-              <th className="px-3 py-2 text-right">Entrada (Débito)</th>
-              <th className="px-3 py-2 text-right">Saida (Crédito)</th>
+          { /*   <th className="px-3 py-2 text-right">Entrada (Débito)</th>*/}
+              <th className="px-3 py-2 text-right"> Valor </th>
+
               <th className="px-3 py-2 text-right">Saldo Final</th>
-              <th className="px-3 py-2 text-center">Ações</th>
+
+            {/*}   <th className="px-3 py-2 text-right">Analítica</th>
+              <th className="px-3 py-2 text-center">Ações</th>*/}
             </tr>
           </thead>    
 
@@ -233,27 +236,38 @@ export default function LancamentosContabeis() {
                   })}
                 </td>
                
-                 <td className="px-3 py-2 text-right font-bold">
+               {/*}  <td className="px-3 py-2 text-right font-bold">
                   {Number(l.debito).toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL"
                   })}
-                </td>
+                </td>*/}
 
-                 <td className="px-3 py-2 text-right font-bold">
-                  {Number(l.credito).toLocaleString("pt-BR", {
+                 <td className={`p-2 text-right font-bold ${
+                  Number(l.valor) >= 0
+                    ? "text-green-700"
+                    : "text-red-600"
+                }`}
+              >
+                  
+                  {Number(l.valor).toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL"
                   })}
                 </td>
-                <td className="px-3 py-2 text-right font-bold">
+                  <td className={`p-2 text-right font-bold ${
+                  Number(l.saldo) >= 0
+                    ? "text-green-700"
+                    : "text-red-600"
+                }`}
+              >
                   {Number(l.saldo).toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL"
                   })}
                 </td>
 
-                <td className="font-bold text-center">
+                {/*<td className="font-bold text-center">
                     {l.analitica == true || l.analitica == 1 ? "Sim" : "Não"}
                   </td>
                 <td className="px-3 py-2 text-center">
@@ -277,7 +291,7 @@ export default function LancamentosContabeis() {
                         Alterar Saldo
                      </button>
 
-                </td>
+                </td>*/}
               </tr>
             ))}
           </tbody>

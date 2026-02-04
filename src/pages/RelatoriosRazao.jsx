@@ -53,8 +53,21 @@ useEffect(() => {
 
 
 async function consultarComParams({  webhook, empresa_id, data_ini, data_fim, filtro }) {
+
+  
+ if (
+  webhook === "razao_por_conta" &&
+  (!contaId || contaId === "[]" || isNaN(Number(contaId)))
+) {
+  alert("Conta inválida.");
+  return;
+}
+
   setLoading(true);
   setDados([]);
+
+ 
+
 
   try {
     const resp = await fetch(buildWebhookUrl(webhook), {
@@ -112,6 +125,8 @@ async function consultarComParams({  webhook, empresa_id, data_ini, data_fim, fi
   if (tipo === "d") webhook = "razao_diario";
   if (tipo === "m") webhook = "razao_mensal";
   if (tipo === "c") webhook = "razao_por_conta";
+
+    
 
 
   return consultarComParams({
@@ -344,13 +359,13 @@ function linhaZerada(l) {
                
                 {tipo !== "m" && ( <th className="p-3 text-left">Data</th>)}
                  {tipo === "m" && (<th className="p-3 text-left">Mes-Ano</th>)}
-                  {!["r", "c"].includes(tipo) && (<th className="p-3 text-left">Conta</th>)}
+                  {![ "c"].includes(tipo) && (<th className="p-3 text-left">Conta</th>)}
                  {tipo === "c" && ( <th className="p-3 text-left">Contrapartida</th>)}
                  {tipo !== "m" && (<th className="p-3 text-left">Histórico</th>)}
-                  {!["r", "c"].includes(tipo) && ( <th className="p-3 text-right">Saldo Inicial</th>)}
-                {!["r", "c"].includes(tipo) && ( <th className="p-3 text-right">Débito</th>)}
-                   {!["r", "c"].includes(tipo) && ( <th className="p-3 text-right">Crédito</th>)}
-                  {["r", "c"].includes(tipo) && (  <th className="p-3 text-right">Valor</th>)}
+                  {tipo !== "c" && (  <th className="p-3 text-right">Saldo Inicial</th> )} 
+                {!["r", "c","m"].includes(tipo) && ( <th className="p-3 text-right">Débito</th>)}
+                   {!["r","c","m"].includes(tipo) && ( <th className="p-3 text-right">Crédito</th>)}
+                  {["r", "c","m"].includes(tipo) && (  <th className="p-3 text-right">Valor</th>)}
                 <th className="p-3 text-right">Saldo</th>
  
 
@@ -427,12 +442,12 @@ function linhaZerada(l) {
                   
                     
 
-                        {!["r", "c"].includes(tipo) && ( <td
+                        {![ "c"].includes(tipo) && ( <td
                         className={`p-3 text-right font-bold ${
                           l.saldo_inicial < 0 ? "text-red-600" : "text-green-700"
                         }`}
                       >
-                        {idx === 0 ? fmt.format(l.saldo_inicial) : ""}
+                        { fmt.format(l.saldo_inicial) }
                       </td>)}
 
 
@@ -440,16 +455,16 @@ function linhaZerada(l) {
 
 
 
-                  {!["r", "c"].includes(tipo) && (   <td   className="p-2 font-bold text-right font-size: 16px">
+                  {!["r", "c","m"].includes(tipo) && (   <td   className="p-2 font-bold text-right font-size: 16px">
                     {fmt.format(l.debito)}
                   </td>)} 
 
-                    {!["r", "c"].includes(tipo) && (  <td   className="p-2 font-bold text-right font-size: 16px">
+                    {!["r", "c","m"].includes(tipo) && (  <td   className="p-2 font-bold text-right font-size: 16px">
                     {fmt.format(l.credito)}
                   </td>)} 
 
                    
-                   {["r", "c"].includes(tipo) && (   <td
+                   {["r", "c","m"].includes(tipo) && (   <td
                     className={`p-3 text-right font-bold ${
                       l.valor < 0 ? "text-red-600" : "text-green-700"
                     }`}
@@ -459,7 +474,7 @@ function linhaZerada(l) {
 
 
 
-                   {tipo === "r" && ( <td
+                     {["r", "d","m"].includes(tipo) && (  <td
                     className={`p-3 text-right font-bold ${
                       l.saldo < 0 ? "text-red-600" : "text-green-700"
                     }`}

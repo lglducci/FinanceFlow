@@ -153,8 +153,9 @@ const navigate = useNavigate();
             <th className="p-2 text-left">Código</th>
             <th className="p-2 text-left">Conta</th>
                 <th className="p-2 text-left">Saldo Inicial</th>
-            <th className="p-2 text-right">Débito</th>
-            <th className="p-2 text-right">Crédito</th>
+          {/*}  <th className="p-2 text-right">Débito</th>
+            <th className="p-2 text-right">Crédito</th>*/}
+            <th className="p-2 text-right">Valor</th>
             <th className="p-2 text-right">Saldo</th>
           </tr>
         </thead>
@@ -169,16 +170,19 @@ const navigate = useNavigate();
                 
                    {fmt.format(c.saldo_inicial)}
               </td>
-              <td className="p-2 text-right font-bold ">
+            {/*}  <td className="p-2 text-right font-bold ">
                 
                    {fmt.format(c.total_debito)}
+              </td>*/}
+               <td className={`p-2 text-right font-bold ${
+                  Number(c.valor) >= 0
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                   {fmt.format( c.valor)}
               </td>
-              <td className="p-2 text-right font-bold ">
-                
-                   {fmt.format( c.total_credito)}
-              </td>
-              <td
-                className={`p-2 text-right font-bold ${
+              <td className={`p-2 text-right font-bold ${
                   Number(c.saldo) >= 0
                     ? "text-green-600"
                     : "text-red-600"

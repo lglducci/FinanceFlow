@@ -68,7 +68,7 @@ useEffect(() => {
     Number(l.saldo_inicial || 0) === 0 &&
     Number(l.total_debito || 0) === 0 &&
     Number(l.total_credito || 0) === 0 &&
-    Number(l.saldo_final || 0) === 0  
+    Number(l.saldo || 0) === 0  
   );
 }
 
@@ -173,7 +173,7 @@ useEffect(() => {
                     l.saldo < 0 ? "text-red-600" : "text-green-700"
                   }`}
                 >
-                  {fmt.format(l.saldo_final)}
+                  {fmt.format(l.saldo)}
                 </td>
               </tr>
             ))}

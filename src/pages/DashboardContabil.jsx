@@ -25,7 +25,7 @@ export default function DashboardContabil() {
   const [resultadoMensal, setResultadoMensal] = useState([]);
   const [balancete, setBalancete] = useState([]);
   const [historico, setHistorico] = useState([]);
-
+  const [mostrarZeradas, setMostrarZeradas] = useState(false);
 
 
   const totalAtivo =  (somarGrupo(balanco, "ATIVO"));
@@ -233,6 +233,16 @@ const totalPassivoInvertido = passivosDevedores.reduce(
   (s, l) => s + Number(l.saldo || 0),
   0
 );
+
+function linhaZerada(l) {
+  return (
+    Number(l.saldo_inicial || 0) === 0 &&
+    Number(l.total_debito || 0) === 0 &&
+    Number(l.total_credito || 0) === 0 &&
+    Number(l.saldo || 0) === 0  
+  );
+}
+
 
 
   return (
@@ -500,7 +510,8 @@ const totalPassivoInvertido = passivosDevedores.reduce(
                     </tr>
                   </thead>
                   <tbody>
-                    {balancete.map((l, i) => (
+                    
+                        { balancete.filter((l) => mostrarZeradas || !linhaZerada(l)).map((l, i) => (
                       <tr
                           key={i}
                           style={{

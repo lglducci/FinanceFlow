@@ -1,6 +1,6 @@
  import { useNavigate } from "react-router-dom";
 
- const baseIcon = "w-10 h-10 stroke-blue-600";
+ const baseIcon = "w-10 h-10 stroke-blue-800";
 
 const IconCash = () => (
   <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -159,23 +159,23 @@ export default function Reports() {
   return (
     <div>
  
-      <div className="bg-gray-100 min-h-screen p-6  rounded-xl shadow-lg border-[4px] border-gray-300"> 
+      <div className="bg-gray-100 min-h-screen p-6  rounded-xl shadow-lg border-[4px] border-gray-400"> 
       <h1 className="text-2xl font-bold mb-6">Relatórios</h1>
  
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"> 
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 text-[#1e40af]"> 
         {cards.map((c) => (
          <div
             key={c.title}
             onClick={() => navigate(c.path)}
-            className="cursor-pointer rounded-xl border border-blue-500 bg-gray-100 p-5 shadow hover:shadow-lg transition"
+            className="cursor-pointer rounded-xl border border-blue-900 bg-gray-100 p-5 shadow hover:shadow-lg transition"
           >
-            <div className="mb-3">{c.icon}</div>
+            <div className="mb-3 text-[#1e40af]">{c.icon}</div>
 
-            <h2 className="text-lg font-bold text-blue-700">
+            <h2 className="text-lg font-bold text-[#1e40af]">
               {c.title}
             </h2>
 
-            <p className="text-base text-gray-700 mt-2">
+            <p className="text-base text-gray-700 mt-2 text-[#1e40af]">
               {c.desc}
             </p>
           </div>
