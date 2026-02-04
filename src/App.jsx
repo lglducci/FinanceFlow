@@ -169,10 +169,9 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   checkAssinatura();
 }, []);
 
-
-
  
- if (bloquearSistema === true) { 
+ 
+ if ( token && empresa_id && bloquearSistema === true) { 
   return (
  
     <Routes>
