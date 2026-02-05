@@ -171,7 +171,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 
  
  
- if ( token && empresa_id && bloquearSistema === true) { 
+ if ( token  && bloquearSistema === true) { 
   return (
  
     <Routes>
@@ -371,5 +371,6 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   );
 }
  
+
 
 
