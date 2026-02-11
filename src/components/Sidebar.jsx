@@ -33,7 +33,7 @@
   const json = await resp.json();
  
  
-  setPerfil(json.codigo || "TODOS");
+  setPerfil(json.codigo || "TOTAL");
 }
 
    
@@ -44,16 +44,16 @@
  
  
  const MENU_PERMISSOES = {
-  visao_geral: ["FINANCEIRO", "TODOS"],
-  dashboard_contabil: ["CONTABIL", "TODOS"],
+  visao_geral: ["FINANCEIRO", "TOTAL"],
+  dashboard_contabil: ["CONTABIL", "TOTAL"],
 
-  transacoes_financeiras: ["FINANCEIRO", "VENDAS", "TODOS"],
+  transacoes_financeiras: ["FINANCEIRO", "VENDAS", "TOTAL"],
 
-  diario_contabil: ["CONTABIL", "TODOS"],
-  apuracao_resultado: ["CONTABIL", "TODOS"],
+  diario_contabil: ["CONTABIL", "TOTAL"],
+  apuracao_resultado: ["CONTABIL", "TOTAL"],
 
-  cadastro: ["FINANCEIRO", "CONTABIL", "TODOS"],
-  configuracoes: ["TODOS"]
+  cadastro: ["FINANCEIRO", "CONTABIL", "TOTAL"],
+  configuracoes: ["TOTAL"]
 };
 
 function podeVer(menuKey) {
@@ -77,7 +77,7 @@ function podeVer(menuKey) {
        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold">
  
         {podeVer("visao_geral") && (
-           <MenuItem icon={<IconHome />} label="Visão Geral" onClick={() => navigate("/dashboard")} />
+           <MenuItem icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboard")} />
         )}
          
           <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
@@ -96,12 +96,12 @@ function podeVer(menuKey) {
            <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
            <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
            <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} />
-           <SubItem icon={<IconBook />} label="Receita Rapida" onClick={() => navigate("/registrareceitarapida")} /> 
+           <SubItem icon={<IconBook />} label="Receita Rapida" onClick={() => navigate("/registrareceitarapida")} />  
          </MenuGroup>
          )}
 
          
-        {podeVer("diario_contabil") && (
+       {(podeVer("diario_contabil") || podeVer("configuracoes")) && (
          <MenuGroup
            icon={<IconBuilding />}
            label="Contábil"
