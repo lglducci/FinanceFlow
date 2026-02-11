@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
-  
+
  
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
@@ -142,7 +142,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
     const empresa_id =
       localStorage.getItem("empresa_id") ||
       localStorage.getItem("id_empresa");
-
+ 
     if (!empresa_id) return;
 
     try {
@@ -171,7 +171,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 
  
  
- if ( token  && bloquearSistema === true) { 
+ if ( token &&    bloquearSistema === true) { 
   return (
  
     <Routes>
@@ -205,7 +205,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   
   {/* Visão Geral */}
   <Route path="/" element={<DashboardContabil />} />
-  <Route path="/dashboard" element={<Visaogeral />} />
+  <Route path="/dashboard" element={<Dashboard />} />
 
   {/* Outras rotas permanecem */}
   <Route path="/transactions" element={<Lancamentos />} />
@@ -371,6 +371,4 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   );
 }
  
-
-
 
