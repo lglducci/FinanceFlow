@@ -1,4 +1,4 @@
-  import { useState, useEffect } from "react";
+   import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 
@@ -280,7 +280,8 @@ const [fornecedores, setFornecedores] = useState([]);
           origem: l.origem
             ? l.origem.charAt(0).toUpperCase() + l.origem.slice(1)
             : "-",
-          evento_codigo: l.evento_codigo
+          evento_codigo: l.evento_codigo,
+          origem_id:l.origem_id
         };
       });
        //  ✔️ EXATAMENTE AQUI  
@@ -358,358 +359,228 @@ useEffect(() => {
   carregarCategorias();
 }, [empresa_id]);
 
+function calcularPeriodoDias(inicio, fim) {
+  if (!inicio || !fim) return null;
 
-  return (
-    <div className="p-2">
- 
+  const d1 = new Date(inicio);
+  const d2 = new Date(fim);
 
-      {/* FILTROS   */} 
-      <div className="mb-2 grid grid-cols-1 lg:grid-cols-1 gap-4"> 
-      
-      <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg p-2 border-[8px] border-[#061f4aff] mb-1 "> 
-              <h2 className="text-2xl font-bold mb-1 text-[#061f4aff]">Lançamentos</h2> 
-       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-1">
+  const diffMs = d2.getTime() - d1.getTime();
+  const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
 
-                {/* COLUNA 1 - FILTROS  
-                <div className="bg-gray-100 p-6 rounded-xl shadow border-[1px] border-gray-300">*/}
-                  <div className="bg-white rounded-xl shadow p-2   w-full h-fit">
-
-                    {/* linha 1 - períodos */}
-                    <div className=" bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                      <div className="flex flex-col">
-                        <span className="text-base font-bold mb-1 text-[#061f4aff]">Períodos</span>
-
-                        <div className=" bg-white flex gap-2 text-base font-bold flex-wrap text-[#061f4aff]">
-                          {["mes", "15", "semana", "hoje"].map((tipo) => (
-                            <label key={tipo}>
-                              <input
-                                type="checkbox"
-                                checked={periodo === tipo}
-                                onChange={() => handlePeriodoChange(tipo)}
-                                className="mr-1"
-                              />
-                              {tipo === "mes"
-                                ? "Mês"
-                                : tipo === "15"
-                                ? "Últimos 15 dias"
-                                : tipo === "semana"
-                                ? "Semana"
-                                : "Hoje"}
-                            </label>
-                          ))}
-                        </div>
-
-                      </div>
-                 </div>
-
-        {/* linha 2 */}
-        <div className="bg-white shadow rounded-lg p-2    mt-2">
-
-            <div className="flex flex-wrap items-end gap-4">
-
-                <div className="flex flex-col">
-                    <label className="font-bold text-base block mb-1 text-[#061f4aff]">Data início</label>
-                    <input
-                      type="date"
-                      value={dataIni}
-                      onChange={(e) => setDataIni(e.target.value)}
-                      className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
-                    />
-                </div>
-
-                <div className="flex flex-col">
-                    <label className="font-bold text-base block mb-1 text-[#061f4aff]">Data fim</label>
-                    <input
-                      type="date"
-                      value={dataFim}
-                      onChange={(e) => setDataFim(e.target.value)}
-                      className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
-                    />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="font-bold text-base block mb-1 text-[#061f4aff]">Conta</label>
-                    <select
-                      value={contaId}
-                      onChange={(e) => setContaId(Number(e.target.value))}
-                      className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
-                    >
-                      <option value={0}>Todas</option>
-                      {contas.map((c) => (
-                        <option key={c.id} value={c.id}>{c.nome}</option>
-                      ))}
-                    </select>
-                </div>
+  return diffDias > 0 ? diffDias : null;
+}
 
 
-                              {/* CATEGORIA */}
-                <div className="flex flex-col">
-                  <label className="font-bold text-base block mb-1 text-[#061f4aff]">Categoria</label>
-                  <select
-                    value={categoriaId}
-                    onChange={(e) => setCategoriaId(e.target.value)}
-                    className="border rounded-lg px-3 py-2 w-48 mt-1 border-yellow-500"
-                  >
-                    <option value="">Todas</option>
-                    {categorias.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.nome}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+return (
+  <div className="p-4 space-y-4">
 
-               
+    {/* HEADER */}
+   <div className="flex justify-between items-start">
+  <div>
+    <h1 className="text-xl font-bold text-blue-800">Lançamentos</h1>
+    <p className="text-sm text-gray-500">
+      Consulte entradas e saídas financeiras com poucos cliques.
+    </p>
+  </div>
 
-
-
-                <button
-                  onClick={pesquisar}
-
-                    className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700`}
-                  //className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32"
-                >
-                  {carregando ? "Carregando..." : "Pesquisar"}
-                </button>
-
-                <button
-                  onClick={abrirNovoLancamento}
-                 // className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32"
-                    className= { `${btnPadrao} bg-green-600 hover:bg-green-700`}
-                >
-                  Novo
-                </button>
-
-                <button
-                  onClick={abrirNovaReceita}
-                 // className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32"
-                    className= { `${btnPadrao} bg-gray-900 hover:bg-gray-500`}
-                >
-                 💰  Nova Receita 
-                </button>
-                
-
-                 <button
-                  onClick={() => window.print()}
-                 // className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
-                   className= { `${btnPadrao} bg-gray-600 hover:bg-gray-700`}
-                >
-                 
-                  🖨️ Imprimir
-                </button>
-
-
-            </div>
-        </div>
-
-    </div>
+  <div className="flex gap-4 text-sm font-semibold">
+         <p className="text-sm text-gray-500 mt-30">
+      ℹ️ Transações já estornadas ou estornos não podem ser estornados novamente.
+    </p>
 
    
+     <button
+      onClick={abrirNovoLancamento}
+      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+    >
+      + Novo lançamento
+    </button>
 
-    {/* COLUNA 2 - DADOS DA CONTA */}
-        <div className="bg-gray-100 rounded-xl shadow p-6 border-l-4 border-blue-900 h-50 w-[500px] mt-[70px]"> 
-            {dadosConta && (
-              <>
-                <h3 className="font-bold text-xl text-blue-700 mb-4">
-                  🏦 {dadosConta.conta_nome}
-                </h3>
+      <button
+      onClick={abrirNovaReceita}
+       className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+    >
+      💰 Nova receita
+     </button>
 
-                <p  className="text-gray-700 font-bold text-base mt-1"><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-                <p className="text-gray-700 font-bold text-base mt-1"><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-                <p className="text-gray-700 font-bold text-base mt-1"><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p> 
-                <p className="text-green-700 font-bold text-xl mt-2">
-                  Saldo final: R$
-                  {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-                </p>
-              </>
+    <a
+      href="#"
+      onClick={() => window.print()}
+      className="text-gray-600 hover:text-gray-800"
+    >
+      🖨️ Imprimir
+    </a>
+  </div>
+</div>
+
+
+    {/* CARDS SUPERIORES */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+      {/* TOTAL DO PERÍODO */}
+      <div className="bg-white rounded-xl p-4 border-l-4 border-blue-600 shadow-sm">
+        <p className="text-sm text-gray-500">Resultado do período</p>
+        <p className="text-2xl font-bold text-gray-900">
+          {(totalEntrada - totalSaida).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </p>
+      </div>
+       
+       <div className="bg-white rounded-xl p-4 border-l-4 border-orange-400 shadow-sm">
+            <p className="text-base text-gray-700">Período</p>
+
+            {dataIni && dataFim ? (
+              <p className="font-bold text-gray-800">
+                Período de {calcularPeriodoDias(dataIni, dataFim)} dias
+              </p>
+            ) : (
+              <p className="font-bold text-blue-800">
+                Não selecionado
+              </p>
             )}
-
-      </div>
-</div>
-</div>
-</div>
-
-    <div id="print-area">   
-       <div className="bg-white  rounded-xl shadow p-2 h-fit">
-  
-          {/* TOTAIS EM 3 COLUNAS */} 
- 
-     <div className="mb-2 grid grid-cols-1 lg:grid-cols-6 gap-4">
-
-  {/* 5 colunas de totais */}
-  <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-5 gap-4">
-
-    {/* SALDO INICIAL */}
-    <div className="bg-gray-200 shadow rounded-lg p-2 border-l-4 border-gray-600">
-      <div className="text-sm font-bold text-gray-600">Saldo Inicial</div>
-      <div className="text-2xl font-bold text-gray-800">
-        {saldoInicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
-
-    {/* ENTRADAS */}
-    <div className="bg-gray-200 shadow rounded-lg p-2 border-l-4 border-green-600">
-      <div className="text-sm font-bold text-gray-600">Total Entradas</div>
-      <div className="text-2xl font-bold text-green-700">
-        {totalEntrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
-
-    {/* SAÍDAS */}
-    <div className="bg-gray-200 shadow rounded-lg p-2 border-l-4 border-red-600">
-      <div className="text-sm font-bold text-gray-600">Total Saídas</div>
-      <div className="text-2xl font-bold text-red-700">
-        {totalSaida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
-
-      {/* SALDO FINAL */}
-      <div className="bg-gray-200 shadow rounded-lg p-2 border-l-4 border-gray-800">
-        <div className="text-sm font-bold text-gray-600">Saldo Atual</div>
-        <div className="text-2xl font-bold text-gray-900">
-          {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-        </div>
-      </div>
-
-    {/* RESULTADO */}
-    <div className={`bg-gray-200 shadow rounded-lg p-2 border-l-4
-        ${(totalEntrada - totalSaida) >= 0 ? "border-green-600" : "border-red-600"}
-    `}>
-      <div className="text-sm font-semibold text-gray-600">Resultado Líquido</div>
-      <div className={`text-2xl font-bold 
-          ${(totalEntrada - totalSaida) >= 0 ? "text-green-700" : "text-red-700"}
-      `}>
-        {(totalEntrada - totalSaida).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-      </div>
-    </div>
-
-  </div> 
-</div>
+          </div>
 
 
-  {/* TABELA */} 
-  <table className="w-full text-sm">
-  
-  </table>
-</div>
+      {/* CONTA BANCÁRIA */}
+      <div className="bg-white rounded-xl p-4 border-l-4 border-green-600 shadow-sm">
+        <p className="text-sm text-gray-500">Conta bancária</p>
 
-      {/* TABELA  
-      
-      <div className="bg-white rounded-xl shadow p-4">* 
-       <div className="bg-gray-300 p-4 rounded-xl shadow">*/}
-           <div className="bg-gray-200 p-44 rounded-xl shadow border-[4px] border-gray-500"> 
-        {lista.length === 0 ? (
-          <p className="text-gray-600 text-base">Nenhum lançamento encontrado.</p>
+        {dadosConta ? (
+          <>
+            <p className="font-semibold text-gray-900">{dadosConta.conta_nome}</p>
+            <p className="text-sm text-gray-600">
+              Banco: {dadosConta.nro_banco ?? "-"} • Ag: {dadosConta.agencia ?? "-"}
+            </p>
+            <p className="text-sm font-semibold text-green-700 mt-1">
+              Saldo:{" "}
+              {Number(dadosConta.saldo_final).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </p>
+          </>
         ) : (
-          <table className="w-full border-separate border-spacing-y-2">
-            <thead>
-              <tr className="border-b bg-blue-900 text-base text-white">
-                <th className="text-left py-2 px-2 w-10 text-base">ID</th>
-                <th className="text-left py-2 px-2 w-64 text-base">Descrição</th>
-                <th className="text-left py-2 px-2 w-32 text-base">Categoria</th>
-                <th className="text-left py-2 px-2 w-32 text-base">Conta</th>
-                <th className="text-left py-2 px-2 w-20 text-base">Tipo</th>
-                <th className="text-left py-2 px-2 w-24 text-base">Data</th>
-                <th className="text-left py-2 px-2 w-24 text-base">Origem</th>
-
-                {/* Valor mais para esquerda */}
-                <th className="text-right py-2 px-1 w-20 text-base">Valor</th>
-                
-
-                 {/* 👉 ADICIONE ESTA LINHA */}
-                 <th className="text-center py-2 px-2 w-24 text-base">Ação</th>
-   
-              </tr>
-
-              
-          
-
-            </thead>
-
-           <tbody>
-              {lista.map((l, i) => (
-                
-                <tr
-                  key={l.id}
-                  className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
-                >
-
-                  {/* REMOVE COMPLETAMENTE A COLUNA DO ID */}
-                <td className="px-3 font-bold ">{l.id}</td>
-                  <td className="px-3 font-bold truncate max-w-xs text-base ">{l.descricao}</td>
-                  <td className="px-3 font-semibold text-base ">{l.categoria_nome}</td>
-                  <td className="px-3 font-bold text-base">{l.conta_nome}</td>
-
-                  <td
-                    className={
-                      "px-3 font-bold  text-base" +
-                      (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
-                    }
-                  >
-                    {l.tipo}
-                  </td>
-
-                  <td className="px-3 font-bold text-base">{l.data}</td>
-                  <td className="px-3 font-bold text-base">{l.origem}</td>
-
-                  <td
-                    className={
-                      "px-3 text-right font-bold text-base" +
-                      (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
-                    }
-                  >
-                    {l.valor}
-                  </td>
- 
-                  
-                  {/* AÇÕES */}
-                  <td className="px-3 py-1 text-center space-x-4">
-
-                    {/* EDITAR */}
-                    <button
-                      onClick={() => editarLancamento(l.id)}
-                      className={
-                          String(l.origem).trim().toUpperCase() === 'ESTORNO' 
-                            ? 'text-gray-400 underline font-bold cursor-not-allowed'
-                            : 'text-blue-600 underline font-bold'
-                        }
-                        disabled={
-                                String(l.origem).trim().toUpperCase() === 'ESTORNO' 
-                              }
-
-                    >
-                      Editar
-                    </button>
-
-                    {/* ESTORNAR */}
-                    <button  
-                      onClick={() => Estornar(l.id)}
-                     className={
-                        String(l.origem).trim().toUpperCase() === 'ESTORNO' 
-                          ? 'text-gray-400 underline font-bold cursor-not-allowed'
-                          : 'text-red-600 underline font-bold'
-                      }
-                         disabled={
-                            String(l.origem).trim().toUpperCase() === 'ESTORNO' 
-                          }
-
-                    >
-                      Estornar
-                    </button>
-                     
-
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-
-             
-
-             
-          </table>
+          <p className="text-sm text-gray-400">Selecione uma conta</p>
         )}
       </div>
     </div>
-     </div>
-  );
+
+    {/* FILTROS */}
+    <div className="bg-white rounded-xl p-4 shadow-sm">
+      <div className="flex flex-wrap items-end gap-4">
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Data início</label>
+          <input
+            type="date"
+            value={dataIni}
+            onChange={(e) => setDataIni(e.target.value)}
+            className="block border rounded-lg px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Data fim</label>
+          <input
+            type="date"
+            value={dataFim}
+            onChange={(e) => setDataFim(e.target.value)}
+            className="block border rounded-lg px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Conta</label>
+          <select
+            value={contaId}
+            onChange={(e) => setContaId(Number(e.target.value))}
+            className="block border rounded-lg px-3 py-2 text-sm"
+          >
+            <option value={0}>Todas</option>
+            {contas.map((c) => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        
+       <button
+          onClick={pesquisar}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm "
+        >
+          Pesquisar
+        </button>
+
+        
+      </div>
+    </div>
+
+    {/* TABELA */}
+    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+      {lista.length === 0 ? (
+        <p className="p-4 text-sm text-gray-500">Nenhum lançamento encontrado.</p>
+      ) : (
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr>
+               <th className="px-3 py-2 text-left">id</th>
+              <th className="px-3 py-2 text-left">Descrição</th>
+              <th className="px-3 py-2 text-left">Categoria</th>
+              <th className="px-3 py-2 text-left">Conta</th>
+              <th className="px-3 py-2 text-left">Tipo</th>
+              <th className="px-3 py-2 text-left">Data</th>
+              <th className="px-3 py-2 text-right">Valor</th>
+               <th className="px-3 py-2 text-right"> Id Estorno</th>
+              <th className="px-3 py-2 text-center">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {lista.map((l, i) => (
+              <tr key={l.id} className="border-t">
+                 <td className="px-3 py-2 text-left font-bold">{l.id}</td>
+                <td className="px-3 py-2 font-medium">{l.descricao}</td>
+                <td className="px-3 py-2">{l.categoria_nome}</td>
+                <td className="px-3 py-2">{l.conta_nome}</td>
+                <td className={`px-3 py-2 font-semibold ${l.tipo === "Entrada" ? "text-green-600" : "text-red-600"}`}>
+                  {l.tipo}
+                </td>
+                <td className="px-3 py-2">{l.data}</td>
+                <td className="px-3 py-2 text-right font-semibold">{l.valor}</td>
+                 <td className="px-3 py-2 text-right font-semibold">{l.origem_id}</td>
+                <td className="px-3 py-2 text-center space-x-2">
+                  <button
+                    onClick={() => editarLancamento(l.id)}
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
+                    Editar
+                  </button>
+                <button
+                  onClick={() => l.origem_id == null && Estornar(l.id)}
+                  disabled={l.origem_id != null}
+                  title={l.origem_id != null ? "Esta transação já foi estornada." : ""}
+                  className={`font-semibold ${
+                    l.origem_id == null
+                      ? "text-red-600 hover:underline"
+                      : "text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Estornar
+                </button>
+
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+
+  </div>
+);
+
+  
 }

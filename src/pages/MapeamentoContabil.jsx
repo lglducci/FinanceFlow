@@ -133,198 +133,113 @@ const [filtro, setFiltro] = useState("");
   m.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
   m.tipo_automacao?.toLowerCase().includes(filtro.toLowerCase())
 );
+ return (
+  <div className="p-4 w-full">
 
-  return ( 
-    <div style={{ width: "100%", padding: 20 }}>
-      
-    
+    {/* ===== HEADER / CONTEXTO ===== */}
+    <div className="bg-white rounded-xl border-l-4  shadow-sm p-4 mb-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-blue-800">
+          Modelo Contábil
+        </h2>
 
-            {/* ============================================= */}
-            {/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}
-            {/* ============================================= */}
-            <div
-              style={{
-                width: "90%",
-                background: "#445777",      // azul grande — igual da foto
-                border: "8px  solid #061f4aff",
-                borderRadius: 12,
-                padding: 4,
-                marginBottom: 16,
-              }}
-            >
-              {/* Faixa amarela token/descrição */}
-
-            <h2   style={{
-              padding: 2,
-              width: "100%",
-            
-              marginTop: 10,
-            }} className="text-xl font-bold mb-4 text-white"> Modelo Contábil</h2>
-          
-              
-            {/* ============================================= */}
-      {/*   BLOCO SUPERIOR IGUAL À SUA FIGURA           */}
-      {/* ============================================= */}
-          <div
-        style={{
-          width: "83%",
-          background: "#f7f9ff", // azul MUITO claro (quase branco)
-          border: "2px solid #eff1f7ff", // borda azul clara
-          borderRadius: 12,
-          padding: 10,
-          marginBottom: 16,
-        }}
-      >
-
-        {/* QUADRO INTERNO BRANCO COM O BOTÃO */}
-        <div
-          style={{ width: "100%",
-            background: "rgb(230, 237, 243)",
-            border: "3px solid #061f4aff",
-            padding: 10,
-            borderRadius: 10,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            
-          }}
-        >
-          {/* INFO TOKEN + MODELO */}
-          <div>
-            <h3 style={{ margin: 0 ,fontWeight: "bold", background: "#ffffffff" }}>
-              <b>Token:</b> {selecionado?.codigo}
-            </h3>
-
-            <h3 style={{ marginTop: 8 , fontWeight: "bold", background: "#ffffffff" }}>
-              <b>Nome do Modelo:</b> {selecionado?.nome}
-            </h3>
-
-            <h3 style={{ marginTop: 16 , fontWeight: "bold", background: "#ffffffff" }}>
-              <b>Tipo Automação:</b> {selecionado?.tipo}
-            </h3>
-
-          </div>
-
-          {/* BOTÃO NOVO MODELO */}
-
-           <div style={{ display: "flex", gap: 12 }}>
+        <div className="flex gap-4">
           <button
-          
             onClick={() => navigate("/novo-modelo")}
-            style={{
-              padding: "12px 22px",
-              background: "#061f4aff",
-              color: "white",
-              border: "none",
-              borderRadius: 8,
-              fontWeight: "bold",
-              cursor: "pointer",
-              fontSize: 15,
-              boxShadow: "0 2px 4px rgba(0,0,0,0.25)",
-              
-            }}
+            className="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
           >
             + Novo Modelo
           </button>
 
-          
-        {/* ➕ NOVA CONTA */}
-        <button
-          onClick={() => navigate("/nova-conta-contabil")}
-          style={{
-            padding: "12px 22px",
-            background: "rgb(23, 106, 16)",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          + Nova Conta Ctb
-        </button>
-        </div> 
+          <button
+            onClick={() => navigate("/nova-conta-contabil")}
+            className="px-5 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+          >
+            + Nova Conta Contábil
+          </button>
         </div>
-
       </div>
 
-              {/* 🔍 FILTRO DE PESQUISA */}
-              <div
-                className="bg-[#061f4aff] rounded-xl shadow p-6 border-[8px] border-[#061f4aff] mb-4 flex items-center gap-6 w-5/6 ml-4" 
+      {selecionado && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div>
+            <p className="text-sm text-gray-500">Token</p>
+            <p className="font-semibold text-gray-800">{selecionado.codigo}</p>
+          </div>
 
+          <div>
+            <p className="text-sm text-gray-500">Modelo</p>
+            <p className="font-semibold text-gray-800">{selecionado.nome}</p>
+          </div>
+
+          <div>
+            <p className="text-sm text-gray-500">Tipo de Automação</p>
+            <p className="font-semibold text-gray-800">{selecionado.tipo}</p>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* ===== FILTRO ===== */}
+    <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
+      <span className="font-semibold text-gray-700">Buscar:</span>
+      <input
+        type="text"
+        placeholder="Token, descrição ou tipo de automação…"
+        value={filtro}
+        onChange={(e) => setFiltro(e.target.value)}
+        className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* ===== DETALHE DO MODELO ===== */}
+    {linhas.length > 0 && (
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
+        <h3 className="font-bold text-gray-800 mb-3">
+          Estrutura do Modelo
+        </h3>
+
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-blue-100 text-gray-700">
+            <tr>
+              <th className="p-2 text-left">Conta</th>
+              <th className="p-2 text-left">Código</th>
+              <th className="p-2 text-left">Nome</th>
+              <th className="p-2 text-left">Tipo</th>
+              <th className="p-2 text-left">Natureza</th>
+              <th className="p-2 text-center">D/C</th>
+            </tr>
+          </thead>
+          <tbody>
+            {linhas.map((l, i) => (
+              <tr
+                key={i}
+                 className={i % 2 === 0 ? "bg-gray-150" : "bg-gray-50"}
               >
-                <label className="font-bold text-white">
-                  Buscar:
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="Token, descrição ou tipo automação..."
-                  value={filtro}
-                  onChange={(e) => setFiltro(e.target.value)}
-                  className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
-                 // className="border rounded-xl px-3 py-2 border-yellow-500"
-                />
-              </div>
-
-
-        {/* TABELA DE LINHAS DENTRO DO BLOCO AZUL */}
-        {linhas.length > 0 && (
-          <table  className="tabela tabela-mapeamento" style={{ width: "84%", borderCollapse: "collapse" ,   border: "1px solid #1d1d93ff", }}> 
-            
-            <thead>
-              <tr>
-                <th>Conta ID</th>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Tipo</th>
-                <th>Natureza</th>
-                <th>D/C</th>
+                <td className="p-2 font-bold" >{l.conta_id}</td>
+                <td className="p-2 font-bold">{l.codigo}</td>
+                <td className="p-2 font-bold">{l.nome}</td>
+                <td className="p-2 font-bold">{l.tipo}</td>
+                <td className="p-2 font-bold">{l.natureza}</td>
+                <td className="p-2 text-center font-bold">{l.dc}</td>
               </tr>
-            </thead>
-
-            <tbody>
-              {linhas.map((l, i) => (
-                <tr
-                  key={i}
-                  style={{
-                    backgroundColor: i % 2 === 0 ? "#f2f2f2" : "rgb(200, 195, 195)",       
-                  }}
-                >
-                  <td>{l.conta_id}</td>
-                  <td>{l.codigo}</td>
-                  <td>{l.nome}</td>
-                  <td>{l.tipo}</td>
-                  <td>{l.natureza}</td>
-                  <td>{l.dc}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+            ))}
+          </tbody>
+        </table>
       </div>
+    )}
 
-      {/* ============================================= */}
-      {/*   PARTE DE BAIXO — LISTA DE MODELOS           */}
-      {/* ============================================= */}
-     
-
-      <table   className="tabela tabela-mapeamento border-[4px] border-gray-500"
-      
-            style={{
-            width: "90%",
-            borderCollapse: "collapse",
-            fontSize: 14,
-            alignItems: "left",
-          }} >
-        <thead>
+    {/* ===== LISTA DE MODELOS ===== */}
+    <div className="bg-white rounded-xl shadow-sm p-4">
+      <table className="w-full text-sm border-collapse">
+        <thead className="bg-gray-100 text-blue-800">
           <tr>
-            <th>ID</th>
-            <th>Token</th>
-            <th>Descrição</th>
-             <th>Tipo Automação</th>
-            <th> Ações </th>
-            <th> Sistema </th>
+            <th className="p-2 text-left">ID</th>
+            <th className="p-2 text-left">Token</th>
+            <th className="p-2 text-left">Descrição</th>
+            <th className="p-2 text-left">Tipo</th>
+            <th className="p-2 text-left">Ações</th>
+            <th className="p-2 text-center">Origem</th>
           </tr>
         </thead>
 
@@ -332,77 +247,65 @@ const [filtro, setFiltro] = useState("");
           {filtrados.map((m, i) => (
             <tr
               key={m.id}
-              style={{
-                backgroundColor: i % 2 === 0 ? "#f2f2f2" : "#c6c5c4ff",
-              }}     
+              className={i % 2 === 0 ? "bg-gray-150" : "bg-gray-100"}
             >
-              <td>{m.id}</td>
-              <td>{m.codigo}</td>
-              <td>{m.nome}</td>
-               <td>{m.tipo_automacao}</td>
-             
-                  <td style={{ display: "flex", gap: "28px" }}>
-                {/* EDITAR */}
-                <button
-                  disabled={m.sistema}
-                  onClick={() =>
-                    !m.sistema &&
-                    navigate("/editar-mapeamento", {
-                      state: {
-                        modelo_id: m.id,
-                        empresa_id: empresa_id,
-                        token: m.codigo,
-                        nome: m.nome,
-                        tipo: m.tipo_automacao,
-                      },
-                    })
-                  }
-                  style={{
-                    color: m.sistema ? "#7d8490ff" : "#1c09c6ff",
-                    cursor: m.sistema ? "not-allowed" : "pointer",
-                    opacity: m.sistema ? 0.6 : 1,
-                  }}
-                >
-                  Editar
-                </button>
+              <td className="p-2 font-semibold">{m.id}</td>
+              <td className="p-2 font-semibold">{m.codigo}</td>
+              <td className="p-2">{m.nome}</td>
+              <td className="p-2">{m.tipo_automacao}</td>
 
-                {/* VISUALIZAR (sempre ativo) */}
-                <button
+              <td className="p-2 flex gap-4">
+                <span
                   onClick={() => visualizar(m.id)}
-                  style={{ color: "#14953bff", cursor: "pointer" }}
+                  className="text-emerald-700 font-semibold cursor-pointer"
                 >
                   Visualizar
-                </button>
+                </span>
 
-                {/* EXCLUIR */}
-                <button
-                  disabled={m.sistema}
-                  onClick={() => !m.sistema && Excluir(m.id)}
-                  style={{
-                    color: m.sistema ? "#7d8490ff" : "#b81111ff",
-                    cursor: m.sistema ? "not-allowed" : "pointer",
-                    opacity: m.sistema ? 0.6 : 1,
-                  }}
-                >
-                  Excluir
-                </button>
+                {!m.sistema && (
+                  <>
+                    <span
+                      onClick={() =>
+                        navigate("/editar-mapeamento", {
+                          state: {
+                            modelo_id: m.id,
+                            empresa_id,
+                            token: m.codigo,
+                            nome: m.nome,
+                            tipo: m.tipo_automacao,
+                          },
+                        })
+                      }
+                      className="text-blue-700 font-semibold cursor-pointer"
+                    >
+                      Editar
+                    </span>
+
+                    <span
+                      onClick={() => Excluir(m.id)}
+                      className="text-red-700 font-semibold cursor-pointer"
+                    >
+                      Excluir
+                    </span>
+                  </>
+                )}
               </td>
 
-
-
-
-               <td style={{ padding: 10, fontWeight: "bold", color: m.sistema ? "#f50909ff" : "#0d3488ff" }}>
-                      {m.sistema ? "Sistema" : "Usuário"}
-                    </td>
-
-
-
-
+              <td className="p-2 text-center font-bold">
+                {m.sistema ? (
+                  <span className="text-red-600">Sistema</span>
+                ) : (
+                  <span className="text-blue-700">Usuário</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-
     </div>
-  );
+
+  </div>
+);
+
+   
 }

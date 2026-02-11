@@ -146,60 +146,83 @@ function montarHistoricoPorNomes(nomeDeb, nomeCred) {
   }
 
   /* ================== SALVAR ================== */
-  async function salvar() {
-    if (!valor || Number(valor) <= 0) {
-      alert("Valor inválido.");
-      return;
-    }
+ async function salvar() {
+  // 🔎 validações básicas
+  if (!valor || Number(valor) <= 0) {
+    alert("Valor inválido.");
+    return;
+  }
 
-    if (!historico) {
-      alert("Histórico obrigatório.");
-      return;
-    }
+  if (!historico) {
+    alert("Histórico obrigatório.");
+    return;
+  }
 
-    let contas;
+  let contas;
+  try {
+    contas = resolverDebitoCredito();
+  } catch (e) {
+    alert(e.message);
+    return;
+  }
+
+  if (contas.debito_id === contas.credito_id) {
+    alert("Débito e crédito não podem ser iguais.");
+    return;
+  }
+
+  setSalvando(true);
+
+  try {
+    const res = await fetch(buildWebhookUrl("lancto_modelo"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id,
+        data_lancto: dataLancto,
+        debito_id: contas.debito_id,
+        credito_id: contas.credito_id,
+        valor: Number(valor),
+        historico,
+        lembrar,
+        vencimento
+      }),
+    });
+
+    // 🧱 lê sempre como texto (NUNCA quebra)
+    const raw = await res.text();
+
+    let json = null;
     try {
-      contas = resolverDebitoCredito();
-    } catch (e) {
-      alert(e.message);
-      return;
+      json = raw ? JSON.parse(raw) : null;
+    } catch {
+      // não é JSON, segue com raw
     }
 
-    if (contas.debito_id === contas.credito_id) {
-      alert("Débito e crédito não podem ser iguais.");
-      return;
+    // 🔴 erro retornado pelo backend ou HTTP
+    if (!res.ok || (json && json.ok === false)) {
+      const msg =
+        (json && (json.details || json.message)) ||
+        raw ||
+        `Erro HTTP ${res.status}`;
+
+      alert(msg);
+      return; // ⛔ NÃO limpa campos
     }
 
-    try {
-       
-      setSalvando(true);
-
-      await fetch(buildWebhookUrl("lancto_modelo"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresa_id,
-          data_lancto: dataLancto,
-          debito_id: contas.debito_id,
-          credito_id: contas.credito_id,
-          valor: Number(valor),
-          historico,
-          lembrar,
-          vencimento
-        }),
-      });
-
+    // ✅ sucesso: só limpa aqui
     setValor("");
     setCreditoId("");
     setCreditoTexto("");
     setCreditoConta(null);
 
-    } catch {
-      alert("Erro ao salvar.");
-    } finally {
-      setSalvando(false);
-    }
+  } catch (e) {
+    // ❌ erro REAL (rede, CORS, URL errada, n8n fora)
+    alert("Falha de comunicação com o servidor.");
+  } finally {
+    setSalvando(false);
   }
+}
 
 
 

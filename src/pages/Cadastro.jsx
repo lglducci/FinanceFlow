@@ -21,7 +21,7 @@ const [mensagem, setMensagem] = useState("");
   e.preventDefault();
   setErro("");
 
-  if (!nome || !cpf || !email || !senha || !telefone) {
+  if (!nome ||  !email || !senha || !telefone) {
     setErro("Preencha todos os campos.");
     return;
   }
@@ -92,6 +92,28 @@ if (erroBootstrap) {
   navigate("/login");
 }
 
+
+function maskTelefone(value) {
+  let v = value.replace(/\D/g, "");
+
+  // força +55
+  if (!v.startsWith("55")) {
+    v = "55" + v;
+  }
+
+  // limita tamanho (55 + DDD + 9 dígitos)
+  v = v.substring(0, 13);
+
+  v = v.replace(/^(\d{2})(\d)/, "+$1 $2");                 // +55
+  v = v.replace(/^(\+\d{2})\s(\d{2})(\d)/, "$1 ($2) $3");  // (DD)
+  v = v.replace(/(\d{5})(\d{4})$/, "$1-$2");               // 99999-9999
+
+  return v;
+}
+
+
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0F172A]">
       <form
@@ -112,12 +134,12 @@ if (erroBootstrap) {
                     onChange={(e) => setNome(e.target.value)}
                 />
 
-                <input
+              {/*}  <input
                     placeholder="Seu CPF"
                     className="w-full border p-2 rounded"
                     value={cpf}
                     onChange={(e) => setCpf(e.target.value)}
-                />
+                />*/}
 
                 <input
                     placeholder="Seu e-mail"
@@ -134,12 +156,13 @@ if (erroBootstrap) {
                     onChange={(e) => setSenha(e.target.value)}
                 />
 
-                <input
+              <input
                     placeholder="Seu telefone"
                     className="w-full border p-2 rounded"
                     value={telefone}
-                    onChange={(e) => setTelefone(e.target.value)}
-                />
+                    onChange={(e) => setTelefone(maskTelefone(e.target.value))}
+                  />
+
 
                 {erro && <p className="text-red-600 text-sm text-center">{erro}</p>}
                         

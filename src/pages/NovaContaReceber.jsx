@@ -200,16 +200,18 @@ const THEME = {
     setSalvando(false);
   }
 }
-
-
-    
-  useEffect(() => {
+useEffect(() => {
   async function carregarContas() {
     try {
-      const resp = await fetch(
-        "https://webhook-homolog.lglducci.com.br/webhook/contasctbreceber?empresa_id=" +
-          empresa_id,
-      );
+      const url = buildWebhookUrl("contasctbreceber") +
+        `?empresa_id=${empresa_id}`;
+
+      const resp = await fetch(url);
+
+      if (!resp.ok) {
+        console.error("Erro HTTP:", resp.status);
+        return;
+      }
 
       const data = await resp.json();
       setContas(data);
@@ -219,8 +221,8 @@ const THEME = {
   }
 
   carregarContas();
-}, [form.empresa_id]);
-
+}, [empresa_id]);
+ 
 
   return (
  

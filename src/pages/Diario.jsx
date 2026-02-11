@@ -62,176 +62,143 @@ async function carregar() {
     return `${dia}/${mes}/${ano}`;
   };
 
-  return (
+ return (
+  <div className="p-4 bg-gray-100 rounded-xl">
 
+    {/* ===== CABEÇALHO ===== */}
+    <div className="bg-white rounded-xl shadow border-l-4 border-green-700 p-4 mb-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-green-800">
+          📘 Diário Contábil
+        </h2>
 
-    <div className="p-4"> 
-
-    <div style={{ width: "100%", padding: 20 }}>
-
-      {/* CABEÇALHO AZUL */}
-      <div
-          style={{
-            background: "#061f4aff",
-            padding: "4px 4px",   // ⬅️ antes era 20
-            borderRadius: 8,       // ⬅️ antes era 12
-            marginBottom: 12,      // ⬅️ antes era 20
-              border: "6px solid #061f4aff", // 👈 AQUI
-          }}
-        > 
-    <h2 className="text-xl font-bold mb-4 text-white"> Diário Contábil </h2>
-        {/* CARD BRANCO */}
-        <div
-          style={{
-            background: "white",
-            padding: 20,
-            borderRadius: 10,
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-          }}
+        <button
+          onClick={() => navigate("/novo-diario")}
+          className={`${btnPadrao} bg-green-700 hover:bg-green-800`}
         >
-          {/* LINHA 1 — DATA INICIAL / FINAL / TOKEN */}
-          <div style={{ display: "flex", gap: 20 }}>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <label className="font-bold text-[#1e40af]">Data Inicial</label>
-              <input
-                type="date"
-                className="border rounded-lg px-3 py-2 border-yellow-500"
-                value={filtros.data_ini}
-                onChange={(e) =>
-                  setFiltros({ ...filtros, data_ini: e.target.value })
-                }
-              />
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <label className="font-bold text-[#1e40af]">Data Final</label>
-              <input
-                type="date"
-                className="border rounded-lg px-3 py-2 border-yellow-500"
-                value={filtros.data_fim}
-                onChange={(e) =>
-                  setFiltros({ ...filtros, data_fim: e.target.value })
-                }
-              />
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-              <label className="font-bold text-[#1e40af]">Token / Modelo</label>
-              <input
-                type="text"
-                className="border rounded-lg px-3 py-2 border-yellow-500"
-                value={filtros.modelo}
-                onChange={(e) =>
-                  setFiltros({ ...filtros, modelo: e.target.value })
-                }
-                placeholder="VENDA_BEBIDA, etc"
-              />
-            </div>
-          </div>
-
-          {/* LINHA 2 — BUSCAR */}
-          <div style={{ display: "flex", flexDirection: "column", marginTop: 5 }}>
-            <label className="font-bold text-[#1e40af]">Buscar</label>
-            <input
-              type="text"
-              className="border rounded-lg px-3 py-2 border-yellow-500"
-              value={filtros.busca}
-              onChange={(e) =>
-                setFiltros({ ...filtros, busca: e.target.value })
-              }
-              placeholder="Histórico / Documento / Parceiro"
-            />
-          </div>
-
-          {/* LINHA 3 — BOTÕES */}
-          <div style={{ display: "flex", gap: 15, marginTop: 10 }}>
-            <button
-             className= { `${btnPadrao} bg-blue-900 hover:bg-blue-700 px-4 py-2 `}
-              onClick={carregar}
-            >
-              Filtrar
-            </button>
-
-            <button
-              onClick={() => navigate("/novo-diario")}
-                className= { `${btnPadrao} bg-green-700 hover:bg-green-700 px-4 py-2 `}
-            >
-              + Novo
-            </button>
-
-            
-          </div>
-        </div>
-      </div>
-      </div>
-
-      {/* LISTA */}
-      <div
-        style={{
-          background: "white",
-          padding: 20,
-          borderRadius: 10,
-          border: "4px solid #666667ff",
-        }}
-      >
-        <table className="tabela tabela-mapeamento" style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ background: "#003ba2", color: "white" }}>
-              <th>ID</th>
-              <th>Data</th>
-              <th>Token</th>
-              <th>Histórico</th>
-              <th>Doc</th>
-              <th>Parceiro</th>
-              <th>Valor</th>
-             {/*   <th>Parcelado</th>
-              <th> Nro Parcela</th>
-               <th>Parcela Atual</th>*/}
-              <th>Ações</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {lista.map((l, i) => (
-              <tr
-                key={l.id}
-                style={{
-                  background: i % 2 === 0 ? "#f4f4f4" : "#e0e0e0",
-                  height: 36,
-                }}
-              >
-                <td>{l.id}</td>
-                <td>{formatarData(l.data_mov)}</td>
-                <td>{l.modelo_codigo}</td>
-                <td>{l.historico}</td>
-                <td>{l.doc_ref}</td>
-                <td>{l.parceiro}</td>
-                <td>{fmt.format(l.valor_total)}</td>
-               {/*} <td>{l.parcelado ? "Sim" : "Não"}</td> 
-                <td>{l.numero_parcelas}</td>
-                   <td>{l.parcela_atual}</td>*/}
-                  <td style={{ display: "flex", gap: "28px" }} >
-                  <button 
-                    onClick={() => 
-                      navigate("/editar-diario", { state: { id: l.id } })
-                    }
-                    style={{ marginRight: 10 }}
-                  >
-                    Editar
-                  </button>
-
-                   {/* <button style={{ color: "red" }}
-                  >Excluir
-                  </button>*/}
-
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          + Novo
+        </button>
       </div>
     </div>
-  );
+
+    {/* ===== FILTROS ===== */}
+    <div className="bg-white rounded-xl shadow p-4 mb-6">
+      <div className="flex flex-wrap gap-6 items-end">
+
+        <div className="flex flex-col">
+          <label className="font-bold text-gray-700">Data inicial</label>
+          <input
+            type="date"
+            value={filtros.data_ini}
+            onChange={(e) =>
+              setFiltros({ ...filtros, data_ini: e.target.value })
+            }
+            className="border rounded-lg px-3 py-2 border-yellow-500"
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="font-bold text-gray-700">Data final</label>
+          <input
+            type="date"
+            value={filtros.data_fim}
+            onChange={(e) =>
+              setFiltros({ ...filtros, data_fim: e.target.value })
+            }
+            className="border rounded-lg px-3 py-2 border-yellow-500"
+          />
+        </div>
+
+        <div className="flex flex-col w-72">
+          <label className="font-bold text-gray-700">Token / Modelo</label>
+          <input
+            type="text"
+            value={filtros.modelo}
+            onChange={(e) =>
+              setFiltros({ ...filtros, modelo: e.target.value })
+            }
+            placeholder="VENDA_BEBIDA, etc"
+            className="border rounded-lg px-3 py-2 border-yellow-500"
+          />
+        </div>
+
+        <div className="flex flex-col flex-1 min-w-[240px]">
+          <label className="font-bold text-gray-700">Buscar</label>
+          <input
+            type="text"
+            value={filtros.busca}
+            onChange={(e) =>
+              setFiltros({ ...filtros, busca: e.target.value })
+            }
+            placeholder="Histórico / Documento / Parceiro"
+            className="border rounded-lg px-3 py-2 border-yellow-500"
+          />
+        </div>
+
+        <button
+          onClick={carregar}
+          className={`${btnPadrao} bg-blue-700 hover:bg-blue-800`}
+        >
+          Filtrar
+        </button>
+      </div>
+    </div>
+
+    {/* ===== TABELA ===== */}
+    <div className="bg-white rounded-xl shadow border border-gray-300 overflow-x-auto">
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr className="bg-gray-150 text-gray-800 font-bold">
+            <th className="p-2 text-left">ID</th>
+            <th className="p-2 text-left">Data</th>
+            <th className="p-2 text-left">Token</th>
+            <th className="p-2 text-left">Histórico</th>
+            <th className="p-2 text-left">Documento</th>
+            <th className="p-2 text-left">Parceiro</th>
+            <th className="p-2 text-right">Valor</th>
+            <th className="p-2 text-center">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {lista.map((l, i) => (
+            <tr
+              key={l.id}
+              className={i % 2 === 0 ? "bg-gray-50" : "bg-gray-100"}
+            >
+              <td className="p-2 font-bold">{l.id}</td>
+              <td className="p-2 font-bold">{formatarData(l.data_mov)}</td>
+              <td className="p-2 font-bold">{l.modelo_codigo}</td>
+              <td className="p-2">{l.historico}</td>
+              <td className="p-2">{l.doc_ref}</td>
+              <td className="p-2">{l.parceiro}</td>
+              <td className="p-2 text-right font-bold">
+                {fmt.format(l.valor_total)}
+              </td>
+              <td className="p-2 text-center">
+                <button
+                  onClick={() =>
+                    navigate("/editar-diario", { state: { id: l.id } })
+                  }
+                  className="text-blue-700 underline font-bold"
+                >
+                  Editar
+                </button>
+              </td>
+            </tr>
+          ))}
+
+          {lista.length === 0 && (
+            <tr>
+              <td colSpan={8} className="p-6 text-center text-gray-400">
+                Nenhum lançamento encontrado
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
+
 }

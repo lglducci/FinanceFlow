@@ -139,10 +139,10 @@ const historicoFormatado = historico.map(h => ({
 
   /* ================== UI ================== */
   return (
-    <div className="p-6 bg-blue-100 min-h-screen">
+    <div className="p-6 bg-blue-50 min-h-screen">
 
       {/* HEADER */}
-      <div className="bg-[#061f4aff] text-white rounded-xl p-6 mb-6">
+      <div className="bg-gray-100 text-blue-800 rounded-xl p-6 mb-6">
         <h1 className="text-2xl font-bold">📌 Apuração de Resultado</h1>
 
         <div className="flex gap-4 mt-4">
@@ -171,7 +171,7 @@ const historicoFormatado = historico.map(h => ({
                 : "bg-gray-400 text-gray-700 cursor-not-allowed"
             }`}
           >
-            Apurar Resultado
+            Apurar
           </button>
         </div>
 

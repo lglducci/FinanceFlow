@@ -24,8 +24,10 @@ export default function Login({ onLogin }) {
       return;
     }
 
-    try {
+     console.log("CHAMEI onLogin");
 
+    try {
+    
          const { data, error } =
             await supabase.auth.signInWithPassword({
               email,
@@ -33,12 +35,12 @@ export default function Login({ onLogin }) {
             });
 
           if (error) {
-            setErro("E-mail ou senha inválidos.");
+            setErro("E-mail  ou senha inválidos.");
             return;
           }
 
           
-      const url = buildWebhookUrl("login");
+     const url = buildWebhookUrl("login");
 
       const resp = await fetch(url, {
         method: "POST",
@@ -48,8 +50,9 @@ export default function Login({ onLogin }) {
 
       const datalogin = await resp.json();
 
-      if (!resp.ok || data.erro) {
-        setErro(datalogin.erro || "Login inválido.");
+    if (!resp.ok || datalogin.erro) {
+
+        setErro(datalogin.erro || "Login  inválido.");
         return;
       }
 
@@ -74,7 +77,7 @@ export default function Login({ onLogin }) {
       localStorage.setItem("id_usuario", datalogin.usuario_id);
       localStorage.setItem("id_empresa", datalogin.empresa_id);
        localStorage.setItem("empresa_id", datalogin.empresa_id);
-      
+     
 
       onLogin();
     } catch (err) {

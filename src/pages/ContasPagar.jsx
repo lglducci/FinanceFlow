@@ -155,8 +155,8 @@ useEffect(() => {
 
   if (periodo === "hoje") {
     const d = hoje.toISOString().split("T")[0];
-    setDataIni(d);
-    setDataFim(d);
+    setDataIni(hojeMaisDias(-7));
+    setDataFim(hojeMaisDias(15));
   }
 }, [periodo]);
 
@@ -300,331 +300,290 @@ async function pagarSelecionadas() {
   
 
   //------------------------------------------------------------------
+return (
+  <div className="p-4">
 
-  return (
-  <div className="p-2">
- 
-
-    
-
-    {/* CONTAINER PRINCIPAL */}
-    <div className="max-w-full mx-auto bg-[#fffffff] rounded-xl shadow-lg p-2 border-[8px] border-[#061f4aff] mb-2">
-      
-    <h2 className="text-xl font-bold mb-2 text-[#061f4aff]">Contas a Pagar</h2>
-
-      {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-
-        {/* ------------------------- */}
-        {/* 🟥 COLUNA 1 — FILTROS     */}
-        {/* ------------------------- */}
-         <div className="bg-white rounded-xl shadow p-4   w-full h-fit">
-
-
-          {/* PERÍODO + STATUS + DATA + FORNECEDOR + CONTA  */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1"> 
-
-            {/* DATA INÍCIO */}
-            <div>
-              <label className="font-bold text-base block mb-1 text-[#061f4aff]">Data início</label>  
-            <input
-              type="date"
-              value={dataIni}
-              disabled={somenteVencidas}
-              onChange={(e) => setDataIni(e.target.value)}
-              className={`border rounded-lg px-3 py-2 border-yellow-500
-                ${somenteVencidas ? "input-desativado" : ""}
-              `}
-            />
-              </div>
-
-            {/* DATA FIM */}
-            <div>
-             <label  className="font-bold text-base block mb-1 text-[#061f4aff]" >Data fim</label>
-              <input
-                type="date"
-                value={dataFim}
-                onChange={e => setDataFim(e.target.value)}
-                 className={`border rounded-lg px-3 py-2 border-yellow-500
-                ${somenteVencidas ? "input-desativado" : ""}
-              `}
-              />
-            </div>
-
-            {/* STATUS */}
-            <div>
-               <label className="text-base font-semibold text-[#061f4aff] mb-1 block"> Status</label>
-              <select
-                value={status}
-                onChange={e => setStatus(e.target.value)}
-                className="border font-bold rounded px-3 py-2 w-full border-yellow-500"
-              >  
-                 <option value="0">Todos</option>
-                <option value="aberto">Aberto</option>
-                <option value="pago">Pago</option>
-                
-              </select>
-            </div>
-
-            {/* FORNECEDOR */}
-            <div >
-               <label className="text-base font-semibold text-[#061f4aff] mb-1 block"> Fornecedor</label>
-
-               
-              <select
-                value={fornecedor_id}
-                onChange={e => setFornecedorId(Number(e.target.value))}
-                className="border font-bold rounded px-3 py-2 w-full border-yellow-500"
-              >
-                <option value={0}>Todos</option>
-                {fornecedores.map(f => (
-                  <option key={f.id} value={f.id}>{f.nome}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* CONTA BANCÁRIA */}
-            <div className="col-span-2">
-               <label className="text-base font-semibold text-[#061f4aff] mb-1 block"> Conta bancária</label>
-              <select
-                value={conta_id}
-                onChange={async (e) => {
-                  const id = Number(e.target.value);
-                  setContaId(id);
-
-                  if (id === 0) {
-                    setDadosConta(null);
-                    return;
-                  }
-
-                  const empresa = localStorage.getItem("empresa_id") || 1;
-
-                  const url = buildWebhookUrl("consultasaldo", {
-                    inicio: new Date().toISOString().split("T")[0],
-                    fim: new Date().toISOString().split("T")[0],
-                    empresa_id: empresa,
-                    conta_id: id,
-                  });
-
-                  const resp = await fetch(url);
-                  const json = await resp.json();
-                  setDadosConta(json[0]);
-                }}
-                className="border font-bold rounded px-3 py-2 w-full border-yellow-500"
-              >
-                <option value={0}>Selecione...</option>
-                {contas.map(ct => (
-                  <option key={ct.id} value={ct.id}>
-                    {ct.nome}
-                  </option>
-                ))}
-              </select> 
-            </div> 
-            <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={somenteVencidas}
-                  onChange={e => setSomenteVencidas(e.target.checked)}
-                />
-                <label className="font-bold text-base block mb-2 text-[#061f4aff]">
-                  Somente vencidas
-                </label>
-              </div>
-
-
-          </div>
-
-          {/* BOTÕES */}
-          <div className="flex justify-left gap-2 mt-4">
-            <button onClick={pesquisar}
-           //  className="bg-blue-600 text-white px-5 py-2 rounded font-semibold">
-               className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700`}>
-              Pesquisar
-            </button>
-
-            <button onClick={() => navigate("/nova-conta-pagar")} 
-          //  className="bg-green-600 text-white px-5 py-2 rounded font-semibold">
-             className= { `${btnPadrao} bg-green-600 hover:bg-green-700`}>
-              Novo Conta
-            </button>
-
-            <button
-              onClick={() => navigate("/excluir-parcelamento-pagar")}
-              //className="bg-red-600 text-white px-5 py-2 rounded font-semibold">
-               className= { `${btnPadrao} bg-red-600 hover:bg-red-700`}>
-              Excluir Parcelamento
-            </button>
-
-            <button
-              //className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-                 className= { `${btnPadrao} bg-green-600 hover:bg-green-700`}
-              onClick={pagarSelecionadas}
-            >
-              Pagar Selecionadas
-            </button>
-        
-           {/* 🖨️ IMPRIMIR */}
-                 
-                  <button
-                    onClick={() => window.print()}
-                   /// className="bg-gray-700 text-white px-6 py-2 rounded-lg font-bold"
-                     className= { `${btnPadrao} bg-gray-600 hover:bg-gray-700`}
-                  >
-                    🖨️ Imprimir
-                  </button> 
-               
-              </div>
-
-        </div>
-
-        {/* ------------------------- */}
-        {/* 🟦 COLUNA 2 — CARD SALDO */}
-        {/* ------------------------- */}
-       
-       <div className="bg-gray-100 rounded-xl shadow p-11 border-l-4 border-blue-900 h-[px640] w-[500px] mt-[20px]"> 
-        {dadosConta && (
-          <>
-            <h3 className="font-bold text-xl text-blue-700 mb-4">
-              🏦 {dadosConta.conta_nome}
-            </h3>
-
-            <p  className="text-gray-700 font-bold text-bas mt-2"><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-            <p className="text-gray-700 font-bold text-base mt-2"><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-            <p className="text-gray-700 font-bold text-base mt-2"><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p> 
-            <p className="text-green-700 font-bold text-xl mt-4">
-              Saldo final: R$
-              {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-            </p>
-          </>
-        )}
-
+    {/* HEADER */}
+    <div className="mb-4 flex flex-col gap-3 rounded-xl bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 className="text-xl font-bold text-blue-800">Contas a Pagar</h2>
+        <p className="text-sm text-slate-600">
+          Consulte, selecione e pague contas com poucos cliques.
+        </p>
       </div>
 
+      <div className="flex flex-wrap items-center gap-3">
+  {/* AÇÃO PRINCIPAL */}
+  <button
+    onClick={() => navigate("/nova-conta-pagar")}
+    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+  >
+    + Nova conta
+  </button>
+
+  {/* AÇÃO CRÍTICA */}
+  <button
+    onClick={pagarSelecionadas}
+    className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+  >
+    Pagar selecionadas
+    {selecionadas.length > 0 && (
+      <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
+        {selecionadas.length}
+      </span>
+    )}
+  </button>
+
+  {/* AÇÕES SECUNDÁRIAS */}
+  <button
+    onClick={() => window.print()}
+    className="text-sm font-semibold text-slate-600 hover:text-slate-800"
+  >
+    🖨️ Imprimir
+  </button>
+
+  <button
+    onClick={() => navigate("/excluir-parcelamento-pagar")}
+    className="text-sm font-semibold text-red-600 hover:text-red-700"
+  >
+    Excluir parcelamento
+  </button>
+</div>
+
+    </div>
+
+    {/* RESUMOS */}
+    <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+      <div className="rounded-xl border-l-4 border-blue-600 bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">Total do período</p>
+        <p className="mt-1 text-xl font-bold text-slate-900">
+          {totalPeriodo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+        </p>
+      </div>
+
+      <div className="rounded-xl border-l-4 border-amber-500 bg-white p-4">
+        <p className="text-xs font-semibold text-slate-500">Status</p>
+        <p className="mt-1 text-sm font-semibold text-slate-900">
+          {status === "0" ? "Todos" : status}
+        </p>
+        <p className="text-xs text-slate-500">
+          {somenteVencidas ? "Somente vencidas" : "Inclui todas"}
+        </p>
+      </div>
+
+      <div className="rounded-xl border-l-4 border-emerald-600 bg-white p-4">
+        <p className="text-base font-bold text-slate-900">Conta bancária</p>
+        <p className="mt-1 text-sm font-semibold text-slate-900">
+          {dadosConta?.conta_nome ?? "Não selecionada"}
+        </p>
+        <p className="text-base text-green-500 font-bold">
+          {dadosConta
+            ? `Saldo: R$ ${Number(dadosConta.saldo_final).toLocaleString("pt-BR")}`
+            : "Selecione para ver saldo"}
+        </p>
       </div>
     </div>
 
+    {/* FILTROS + CONTA */}
+    <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
 
-    {/* TOTAL PERÍODO 
-    <div className="bg-gray-100 rounded-xl shadow p-5 border-l-4 border-red-500 w-64 mb-4">
-      <p className="text-base text-gray-600">Total do Período</p>
-      <p className="text-2xl font-bold">
-        {totalPeriodo.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL"
-        })}
-      </p>
-    </div>*/}
-   
-    {/* LISTA */}
-    {loading && <p>Carregando...</p>}
+      {/* FILTROS */}
+      <details className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
+        <summary className="cursor-pointer text-sm font-semibold text-slate-900">
+          🔎 Filtros
+        </summary>
 
-    <div className="bg-gray-300 rounded-xl shadow  border-[4px] border-gray-500 overflow-x-auto">
-       <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
-      <table className="w-full text-base">
-        <thead className="bg-blue-900 text-white">
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+          <input
+            type="date"
+            value={dataIni}
+            onChange={e => setDataIni(e.target.value)}
+            className="rounded-lg border px-3 py-2 text-sm"
+          />
+
+          <input
+            type="date"
+            value={dataFim}
+            onChange={e => setDataFim(e.target.value)}
+            className="rounded-lg border px-3 py-2 text-sm"
+          />
+
+          <select
+            value={status}
+            onChange={e => setStatus(e.target.value)}
+            className="rounded-lg border px-3 py-2 text-sm font-semibold"
+          >
+            <option value="0">Todos</option>
+            <option value="aberto">Aberto</option>
+            <option value="pago">Pago</option>
+          </select>
+
+          <select
+            value={fornecedor_id}
+            onChange={e => setFornecedorId(Number(e.target.value))}
+            className="rounded-lg border px-3 py-2 text-sm font-semibold md:col-span-2"
+          >
+            <option value={0}>Todos</option>
+            {fornecedores.map(f => (
+              <option key={f.id} value={f.id}>{f.nome}</option>
+            ))}
+          </select>
+
+          <label className="flex items-center gap-2 text-sm font-semibold">
+            <input
+              type="checkbox"
+              checked={somenteVencidas}
+              onChange={e => setSomenteVencidas(e.target.checked)}
+            />
+            Somente vencidas
+          </label>
+        </div>
+
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={pesquisar}
+            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
+          >
+            Pesquisar
+          </button>
+        </div>
+      </details>
+
+      {/* CONTA BANCÁRIA */}
+      <div className="rounded-xl border-l-4 border-emerald-600 bg-white p-4">
+        <label className="block text-xs font-semibold text-slate-600">
+          Conta bancária
+        </label>
+
+        <select
+          value={conta_id}
+          onChange={async (e) => {
+            const id = Number(e.target.value);
+            setContaId(id);
+
+            if (id === 0) {
+              setDadosConta(null);
+              return;
+            }
+
+            const empresa = localStorage.getItem("empresa_id") || 1;
+
+            const url = buildWebhookUrl("consultasaldo", {
+              inicio: new Date().toISOString().split("T")[0],
+              fim: new Date().toISOString().split("T")[0],
+              empresa_id: empresa,
+              conta_id: id,
+            });
+
+            const resp = await fetch(url);
+            const json = await resp.json();
+            setDadosConta(json[0]);
+          }}
+          className="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
+        >
+          <option value={0}>Selecione...</option>
+          {contas.map(ct => (
+            <option key={ct.id} value={ct.id}>{ct.nome}</option>
+          ))}
+        </select>
+
+        <div className="mt-4 rounded-lg bg-emerald-50 p-3">
+          <p className="text-sm font-semibold text-slate-900">
+            {dadosConta ? `🏦 ${dadosConta.conta_nome}` : "Nenhuma conta selecionada"}
+          </p>
+                 <div className="mt-2 space-y-1 text-sm text-slate-700">
+            <div><strong>Banco:</strong> {dadosConta?.nro_banco ?? "-"}</div>
+            <div><strong>Agência:</strong> {dadosConta?.agencia ?? "-"}</div>
+            <div><strong>Conta:</strong> {dadosConta?.conta ?? "-"}</div>
+          </div>
+          {/*<div className="mt-3 text-lg font-bold text-emerald-700">
+            Saldo: {dadosConta
+              ? `R$ ${Number(dadosConta.saldo_final).toLocaleString("pt-BR")}`
+              : "—"}
+          </div>*/}
+        </div>
+      </div>
+    </div>
+
+    {/* TABELA */}
+    <div className="rounded-xl border border-blue-100 bg-white overflow-x-auto">
+      <table className="min-w-full text-sm">
+        <thead className="bg-blue-50 text-blue-900 border-b border-blue-200">
           <tr>
-            <th className="px-3 py-2 text-center font-bold w-10">Sel.</th>
-            <th className="px-3 py-2 text-left font-bold">ID</th>
-            <th className="px-3 py-2 text-left font-bold">Descrição</th>
-            <th className="px-3 py-2 text-center font-bold">Vencimento</th>
-            <th className="px-3 py-2 text-left font-bold">Categoria</th>
-            <th className="px-3 py-2 text-left font-bold">Fornecedor</th>
-            <th className="px-3 py-2 text-center font-bold">Parcelas</th>
-            <th className="px-3 py-2 text-center font-bold">Nº Parcela</th> 
-            <th className="px-3 py-2 text-right font-bold">Valor</th>
-             <th className="px-3 py-2 text-center font-bold">Status</th>
-            <th className="px-3 py-2 text-center font-bold">Ações</th>
+            <th className="px-3 py-3">Sel.</th>
+            <th className="px-3 py-3 text-left">ID</th>
+            <th className="px-3 py-3 text-left">Descrição</th>
+            <th className="px-3 py-3 text-left">Vencimento</th>
+            <th className="px-3 py-3 text-left">Fornecedor</th>
+            <th className="px-3 py-3 text-right">Valor</th>
+            <th className="px-3 py-3 text-left">Status</th>
+            <th className="px-3 py-3 text-right">Ações</th>
           </tr>
         </thead>
 
         <tbody>
-          {lista.length === 0 && !loading && (
-            <tr>
-              <td colSpan={10} className="px-3 py-4 text-center">
-                Nenhuma conta encontrada para o filtro selecionado.
-              </td>
-            </tr>
-          )}
+          {lista.map(c => {
+            const statusClass =
+              c.status === "pago"
+                ? "bg-emerald-200 text-emerald-900"
+                : "bg-amber-200 text-amber-900";
 
-          {lista.map((c, i) => (
-            <tr key={c.id} className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
+            return (
+              <tr key={c.id} className="border-b hover:bg-blue-50">
+                <td className="px-3 py-2 text-center">
+                  <input
+                    type="checkbox"
+                    checked={selecionadas.includes(c.id)}
+                    onChange={() => toggleSelecionada(c.id)}
+                    disabled={c.status === "pago"}
+                  />
+                </td>
 
-               
-              <td className="px-3 py-2 text-center">
-                <input
-                  type="checkbox"
-                  checked={selecionadas.includes(c.id)}
-                  onChange={() => toggleSelecionada(c.id)}
-                  disabled={c.status === "pago"}
-                 className={c.status === "pago" ? "opacity-140 bg-black" : ""}
-                />
-              </td>
+                <td className="px-3 py-2 font-semibold">{c.id}</td>
+                <td className="px-3 py-2 font-semibold">{c.descricao}</td>
+                <td className="px-3 py-2">{formatarDataBR(c.vencimento)}</td>
+                <td className="px-3 py-2">{c.fornecedor}</td>
 
+                <td className="px-3 py-2 text-right font-bold">
+                  {Number(c.valor).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </td>
 
-              <td className="px-3 py-2">{c.id}</td>
-              <td className="px-3 py-2 font-bold">{c.descricao}</td>
-              <td className="px-3 py-2 text-center font-bold">
-                { formatarDataBR(c.vencimento) }
-              </td>
-              <td className="px-3 py-2 font-bold">{c.categoria}</td>
-              <td className="px-3 py-2 font-bold">{c.fornecedor}</td>
-              <td className="px-3 py-2 text-center font-bold">{c.parcelas}</td>
-              <td className="px-3 py-2 text-center font-bold">{c.parcela_num}</td>  
-              <td className="px-3 py-2 text-right font-bold">
-                {Number(c.valor).toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-              </td>
-              
-               <td className="px-3 py-2 text-center font-bold">{c.status}</td>
-              <td className="px-3 py-2 text-center">
+                <td className="px-3 py-2">
+                  <span className={`rounded-full px-2 py-1 text-xs font-semibold ${statusClass}`}>
+                    {c.status}
+                  </span>
+                </td>
+
+                <td className="px-3 py-2 text-right">
                   {c.status === "aberto" && (
-                <button
-                  onClick={() => navigate(`/edit-conta-pagar/${c.id}`)}
-                  className="text-blue-600 mr-3 underline"
-                >
-                  Editar
-                </button>
+                    <>
+                      <button
+                        onClick={() => navigate(`/edit-conta-pagar/${c.id}`)}
+                        className="mr-3 text-blue-700 hover:underline"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => excluir(c.id)}
+                        className="text-red-700 hover:underline"
+                      >
+                        Excluir
+                      </button>
+                    </>
                   )}
-
-                 {c.status === "aberto" && (
-                <button
-                  onClick={() => excluir(c.id)}
-                  className="text-red-600 underline"
-                >
-                  Excluir
-                </button>
-                  )}
-              </td>
-                 
-            </tr>
-          ))}
-
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
-
-        <tfoot>
-          <tr className="bg-blue-100 border-t-2 border-blue-900">
-            <td colSpan={8} className="px-3 py-3 text-right font-bold text-blue-900">
-              Total do período:
-            </td>
-
-            <td className="px-3 py-3 text-right font-bold text-green-700 text-lg">
-              {totalPeriodo.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </td>
-
-            <td colSpan={2}></td>
-          </tr>
-        </tfoot>
-
       </table>
-      </div>
     </div>
 
   </div>
 );
 
+   
 }

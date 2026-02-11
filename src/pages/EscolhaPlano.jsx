@@ -14,13 +14,13 @@ export default function EscolhaPlano() {
   useEffect(() => {
     async function carregar() {
       setLoading(true);
-
+ 
       // 1️⃣ buscar perfil CONTABIL (schema correto)
       const { data: perfil, error: errPerfil } = await supabase
         .schema("public")
         .from("perfis")
         .select("id")
-        .eq("codigo", "CONTABIL")
+        .eq("codigo", "TOTAL")
         .single();
 
       if (errPerfil || !perfil) {
@@ -37,6 +37,10 @@ export default function EscolhaPlano() {
         .eq("ativo", true)
         .eq("perfil_id", perfil.id)
         .order("valor_mensal");
+        
+  
+console.log("TESTE PLANOS:", planosData);
+console.log("ERRO PLANOS:", errPlanos);
 
       if (errPlanos) {
         console.error("Erro ao buscar planos", errPlanos);

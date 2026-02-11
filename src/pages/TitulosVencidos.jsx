@@ -152,127 +152,162 @@ export default function TitulosVencidos() {
 }
 
 
-  return (
-    <div className="p-2">
-      
+   return (
+  <div className="p-4 space-y-6">
 
-      {/* ===== BLOCO FIXO (NÃO SE MOVE) ===== */}
-      <div className="bg-white rounded-xl shadow p-2 border-[10px] border-[#061f4aff] mb-2">
+    {/* HEADER */}
+    <div>
+      <h1 className="text-xl font-bold text-blue-800">
+        Títulos vencidos e a vencer
+      </h1>
+      <p className="text-sm text-gray-500">
+        Controle de contas vencidas e próximas do vencimento.
+      </p>
+    </div>
 
-         <h2 className="text-2xl font-bold mb-1 text-[#061f4aff]">
-       Títulos Vencidos e a Vencer
-      </h2>
+    {/* FILTROS */}
+    <div className="bg-white rounded-xl shadow-sm p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-end">
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 items-stretch">
-
-          {/* FILTROS */}
-          <div className="lg:col-span-3 flex flex-wrap items-center gap-2">
-            <div>
-              <label className="font-bold text-[#061f4aff] block mb-1">Período</label>
-              <select
-                value={modo}
-                onChange={(e) => setModo(e.target.value)}
-                className="border rounded px-3 py-2 w-48 border-yellow-500"
-              >
-                <option value="vencidos">Somente vencidos</option>
-                <option value="vencer">Vencidos + a vencer</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="font-bold text-[#061f4aff] block mb-1">Dias</label>
-              <select
-                value={dias}
-                disabled={modo === "vencidos"}
-                onChange={(e) => setDias(Number(e.target.value))}
-                className="border rounded px-3 py-2 w-24 border-yellow-500"
-              >
-                <option value={7}>7</option>
-                <option value={15}>15</option>
-                <option value={30}>30</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="font-bold text-[#061f4aff] block mb-1">Conta</label>
-              <select
-                value={contaId}
-                onChange={(e) => setContaId(Number(e.target.value))}
-                className="border rounded px-3 py-2 w-56 border-yellow-500"
-              >
-                <option value={0}>Todas</option>
-                {contas.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nome}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              onClick={pesquisar}
-              className="h-12 px-8 bg-blue-600 text-white font-bold rounded-lg mt-6"
-            >
-              Atualizar
-            </button>
-
-          </div>
-
-          {/* CARD CONTA — ALTURA FIXA */}
-          <div className="bg-white rounded-xl shadow p-4 border-l-4 border-blue-900 flex flex-col justify-between min-h-[140px]">
-            <div>
-              <h3 className="font-bold text-lg text-blue-700 mt-2">
-                🏦 {dadosConta.conta_nome}
-              </h3>
-
-              <p className="text-sm mt-2 text-gray-700">
-                Banco: {dadosConta.nro_banco}    • Agência: {dadosConta.agencia}    • Conta Corrente: {dadosConta.conta}
-              </p>
-            </div>
-
-            <div className="text-green-700 font-bold text-lg mt-2">
-              Saldo final: R$ {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-            </div>
-          </div>
+        {/* PERÍODO */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Período
+          </label>
+          <select
+            value={modo}
+            onChange={(e) => setModo(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="vencidos">Somente vencidos</option>
+            <option value="vencer">Vencidos + a vencer</option>
+          </select>
         </div>
+
+        {/* DIAS */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Dias
+          </label>
+          <select
+            value={dias}
+            disabled={modo === "vencidos"}
+            onChange={(e) => setDias(Number(e.target.value))}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
+          >
+            <option value={7}>7</option>
+            <option value={15}>15</option>
+            <option value={30}>30</option>
+          </select>
+        </div>
+
+        {/* CONTA */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Conta bancária
+          </label>
+          <select
+            value={contaId}
+            onChange={(e) => setContaId(Number(e.target.value))}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value={0}>Todas</option>
+            {contas.map(c => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* AÇÃO */}
+        <button
+          onClick={pesquisar}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+        >
+          Atualizar
+        </button>
       </div>
+    </div>
 
-      {/* ===== TABELA ===== */}
-      <div className="bg-gray-100 rounded-xl p-4 shadow border-[2px] border-gray-500  border-spacing-y-2">
-     <table className="w-full border-separate border-spacing-y-3">
-          <thead className="bg-blue-900 text-white">
+    {/* CARD CONTA */}
+    <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-700">
+      <h3 className="font-semibold text-gray-900">
+        🏦 {dadosConta.conta_nome}
+      </h3>
+
+      <p className="text-sm text-gray-600 mt-1">
+        Banco: {dadosConta.nro_banco} • Agência: {dadosConta.agencia} • Conta: {dadosConta.conta}
+      </p>
+
+      <p className="mt-3 text-lg font-semibold text-emerald-600">
+        Saldo atual:{" "}
+        {Number(dadosConta.saldo_final).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })}
+      </p>
+    </div>
+
+    {/* TABELA */}
+    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="bg-slate-100 text-slate-700">
+          <tr>
+            <th className="px-3 py-2 text-left">Status</th>
+            <th className="px-3 py-2 text-left">Tipo</th>
+            <th className="px-3 py-2 text-center">Vencimento</th>
+            <th className="px-3 py-2 text-center">Dias</th>
+            <th className="px-3 py-2 text-left">Descrição</th>
+            <th className="px-3 py-2 text-left">Parceiro</th>
+            <th className="px-3 py-2 text-right">Valor</th>
+            <th className="px-3 py-2 text-center">Ação</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {lista.length === 0 && (
             <tr>
-              <th>⚠ Status</th>
-              <th className="text-left font-bold">Tipo</th>
-              <th  className="text-center font-bold">Vencimento.</th>
-              <th  className="text-left font-bold">Dias</th>
-              <th className="text-left font-bold ">Descrição</th>
-              <th className="text-left font-bold">Parceiro</th>
-              <th className="text-right font-bold">Valor</th> 
-              <th className=" px-5 text-left font-bold">Ação</th>
+              <td colSpan={8} className="text-center py-6 text-gray-500">
+                Nenhum título encontrado.
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {lista.map((l, i) => (
-              <tr key={i} className={i % 2 ?  "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-                <td className="px-3 text-center font-bold text-base">{l.critico ? "⚠ crítico" : "normal"}</td>
-                <td className="px-3 text-left font-bold text-base ">{l.evento_codigo}</td>
-                <td className="px-3 text-center font-bold text-base">{new Date(l.vencimento).toLocaleDateString("pt-BR")}</td>
-                <td className={l.dias_atraso > 0 ? "px-3 text-red-600 font-bold text-base" : "px-3 text-blue-600 font-bold text-base"}>
-                  {l.dias_atraso}
-                </td>
-                <td className="px-3 text-left font-bold text-base">{l.descricao}</td>
-                <td className="px-3 text-left font-bold text-base">{l.parceiro || "-"}</td>
-                <td className="px-3 text-right font-bold text-base">
-                  {Number(l.valor).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </td>
+          )}
 
-               <button
+          {lista.map((l, i) => (
+            <tr key={i} className="border-t">
+              <td className="px-3 py-2 font-semibold">
+                {l.critico ? "⚠ Crítico" : "Normal"}
+              </td>
+
+              <td className="px-3 py-2 font-medium">
+                {l.evento_codigo}
+              </td>
+
+              <td className="px-3 py-2 text-center">
+                {new Date(l.vencimento).toLocaleDateString("pt-BR")}
+              </td>
+
+              <td
+                className={`px-3 py-2 text-center font-semibold ${
+                  l.dias_atraso > 0 ? "text-red-600" : "text-blue-600"
+                }`}
+              >
+                {l.dias_atraso}
+              </td>
+
+              <td className="px-3 py-2">{l.descricao}</td>
+              <td className="px-3 py-2">{l.parceiro || "-"}</td>
+
+              <td className="px-3 py-2 text-right font-semibold">
+                {Number(l.valor).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </td>
+
+              <td className="px-3 py-2 text-center">
+                <button
                   onClick={() => processarTitulo(l, contaId)}
-                  className={`px-5 underline font-bold text-right ${
+                  className={`font-semibold underline ${
                     l.evento_codigo === "RECEBER"
                       ? "text-blue-700"
                       : "text-red-700"
@@ -281,18 +316,17 @@ export default function TitulosVencidos() {
                   {l.evento_codigo === "RECEBER"
                     ? "Receber"
                     : l.evento_codigo === "PAGAMENTO_FATURA_CARTAO"
-                    ? "Pagar Fatura"
+                    ? "Pagar fatura"
                     : "Pagar"}
                 </button>
-
-              {/*}  <td className="px-3 text-center text-blue-700 underline font-bold text-base">
-                  {l.evento_codigo === "RECEBER" ? "Receber" : "Pagar"}
-                </td>*/}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-  );
+
+  </div>
+);
+
 }

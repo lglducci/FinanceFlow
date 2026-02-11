@@ -1,6 +1,7 @@
  import React, { useState } from "react";
  import { hojeLocal, dataLocal } from "../utils/dataLocal";
 import { useNavigate } from "react-router-dom";
+import { buildWebhookUrl } from "../config/globals";
 
 export default function NovaConta() {
   const [form, setForm] = useState({
@@ -56,68 +57,69 @@ const THEME = {
   };
 
   const salvar = async () => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const payload = {
-        body: {
-          empresa_id: form.empresa_id,
-          nome: form.nome,
-          banco: form.banco,
-          tipo: form.tipo,
-          saldo_inicial: form.saldo_inicial,
-          nro_banco: form.nro_banco,
-          agencia: form.agencia,
-          conta: form.conta,
-          conjunta: form.conjunta,
-          juridica: form.juridica,
-          padrao: form.padrao,
-          conta_contabil: form.conta_contabil
-        },
-      };
+    const payload = {
+      body: {
+        empresa_id: form.empresa_id,
+        nome: form.nome,
+        banco: form.banco,
+        tipo: form.tipo,
+        saldo_inicial: form.saldo_inicial,
+        nro_banco: form.nro_banco,
+        agencia: form.agencia,
+        conta: form.conta,
+        conjunta: form.conjunta,
+        juridica: form.juridica,
+        padrao: form.padrao,
+        conta_contabil: form.conta_contabil,
+      },
+    };
 
-      console.log("ENVIANDO PRO WEBHOOK:", payload);
+    console.log("ENVIANDO PRO WEBHOOK:", payload);
 
-      const resp = await fetch(
-        "https://webhook-homolog.lglducci.com.br/webhook/novacontafinanceira",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!resp.ok) {
-        console.log("ERRO STATUS:", resp.status);
-        alert("Erro ao salvar conta.");
-        return;
+    const resp = await fetch(
+      buildWebhookUrl("novacontafinanceira"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       }
+    );
 
-      const data = await resp.json();
-      console.log("RESPOSTA SALVAR:", data);
-
-      alert("Conta salva com sucesso!");
-
-      setForm({
-        empresa_id: localStorage.getItem("id_empresa") || "",
-        nome: "",
-        banco: "",
-        tipo: "",
-        saldo_inicial: "",
-        nro_banco: "",
-        agencia: "",
-        conta: "",
-        conjunta: false,
-        juridica: false,
-        padrao: false,
-      });
-    } catch (e) {
-      console.log("ERRO:", e);
+    if (!resp.ok) {
+      console.log("ERRO STATUS:", resp.status);
       alert("Erro ao salvar conta.");
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    const data = await resp.json();
+    console.log("RESPOSTA SALVAR:", data);
+
+    alert("Conta salva com sucesso!");
+
+    setForm({
+      empresa_id: localStorage.getItem("id_empresa") || "",
+      nome: "",
+      banco: "",
+      tipo: "",
+      saldo_inicial: "",
+      nro_banco: "",
+      agencia: "",
+      conta: "",
+      conjunta: false,
+      juridica: false,
+      padrao: false,
+      conta_contabil: "",
+    });
+  } catch (e) {
+    console.log("ERRO:", e);
+    alert("Erro ao salvar conta.");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 
@@ -134,7 +136,7 @@ const THEME = {
 
   return (
         <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#1e40af]   mt-1 mb-1" >
+        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
       <h1
        
          className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -146,7 +148,7 @@ const THEME = {
 
         {/* Nome */}
         <div>
-          <label className="label label-required block font-bold mb-1 text-[#1e40af]">Nome da Conta</label>
+          <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Nome da Conta</label>
           <input
             name="nome" 
             value={form.nome}
@@ -159,7 +161,7 @@ const THEME = {
         {/* Banco + Número do Banco */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Banco</label>
+            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Banco</label>
             <input
               name="banco"
               className="input-base w-64 h-10"
@@ -170,7 +172,7 @@ const THEME = {
           </div>
 
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Número do Banco</label>
+            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Número do Banco</label>
             <input
               name="nro_banco"
                  className="input-base w-64 h-10"
@@ -185,7 +187,7 @@ const THEME = {
        
          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className=" label label-required block font-bold mb-1 text-[#1e40af]">Agência</label>
+            <label className=" label label-required block font-bold mb-1 text-[#061f4aff]">Agência</label>
             <input
               name="agencia"
                className="input-base w-48 h-10"
@@ -196,7 +198,7 @@ const THEME = {
           </div>
 
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Número da Conta</label>
+            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Número da Conta</label>
             <input
               name="conta"
                className="input-base w-48 h-10"
@@ -208,7 +210,7 @@ const THEME = {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Tipo</label>
+            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Tipo</label>
             <select
               name="tipo"
               value={form.tipo}
@@ -331,7 +333,7 @@ const THEME = {
         <button
           onClick={salvar}
           disabled={loading}
-          className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
+          className="flex-1 bg-[#061f4aff] text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
         >
           {loading ? "Salvando..." : "Salvar"}
         </button>

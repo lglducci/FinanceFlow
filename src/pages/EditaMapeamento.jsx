@@ -87,166 +87,132 @@ export default function EditaMapeamento() {
   // ================================
   //  TELA
   // ================================
-  return (
-    <div style={{ padding: 10,
-                  background: "#cdd5dfff",
-                    border: "2px solid #061f4aff",
-                }}>
-      <h2>Editar Mapeamento</h2>
+   return (
+  <div className="p-4 bg-gray-100 border border-blue-900 rounded-xl">
 
-                    {/* CABEÇALHO DO MODELO */}
-                 <div
-                    style={{
-                        background: "#061f4aff",
-                        padding: 15,
-                        border: "2px solid #f7f1f5ff",
-                        borderRadius: 8,
-                        marginBottom: 20, 
-                    }}
-                    >
-                    <h3  className="text-1xl font-bold mb-4 text-white" style={{ margin: 0 }}>
-                       
-                        <b> Token: </b> {token}
-                    </h3>
+    {/* ===== CABEÇALHO ===== */}
+    <div className="bg-white rounded-xl border-l-4 border-blue-700 shadow-sm p-4 mb-6">
+      <h2 className="text-2xl font-bold text-blue-900 mb-2">
+        Editar Mapeamento Contábil
+      </h2>
 
-                    <h3 className="text-1xl font-bold mb-4 text-white" style={{ marginTop: 5 }}>
-                        <b> Nome:</b> {nome}
-                    </h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <p className="text-sm text-gray-500">Token</p>
+          <p className="font-semibold text-gray-800">{token}</p>
+        </div>
 
-                    
-                    <h3 className="text-1xl font-bold mb-4 text-white" style={{ marginTop: 5 }}>
-                        <b className="text-1xl font-bold mb-4 text-white" >Tipo:</b> {tipo}
-                    </h3>
+        <div>
+          <p className="text-sm text-gray-500">Nome</p>
+          <p className="font-semibold text-gray-800">{nome}</p>
+        </div>
 
-                    </div>
+        <div>
+          <p className="text-sm text-gray-500">Tipo</p>
+          <p className="font-semibold text-gray-800">{tipo}</p>
+        </div>
+      </div>
+    </div>
 
-
-
-      <table className="tabela tabela-mapeamento"   style={{
-            width: "90%",
-            borderCollapse: "collapse",
-            fontSize: 14,
-          }} >
-        <thead>
+    {/* ===== TABELA ===== */}
+    <div className="bg-white rounded-xl shadow-sm p-4">
+      <table className="w-full text-sm border-collapse">
+        <thead className="bg-gray-100 text-gray-700">
           <tr>
-            <th>Buscar Conta</th>
-            <th>ID</th>
-            <th>Conta Atual</th> 
-            <th>Código</th>
-            <th>Nome</th>
-            <th>Tipo</th>
-            <th>Natureza</th>
-            <th>D/C</th>
+            <th className="p-2 text-left">Buscar Conta</th>
+            <th className="p-2 text-left">ID</th>
+            <th className="p-2 text-left">Conta Atual</th>
+            <th className="p-2 text-left">Código</th>
+            <th className="p-2 text-left">Nome</th>
+            <th className="p-2 text-left">Tipo</th>
+            <th className="p-2 text-left">Natureza</th>
+            <th className="p-2 text-center">D/C</th>
           </tr>
         </thead>
 
         <tbody>
           {linhas.map((l, i) => (
-            <tr key={i}> 
-              {/* CAMPO DE BUSCA */}
-              <td>
+            <tr
+              key={i}
+              className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+            >
+              <td className="p-2 relative">
                 <input
                   type="text"
-                  placeholder="Procurar conta..."
+                  placeholder="Procurar conta…"
                   value={indexLinha === i ? busca : ""}
                   onChange={(e) => {
                     const texto = e.target.value;
                     setBusca(texto);
                     setIndexLinha(i);
-                    buscarContas(texto);
-                     buscarContas(l, texto);   // <-- PASSA A LINHA AQUI  
-
+                    buscarContas(l, texto);
                   }}
-                  style={{ width: "180px" }}
+                  className="w-full border rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
 
-                {/* LISTA DE RESULTADOS */}
                 {indexLinha === i && resultadoBusca.length > 0 && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      background: "#fff",
-                      border: "1px solid #ccc",
-                      width: "180px",
-                      zIndex: 9999,
-                    }}
-                  >
+                  <div className="absolute left-0 top-full mt-1 w-full bg-white border rounded-lg shadow-lg z-50 max-h-48 overflow-auto">
                     {resultadoBusca.map((c) => (
                       <div
                         key={c.id}
                         onClick={() => aplicarConta(i, c)}
-                        style={{
-                          padding: "6px 10px",
-                          cursor: "pointer",
-                          borderBottom: "1px solid #eee",
-                        }}
+                        className="px-3 py-2 cursor-pointer hover:bg-gray-100"
                       >
-                        <b>{c.codigo}</b> — {c.nome}
+                        <span className="font-semibold">{c.codigo}</span> — {c.nome}
                       </div>
                     ))}
                   </div>
                 )}
               </td>
-            <td>{l.id}</td> 
-              <td>{l.conta_id}</td>
-              <td>{l.codigo}</td>
-              <td>{l.nome}</td>
-              <td>{l.tipo}</td>
-              <td>{l.natureza}</td>
-              <td>{l.dc}</td>
+
+              <td className="p-2 font-semibold">{l.id}</td>
+              <td className="p-2">{l.conta_id}</td>
+              <td className="p-2">{l.codigo}</td>
+              <td className="p-2">{l.nome}</td>
+              <td className="p-2">{l.tipo}</td>
+              <td className="p-2">{l.natureza}</td>
+              <td className="p-2 text-center font-bold">{l.dc}</td>
             </tr>
           ))}
         </tbody>
       </table>
-         <div style={{ display: "flex", gap: 20, marginTop: 20 }}>
-  <button 
-    style={{
-      padding: "10px 20px",
-       background: "#003ba2",
-      color: "white",
-      border: "none",
-      borderRadius: 8,
-      fontWeight: "bold",
-      cursor: "pointer",
-    }}
-    onClick={async () => {
-      try {
-        const url = buildWebhookUrl("salvar_mapeamento", {
-          empresa_id,
-          modelo_id,
-        });
-
-        await fetch(url, {
-          method: "POST",
-          body: JSON.stringify(linhas),
-        });
-
-        alert("Mapeamento salvo!");
-        navigate("/mapeamento-contabil");  // ⭐ AQUI VOLTA PRA TELA
-      } catch (e) {
-        alert("Erro ao salvar!");
-      }
-    }}
-  >
-    Salvar Tudo
-  </button>
-
-  <button
-    style={{
-      padding: "10px 20px",
-      background: "#6b6b6b71",
-      color: "white",
-      border: "none",
-      borderRadius: 8,
-      fontWeight: "bold",
-      cursor: "pointer",
-    }}
-    onClick={() => navigate("/mapeamento-contabil")}
-  >
-    Cancelar
-  </button>
-</div> 
-
     </div>
-  );
+
+    {/* ===== AÇÕES ===== */}
+    <div className="flex gap-4 mt-6">
+      <button
+        onClick={async () => {
+          try {
+            const url = buildWebhookUrl("salvar_mapeamento", {
+              empresa_id,
+              modelo_id,
+            });
+
+            await fetch(url, {
+              method: "POST",
+              body: JSON.stringify(linhas),
+            });
+
+            alert("Mapeamento salvo!");
+            navigate("/mapeamento-contabil");
+          } catch {
+            alert("Erro ao salvar!");
+          }
+        }}
+        className="px-6 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-800"
+      >
+        Salvar tudo
+      </button>
+
+      <button
+        onClick={() => navigate("/mapeamento-contabil")}
+        className="px-6 py-2 rounded-lg bg-gray-400 text-white font-semibold hover:bg-gray-500"
+      >
+        Cancelar
+      </button>
+    </div>
+
+  </div>
+);
+
 }

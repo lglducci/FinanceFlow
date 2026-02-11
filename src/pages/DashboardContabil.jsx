@@ -249,11 +249,11 @@ function linhaZerada(l) {
     <div className="p-6 bg-blue-100 min-h-screen">
 
       {/* HEADER */}
-      <div className="bg-[#061f4aff] text-white rounded-xl p-6 mb-6">
+      <div className="bg-[#ffffffff] text-blue-900 rounded-xl p-6 mb-6">
         <h1 className="text-2xl font-bold">📊 Dashboard Contábil</h1>
 
         
-          <div className="text-white font-semibold text-sm px-3 py-2 bg-black/30 rounded-lg">
+          <div className="text-blue-900 font-bold text-base px-3 py-2 bg-blue/15 rounded-lg">
             Período: {diasPeriodo} dias
           </div>
  
@@ -265,7 +265,7 @@ function linhaZerada(l) {
 
            <button
             onClick={carregar}
-            className="bg-yellow-400 px-6 rounded font-bold text-black"
+            className="bg-blue-700 px-6 rounded font-bold text-white"
             >
             Atualizar
             </button>  
@@ -274,7 +274,7 @@ function linhaZerada(l) {
 
       {/* KPIs */}
          <div className="grid grid-cols-4 gap-6 mb-8 bg-white">
-          <div className="border-l-8 border-blue-600 rounded-xl shadow bg-blue-100 p-4">
+          <div className="border-l-8 border-blue-300 rounded-xl shadow bg-blue-100 p-4">
             <Kpi titulo="Ativo" valor={formatarMoeda(totalAtivo)} />
           </div> 
           <div className="border-l-8 border-red-600 rounded-xl shadow bg-red-100 p-4">
@@ -443,7 +443,7 @@ function linhaZerada(l) {
             </div> 
       </Card>*/}
 
-      <div className="my-10 border-t border-blue-300"></div>
+      <div className="my-10 border-t border-blue-200"></div>
 
       {/* RESULTADO MENSAL */}
       <Card titulo="Resultado Mensal" className="mt-16">

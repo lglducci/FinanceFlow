@@ -122,37 +122,20 @@ const filtrados = dados.filter(item => {
   }
 }
 
+return (
+  <div className="p-4 bg-gray-100 rounded-xl">
 
-   
- 
-  return (
-    <div className="p-2">
-          <div className="max-w-full mx-auto bg-[#445777] rounded-xl shadow-lg p-2 border-[6px] border-blue-900 mb-2">
-      <h1 className="text-2xl font-bold mb-6 text-white ">📘 Lançamentos Contábeis (Detalhes) </h1>
+    {/* ===== FILTROS ===== */}
+    <div className="bg-white rounded-xl shadow border-l-4 border-blue-600 p-4 mb-6">
+      <h2 className="text-2xl font-bold text-blue-600 mb-4">
+        📘 Lançamentos Contábeis (Detalhes) 
+      </h2>
 
-      {/* filtros */}
-         <div className="bg-[#838FA5] rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
-        {/* CARD BRANCO */}
-        <div
-          style={{
-            background: "white",
-            padding: 12,
-            borderRadius: 10,
-            display: "flex",
-            flexDirection: "column",
-            gap: 12,
-          }}
-        >
-          {/* LINHA 1 — DATA INICIAL / FINAL / TOKEN */}
-          <div style={{ display: "flex", gap: 18 }}>
-            <div style={{ display: "flex", flexDirection: "column" }}> 
+      <div className="flex flex-wrap gap-4 items-end">
 
-          <label className=" block font-bold text-[#1e40af]">
-             Data inicial 
-             </label>
+        <div className="flex flex-col">
+          <label className="font-bold text-blue-800 mb-1">Data inicial</label>
           <input
- 
-
             type="date"
             value={dataIni}
             onChange={(e) => setDataIni(e.target.value)}
@@ -160,9 +143,8 @@ const filtrados = dados.filter(item => {
           />
         </div>
 
-        <div>
-          <label className=" block font-bold text-[#1e40af]">
-             Data final </label>
+        <div className="flex flex-col">
+          <label className="font-bold text-blue-800 mb-1">Data final</label>
           <input
             type="date"
             value={dataFim}
@@ -171,125 +153,102 @@ const filtrados = dados.filter(item => {
           />
         </div>
 
-        <div>
-          <label className="block font-bold text-blue-700">
-            Conta
-          </label>
+        <div className="flex flex-col flex-1 min-w-[260px]">
+          <label className="font-bold text-blue-800 mb-1">Conta / Histórico</label>
           <input
             type="text"
-            placeholder="Código ou nome"
+            placeholder="Conta, histórico ou modelo"
             value={filtro}
-            onChange={e => setFiltro(e.target.value)} 
-            className="border rounded px-3 py-2 border-yellow-500 w-64"
+            onChange={(e) => setFiltro(e.target.value)}
+            className="border rounded-lg px-3 py-2 border-yellow-500"
           />
         </div>
-        
 
-          <div className="flex gap-3 mt-3"> 
         <button
           onClick={consultar}
-               className= { `${btnPadrao} bg-blue-900 hover:bg-blue-700 px-4 py-3 `} 
+          className="px-6 h-11 bg-blue-800 text-white font-semibold rounded-lg hover:bg-blue-700"
         >
           Consultar
-        </button> 
-          <button
-            onClick={() => 
-                      navigate( "/lancamentocontabilrapido")  
-                    }
-                  className= { `${btnPadrao} bg-green-700 hover:bg-green-500 px-4 py-2 `}
-                >
-                  ⚡ + Lancto Rapido
-           </button> 
+        </button>
 
-           
+        <button
+          onClick={() => navigate("/lancamentocontabilrapido")}
+          className="px-6 h-11 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-600"
+        >
+          ⚡ Lançamento rápido
+        </button>
+
         <button
           onClick={() => window.print()}
-          className=  { `${btnPadrao} bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold `}        
+          className="px-6 h-11 bg-gray-700 text-white font-semibold rounded-lg hover:bg-gray-600"
         >
           🖨️ Imprimir
         </button>
+      </div>
+    </div>
 
-         
-           </div>
-        </div>
-        </div>
-      </div>
-      </div>
-       <div id="print-area"> 
-      {/* tabela */}
-         <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-blue-900 text-white">
-            <tr>
-              
-              <th className="p-3 text-left">Lançamento</th>
-               <th className="p-3 text-left">Data</th>  
-              <th className="p-3 text-left">Histórico</th>
-                <th className="p-3 text-left">  Entrada (Débito)</th>
-              {/*<th className="p-3 text-right">Débito</th>*/}
-               <th className="p-3 text-left">Saida (Crédito)</th>
-              <th className="p-3 text-right">Valor </th>
-              <th className="p-3 text-center">Lote</th>
-               <th className="p-3 text-center">Ação</th>
+    {/* ===== TABELA ===== */}
+    <div className="bg-white rounded-xl shadow p-4 border border-gray-400">
+      <table className="w-full text-sm border-collapse">
+        <thead className="bg-gray-100 text-blue-800">
+          <tr>
+            <th className="p-2 text-left">Lançamento</th>
+            <th className="p-2 text-left">Data</th>
+            <th className="p-2 text-left">Histórico</th>
+            <th className="p-2 text-left">Débito</th>
+            <th className="p-2 text-left">Crédito</th>
+            <th className="p-2 text-right">Valor</th>
+            <th className="p-2 text-center">Lote</th>
+            <th className="p-2 text-center">Ação</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filtrados.map((l, i) => (
+            <tr
+              key={i}
+              className={i % 2 === 0 ? "bg-gray-50" : "bg-gray-100"}
+            >
+              <td className="p-2 font-bold">{l.id}</td>
+              <td className="p-2 font-bold">{formatarDataBR(l.data)}</td>
+              <td className="p-2 font-bold">{l.historico}</td>
+              <td className="p-2 font-bold">{l.conta_debito}</td>
+              <td className="p-2 font-bold">{l.conta_credito}</td>
+              <td className="p-2 text-right font-bold">
+                {fmt.format(l.credito)}
+              </td>
+              <td className="p-2 text-center font-bold">{l.lote_id}</td>
+              <td className="p-2 text-center">
+                <button
+                  onClick={() => Estornar(l.lote_id)}
+                  className="text-blue-700 underline font-bold"
+                >
+                  Excluir lote
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {filtrados.map((l, i) => (
-              <tr key={i}   className={i % 2 === 0 ? "bg-gray-100" : "bg-blue-200"} >
-                 {/*  <td  className="p-2 font-bold text-left font-size: 16px">{fmtData(l.data_mov)}</td>  */}
-                 <td   className="p-2 font-bold text-left font-size: 16px">{l.id}</td>
-                 <td  className="p-2 font-bold text-left font-size: 16px">{ formatarDataBR(l.data)}</td>   
-                 
-                <td  className="p-2 font-bold text-left font-size: 16px left">{l.historico}</td>
-                <td    className="p-2 font-bold text-left font-size: 16px">
-                {l.conta_debito}
-                </td>
-                 {/* <td  className="p-2 font-bold text-right font-size: 16px text-right">{fmt.format(l.debito)}</td>*/}
-                 <td    className="p-2 font-bold text-rigth font-size: 16px">
-                {l.conta_credito}
-                </td>
-                <td   className="p-2 font-bold text-right font-size: 16px text-right">{fmt.format(l.credito)}</td>
-                  
-                <td   className="p-2 font-bold text-center font-size: 16px">{l.lote_id}</td>
+          ))}
 
-                
-                  {/* AÇÕES */}
-                  <td className="px-3 py-1 text-center space-x-4">
+          {!loading && dados.length === 0 && (
+            <tr>
+              <td colSpan={8} className="py-6 text-center text-gray-500">
+                Nenhum lançamento encontrado.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-             {/* ESTORNAR */}
-                    <button  
-                     className=  "text-blue-600 underline font-bold"
-                         
-                      onClick={() => Estornar(l.lote_id)} 
-
-                    >
-                      Exclui Lote
-                    </button>
-                     
-            </td>
-
-              </tr>
-            ))}
-
-            {!loading && dados.length === 0 && (
-              <tr>
-                <td colSpan={7} className="p-6 text-center text-gray-400">
-                  Nenhum lançamento encontrado
-                </td>
-              </tr>
-            )} 
-          </tbody>
-        </table>
+      {loading && (
+        <div className="p-6 text-center text-blue-600 font-semibold">
+          Carregando...
         </div>
-        {loading && (
-          <div className="p-6 text-center text-blue-600 font-semibold">
-            Carregando...
-          </div>
-        )}
-      </div>
+      )}
     </div>
-    </div>
-    
-  );
+
+  </div>
+);
+
+   
+  
 }

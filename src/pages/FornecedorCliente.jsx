@@ -91,131 +91,136 @@ export default function FornecedorCliente() {
       alert("Erro ao excluir.");
     }
   }
+ return (
+  <div className="p-4 space-y-6">
 
-  return (
-    <div className="p-2">
-      
-     
-      {/* FILTRO */}
-          
-<div className="bg-white p-5 rounded-xl shadow border border-[8px] border-[#061f4aff] gap-6 mb-10 max-w-[100%]">
-
-  {/* TÍTULO EM CIMA */}
-  <h2 className="text-2xl font-bold mb-4 text-[#061f4aff]">
-    Fornecedores / Clientes
-  </h2>
-
-  {/* LINHA DE CONTROLES */}
-  <div className="flex items-end gap-6">
-
-    <div>
-      <label className="text-base font-bold block mb-1 text-[#061f4aff]">
-        Tipo
-      </label>
-      <select
-        className="border font-bold rounded-lg px-3 py-2 w-48 border-yellow-500"
-        value={tipo}
-        onChange={(e) => setTipo(e.target.value)}
+    {/* HEADER */}
+    <div className="flex items-start justify-between">
+      <div>
+        <h1 className="text-xl font-bold text-blue-800">
+          Fornecedores / Clientes
+        </h1>
+        <p className="text-sm text-gray-500">
+          Gerencie fornecedores e clientes da empresa.
+        </p>
+      </div>
+      <button
+        onClick={novo}
+        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
       >
-        <option value="fornecedor">Fornecedor</option>
-        <option value="cliente">Cliente</option>
-        <option value="ambos">Ambos</option>
-      </select>
+        + Novo
+      </button>
     </div>
 
-    <div>
-      <label className="block font-bold text-[#061f4aff] mb-1">
-        Pesquisa - Nome ou CNPJ
-      </label>
-      <input
-        type="text"
-        placeholder="Buscar por nome, tipo, grupo..."
-        value={filtro}
-        onChange={(e) => setFiltro(e.target.value)}
-        className="border rounded-xl px-4 py-2 border-yellow-500 w-[620px]"
-      />
-    </div>
+    {/* FILTROS */}
+    <div className="bg-white rounded-xl shadow-sm p-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
-    <button
-      onClick={carregar}
-      className={`${btnPadrao} bg-blue-600 hover:bg-blue-700`}
-    >
-      {carregando ? "Carregando..." : "Pesquisar"}
-    </button>
+        {/* TIPO */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Tipo
+          </label>
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="fornecedor">Fornecedor</option>
+            <option value="cliente">Cliente</option>
+            <option value="ambos">Ambos</option>
+          </select>
+        </div>
 
-    <button
-      onClick={novo}
-      className={`${btnPadrao} bg-green-600 hover:bg-green-700`}
-    >
-      Novo
-    </button>
+        {/* PESQUISA */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Pesquisar
+          </label>
+          <input
+            type="text"
+            placeholder="Nome, documento, telefone ou ID"
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </div>
+      </div>
 
-  </div>
-</div>
-
-
-        
-       
-      {/* LISTAGEM EM TABELA (FIGURA 2) */} 
-      
-      <div className="bg-gray-300 shadow rounded-lg overflow-hidden mt-6 border-[4px] border-gray-500">
-        <table className="w-full text-base border-collapse">
-          <thead>
-            <tr className="bg-blue-900 text-left font-bold text-lg text-white">
-              <th className="p-2 border">Nome</th>
-              <th className="p-2 border">Tipo</th>
-              <th className="p-2 border">Documento</th>
-              <th className="p-2 border">Telefone</th>
-              <th className="p-2 border text-center">Ações</th>
-            </tr>
-          </thead>
-
-          <tbody>
-             
-            {listaFiltrada.map((c, i) => {
-              const tipoColor =
-                c.tipo?.toLowerCase() === "fornecedor"
-                  ? "text-red-700 font-bold"
-                  : "text-green-700 font-bold";
-
-              return (
-                <tr
-                  key={c.id}
-                  className={i % 2 === 0 ? "bg-white" : "bg-gray-200"}
-                >
-                  <td className="p-2 border font-bold">{c.nome}</td>
-
-                  <td className={`p-2 border ${tipoColor}`}>
-                    {c.tipo.charAt(0).toUpperCase() + c.tipo.slice(1)}
-                  </td>
-
-                  <td className="p-2 border font-bold ">{c.cpf_cnpj}</td>
-
-                  <td className="p-2 border font-bold ">{c.telefone}</td>
-
-                  <td className="p-4 border text-center">
-                  <div className="flex justify-center items-center gap-6">
-                    <button
-                      onClick={() => editar(c.id)}
-                      className="text-blue-700 font-bold"
-                    >
-                      Editar
-                    </button>
-
-                    <button
-                      onClick={() => excluirFornecedorCliente(c.id)}
-                      className="text-red-700 font-bold"
-                    >
-                      Excluir
-                    </button>
-                  </div>
-                </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="mt-4">
+        <button
+          onClick={carregar}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+        >
+          {carregando ? "Carregando..." : "Pesquisar"}
+        </button>
       </div>
     </div>
-  );
+
+    {/* TABELA */}
+    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="bg-slate-100 text-slate-700">
+          <tr>
+            <th className="px-3 py-2 text-left">Nome</th>
+            <th className="px-3 py-2 text-left">Tipo</th>
+            <th className="px-3 py-2 text-left">Documento</th>
+            <th className="px-3 py-2 text-left">Telefone</th>
+            <th className="px-3 py-2 text-center">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {listaFiltrada.length === 0 && (
+            <tr>
+              <td colSpan={5} className="text-center py-6 text-gray-500">
+                Nenhum registro encontrado.
+              </td>
+            </tr>
+          )}
+
+          {listaFiltrada.map((c, i) => {
+            const tipoClasse =
+              c.tipo?.toLowerCase() === "fornecedor"
+                ? "text-red-600"
+                : c.tipo?.toLowerCase() === "cliente"
+                ? "text-emerald-600"
+                : "text-slate-700";
+
+            return (
+              <tr key={c.id} className="border-t">
+                <td className="px-3 py-2 font-medium">{c.nome}</td>
+
+                <td className={`px-3 py-2 font-semibold ${tipoClasse}`}>
+                  {c.tipo}
+                </td>
+
+                <td className="px-3 py-2">{c.cpf_cnpj}</td>
+                <td className="px-3 py-2">{c.telefone}</td>
+
+                <td className="px-3 py-2 text-center space-x-4">
+                  <button
+                    onClick={() => editar(c.id)}
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    onClick={() => excluirFornecedorCliente(c.id)}
+                    className="text-red-600 hover:underline font-semibold"
+                  >
+                    Excluir
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+);
+
 }

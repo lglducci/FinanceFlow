@@ -93,168 +93,145 @@ export default function ContasGerenciais() {
 }
 
 
+ return (
+  <div className="p-4 space-y-6">
 
+    {/* HEADER */}
+    <div className="flex items-start justify-between">
+      <div>
+        <h1 className="text-xl font-bold text-blue-800">
+          Contas Gerenciais
+        </h1>
+        <p className="text-sm text-gray-500">
+          Organize categorias de entrada e saída para controle gerencial.
+        </p>
+      </div>
 
+      <button
+        onClick={() => navigate("/contasgerenciais/novo")}
+        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+      >
+        + Novo
+      </button>
+    </div>
 
-  return (
-    <div>
-    
-         
-       
+    {/* FILTROS */}
+    <div className="bg-white rounded-xl shadow-sm p-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
-      {/* FILTRO */}
-
- 
-      
-        <div className="bg-white p-5 rounded-xl shadow border border-[8px] border-[#061f4aff] gap-6 mb-10 max-w-[100%]">
-          
-             
-           <h2 className="text-2xl font-bold mb-4 text-[#061f4aff]">  
-            Contas Gerenciais </h2> 
-
-           
-            <div className="flex items-end gap-6">
-           <div> 
-             <label className="block font-bold text-[#061f4aff]"> Tipo </label>
-            <select 
-              value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
-              className="border px-5 py-2 rounded rounded-xl w-46 border-yellow-500 w-32"
-            >
-              <option value="">Todos</option>
-              <option value="entrada">Entrada</option>
-              <option value="saida">Saída</option>
-            </select>
-          </div>
-              <div> 
-             <label className="block font-bold text-[#061f4aff]"> Nome ou Tipo </label>
-            <input
-              type="text"
-              placeholder="Buscar por nome, tipo, grupo..."
-              value={filtro}
-              onChange={(e) => setFiltro(e.target.value)}
-              className="border rounded-xl  px-4 py-2  border-yellow-500 w-[620px]"
-            />
-            </div>
-
-            <button
-              onClick={carregar}
-             // className="bg-blue-600 text-white px-5 py-2 rounded font-bold w-32">
-              className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700 px-4 py-2 `}>
-              Pesquisar
-            </button>
-
-
-             <button
-                onClick={() => navigate("/contasgerenciais/novo")}
-                //className="bg-green-600 text-white px-5 py-2 rounded font-bold shadow">
-                 className= { `${btnPadrao} bg-green-600 hover:bg-green-700 px-4 py-2 `}>
-                Novo
-              </button>
- 
+        {/* TIPO */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Tipo
+          </label>
+          <select
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="">Todos</option>
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+          </select>
         </div>
- 
-          </div>
 
-    
+        {/* PESQUISA */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Pesquisar
+          </label>
+          <input
+            type="text"
+            placeholder="Nome, tipo, grupo contábil ou ID"
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </div>
+      </div>
 
-      {loading && <p>Carregando…</p>}
+      <div className="mt-4">
+        <button
+          onClick={carregar}
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+        >
+          {loading ? "Carregando..." : "Pesquisar"}
+        </button>
+      </div>
+    </div>
 
-      {/* TABELA */}
-      
-         
-       <div className="bg-gray-200 shadow rounded-lg overflow-hidden mt-6 border-[4px] border-gray-500">
-        <table className="w-full text-base border-collapse">
-          <thead>
-            <tr className="bg-blue-900 text-left font-bold text-lg text-white">
-            <th className="p-1 border text-left border">ID</th>
-            <th className="p-1 border text-left border">Nome</th>
-            <th className="p-1 border text-left border">Tipo</th>
-            <th className="p-1 border text-left border">Grupo Contábil</th>
-            <th className="p-1 border text-left border">Ações</th>
+    {/* TABELA */}
+    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="bg-slate-100 text-slate-700">
+          <tr>
+            <th className="px-3 py-2 text-left">ID</th>
+            <th className="px-3 py-2 text-left">Nome</th>
+            <th className="px-3 py-2 text-left">Tipo</th>
+            <th className="px-3 py-2 text-left">Grupo Contábil</th>
+            <th className="px-3 py-2 text-center">Ações</th>
           </tr>
         </thead>
 
         <tbody>
-         {listaFiltrada.map((l, i) => (
-            <tr
-              key={l.id}
-              className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
-            >
-              <td className="p-1 border font-bold shadow">{l.id}</td>
-              <td className="p-1 border font-bold shadow">{l.nome}</td>
-             
-                 <td className={"px-1 font-bold " +
-                      (l.tipo === "entrada" ? "text-green-600" : "text-red-600")
-                    }
-                  > {l.tipo}
-                  </td>
+          {listaFiltrada.length === 0 && (
+            <tr>
+              <td colSpan={5} className="text-center py-6 text-gray-500">
+                Nenhuma conta encontrada.
+              </td>
+            </tr>
+          )}
 
-              <td className="p-1 border font-bold shadow">{l.grupo_contabil}</td>
+          {listaFiltrada.map((l) => (
+            <tr key={l.id} className="border-t">
+              <td className="px-3 py-2 font-medium">{l.id}</td>
+              <td className="px-3 py-2 font-medium">{l.nome}</td>
 
-              <td className="p-1 border flex gap-2">
- 
-                <td className="px-4 py-1 text-blue-600 underline font-bold cursor-pointer"
-                    onClick={() =>
-                      navigate("/contasgerenciais/editar", { state: l })
-                    }>
-                  Editar
-                </td>
+              <td
+                className={`px-3 py-2 font-semibold ${
+                  l.tipo === "entrada" ? "text-emerald-600" : "text-red-600"
+                }`}
+              >
+                {l.tipo}
+              </td>
 
-                 <td
-                      className="px-4 py-1 text-indigo-600 underline font-bold cursor-pointer"
-                      onClick={() =>
-                        navigate("/mapeamento-contabil/impacto", {
-                          state: {
-                            id: l.id, 
-                            empresa_id: empresa_id
-                          }
-                        })
-                      }
-                    >
-                      Impacto Contábil?
-                    </td>
+              <td className="px-3 py-2">{l.grupo_contabil}</td>
 
-
-
-                <td
-                  className="px-4 py-1 text-red-600 underline font-bold cursor-pointer"
-                  onClick={() => excluir(l.id)}
-                >
-                  Excluir
-                </td>
-
-
-
-
-
-
-               {/*} <button
+              <td className="px-3 py-2 text-center space-x-4">
+                <button
                   onClick={() =>
                     navigate("/contasgerenciais/editar", { state: l })
                   }
-                  className="bg-yellow-500 text-white px-3 py-1 rounded"
+                  className="text-blue-600 hover:underline font-semibold"
                 >
                   Editar
                 </button>
 
                 <button
-                  onClick={() => navigate("/contasgerenciais/excluir", { state: l })}
-                  className="bg-red-600 text-white px-3 py-1 rounded"
+                  onClick={() =>
+                    navigate("/mapeamento-contabil/impacto", {
+                      state: { id: l.id, empresa_id },
+                    })
+                  }
+                  className="text-indigo-600 hover:underline font-semibold"
+                >
+                  Impacto contábil
+                </button>
+
+                <button
+                  onClick={() => excluir(l.id)}
+                  className="text-red-600 hover:underline font-semibold"
                 >
                   Excluir
-                </button>*/}
-
-
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      </div>
-      {!loading && lista.length === 0 && (
-        <p className="text-gray-600 mt-4">Nenhuma conta encontrada.</p>
-      )}
     </div>
-  );
+
+  </div>
+);
+
 }

@@ -62,207 +62,143 @@ export default function ContasContabeis() {
   }
 }
 
+return (
+  <div className="p-4 space-y-6">
 
+    {/* HEADER */}
+    <div className="flex items-start justify-between">
+      <div>
+        <h1 className="text-xl font-bold text-blue-800">
+          Contas Contábeis
+        </h1>
+        <p className="text-sm text-gray-500">
+          Plano de contas utilizado na escrituração contábil.
+        </p>
+      </div>
 
-  return (
-
-   <div className="p-2">
-
-     
-    <div
-      style={{
-         background: "#445777",
-        padding: 20,
-        width: "100%", 
-        margin: "0 auto",
-        marginTop: 20,
-        borderRadius: 12,
-         border: "8px solid #061f4aff",
-      }}
-    >
-
-      <h1 className="text-2xl font-bold mb-6 text-white">Contas Contábeis</h1>
-
-      {/* 🔵 CARD DO TOPO */}
-    <div
-  style={{
-    
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",   // 👈 CONTROLA O ESPAÇO ENTRE ELES
-    marginBottom: 15 
-  }}
->
-        <h2 style={{ marginBottom: 10, fontWeight: "bold", fontSize: 15  }}  className="tabela tabela-mapeamento text-white" >Plano de Contas</h2>
-
-  {/* 🔍 BUSCA */}
-  <input
-    placeholder="Buscar por código ou nome..."
-    value={filtro}
-    onChange={(e) => setFiltro(e.target.value)}
-    style={{
-      width: "300px",
-      padding: "4px",
-      border: "1px solid #f9f6f6",
-      borderRadius: 8,
-    }}
-  />    
-
-        {/* ➕ NOVA CONTA */}
+      <div className="flex gap-3">
         <button
           onClick={() => navigate("/nova-conta-contabil")}
-          style={{
-            padding: "8px 8px",
-            background: "rgb(23, 106, 16)",
-            color: "white",
-            border: "none",
-            borderRadius: 10,
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
+          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
         >
-          + Nova Conta
+          + Nova conta
         </button>
+
         <button
           onClick={() => window.print()}
-          className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
+          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
         >
           🖨️ Imprimir
         </button>
-
       </div>
- </div>
+    </div>
 
-        <div id="print-area"> 
+    {/* FILTRO */}
+    <div className="bg-white rounded-xl shadow-sm p-5">
+      <div className="max-w-md">
+        <label className="block text-sm font-bold text-blue-700 mb-1">
+          Buscar por código ou nome
+        </label>
+        <input
+          type="text"
+          placeholder="Ex: 1.01.01 ou Caixa"
+          value={filtro}
+          onChange={(e) => setFiltro(e.target.value)}
+          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+        />
+      </div>
+    </div>
 
-      {/* 🔵 TABELA EM OUTRO CARD */}
-      <div
-        style={{
-          background: "white",
-           padding: "8px 8px",
-          border: "4px solid #6b7382ff",
-           borderRadius: 12,
-           marginTop: 20,
-          padding: 15,
-        }}
-      >
-        <table
-          className="tabela"
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: "15px",
-          }}
-        >
-          <thead>
-              <tr style={{ background: "#002f7a", color: "white", textAlign: "left" }}>
-              <th style={{ padding: 8 }}>ID</th>
-              <th style={{ padding: 8 }}>Código</th>
-              <th style={{ padding: 8 }}>Nome</th>
-              <th style={{ padding: 8 }}>Tipo</th>
-              <th style={{ padding: 8 }}>Natureza</th>
-              <th style={{ padding: 8 }}>Nível</th>
-              <th style={{ padding: 8 }}>Sistema</th>
-              <th style={{ padding: 8, width: 140 }}>Ações</th>
+    {/* TABELA */}
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-slate-100 text-blue-800">
+          <tr>
+            <th className="px-3 py-2 text-left">ID</th>
+            <th className="px-3 py-2 text-left">Código</th>
+            <th className="px-3 py-2 text-left">Nome</th>
+            <th className="px-3 py-2 text-left">Tipo</th>
+            <th className="px-3 py-2 text-left">Natureza</th>
+            <th className="px-3 py-2 text-left">Nível</th>
+            <th className="px-3 py-2 text-left">Origem</th>
+            <th className="px-3 py-2 text-center">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filtradas.map((c, i) => (
+            <tr
+              key={c.id}
+              className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}
+            >
+              <td className="px-3 py-2 font-semibold">{c.id}</td>
+              <td className="px-3 py-2 font-mono">{c.codigo}</td>
+              <td className="px-3 py-2">{c.nome}</td>
+              <td className="px-3 py-2">{c.tipo}</td>
+              <td className="px-3 py-2">{c.natureza}</td>
+              <td className="px-3 py-2">{c.nivel}</td>
+              <td className="px-3 py-2">
+                {c.sistema ? (
+                  <span className="text-xs font-semibold text-slate-500">
+                    Sistema
+                  </span>
+                ) : (
+                  <span className="text-xs font-semibold text-blue-600">
+                    Usuário
+                  </span>
+                )}
+              </td>
+
+              <td className="px-3 py-2 text-right space-x-4">
+                {c.sistema ? (
+                  <>
+                    <span className="text-slate-400 text-sm cursor-not-allowed">
+                      Editar
+                    </span>
+                    <span className="text-slate-400 text-sm cursor-not-allowed">
+                      Excluir
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span
+                      onClick={() =>
+                        navigate("/editar-conta-contabil", {
+                          state: {
+                            id: c.id,
+                            empresa_id:
+                              localStorage.getItem("empresa_id") || "1",
+                          },
+                        })
+                      }
+                      className="text-blue-600 text-sm font-semibold cursor-pointer hover:underline"
+                    >
+                      Editar
+                    </span>
+
+                    <span
+                      onClick={() => excluirConta(c.id)}
+                      className="text-red-600 text-sm font-semibold cursor-pointer hover:underline"
+                    >
+                      Excluir
+                    </span>
+                  </>
+                )}
+              </td>
             </tr>
-          </thead>
+          ))}
+        </tbody>
+      </table>
 
-          <tbody>
-            {filtradas.map((c, idx) => (
-              <tr
-                key={c.id}
-                style={{
-                  background: idx % 2 === 0 ? "#f7f7f7" : "#adbbc9",
-                  height: "38px",
-                  fontWeight: "bold",
-                }}
-              >
-                <td style={{ padding: 8 }}>{c.id}</td>
-                <td style={{ padding: 8 }}>{c.codigo}</td>
-                <td style={{ padding: 8 }}>{c.nome}</td>
-                <td style={{ padding: 8 }}>{c.tipo}</td>
-                <td style={{ padding: 8 }}>{c.natureza}</td>
-                <td style={{ padding: 8 }}>{c.nivel}</td>
-                <td style={{ padding: 8 }}>
-                    {c.sistema ? "Sistema" : "Usuário"}
-                    </td>
-
-
-
-                <td style={{ padding: 8 }}>
-                   {c.sistema ? (
-                            <>
-                              <span
-                                style={{
-                                  marginRight: 15,
-                                  color: "#999",
-                                  cursor: "not-allowed",
-                                  textDecoration: "line-through",
-                                }}
-                                title="Conta do sistema — não pode ser editada"
-                              >
-                                Editar
-                              </span>
-
-                              <span
-                                style={{
-                                  color: "#999",
-                                  cursor: "not-allowed",
-                                  textDecoration: "line-through",
-                                }}
-                                title="Conta do sistema — não pode ser excluída"
-                              >
-                                Excluir
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <span
-                                onClick={() =>
-                                  navigate("/editar-conta-contabil", {
-                                    state: {
-                                      id: c.id,
-                                      empresa_id: localStorage.getItem("empresa_id") || "1",
-                                    },
-                                  })
-                                }
-                                style={{
-                                  marginRight: 15,
-                                  color: "#0056d6",
-                                  cursor: "pointer",
-                                  fontWeight: "bold",
-                                  textDecoration: "underline",
-                                }}
-                              >
-                                Editar
-                              </span>
-
-                              <span
-                                onClick={() => excluirConta(c.id)}
-                                style={{
-                                  color: "#c62828",
-                                  cursor: "pointer",
-                                  fontWeight: "bold",
-                                  textDecoration: "underline",
-                                }}
-                              >
-                                Excluir
-                              </span>
-                            </>
-                          )}
-
-
-                  </td>
-
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        
-      
+      {filtradas.length === 0 && (
+        <div className="p-4 text-sm text-gray-500">
+          Nenhuma conta contábil encontrada.
+        </div>
+      )}
     </div>
-    </div>
-     </div>
-  );
+
+  </div>
+);
+
+ 
 }

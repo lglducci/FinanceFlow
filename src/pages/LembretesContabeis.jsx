@@ -86,13 +86,13 @@ useEffect(() => {
 
   return (
     <div className="p-2">
-      <div className="max-w-full mx-auto bg-[#445777] rounded-xl shadow-lg p-2 border-[6px] border-blue-900 mb-2">
-        <h1 className="text-2xl font-bold mb-4 text-white">
+      <div className="max-w-full mx-auto bg-[#ffffff] rounded-xl shadow-lg p-2 border-[2px] border-blue-100 mb-2">
+        <h1 className="text-2xl font-bold mb-4 text-blue-800">
           📘 Lembretes de Lançamentos Contábeis
         </h1>
 
         {/* FILTROS */}
-        <div className="bg-[#838FA5] rounded-xl p-4 shadow mb-4 flex gap-4 items-end">
+        <div className="bg-gray-100 rounded-xl p-4 shadow mb-4 flex gap-4 items-end">
           <div className="bg-white p-3 rounded-lg flex gap-4 items-end">
             <div className="flex flex-col">
               <label className="font-bold text-blue-800">Data Inicial</label>
@@ -145,12 +145,12 @@ useEffect(() => {
         </div>
 
         {/* LISTA */}
-        <div className="bg-white p-4 rounded-xl border-[4px] border-gray-600">
+        <div className="bg-white p-4 rounded-xl border-[4px] border-gray-100">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-[#061f4aff] text-white">
+              <tr className="bg-gray-100 text-blue-800">
                 <th className="p-2 text-center w-10">☑</th>
-                 <th className="p-2 text-right">Id</th>
+                 <th className="p-2 text-left">Id</th>
                 <th className="p-2 text-left">Descrição</th>
                 <th className="p-2 text-center">Vencimento</th>
                 <th className="p-2 text-left">Conta Débito</th>
@@ -174,11 +174,11 @@ useEffect(() => {
                 
                   <tr
                     key={id}
-                     className={i % 2 === 0 ? "bg-gray-100" : "bg-blue-200"}
+                     className={i % 2 === 0 ? "bg-gray-150" : "bg-blue-200"}
                   > 
-                     <td className="text-center">{id}</td>
+                     <td className="text-left">{id}</td>
 
-                    <td className="text-center">
+                    <td className="text-left">
                       <input
                         type="checkbox"
                         checked={selecionados.includes(id)}

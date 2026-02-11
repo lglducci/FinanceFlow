@@ -92,128 +92,153 @@ function novoCartao() {
   }
 }
 
+ return (
+  <div className="p-4 space-y-6">
 
-return (
-  <div className="p-2">
-
-    {/* Título + Botão */}
-    
-
-    {/* FILTROS */}
-     
-         <div className="bg-white p-5 rounded-xl shadow border border-[8px] border-[#061f4aff] gap-2 mb-10 max-w-[100%]">
-    
-         <h2 className="text-2xl font-bold mb-2 text-[#061f4aff]">Cartóes</h2>
-        
-         <div className="flex gap-2 text-base  font-bold  mb-2"> 
+    {/* HEADER */}
+    <div className="flex items-start justify-between">
       <div>
-        <label className="text-base font-bold block mb-1 font-bold text-[#061f4aff]">Status</label>
-        <select
-          className=   "border font-bold rounded px-4 py-3 w-[380px] mb-2 border-gray-300"
-          value={statusFiltro}
-          onChange={(e) => setStatusFiltro(e.target.value)}
-        >
-          <option value="ativo">Ativos</option>
-          <option value="cancelado">Cancelados</option>
-          <option value="todos">Todos</option>
-        </select>
-      </div>
-      
-         <div className="flex gap-8 pt-8 pb-8 pl-1"> 
-           <div> 
-            <button
-              onClick={carregar}
-              className="flex-1 bg-blue-600  w-[200px] text-white px-5 py-3 rounded-lg font-bold "
-            >
-              {carregando ? "Carregando..." : "Pesquisar"}
-            </button>
-            </div>
-            <div> 
-            <button
-              onClick={novoCartao}
-              className="flex-1  bg-green-600   w-[200px] text-white px-5 py-3 rounded-lg font-bold"
-            >
-              Novo cartão
-            </button> 
-          </div>
-      </div>
-    </div>
-    </div>
-
-    {/* DASHBOARD DE CARTÕES */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
-      {lista.length === 0 ? (
-  <p className="text-gray-600 text-sm col-span-3">
-    Nenhum cartão encontrado.
-  </p>
-) : (
-  lista.map((c) => (
-    <div
-      key={c.id}
-      className={
-        "bg-white rounded-xl shadow p-5 border border-gray-200 " +
-        (c.status === "ativo"
-          ? "border-l-4 border-green-600"
-          : "border-l-4 border-red-600")
-      }
-    >
-      {/* Cabeçalho */}
-      <div className="flex justify-between items-start mb-3">
-        <h3 className="font-bold text-lg text-gray-800">{c.nome}</h3>
-
-        <button
-          onClick={() => editarCartao(c.id)}
-          className="text-blue-600 text- base font-semibold"
-        >
-          Editar
-        </button>
-      </div>
-
-      {/* Conteúdo do cartão */}
-      <div className="text- base text-gray-500 leading-6"> 
-        <p><strong>Bandeira:</strong> {c.bandeira}</p> 
-        <p>
-          <strong>Limite:</strong>{" "}
-          {Number(c.limite_total).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
-        </p> 
-        <p><strong>Fechamento:</strong> {c.fechamento_dia}</p> 
-        <p><strong>Vencimento dia:</strong> {c.vencimento_dia}</p> 
-        {/* NOVOS CAMPOS — AGORA CORRETOS */}
-        <p><strong>Número do Cartão:</strong> {c.numero || "-"}</p> 
-        <p><strong>Nome no Cartão:</strong> {c.nomecartao || "-"}</p> 
-        <p><strong>Vencimento (MM/AA):</strong> {c.Vencimento || "-"}</p> 
-        {/* Status */}
-        <p
-          className={`font-bold mt-2 ${
-            c.status === "ativo" ? "text-green-700" : "text-red-600"
-          }`}
-        >
-          Status: {c.status}
+        <h1 className="text-xl font-bold text-blue-800">
+          Cartões
+        </h1>
+        <p className="text-sm text-gray-500">
+          Gerencie cartões de crédito e seus limites.
         </p>
       </div>
 
-      {/* Botão excluir */}
-      <div className="mt-4 text-right">
-        <button
-          onClick={() => excluirCartao(c.id)}
-          className="text-red-600 text-sm font-semibold"
-        >
-          Excluir
-        </button>
+      <button
+        onClick={novoCartao}
+        className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+      >
+        + Novo cartão
+      </button>
+    </div>
+
+    {/* FILTROS */}
+    <div className="bg-white rounded-xl shadow-sm p-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+
+        {/* STATUS */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Status
+          </label>
+          <select
+            value={statusFiltro}
+            onChange={(e) => setStatusFiltro(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="ativo">Ativos</option>
+            <option value="cancelado">Cancelados</option>
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+        {/* BOTÃO PESQUISAR */}
+        <div className="md:col-span-2">
+          <button
+            onClick={carregar}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          >
+            {carregando ? "Carregando..." : "Pesquisar"}
+          </button>
+        </div>
       </div>
     </div>
-  ))
-)}
- 
 
+    {/* GRID DE CARTÕES */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      {lista.length === 0 && (
+        <div className="col-span-full text-sm text-gray-500">
+          Nenhum cartão encontrado.
+        </div>
+      )}
+
+      {lista.map((c) => (
+        <div
+          key={c.id}
+          className={`bg-white rounded-xl shadow-sm p-5 border-l-4 ${
+            c.status === "ativo" ? "border-emerald-600" : "border-red-600"
+          }`}
+        >
+          {/* HEADER CARD */}
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <h3 className="font-semibold text-gray-900">
+                {c.nome}
+              </h3>
+              <p className="text-sm text-gray-500">
+                {c.bandeira}
+              </p>
+            </div>
+
+            <button
+              onClick={() => editarCartao(c.id)}
+              className="text-blue-600 text-sm font-semibold hover:underline"
+            >
+              Editar
+            </button>
+          </div>
+
+          {/* DADOS */}
+          <div className="space-y-1 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold">Limite:</span>{" "}
+              {Number(c.limite_total).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </p>
+            <p>
+              <span className="font-semibold">Fechamento:</span>{" "}
+              dia {c.fechamento_dia}
+            </p>
+            <p>
+              <span className="font-semibold">Vencimento:</span>{" "}
+              dia {c.vencimento_dia}
+            </p>
+            <p>
+              <span className="font-semibold">Número:</span>{" "}
+              {c.numero || "-"}
+            </p>
+            <p>
+              <span className="font-semibold">Nome no cartão:</span>{" "}
+              {c.nomecartao || "-"}
+            </p>
+            <p>
+              <span className="font-semibold">Validade:</span>{" "}
+              {c.Vencimento || "-"}
+            </p>
+          </div>
+
+          {/* STATUS */}
+          <div
+            className={`mt-3 text-sm font-semibold ${
+              c.status === "ativo"
+                ? "text-emerald-600"
+                : "text-red-600"
+            }`}
+          >
+            Status: {c.status}
+          </div>
+
+          {/* AÇÕES */}
+          <div className="mt-4 text-right">
+            <button
+              onClick={() => excluirCartao(c.id)}
+              className="text-red-600 text-sm font-semibold hover:underline"
+            >
+              Excluir
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
 
   </div>
 );
+
 
   
 }

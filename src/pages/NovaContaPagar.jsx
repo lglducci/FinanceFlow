@@ -210,24 +210,30 @@ if (!form.contabil_id) {
 }
 
 
- 
-  useEffect(() => {
+ useEffect(() => {
   async function carregarContas() {
     try {
-      const resp = await fetch(
-        "https://webhook-homolog.lglducci.com.br/webhook/contascmv?empresa_id=" +
-          empresa_id,
-      );
+      const url = buildWebhookUrl("contascmv", { empresa_id });
 
-      const data = await resp.json();
-      setContas(data);
+      const resp = await fetch(url);
+      const txt = await resp.text();
+
+      let data = [];
+      try {
+        data = JSON.parse(txt);
+      } catch {}
+
+      setContas(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Erro ao carregar contas contábeis", e);
+      setContas([]);
     }
   }
 
   carregarContas();
-}, [form.empresa_id]);
+}, [form.empresa_id, empresa_id]);
+
+   
 
 
 

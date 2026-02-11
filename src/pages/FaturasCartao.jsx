@@ -118,208 +118,206 @@ const btnPadrao =
   // ============================================================
   // ========================= RENDER ============================
   // ============================================================
+ return (
+  <div className="p-4 space-y-6">
 
-  return (
-    <div className="p-2">
+    {/* HEADER */}
+    <div className="flex justify-between items-start">
+      <div>
+        <h1 className="text-xl font-bold text-blue-800">Pagar Faturas</h1>
+        <p className="text-sm text-gray-500">
+          Consulte e feche faturas de cartão de crédito.
+        </p>
+      </div>
+    </div>
 
-    
+    {/* FILTROS + CONTA */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    {/* CONTAINER PRINCIPAL */}
-    <div className="max-w-full mx-auto bg-white rounded-xl shadow-lg p-2 border-[8px] border-[#061f4aff] mb-2">
-      <h2 className="text-xl font-bold mb-2 text-[#061f4aff]"> Pagar Faturas </h2>
-      {/* GRID COM 2 COLUNAS — AQUI FICA TUDO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    {/* ===================== COLUNA 1 ===================== */}
-    <div className="bg-white  rounded-xl shadow p-5   w-full">
+      {/* COLUNA ESQUERDA */}
+      <div className="bg-white rounded-xl shadow-sm p-5 space-y-4">
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            {/* CARTÃO */}
-            <div>
-                 <label className="font-bold text-base block mb-1 text-[#061f4aff]">Cartão</label>
-                <select
-                  value={cartao_id}
-                  onChange={(e) => setCartaoId(Number(e.target.value))}
-                  className="border font-bold p-2 rounded w-full border-yellow-500"
-                >
-                  <option value={0}>Todos</option>
-                  {cartoes.map((c) => (
-                    <option key={c.id} value={c.id}>{c.nome}</option>
-                  ))}
-                </select>
-            </div>
-
-            {/* STATUS */}
-            <div>
-                <label className="font-bold text-base block mb-1 text-[#061f4aff]"> Status</label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="border font-bold p-2 rounded w-full border-yellow-500"
-                >
-                  <option value="aberta">Aberta</option>
-                  <option value="paga">Paga</option>
-                  <option value="">Todos</option>
-                </select>
-            </div>
-
-            {/* MÊS */}
-            <div>
-                  <label className="font-bold text-base block mb-1 text-[#061f4aff]"> Mês referência</label>
-                <input
-                  type="month"
-                  value={mes}
-                  onChange={(e) => setMes(e.target.value)}
-                  className="border font-bold p-2 rounded w-full border-yellow-500"
-                />
-            </div>
-
-            {/* CONTA BANCÁRIA */}
-            <div>
-                  <label className="font-bold text-base block mb-1 text-[#061f4aff]"> Conta bancária</label>
-                <select
-                  value={conta_id}
-                  onChange={(e) => {
-                    const id = Number(e.target.value);
-                    setContaId(id);
-                    if (id === 0) setDadosConta(null);
-                    else carregarSaldoConta(id);
-                  }}
-                  className="border font-bold p-2 rounded w-full border-yellow-500"
-                >
-                  <option value={0}>Selecione...</option>
-                  {contas.map((ct) => (
-                    <option key={ct.id} value={ct.id}>{ct.nome}</option>
-                  ))}
-                </select>
-            </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> 
-            {/* BOTÕES */}
-            <div className="flex items-end">
-                <button
-                  onClick={pesquisar}
-                //  className={`${btnPadrao} bg-blue-600 hover:bg-blue-700`}>
-                     className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700`}>
-                  Pesquisar
-                </button>
-            </div>
-
-            <div className="flex items-end">
-                <button
-                  onClick={fecharFaturas}
-                    className={`${btnPadrao} bg-green-600 hover:bg-green-700`}
-                >
-                  Fechar Fatura
-                </button>
-            </div>
-              <div className="flex items-end"> 
-              <button
-                onClick={() => window.print()}
-                 className={`${btnPadrao} bg-gray-700 hover:bg-gray-800`}
-              >
-                🖨️ Imprimir
-              </button> 
-            </div>
+          {/* CARTÃO */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Cartão
+            </label>
+            <select
+              value={cartao_id}
+              onChange={(e) => setCartaoId(Number(e.target.value))}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            >
+              <option value={0}>Todos</option>
+              {cartoes.map(c => (
+                <option key={c.id} value={c.id}>{c.nome}</option>
+              ))}
+            </select>
           </div>
+
+          {/* STATUS */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Status
+            </label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            >
+              <option value="aberta">Aberta</option>
+              <option value="paga">Paga</option>
+              <option value="">Todas</option>
+            </select>
+          </div>
+
+          {/* MÊS */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Mês de referência
+            </label>
+            <input
+              type="month"
+              value={mes}
+              onChange={(e) => setMes(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            />
+          </div>
+
+          {/* CONTA */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Conta bancária
+            </label>
+            <select
+              value={conta_id}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                setContaId(id);
+                if (id === 0) setDadosConta(null);
+                else carregarSaldoConta(id);
+              }}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+            >
+              <option value={0}>Selecione...</option>
+              {contas.map(ct => (
+                <option key={ct.id} value={ct.id}>{ct.nome}</option>
+              ))}
+            </select>
+          </div>
+
         </div>
-    </div>
 
+        {/* AÇÕES */}
+        <div className="flex flex-wrap gap-3 pt-2">
+          <button
+            onClick={pesquisar}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          >
+            Pesquisar
+          </button>
 
-            {/* ===================== COLUNA 2 ===================== */}
-            <div className="bg-white rounded-xl shadow p-5 border w-full">
-                {dadosConta && (
-                    <div className="bg-white rounded-xl shadow p-4 border-l-4 border-[#061f4aff] w-full">
-                        <h3 className="font-bold text-lg text-blue-700 mb-2">
-                            🏦 {dadosConta.conta_nome}
-                        </h3>
+          <button
+            onClick={fecharFaturas}
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+          >
+            Fechar faturas selecionadas
+            {selecionadas.length > 0 && (
+              <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
+                {selecionadas.length}
+              </span>
+            )}
+          </button>
 
-                        <p><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
-                        <p><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
-                        <p><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p>
-                        <p><strong>Conjunta:</strong> {dadosConta.conjunta ? "Sim" : "Não"}</p>
-                        <p><strong>Jurídica:</strong> {dadosConta.juridica ? "Sim" : "Não"}</p>
+          <button
+            onClick={() => window.print()}
+            className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            🖨️ Imprimir
+          </button>
+        </div>
+      </div>
 
-                        <p className="text-green-700 font-bold text-lg mt-3">
-                            Saldo final: R$ {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
-                        </p>
-                    </div>
-                )}
+      {/* COLUNA DIREITA – CONTA */}
+      <div className="bg-white rounded-xl shadow-sm p-5">
+        {dadosConta ? (
+          <>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              🏦 {dadosConta.conta_nome}
+            </h3>
+
+            <div className="space-y-1 text-sm text-gray-700">
+              <p><strong>Banco:</strong> {dadosConta.nro_banco ?? "-"}</p>
+              <p><strong>Agência:</strong> {dadosConta.agencia ?? "-"}</p>
+              <p><strong>Conta:</strong> {dadosConta.conta ?? "-"}</p>
             </div>
 
-          </div>
-     </div>
-
- 
-      {/* ==================== LISTAGEM DAS FATURAS ==================== */}
-      <div className="bg-white rounded-xl shadow  border-[4px] border-gray-500 p-4">
-          <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto"> 
-        <table className="w-full text-base">
-          <thead className="bg-blue-900 text-white">
-            <tr>
-              <th className="px-3 py-2 text-center font-bold">Sel</th>
-              <th className="px-3 py-2 text-left font-bold">ID</th>
-               <th className="px-3 py-2 text-left font-bold">Nome</th>
-              <th className="px-3 py-2 text-left font-bold">Bandeira</th>
-                 <th className="px-3 py-2 text-left font-bold">Número</th>
-               <th className="px-3 py-2 text-left font-bold">Limite</th> 
-              <th className="px-3 py-2 text-left font-bold">Dia Fech.</th>
-               <th className="px-3 py-2 text-left font-bold">Dia Vencto.</th>
-              <th className="px-3 py-2 text-left font-bold">Referência</th>
-              <th className="px-3 py-2 text-left font-bold">Valor</th>
-              <th className="px-3 py-2 text-left font-bold">Status</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {lista.length === 0 && (
-              <tr>
-                <td colSpan={6} className="text-center py-4">
-                  Nenhuma fatura encontrada.
-                </td>
-              </tr>
-            )}
-
-            {lista.map((f, i) => (
-              <tr
-                key={f.id}
-                className={i % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
-              >
-                <td className="px-3 py-2 text-center">
-                  <input
-                    type="checkbox"
-                    checked={selecionadas.includes(f.id)}
-                    onChange={() => toggleSelecionada(f.id)}
-                    disabled={f.status === "paga"}
-                    className={f.status === "pag" ? "opacity-40 cursor-not-allowed" : ""}
-                  />
-                </td>
-
-                <td className="px-3 py-2 font-bold">{f.id}</td> 
-                 <td className="px-3 py-2 font-bold">{f.nome}</td>
-                 <td className="px-3 py-2 font-bold">{f.bandeira}</td>
-                 <td className="px-3 py-2 font-bold">{f.numero}</td>
-                 <td className="px-3 py-2 font-bold">{f.limite_total}</td> 
-                 <td className="px-3 py-2 font-bold">{f.fechamento_dia}</td>
-                 <td className="px-3 py-2 font-bold">{f.vencimento_dia}</td>
-                <td className="px-3 py-2 font-bold">
-                  {new Date(f.mes_referencia).toLocaleDateString("pt-BR", {
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </td>
-                <td className="px-3 py-2 font-bold">
-                  R$ {Number(f.valor_total).toLocaleString("pt-BR")}
-                </td>
-                <td className="px-3 py-2 font-bold">{f.status}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            <div className="mt-4 text-lg font-bold text-green-700">
+              Saldo: R$ {Number(dadosConta.saldo_final).toLocaleString("pt-BR")}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-gray-500">
+            Selecione uma conta bancária para visualizar o saldo.
+          </p>
+        )}
       </div>
     </div>
+
+    {/* LISTAGEM */}
+    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="bg-slate-100 text-slate-700">
+          <tr>
+            <th className="px-3 py-2 text-center">Sel</th>
+            <th className="px-3 py-2 text-left">Cartão</th>
+            <th className="px-3 py-2 text-left">Bandeira</th>
+            <th className="px-3 py-2 text-left">Referência</th>
+            <th className="px-3 py-2 text-right">Valor</th>
+            <th className="px-3 py-2 text-center">Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {lista.length === 0 && (
+            <tr>
+              <td colSpan={6} className="text-center py-6 text-gray-500">
+                Nenhuma fatura encontrada.
+              </td>
+            </tr>
+          )}
+
+          {lista.map((f, i) => (
+            <tr key={f.id} className="border-t">
+              <td className="px-3 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={selecionadas.includes(f.id)}
+                  onChange={() => toggleSelecionada(f.id)}
+                  disabled={f.status === "paga"}
+                />
+              </td>
+
+              <td className="px-3 py-2 font-semibold">{f.nome}</td>
+              <td className="px-3 py-2">{f.bandeira}</td>
+              <td className="px-3 py-2">
+                {new Date(f.mes_referencia).toLocaleDateString("pt-BR", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </td>
+              <td className="px-3 py-2 text-right font-semibold">
+                R$ {Number(f.valor_total).toLocaleString("pt-BR")}
+              </td>
+              <td className="px-3 py-2 text-center">{f.status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-      
-  );
+
+  </div>
+);
+
 }

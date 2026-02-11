@@ -104,273 +104,207 @@ export default function ConsultaTransacaoCartao() {
   state: { from: location.pathname }
 });
 }
+return (
+  <div className="p-4 space-y-6">
 
+    {/* HEADER */}
+    <div className="flex justify-between items-start">
+      <div>
+        <h1 className="text-xl font-bold text-blue-800">
+          Transações do Cartão
+        </h1>
+        <p className="text-sm text-gray-500">
+          Consulte e gerencie transações de cartão de crédito.
+        </p>
+      </div>
+    </div>
 
-  return (
-    <div className="p-2">
-      
+    {/* FILTROS */}
+    <div className="bg-white rounded-xl shadow-sm p-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-      {/* FILTROS  */}
-      <div className="bg-white p-2.5 rounded-xl shadow-xl mb-4 border border-[8px] border-[#061f4aff]">
-         <h2 className="text-2xl font-bold mb-4 text-[#061f4aff]">Transações de Cartão</h2>
-        <div className="bg-white p-2.5 rounded-lg mb-4 flex flex-col md:flex-row md:items-end gap-2">
-          <div className="flex flex-col">
-            <label className="font-bold mb-1 text-[#061f4aff]">Cartão</label>
-            <select
-              className="border font-bold px-3 py-1.5 rounded w-78 h-10 border-yellow-500"
-              value={cartaoId}                      // <-- trabalha com ID
-              onChange={(e) => setCartaoId(e.target.value)}
-            >
-              {listaCartoes.length === 0 ? (
-                <option>Carregando...</option>
-              ) : (
-                <>
-                  <option value="">Selecione...</option>
-                  {listaCartoes.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nome}
-                    </option>
-                  ))}
-                </>
-              )}
-            </select>
-          </div>
+        {/* CARTÃO */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Cartão
+          </label>
+          <select
+            value={cartaoId}
+            onChange={(e) => setCartaoId(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="">Selecione...</option>
+            {listaCartoes.map(c => (
+              <option key={c.id} value={c.id}>{c.nome}</option>
+            ))}
+          </select>
+        </div>
 
-          <div className="flex flex-col">
-            <label className="font-bold mb-1 text-[#061f4aff]">
-              Mês referência
-            </label>
-            <input
-              type="month"
-              className="border font-bold px-3 py-1.5 rounded w-52 h-10 border-yellow-500"
-              value={referencia}
-              onChange={(e) => setReferencia(e.target.value)}
-            />
-          </div>
+        {/* MÊS */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Mês de referência
+          </label>
+          <input
+            type="month"
+            value={referencia}
+            onChange={(e) => setReferencia(e.target.value)}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+          />
+        </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={pesquisar}
-              disabled={loading}
-             // className="bg-blue-600 text-white px-5 py-2 rounded h-10">
-              className= { `${btnPadrao} bg-blue-600 hover:bg-blue-700 px-4 py-2 `}>
-              {loading ? "Carregando..." : "Pesquisar"}
-            </button>
+        {/* AÇÕES */}
+        <div className="flex items-end gap-3">
+          <button
+            onClick={pesquisar}
+            disabled={loading}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          >
+            {loading ? "Carregando..." : "Pesquisar"}
+          </button>
 
-            <button
-              onClick={novaTransacao}
-             // className="bg-green-600 text-white px-5 py-1.5 rounded h-10">
-               className= { `${btnPadrao} bg-green-600 hover:bg-green-700 px-4 py-2 `}>
-              Nova Transação
-            </button>
-          
+          <button
+            onClick={novaTransacao}
+            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+          >
+            + Nova transação
+          </button>
 
-           <button
-              onClick={compra}
-              className={`${btnPadrao} bg-blue-900 hover:bg-blue-600 px-4 py-2`}
-              
-            >
-              Compra
-            </button>
-
-
-          </div>
+          <button
+            onClick={compra}
+            className="text-sm font-semibold text-blue-700 hover:text-blue-900"
+          >
+            Compra
+          </button>
         </div>
       </div>
-
-      {/* ====================== RESULTADO ====================== */}
-
-      {dados?.erro && (
-        <div className="text-center text-red-600 font-semibold mt-4">
-          {dados.erro}
-        </div>
-      )}
-
-      {/* Se tem fatura */}
-      {dados && !dados.erro && dados.fatura && (
-        <>
-          {/* Painel superior */}
-          <div className="bg-gray-100 shadow rounded-lg p-3 border-l-4 border-gray-600">
-            {/* GRID COM 2 COLUNAS */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-2">
-              {/* COLUNA 1 – PAINEL DA FATURA */}
-              <div className="bg-gray-100 shadow rounded-lg p-3 border-l-4 border-gray-600">
-                <h2 className="text-lg font-bold text-gray-800 mb-2">
-                  Cartão:{" "}
-                  <span className="text-blue-700">{dados.cartao}</span>
-                </h2>
-
-                <div className="grid grid-cols-4 gap-3 text-gray-700">
-                  <div className="p-3 bg-gray-100 rounded">
-                    <span className="font-bold block text-sm text-gray-600">
-                      Mês referência
-                    </span>
-                    <span className="text-lg font-bold">
-                     {(() => {
-                          if (!dados?.fatura?.mes_referencia) return "-";
-
-                          // mes_referencia = "2025-12-01"
-                          const [ano, mes] = dados.fatura.mes_referencia.split("-");
-
-                          const dataFormatada = new Date(
-                            Number(ano),
-                            Number(mes) - 1,
-                            1
-                          ).toLocaleDateString("pt-BR", {
-                            month: "long",
-                            year: "numeric",
-                          });
-
-                          return dataFormatada;
-                        })()}
-
-                    </span>
-                  </div>
-
-                  <div className="p-3 bg-gray-100 rounded">
-                    <span className="font-semibold block text-sm text-gray-600">
-                      Status
-                    </span>
-                    <span className="text-lg font-bold capitalize">
-                      {dados.fatura.status}
-                    </span>
-                  </div>
-
-                  <div className="p-3 bg-gray-100 rounded">
-                    <span className="font-semibold block text-sm text-gray-600">
-                      Total da Fatura
-                    </span>
-                    <span className="text-lg font-bold text-blue-700">
-                      {Number(dados.fatura.valor_total).toLocaleString(
-                        "pt-BR",
-                        {
-                          style: "currency",
-                          currency: "BRL",
-                        }
-                      )}
-                    </span>
-                  </div>
- 
-                </div>
-              </div>
-
-              {/* COLUNA 2 – DADOS DO CARTÃO */}
-               
-              <div className="bg-gray-100 shadow rounded-lg p-2 border-l-4 border-blue-700">
-                 <h3 className="font-bold text-lg text-blue-700 mb-2">
-                  Informações do Cartão
-                </h3>
-                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-2"> 
-                
-                <p>
-                  <strong>Nome : </strong>
-                  {cartaoSelecionado?.nome || "-"}
-                </p>
-                <p>
-                  <strong>Bandeira : </strong>
-                  {cartaoSelecionado?.bandeira || "-"}
-                </p>
-                <p>
-                  <strong>Limite :</strong>{" "}
-                  {cartaoSelecionado?.limite_total
-                    ? Number(
-                        cartaoSelecionado.limite_total
-                      ).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })
-                    : "-"}
-                </p>
-
-                <p>
-                  <strong>Fechamento :</strong>{" "}
-                  {cartaoSelecionado?.fechamento_dia ?? "-"}
-                </p>
-                <p>
-                  <strong>Vencimento dia :</strong>{" "}
-                  {cartaoSelecionado?.vencimento_dia ?? "-"}
-                </p>
-
-                <p>
-                  <strong>Número do Cartão :</strong>{" "}
-                  {cartaoSelecionado?.numero || "-"}
-                </p>
-                <p>
-                  <strong>Nome no Cartão :</strong>{" "}
-                  {cartaoSelecionado?.nomecartao || "-"}
-                </p> 
-              </div>
-            </div>
-          </div>
-           </div>
-          {/* Tabela */}
-          <div className="bg-gray-100 p-4 rounded-xl shadow border-[4px] border-gray-500">
-            <div className="bg-white p-4 rounded-xl shadow">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="bg-blue-900 font-black text-base text-white">
-                    <th className="p-2 text-left border">Data</th>
-                    <th className="p-2 text-left border">Descrição</th>
-                    <th className="p-2 text-right border text-blue-800">
-                      Valor
-                    </th>
-                    <th className="p-2 text-center border">Parcela</th>
-                    <th className="p-2 text-center border">Editar</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {/* Nenhuma transação */}
-                  {(!dados.transacoes ||
-                    dados.transacoes.length === 0) && (
-                    <tr>
-                      <td colSpan="5" className="text-center p-4">
-                        Nenhuma transação encontrada.
-                      </td>
-                    </tr>
-                  )}
-
-                  {/* Linhas */}
-                  {dados.transacoes?.map((t, i) => (
-                    <tr
-                      key={t.id}
-                      className={
-                        i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"
-                      }
-                    >
-                      <td className="p-2 border">{t.data_parcela}</td>
-
-                      <td className="p-2 border font-medium">
-                        {t.descricao}
-                      </td>
-
-                      <td className="p-2 text-right border text-blue-800 font-bold">
-                        {Number(t.valor).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </td>
-
-                      <td className="p-2 text-center border">
-                        {t.parcela_num}/{t.parcela_total}
-                      </td>
-
-                      <td className="p-2 text-center border">
-                        <button
-                          onClick={() => editar(t.id)}
-                          className="text-blue-600 underline font-semibold"
-                        >
-                          Editar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </>
-      )}
     </div>
-  );
+
+    {/* RESULTADOS */}
+    {dados?.erro && (
+      <div className="text-center text-red-600 font-semibold">
+        {dados.erro}
+      </div>
+    )}
+
+    {dados && !dados.erro && dados.fatura && (
+      <>
+        {/* RESUMO */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          {/* FATURA */}
+          <div className="bg-white rounded-xl shadow-sm p-5">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Fatura — {dados.cartao}
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div>
+                <p className="text-gray-500">Mês</p>
+                <p className="font-semibold">
+                  {new Date(dados.fatura.mes_referencia).toLocaleDateString(
+                    "pt-BR",
+                    { month: "long", year: "numeric" }
+                  )}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Status</p>
+                <p className="font-semibold capitalize">
+                  {dados.fatura.status}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-gray-500">Total</p>
+                <p className="font-semibold text-blue-700">
+                  {Number(dados.fatura.valor_total).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* CARTÃO */}
+          <div className="bg-white rounded-xl shadow-sm p-5">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Informações do Cartão
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              <p><strong>Nome:</strong> {cartaoSelecionado?.nome || "-"}</p>
+              <p><strong>Bandeira:</strong> {cartaoSelecionado?.bandeira || "-"}</p>
+              <p><strong>Limite:</strong>{" "}
+                {cartaoSelecionado?.limite_total
+                  ? Number(cartaoSelecionado.limite_total).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })
+                  : "-"}
+              </p>
+              <p><strong>Fechamento:</strong> {cartaoSelecionado?.fechamento_dia ?? "-"}</p>
+              <p><strong>Vencimento:</strong> {cartaoSelecionado?.vencimento_dia ?? "-"}</p>
+              <p><strong>Número:</strong> {cartaoSelecionado?.numero || "-"}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* TABELA */}
+        <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-100 text-slate-700">
+              <tr>
+                <th className="px-3 py-2 text-left">Data</th>
+                <th className="px-3 py-2 text-left">Descrição</th>
+                <th className="px-3 py-2 text-right">Valor</th>
+                <th className="px-3 py-2 text-center">Parcela</th>
+                <th className="px-3 py-2 text-center">Editar</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {(!dados.transacoes || dados.transacoes.length === 0) && (
+                <tr>
+                  <td colSpan={5} className="text-center py-6 text-gray-500">
+                    Nenhuma transação encontrada.
+                  </td>
+                </tr>
+              )}
+
+              {dados.transacoes?.map((t) => (
+                <tr key={t.id} className="border-t">
+                  <td className="px-3 py-2">{t.data_parcela}</td>
+                  <td className="px-3 py-2 font-medium">{t.descricao}</td>
+                  <td className="px-3 py-2 text-right font-semibold text-blue-700">
+                    {Number(t.valor).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    {t.parcela_num}/{t.parcela_total}
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    <button
+                      onClick={() => editar(t.id)}
+                      className="text-blue-600 hover:underline font-semibold"
+                    >
+                      Editar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )}
+
+  </div>
+);
+
+ 
 }

@@ -178,7 +178,7 @@ const dadosRender = dados.map((l) => {
             <tr className="bg-blue-900 text-white">
               <th className="text-left text-white">Ano</th>
               <th className="text-left text-white">Mês</th> 
-              <th className="text-right text-green-600">Saldo Inicial</th>
+              
               <th className="text-right text-green-600">Entradas</th>
               <th className="text-right text-red-600">Saídas</th>
               <th className="text-right text-white">Saldo Final</th>
@@ -189,10 +189,10 @@ const dadosRender = dados.map((l) => {
               <tr key={i}>
                 <td className="text-left text-green-600 font-bold text-sm" >{l.ano}</td>
                 <td className="text-left text-green-600 font-bold text-sm">{l.mes}</td>
-                <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.saldo_inicial)}</td>
                 <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.entrada)}</td>
+                <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.saida)}</td>
                 <td className="text-right text-red-600 font-bold text-sm">{fmt.format(l.saida)}</td>
-                <td className="text-right font-bold text-sm">{fmt.format(l.saldo_final)}</td>
+             
               </tr>
             ))}
           </tbody>
