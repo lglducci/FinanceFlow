@@ -1,0 +1,1617 @@
+{
+  "name": "DashBoardFinanceiro",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        -160
+      ],
+      "id": "db4e6a68-33be-414a-9646-824c984f024e",
+      "name": "Edit _vw_saldo_atual"
+    },
+    {
+      "parameters": {
+        "path": "vw_saldo_atual",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        -160
+      ],
+      "id": "b0452566-eefc-4e49-b3b0-168f1b3205bd",
+      "name": "SaldoAtual",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        96,
+        -160
+      ],
+      "id": "7d328f91-85ce-4028-ad1c-9379d7a39093",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_saldo_atual where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -112,
+        -160
+      ],
+      "id": "bd1e52e2-efc3-4ee7-a55e-a821ad37768a",
+      "name": "vw_saldo_atual",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        96,
+        16
+      ],
+      "id": "861d53a6-b639-40bc-a45b-75bff24fe0f5",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "vw_recebido_mes ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        16
+      ],
+      "id": "2c1ef720-a619-4bfe-a4a6-1cad7d74bcd3",
+      "name": "Recebido_mes",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        16
+      ],
+      "id": "ad173d80-6ad4-4203-aeb1-c485bb9f9648",
+      "name": "Edit _vw_recebido_mes"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_recebido_mes  where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -112,
+        16
+      ],
+      "id": "ac6dd406-5bf9-4005-aafd-196f8a1b83ea",
+      "name": "vw_recebido_mes",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        80,
+        176
+      ],
+      "id": "98fc38cc-6f4e-4dc5-b4e3-9985cb96cfc8",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "path": "vw_pago_mes ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -544,
+        176
+      ],
+      "id": "c5c7f86c-f0e8-4968-863f-9759bfb7c3c7",
+      "name": "Pago_mes",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -336,
+        176
+      ],
+      "id": "67945336-41f5-447d-8507-0dfc63b84089",
+      "name": "Edit _vw_pago_mes"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_pago_mes   where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -128,
+        176
+      ],
+      "id": "7556471d-1e84-4c6b-9247-d8b81808623a",
+      "name": "vw_pago_mes",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        64,
+        368
+      ],
+      "id": "ff9b1119-021a-4f3d-bb03-146c14c70fdd",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "path": "vw_resultado_mes ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        368
+      ],
+      "id": "d6866ca3-cc8e-4ec4-afa2-071dac33acc7",
+      "name": "Resultado_mes",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        368
+      ],
+      "id": "07085d70-65be-4a60-87f8-daa61fb36be2",
+      "name": "Edit _vw_resultado_mes"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_resultado_mes    where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -144,
+        368
+      ],
+      "id": "54bddbab-048d-4205-a4b3-c38df32d6c07",
+      "name": "vw_resultado_mes",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1152,
+        -144
+      ],
+      "id": "46f47dbd-ac73-4fe3-a45a-a4e29d22aa94",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "path": "vw_pagar_vencido",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1776,
+        -144
+      ],
+      "id": "0c9f1a9f-3cc0-4456-a80a-70d08a54608f",
+      "name": "Pagar_vencido",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1568,
+        -144
+      ],
+      "id": "aa6c8676-08db-48f2-8fbe-b745d74a14a3",
+      "name": "Edit _vw_pagar_vencido"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_pagar_vencido    where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1360,
+        -144
+      ],
+      "id": "b20d0ba8-3646-472f-814e-7eeba1900507",
+      "name": "vw_pagar_vencido",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1152,
+        16
+      ],
+      "id": "6f45bfaa-4be4-4196-bf3c-22380a9d3f85",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "path": "vw_receber_vencido ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1776,
+        16
+      ],
+      "id": "40fd6db2-81a7-435a-ae2d-040e0968f015",
+      "name": "Receber_vencido",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1568,
+        16
+      ],
+      "id": "9bec50da-65c2-4aa8-b894-cded96971ef6",
+      "name": "Edit _vw_receber_vencido"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_receber_vencido      where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1360,
+        16
+      ],
+      "id": "68bc1aa7-f2af-4dcd-9970-2098cec3e7f8",
+      "name": "vw_receber_vencido",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1168,
+        192
+      ],
+      "id": "e3d91d8f-4def-4f30-a2bf-9c7698e25ea8",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "path": "fn_pagar_periodo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1792,
+        192
+      ],
+      "id": "cf40ebc6-8c4a-4377-a2b4-f3a65d5f9528",
+      "name": "Pagar_Periodo",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1584,
+        192
+      ],
+      "id": "7f762e40-c784-486d-97be-d2a39e1a761e",
+      "name": "Edit _fn_pagar_periodo"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1152,
+        368
+      ],
+      "id": "986c34b7-3c7c-4ffe-baa5-8798bf1fdeb4",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "path": "fn_receber_periodo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1776,
+        368
+      ],
+      "id": "8cbedda1-1d8d-4ee1-a9a5-b6be8a3bfdd4",
+      "name": "Receber_Periodo",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1568,
+        368
+      ],
+      "id": "760c0e3a-4977-4f0b-94c6-5d01a23283c9",
+      "name": "Edit _fn_receber_periodo"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from fn_receber_periodo ( {{ $json.empresa_id }},'{{ $json.data_inicio }}','{{ $json.data_fim }}')",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1360,
+        368
+      ],
+      "id": "85f28e65-e8c4-436b-83b2-a01fe6dac53e",
+      "name": "fn_receber_periodo",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from fn_pagar_periodo ( {{ $json.empresa_id }},'{{ $json.data_inicio }}','{{ $json.data_fim }}')",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1376,
+        192
+      ],
+      "id": "bc873ceb-f446-4235-a3c1-314d142e7832",
+      "name": "fn_pagar_periodo",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Constituir  dashboard  Parte(1) \nWebhooks  do dashboard financeiro. repositório.",
+        "height": 1196,
+        "width": 1312,
+        "color": 3
+      },
+      "id": "f1aa45e8-381b-418a-8a98-16c28e0344d7",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2096,
+        -384
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Constituir  dashboard  Parte(2)\nWebhooks  do dashboard financeiro.",
+        "height": 1196,
+        "width": 1312,
+        "color": 4
+      },
+      "id": "25afcd3a-f0a1-4655-81df-5ded1a4d2c38",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -368
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Constituir  dashboard  Parte(3) \nWebhooks  do dashboard financeiro. repositório.",
+        "height": 1196,
+        "width": 1312,
+        "color": 5
+      },
+      "id": "23a83ed5-4e14-4f63-922b-01925ffa96b0",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3536,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2752,
+        -160
+      ],
+      "id": "ef5ac852-b537-440d-962e-5bf40b38bbd4",
+      "name": "Respond to Webhook8"
+    },
+    {
+      "parameters": {
+        "path": "vw_receita_12_meses",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3376,
+        -160
+      ],
+      "id": "653fa75e-d032-4750-9a6c-5c6183b0d748",
+      "name": "Receita_12_meses",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3168,
+        -160
+      ],
+      "id": "b291a8ba-01c0-427c-bff8-c566b0c0b1a6",
+      "name": "Edit _vw_receita_12_meses"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_receita_12_meses where empresa_id =  {{ $json.empresa_id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2960,
+        -160
+      ],
+      "id": "66bdab60-6c6e-403a-b0cc-caa12a80b6fd",
+      "name": "vw_receita_12_meses",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2720,
+        96
+      ],
+      "id": "4d1fff54-44cd-4cde-ada6-6a465a68f09f",
+      "name": "Respond to Webhook9"
+    },
+    {
+      "parameters": {
+        "path": "vw_proximos_pagamentos ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3344,
+        96
+      ],
+      "id": "01bafb7c-74f5-42f6-b57f-10401e538982",
+      "name": "Proximos_pagamentos",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3136,
+        96
+      ],
+      "id": "951b247d-f7cd-402a-a02b-eb40db91d1b1",
+      "name": "Edit _vw_proximos_pagamentos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_proximos_pagamentos  where empresa_id =  {{ $json.empresa_id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2928,
+        96
+      ],
+      "id": "8915f33c-c162-4b93-b692-273b0f8e1cfd",
+      "name": "vw_proximos_pagamentos",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2720,
+        352
+      ],
+      "id": "2c2ab714-fed4-4bc2-a1b9-a0f84dd0e4a6",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "path": "vw_proximos_recebimentos ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3344,
+        352
+      ],
+      "id": "d48e2af5-87b2-49e6-ac01-798e00358504",
+      "name": "Proximos_recebimentos",
+      "webhookId": "6ac7accf-bc7c-4ca8-b698-719b4eee0249"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3136,
+        352
+      ],
+      "id": "ed92bb31-7ff0-4289-bcc7-4781e110f032",
+      "name": "Edit _vw_proximos_recebimentos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from vw_proximos_recebimentos   where empresa_id =  {{ $json.empresa_id }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2928,
+        352
+      ],
+      "id": "76d68504-dbf0-4664-a7cb-75953c2096cf",
+      "name": "vw_proximos_recebimentos",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2672,
+        592
+      ],
+      "id": "8f8912bb-b65c-44a5-bde4-e777a06a88c4",
+      "name": "Respond to Webhook11"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "375c142e-60db-455c-ae21-6e3bd8bba4d9",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "a7ce99f5-dd69-40f8-a58e-fbb6b3279e4c",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "f0f1ddcd-2594-4a1d-a6bf-9b3271c03840",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3088,
+        592
+      ],
+      "id": "4bf92189-297d-4215-9771-f14de45153f2",
+      "name": "Edit _vw_proximos_recebimentos1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from fn_dashboard_financeiro ( {{ $json.empresa_id }} )",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2880,
+        592
+      ],
+      "id": "39a6fdcb-8897-461f-813b-e5ec1d6773bb",
+      "name": "fn_dashboard_financeiro",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "dashboard_financeiro",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3312,
+        592
+      ],
+      "id": "d347f005-f990-419a-a2c7-a516e05a2223",
+      "name": "consultaSaldo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    }
+  ],
+  "pinData": {
+    "Edit _vw_saldo_atual": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "",
+          "data_fim": ""
+        }
+      }
+    ],
+    "Edit _vw_recebido_mes": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "",
+          "data_fim": ""
+        }
+      }
+    ],
+    "Edit _vw_pago_mes": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "",
+          "data_fim": ""
+        }
+      }
+    ],
+    "Edit _vw_resultado_mes": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "",
+          "data_fim": ""
+        }
+      }
+    ],
+    "Edit _vw_pagar_vencido": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "",
+          "data_fim": ""
+        }
+      }
+    ],
+    "Edit _vw_receber_vencido": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "",
+          "data_fim": ""
+        }
+      }
+    ],
+    "Edit _fn_pagar_periodo": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "20260101",
+          "data_fim": "20260301"
+        }
+      }
+    ],
+    "Edit _fn_receber_periodo": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "20260101",
+          "data_fim": "20260301"
+        }
+      }
+    ],
+    "Edit _vw_receita_12_meses": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "20260101",
+          "data_fim": "20260301"
+        }
+      }
+    ],
+    "Edit _vw_proximos_pagamentos": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "20260101",
+          "data_fim": "20260301"
+        }
+      }
+    ],
+    "Edit _vw_proximos_recebimentos": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "20260101",
+          "data_fim": "20260301"
+        }
+      }
+    ],
+    "Edit _vw_proximos_recebimentos1": [
+      {
+        "json": {
+          "empresa_id": "1",
+          "data_inicio": "20260101",
+          "data_fim": "20260301"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "SaldoAtual": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_saldo_atual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_saldo_atual": {
+      "main": [
+        [
+          {
+            "node": "vw_saldo_atual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_saldo_atual": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recebido_mes": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_recebido_mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_recebido_mes": {
+      "main": [
+        [
+          {
+            "node": "vw_recebido_mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_recebido_mes": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pago_mes": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_pago_mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_pago_mes": {
+      "main": [
+        [
+          {
+            "node": "vw_pago_mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_pago_mes": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resultado_mes": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_resultado_mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_resultado_mes": {
+      "main": [
+        [
+          {
+            "node": "vw_resultado_mes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_resultado_mes": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pagar_vencido": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_pagar_vencido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_pagar_vencido": {
+      "main": [
+        [
+          {
+            "node": "vw_pagar_vencido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_pagar_vencido": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receber_vencido": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_receber_vencido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_receber_vencido": {
+      "main": [
+        [
+          {
+            "node": "vw_receber_vencido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_receber_vencido": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pagar_Periodo": {
+      "main": [
+        [
+          {
+            "node": "Edit _fn_pagar_periodo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _fn_pagar_periodo": {
+      "main": [
+        [
+          {
+            "node": "fn_pagar_periodo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receber_Periodo": {
+      "main": [
+        [
+          {
+            "node": "Edit _fn_receber_periodo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _fn_receber_periodo": {
+      "main": [
+        [
+          {
+            "node": "fn_receber_periodo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fn_receber_periodo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fn_pagar_periodo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receita_12_meses": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_receita_12_meses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_receita_12_meses": {
+      "main": [
+        [
+          {
+            "node": "vw_receita_12_meses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_receita_12_meses": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proximos_pagamentos": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_proximos_pagamentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_proximos_pagamentos": {
+      "main": [
+        [
+          {
+            "node": "vw_proximos_pagamentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_proximos_pagamentos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proximos_recebimentos": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_proximos_recebimentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_proximos_recebimentos": {
+      "main": [
+        [
+          {
+            "node": "vw_proximos_recebimentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vw_proximos_recebimentos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit _vw_proximos_recebimentos1": {
+      "main": [
+        [
+          {
+            "node": "fn_dashboard_financeiro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fn_dashboard_financeiro": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consultaSaldo": {
+      "main": [
+        [
+          {
+            "node": "Edit _vw_proximos_recebimentos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f25c4ea8-65a5-46b7-aa00-f331afbc427a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+  },
+  "id": "3die1BaQnTBvHayn",
+  "tags": []
+}
