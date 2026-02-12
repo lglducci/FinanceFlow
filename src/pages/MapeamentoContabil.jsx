@@ -1,6 +1,8 @@
  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import FormContaContabilModal from "../components/forms/FormContaContabilModal"; 
+import ModalBase from "../components/ModalBase";
 
 export default function MapeamentoContabil() {
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ export default function MapeamentoContabil() {
   const [linhas, setLinhas] = useState([]);
 
 const [filtro, setFiltro] = useState("");
- 
+  const [modalContaContabil, setModalContaContabil] = useState(false);
  
  // const contaGerencialId = state?.conta_gerencial_id;
 
@@ -150,13 +152,17 @@ const [filtro, setFiltro] = useState("");
           >
             + Novo Modelo
           </button>
-
+ 
+         
           <button
-            onClick={() => navigate("/nova-conta-contabil")}
-            className="px-5 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700"
+            onClick={() => setModalContaContabil(true)}
+            className="px-6 py-2 rounded-lg bg-[#061f4a] text-white font-semibold hover:brightness-110"
           >
-            + Nova Conta Contábil
+            ➕ Adicionar Conta
           </button>
+
+
+
         </div>
       </div>
 
@@ -303,7 +309,21 @@ const [filtro, setFiltro] = useState("");
         </tbody>
       </table>
     </div>
-
+     
+      <ModalBase
+            open={modalContaContabil}
+            onClose={() => setModalContaContabil(false)}
+            title="Nova Conta Contábil"
+          >
+            <FormContaContabilModal
+                empresa_id={empresa_id}
+                onSuccess={() => {
+                  setModalContaContabil(false);
+                 
+                }}
+                onCancel={() => setModalContaContabil(false)}
+              /> 
+        </ModalBase>
   </div>
 );
 

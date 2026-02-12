@@ -5,6 +5,7 @@ import ModalBase from "../components/ModalBase";
 
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import FormContaContabilModal from "../components/forms/FormContaContabilModal"; 
+import  FormModeloContabil from "../components/forms/FormModeloContabil"; 
 
 export default function LancamentoContabilRapido() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ export default function LancamentoContabilRapido() {
 
  
  const [modalContaContabil, setModalContaContabil] = useState(false);
+
+ const [modalModelo, setModalModelo] = useState(false);
 const [contasContabeis, setContasContabeis] = useState([]);
 
 
@@ -47,36 +50,34 @@ const [vencimento, setVencimento] = useState(hojeMaisDias(1));
 
 const [lembrar, setLembrar] = useState(false);
  const hoje =  hojeMaisDias(1);
+ 
+const [campoOrigemConta, setCampoOrigemConta] = useState(null); 
+// "debito" ou "credito"
 
 // 🔥 Helper de consistência (alerta, não bloqueia)
 const [helperMsg, setHelperMsg] = useState(null); 
 // helperMsg = null ou { titulo: string, mensagem: string }
 
 
-  /* ================== LOAD CONTAS ================== */
-  useEffect(() => {
-    async function carregarContas() {
-      const r = await fetch(
-        buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id })
-      );
-      const j = await r.json();
-      setContas(j || []);
-    }
-    carregarContas();
-  }, [empresa_id]);
+ 
 
-  /* ================== LOAD MODELOS ================== */
-  useEffect(() => {
-    async function carregarModelos() {
-      const r = await fetch(
-        buildWebhookUrl("modelos", { empresa_id })
-      );
-      const j = await r.json();
-      setModelos(j || []);
-    }
-    carregarModelos();
-  }, [empresa_id]);
 
+
+async function carregarModelos() {
+  const r = await fetch(
+    buildWebhookUrl("modelos", { empresa_id })
+  );
+  const j = await r.json();
+  setModelos(j || []);
+}
+
+useEffect(() => {
+  carregarModelos();
+}, [empresa_id]);
+
+
+
+ 
   /* ================== SELECIONAR MODELO ================== */
   async function selecionarModelo(token) {
     setModeloCodigo(token);
@@ -116,6 +117,19 @@ const histAuto = montarHistoricoPorNomes(nomeDeb, nomeCred);
 } 
 
 }
+
+async function carregarContas() {
+  const r = await fetch(
+    buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id })
+  );
+  const j = await r.json();
+  setContas(j || []);
+}
+
+useEffect(() => {
+  carregarContas();
+}, [empresa_id]);
+
  
 function montarHistoricoPorNomes(nomeDeb, nomeCred) {
   if (!nomeDeb && !nomeCred) return "";
@@ -516,6 +530,7 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
         </label>
 
         {/* TOKEN */}
+         <div className="flex items-center gap-2"> 
         {usarModelo && (
           <input
             list="tokens"
@@ -530,6 +545,33 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
             <option key={m.id} value={m.codigo} />
           ))}
         </datalist>
+          {usarModelo && ( 
+            
+              <div className="relative group"> 
+              <button
+              type="button"
+              onClick={() => {
+                console.log("CLICOU MODELO");
+                setModalModelo(true);
+              }}
+               className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+            >
+              ➕  
+            </button> 
+            <div className="
+                        absolute left-1/2 -translate-x-1/2 top-10
+                        hidden group-hover:block
+                        bg-black text-white text-xs
+                        px-2 py-1 rounded
+                        whitespace-nowrap
+                        z-50
+                      ">
+                      Adicionar Modelo
+                    </div>
+                   
+            
+             </div>) }  
+            </div>
 
                       {/* ================= BLOCO MODELO (SÓ SE TOKEN) ================= */}
               {usarModelo && modeloSelecionado && (
@@ -607,7 +649,8 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
                   )}
                 </label>
  
-
+               
+             <div className="flex items-center gap-2"> 
              <input
                 list="contasDebito"
                 className="input-premium"
@@ -640,15 +683,45 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
                     value={`${c.codigo} - ${c.nome}`}
                   />
                 ))}
-              </datalist>
+              </datalist>  
 
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                {/* seu input + datalist aqui (igual acima) */}
+              </div>
 
-         
-            {debitoConta && (
+              <div className="relative group">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCampoOrigemConta("debito");
+                        setModalContaContabil(true);
+                      }}
+                      className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                    >
+                      +
+                    </button>
+
+                    <div className="
+                        absolute left-1/2 -translate-x-1/2 top-10
+                        hidden group-hover:block
+                        bg-black text-white text-xs
+                        px-2 py-1 rounded
+                        whitespace-nowrap
+                        z-50
+                      ">
+                      Adicionar nova conta
+                    </div>
+                   
+                  </div>  
+             </div> 
+           
+            </div>
+               {debitoConta && (
               <div className="mt-1 text-xs text-blue-900  bg-yellow-100 p-2 rounded">
                 📌 {explicacaoConta(debitoConta.codigo)?.texto}
               </div>
-            )}
+            )}  
 
             </div>
             
@@ -684,8 +757,8 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
                       </div>
                     )}
                   </label>
-
-
+               
+             <div className="flex items-center gap-2"> 
               <input
                   list="contasCredito"
                   className="input-premium"
@@ -719,15 +792,37 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
                       value={`${c.codigo} - ${c.nome}`}
                     />
                   ))}
-                </datalist>
+                </datalist> 
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCampoOrigemConta("credito");
+                        setModalContaContabil(true);
+                      }}
+                      className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                    >
+                      +
+                    </button>
 
-              {creditoConta && (
+                    <div className="
+                        absolute left-1/2 -translate-x-1/2 top-10
+                        hidden group-hover:block
+                        bg-black text-white text-xs
+                        px-2 py-1 rounded
+                        whitespace-nowrap
+                        z-50
+                      ">
+                      Adicionar nova conta
+                    </div>
+                  </div>
+
+          </div>
+             {creditoConta && (
               <div className="mt-1 text-xs text-blue-900 bg-yellow-100 p-2 rounded">
                 📌 {explicacaoConta(creditoConta.codigo)?.texto}
               </div>
             )}
-
-
           </div>
           </>
         )}
@@ -819,6 +914,8 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
         >
           Voltar
         </button>
+
+ 
       </div>
        </div>
       </div>
@@ -828,22 +925,29 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
           onClose={() => setModalContaContabil(false)}
           title="Nova Conta Contábil"
         >
-          <FormContaContabilModal
+           <FormContaContabilModal
+              empresa_id={empresa_id}
+              onSuccess={() => {
+                setModalContaContabil(false);
+                carregarContas(); // 🔥 REFRESH DO DROPDOWN
+              }}
+              onCancel={() => setModalContaContabil(false)}
+            /> 
+        </ModalBase>
+
+        <ModalBase
+          open={modalModelo}
+          onClose={() => setModalModelo(false)}
+          title="Novo Modelo"
+        >
+          <FormModeloContabil
             empresa_id={empresa_id}
-            onSuccess={(nova) => {
+            onSuccess={() => {
+              setModalModelo(false);
+              carregarModelos();
+            }} 
 
-              // adiciona na lista
-              setContasContabeis(prev => [nova, ...prev]);
-
-              // já seleciona automaticamente
-              setForm(prev => ({
-                ...prev,
-                contabil_id: String(nova.id)
-              }));
-
-              setModalContaContabil(false);
-            }}
-            onCancel={() => setModalContaContabil(false)}
+            onCancel={() => setModalModelo(false)}
           />
         </ModalBase>
 

@@ -364,7 +364,7 @@ export default function NovoLancamento() {
               empresa_id={empresa_id}
               onSuccess={(novaConta) => {
                     console.log("RETORNO RAW:", novaConta);
-
+                    carregarContas()
                     const conta = Array.isArray(novaConta)
                       ? novaConta[0]
                       : novaConta;

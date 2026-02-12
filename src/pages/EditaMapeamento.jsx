@@ -1,6 +1,9 @@
  import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import FormContaContabilModal from "../components/forms/FormContaContabilModal"; 
+import ModalBase from "../components/ModalBase";
+
 
 export default function EditaMapeamento() {
   const navigate = useNavigate();
@@ -16,7 +19,8 @@ export default function EditaMapeamento() {
   const [busca, setBusca] = useState(""); // texto digitado
   const [resultadoBusca, setResultadoBusca] = useState([]); // contas retornadas
   const [indexLinha, setIndexLinha] = useState(null); // qual linha está sendo editada
-
+  
+ const [modalContaContabil, setModalContaContabil] = useState(false);
   // ================================
   //  CARREGAR LINHAS DO MODELO
   // ================================
@@ -180,37 +184,63 @@ export default function EditaMapeamento() {
 
     {/* ===== AÇÕES ===== */}
     <div className="flex gap-4 mt-6">
-      <button
-        onClick={async () => {
-          try {
-            const url = buildWebhookUrl("salvar_mapeamento", {
-              empresa_id,
-              modelo_id,
-            });
 
-            await fetch(url, {
-              method: "POST",
-              body: JSON.stringify(linhas),
-            });
+          <button
+            onClick={async () => {
+              try {
+                const url = buildWebhookUrl("salvar_mapeamento", {
+                  empresa_id,
+                  modelo_id,
+                });
 
-            alert("Mapeamento salvo!");
-            navigate("/mapeamento-contabil");
-          } catch {
-            alert("Erro ao salvar!");
-          }
-        }}
-        className="px-6 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-800"
-      >
-        Salvar tudo
-      </button>
+                await fetch(url, {
+                  method: "POST",
+                  body: JSON.stringify(linhas),
+                });
 
-      <button
-        onClick={() => navigate("/mapeamento-contabil")}
-        className="px-6 py-2 rounded-lg bg-gray-400 text-white font-semibold hover:bg-gray-500"
-      >
-        Cancelar
-      </button>
-    </div>
+                alert("Mapeamento salvo!");
+                navigate("/mapeamento-contabil");
+              } catch {
+                alert("Erro ao salvar!");
+              }
+            }}
+            className="px-6 py-2 rounded-lg bg-blue-700 text-white font-semibold hover:bg-blue-800"
+          >
+            Salvar tudo
+          </button>
+
+          <button
+            onClick={() => navigate("/mapeamento-contabil")}
+            className="px-6 py-2 rounded-lg bg-gray-400 text-white font-semibold hover:bg-gray-500"
+          >
+            Cancelar
+          </button>
+
+          <button
+            onClick={() => setModalContaContabil(true)}
+            className="px-6 py-2 rounded-lg bg-[#061f4a] text-white font-semibold hover:brightness-110"
+          >
+            ➕ Adicionar Conta
+          </button>
+
+        </div>
+
+
+      <ModalBase
+            open={modalContaContabil}
+            onClose={() => setModalContaContabil(false)}
+            title="Nova Conta Contábil"
+          >
+            <FormContaContabilModal
+                empresa_id={empresa_id}
+                onSuccess={() => {
+                  setModalContaContabil(false);
+                   carregarDados(); // 🔥 REFRESH DO DROPDOWN
+                }}
+                onCancel={() => setModalContaContabil(false)}
+              /> 
+        </ModalBase>
+
 
   </div>
 );

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import ModalBase from "../components/ModalBase";
+import FormCartaoModal from "../components/forms/FormCartaoModal";
 
 
 export default function NovoCardTransaction() {
@@ -13,7 +15,7 @@ export default function NovoCardTransaction() {
   const [listaCartoes, setListaCartoes] = useState([]);
   const [cartaoSelecionado, setCartaoSelecionado] = useState("");
   const [contas, setContas] = useState([]);
-
+ const [modalCartao, setModalCartao] = useState(false);
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
@@ -125,9 +127,10 @@ export default function NovoCardTransaction() {
 
      <div className="bg-gray-100 flex flex-col  gap-2  px-3"> 
       
-
+       
       {/* Cartão */}
       <label className="block label label-required">Cartão</label>
+          <div className="flex items-center gap-2"> 
       <select
             className="input-premium w-[480px]"
         value={cartaoSelecionado}
@@ -141,6 +144,26 @@ export default function NovoCardTransaction() {
           </option>
         ))}
       </select>
+    <div className="relative group"> 
+      <button
+        onClick={() => setModalCartao(true)}
+          className="px-6 py-2 rounded-lg bg-[#061f4a] text-white font-semibold hover:brightness-110"
+      >
+        ➕ 
+      </button>
+
+            <div className="
+                  absolute left-1/2 -translate-x-1/2 top-10
+                  hidden group-hover:block
+                  bg-black text-white text-xs
+                  px-2 py-1 rounded
+                  whitespace-nowrap
+                  z-50
+                ">
+                Adicionar novo cartão 
+              </div>
+          </div>
+     </div>
 
        {/* Data */}
       <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Data da Compra</label>
@@ -267,6 +290,23 @@ export default function NovoCardTransaction() {
 
       </div>
      </div>
+
+     <ModalBase
+  open={modalCartao}
+  onClose={() => setModalCartao(false)}
+  title="Novo Cartão"
+>
+  <FormCartaoModal
+    empresa_id={empresa_id}
+    onSuccess={() => {
+      setModalCartao(false);
+      // se quiser recarregar lista:
+     carregarCartoes();   // 👈 AQUI ESTÁ O RELOAD
+    }}
+    onCancel={() => setModalCartao(false)}
+  />
+</ModalBase>
+
      </div>
   );
 }
