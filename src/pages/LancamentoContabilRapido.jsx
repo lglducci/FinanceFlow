@@ -13,6 +13,11 @@ export default function LancamentoContabilRapido() {
     localStorage.getItem("id_empresa");
  const [historicoEditado, setHistoricoEditado] = useState(false);
 
+
+ const [modalContaContabil, setModalContaContabil] = useState(false);
+const [contasContabeis, setContasContabeis] = useState([]);
+
+
   /* ================== STATES ================== */
   const [usarModelo, setUsarModelo] = useState(false);
 
@@ -817,6 +822,31 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
       </div>
        </div>
       </div>
+
+      <ModalBase
+        open={modalContaContabil}
+        onClose={() => setModalContaContabil(false)}
+        title="Nova Conta Contábil"
+      >
+        <FormContaContabilModal
+          empresa_id={empresa_id}
+          onSuccess={(nova) => {
+
+            // adiciona na lista
+            setContasContabeis(prev => [nova, ...prev]);
+
+            // já seleciona automaticamente
+            setForm(prev => ({
+              ...prev,
+              contabil_id: String(nova.id)
+            }));
+
+            setModalContaContabil(false);
+          }}
+          onCancel={() => setModalContaContabil(false)}
+        />
+      </ModalBase>
+
     </div>
   );
 }
