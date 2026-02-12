@@ -227,15 +227,20 @@ export default function NovoLancamento() {
 
             <div>
               <label  className="label label-required block font-bold text-[#1e40af]">Conta Financeira</label>
-              <select
+                <select
                     name="conta_id"
                     value={String(form.conta_id || "")}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      if (e.target.value === "__nova__") {
+                        setModalConta(true);
+                        return;
+                      }
+
                       setForm(prev => ({
                         ...prev,
-                        conta_id: String(e.target.value)
-                      }))
-                    }
+                        conta_id: e.target.value
+                      }));
+                    }}
                     className="input-premium"
                   >
                     <option value="">Selecione</option>
@@ -246,7 +251,7 @@ export default function NovoLancamento() {
                       </option>
                     ))}
 
-                    <option value="__nova__">+ Nova Conta Financeira</option>
+                    <option value="__nova__">➕ Nova Conta Financeira</option>
                   </select>
 
             </div>

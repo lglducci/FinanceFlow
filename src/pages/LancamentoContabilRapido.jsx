@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
- 
+import ModalBase from "../components/ModalBase";
+
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
  
 

@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
-import FormCategoria from "../components/forms/FormCategoria";
+ import FormCategoria from "../components/forms/FormCategoria";
+import FormFornecedorModal from "../components/forms/FormFornecedorModal"; 
+import ModalBase from "../components/ModalBase";
+
 
 
 export default function NovaContaPagar() {
@@ -49,8 +52,12 @@ const THEME = {
   btnSecondaryText: "#ffffff",
 };
 
+const [modalFornecedor, setModalFornecedor] = useState(false);
+const [fornecedores, setFornecedores] = useState([]);
 
-  const [fornecedores, setFornecedores] = useState([]);
+ 
+
+  
   const [categorias, setCategorias] = useState([]);
   const [salvando, setSalvando] = useState(false);
 
@@ -238,6 +245,8 @@ if (!form.contabil_id) {
 
 
   return ( 
+
+    
           <div className="min-h-screen py-6 px-4 bg-bgSoft">
         <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >  
 
@@ -271,8 +280,7 @@ if (!form.contabil_id) {
         {/* CATEGORIA */}
         <div>
             <div className="w-2/3"> 
-          <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
-         
+          <label className="label label-required font-bold text-[#1e40af]">Categoria</label> 
 
                   <select
                     name="categoria_id"
@@ -305,21 +313,33 @@ if (!form.contabil_id) {
         <div>
           <div className="w-2/3"> 
           <label className=" label label-required font-bold text-[#1e40af]">Fornecedor</label>
-          <select
-            name="fornecedor_id"
-            value={form.fornecedor_id}
-            onChange={handleChange}
-             className="input-premium w-24"
-            placeholder="fornecedor"
-          >
-            <option value="">Nenhum</option>
+          
+              <select
+                name="fornecedor_id"
+                value={String(form.fornecedor_id || "")}
+                onChange={(e) => {
+                  const v = e.target.value;
 
-            {fornecedores.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.nome}
-              </option>
-            ))}
-          </select>
+                  if (v === "__novo__") {
+                    setModalFornecedor(true);
+                    return;
+                  }
+
+                  setForm(prev => ({ ...prev, fornecedor_id: v }));
+                }}
+                className="input-premium w-full"
+              >
+                <option value="">Nenhum</option>
+
+                {fornecedores.map((f) => (
+                  <option key={f.id} value={String(f.id)}>
+                    {f.nome}
+                  </option>
+                ))}
+
+                <option value="__novo__">➕ Novo Fornecedor / Cliente</option>
+              </select>
+
         </div>
         </div>
 
@@ -490,6 +510,30 @@ if (!form.contabil_id) {
           }));
         }}
       />
+        
+        <ModalBase
+          open={modalFornecedor}
+          onClose={() => setModalFornecedor(false)}
+          title="Novo Fornecedor / Cliente"
+        >
+          <FormFornecedorModal
+            empresa_id={empresa_id}
+            tipo="fornecedor"   // 👈 AQUI
+            onSuccess={(novo) => {
+              setFornecedores(prev => [novo, ...prev]);
+
+              setForm(prev => ({
+                ...prev,
+                fornecedor_id: String(novo.id)
+              }));
+
+              setModalFornecedor(false);
+            }}
+            onCancel={() => setModalFornecedor(false)}
+          />
+        </ModalBase>
+
+ 
 
     </div>
   );
