@@ -4,7 +4,7 @@ import { buildWebhookUrl } from "../config/globals";
 import ModalBase from "../components/ModalBase";
 
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
- 
+import FormContaContabilModal from "../components/forms/FormContaContabilModal"; 
 
 export default function LancamentoContabilRapido() {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function LancamentoContabilRapido() {
     localStorage.getItem("id_empresa");
  const [historicoEditado, setHistoricoEditado] = useState(false);
 
-
+ 
  const [modalContaContabil, setModalContaContabil] = useState(false);
 const [contasContabeis, setContasContabeis] = useState([]);
 
@@ -824,28 +824,28 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
       </div>
 
       <ModalBase
-        open={modalContaContabil}
-        onClose={() => setModalContaContabil(false)}
-        title="Nova Conta Contábil"
-      >
-        <FormContaContabilModal
-          empresa_id={empresa_id}
-          onSuccess={(nova) => {
+          open={modalContaContabil}
+          onClose={() => setModalContaContabil(false)}
+          title="Nova Conta Contábil"
+        >
+          <FormContaContabilModal
+            empresa_id={empresa_id}
+            onSuccess={(nova) => {
 
-            // adiciona na lista
-            setContasContabeis(prev => [nova, ...prev]);
+              // adiciona na lista
+              setContasContabeis(prev => [nova, ...prev]);
 
-            // já seleciona automaticamente
-            setForm(prev => ({
-              ...prev,
-              contabil_id: String(nova.id)
-            }));
+              // já seleciona automaticamente
+              setForm(prev => ({
+                ...prev,
+                contabil_id: String(nova.id)
+              }));
 
-            setModalContaContabil(false);
-          }}
-          onCancel={() => setModalContaContabil(false)}
-        />
-      </ModalBase>
+              setModalContaContabil(false);
+            }}
+            onCancel={() => setModalContaContabil(false)}
+          />
+        </ModalBase>
 
     </div>
   );
