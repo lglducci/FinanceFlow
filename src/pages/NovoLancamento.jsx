@@ -2,11 +2,21 @@
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import ModalBase from "../components/ModalBase";
+import FormCategoria from "../components/forms/FormCategoria";
+import FormConta from "../components/forms/FormConta";
+
 
 export default function NovoLancamento() {
   const navigate = useNavigate();   
 
   const empresa_id = localStorage.getItem("empresa_id") || "1";
+  const [modalCategoria, setModalCategoria] = useState(false);
+   const [modalConta, setModalConta] = useState(false);
+ 
+
+ 
+
 
   const [form, setForm] = useState({
     id: "",
@@ -180,18 +190,36 @@ export default function NovoLancamento() {
           {/* Categoria */}
           <label  className="label label-required font-bold text-[#1e40af]" >Categoria</label>
           <div className="w-2/3"> 
-          <select
-            name="categoria_id"
-            value={form.categoria_id}
-            onChange={handleChange}
-               placeholder="Categoria"
-               className="input-premium"
-          >
-            <option value="">Selecione</option>
-            {categorias.map((c) => (
-              <option key={c.id} value={c.id}>{c.nome}</option>
-            ))}
-          </select>
+           
+
+
+                  <select
+                    name="categoria_id"
+                    value={form.categoria_id}
+                    onChange={(e) => {
+                      if (e.target.value === "__nova__") {
+                        setModalCategoria(true);
+                        return;
+                      }
+                      handleChange(e);
+                    }}
+                    className="input-premium"
+                  >
+                    <option value="">Selecione</option>
+
+                    {categorias.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nome}
+                      </option>
+                    ))}
+
+                    <option value="__nova__">
+                      ➕ Nova Categoria
+                    </option>
+                  </select>
+ 
+
+
            </div>
 
           {/* GRID IGUAL AO EDITAR */}
@@ -200,17 +228,27 @@ export default function NovoLancamento() {
             <div>
               <label  className="label label-required block font-bold text-[#1e40af]">Conta Financeira</label>
               <select
-                name="conta_id"
-                value={form.conta_id}
-                onChange={handleChange}
-                    placeholder="Conta Gerencial"
-                   className="input-premium"
-              >
-                <option value="">Selecione</option>
-                {contas.map((c) => (
-                  <option key={c.id} value={c.id}>{c.nome}</option>
-                ))}
-              </select>
+                    name="conta_id"
+                    value={String(form.conta_id || "")}
+                    onChange={(e) =>
+                      setForm(prev => ({
+                        ...prev,
+                        conta_id: String(e.target.value)
+                      }))
+                    }
+                    className="input-premium"
+                  >
+                    <option value="">Selecione</option>
+
+                    {contas.map((c) => (
+                      <option key={c.id} value={String(c.id)}>
+                        {c.nome}
+                      </option>
+                    ))}
+
+                    <option value="__nova__">+ Nova Conta Financeira</option>
+                  </select>
+
             </div>
 
             <div>
@@ -290,10 +328,62 @@ export default function NovoLancamento() {
             >
               Voltar
             </button>
+
+           
+
           </div> 
         </div>
 
       </div>
+      
+      <FormCategoria
+        open={modalCategoria}
+        onClose={() => setModalCategoria(false)}
+        empresa_id={empresa_id}
+        tipo={form.tipo}
+        onCategoriaCriada={(nova) => {
+          setCategorias(prev => [nova, ...prev]);
+          setForm(prev => ({
+            ...prev,
+            categoria_id: nova.id
+          }));
+        }}
+      />
+
+        <ModalBase
+            open={modalConta}
+            onClose={() => setModalConta(false)}
+            title="Nova Conta Financeira"
+          >
+            <FormConta
+              empresa_id={empresa_id}
+              onSuccess={(novaConta) => {
+                    console.log("RETORNO RAW:", novaConta);
+
+                    const conta = Array.isArray(novaConta)
+                      ? novaConta[0]
+                      : novaConta;
+
+                    console.log("CONTA TRATADA:", conta);
+
+                    setContas(prev => {
+                      console.log("ANTES:", prev);
+                      return [conta, ...prev];
+                    });
+
+                    setForm(prev => ({
+                      ...prev,
+                      conta_id: conta.id, // SEM String
+                    }));
+
+                    setModalConta(false);
+                  }}
+              onCancel={() => setModalConta(false)}
+            />
+          </ModalBase>
+
     </div>
+
+    
   );
 }

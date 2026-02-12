@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import FormCategoria from "../components/forms/FormCategoria";
+ 
+
 
 export default function NovoFornecedorCliente() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
-
+  const [modalCategoria, setModalCategoria] = useState(false);
+   const [categorias, setCategorias] = useState([])
 
   /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
 const THEME = {
@@ -298,6 +302,20 @@ const THEME = {
           </div>
         </div>
       </div>
+       
+      <FormCategoria
+        open={modalCategoria}
+        onClose={() => setModalCategoria(false)}
+        empresa_id={empresa_id}
+        tipo={form.tipo}
+        onCategoriaCriada={(nova) => {
+          setCategorias(prev => [nova, ...prev]);
+          setForm(prev => ({
+            ...prev,
+            categoria_id: nova.id
+          }));
+        }}
+      />
     </div>
   );
 }

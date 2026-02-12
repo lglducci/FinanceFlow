@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
-
+import FormCategoria from "../components/forms/FormCategoria";
 
 
 export default function NovaContaPagar() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
     const [contas, setContas] = useState([]);
-
+ const [modalCategoria, setModalCategoria] = useState(false);
  const [form, setForm] = useState({
   descricao: "",
   valor: "",
@@ -272,21 +272,32 @@ if (!form.contabil_id) {
         <div>
             <div className="w-2/3"> 
           <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
-          <select
-            name="categoria_id"
-            value={form.categoria_id}
-            onChange={handleChange}
-            className="input-premium w-24"
-            placeholder="categoria"
-          >
-            <option value="">Selecione...</option>
+         
 
-            {categorias.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome}
-              </option>
-            ))}
-          </select>
+                  <select
+                    name="categoria_id"
+                    value={form.categoria_id}
+                    onChange={(e) => {
+                      if (e.target.value === "__nova__") {
+                        setModalCategoria(true);
+                        return;
+                      }
+                      handleChange(e);
+                    }}
+                    className="input-premium"
+                  >
+                    <option value="">Selecione</option>
+
+                    {categorias.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nome}
+                      </option>
+                    ))}
+
+                    <option value="__nova__">
+                      ➕ Nova Categoria
+                    </option>
+                  </select>
         </div>
          </div>
           
@@ -465,6 +476,21 @@ if (!form.contabil_id) {
         </div>
       </div>
       </div>
+
+           <FormCategoria
+        open={modalCategoria}
+        onClose={() => setModalCategoria(false)}
+        empresa_id={empresa_id}
+        tipo={'saida'}
+        onCategoriaCriada={(nova) => {
+          setCategorias(prev => [nova, ...prev]);
+          setForm(prev => ({
+            ...prev,
+            categoria_id: nova.id
+          }));
+        }}
+      />
+
     </div>
   );
 }
