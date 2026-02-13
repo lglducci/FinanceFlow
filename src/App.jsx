@@ -116,6 +116,7 @@ import LembretesContabeis from   "./pages/LembretesContabeis"
  import { buildWebhookUrl } from "./config/globals";
 
  import MinhasAssinaturas from "./pages/MinhasAssinaturas";
+ import RelatoriosLanctoPartida from "./pages/RelatoriosLanctoPartida";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -354,7 +355,9 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
  <Route path="/escolhaplano" element={<EscolhaPlano />} />
 
  <Route path="/minhas-assinaturas" element={<MinhasAssinaturas />} />
+ <Route path="/rel-lancto_partida" element={<RelatoriosLanctoPartida />} />
 
+ 
  
    
 
