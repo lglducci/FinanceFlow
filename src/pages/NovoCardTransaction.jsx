@@ -147,7 +147,7 @@ export default function NovoCardTransaction() {
     <div className="relative group"> 
       <button
         onClick={() => setModalCartao(true)}
-          className="px-6 py-2 rounded-lg bg-[#061f4a] text-white font-semibold hover:brightness-110"
+          className="px-1 py-1 rounded-lg bg-[#061f4a] text-white font-semibold hover:brightness-110"
       >
         ➕ 
       </button>
@@ -199,10 +199,7 @@ export default function NovoCardTransaction() {
           placeholder="valor"
            className="input-premium"
       />
- 
-
-      
-
+  
 
       {/* Descrição */}
       <label className="block mb-1 text-base  font-bold  text-[#1e40af] label label-required ">Descrição</label>
@@ -214,10 +211,7 @@ export default function NovoCardTransaction() {
         placeholder="descricao"
          className="input-premium"
          rows={3}
-      />
-
-          
-      
+      /> 
            <div>
             
                 <label className="font-bold text-[#1e40af] flex items-center gap-2 label label-required">
