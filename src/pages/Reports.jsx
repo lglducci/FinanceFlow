@@ -141,19 +141,12 @@ export default function Reports() {
         icon: <IconChart />,
     },
  
-    {/*} {
-      title: "Relação Balanço Níveis",
-      desc: " Balanço por níveis",
-      path: "/relatorios/balanco-niveis",
-        icon: <IconBalance />,
-    }, 
-     {
-      title: "Apuração Tributacao",
-      desc: "Resumo fiscal por período",
-      path: "/relatorios/piscofins",
+       {
+      title: "Relatório Lancto Partida Dobrada",
+      desc: "Detalhe de Partida Dobrada",
+      path: "/rel-lancto_partida",
       icon: <IconReport />,
     },
-    */}
   ];
 
   return (

@@ -239,241 +239,154 @@ async function gerarContabil() {
 
   // ---------------------------------------
   // RENDER
-  return (
-    <div style={{ padding: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between" ,
-            fontSize: 18 , fontWeight: "bold" ,   background: "#eeeff5ff", }}>
-        <h2 style={{ display: "flex", justifyContent: "space-between" ,
-            fontSize: 22 , fontWeight: "bold" ,   background: "#e4e5eeff"}}
-            >📥 Geração  1) Pré-Diário / 2) Diário / 3) Geração Contábil</h2>
-        
-      </div>
-            {/* ------------------ TOPO DA IMPORTAÇÃO ------------------ */}
- {/* ===== GRID PRINCIPAL (2x2) ===== */}
-<div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+ return (
+  <div className="min-h-screen bg-gray-50 p-6">
 
-  {/* ===== LINHA 1 ===== */}
-  <div style={{ display: "flex", gap: 20 }}>
-
-    {/* CONTAINER 1 — UPLOAD */}
-    
-
-    {/* CONTAINER 3 — PROCESSAMENTO */}
-
-<div style={{
-  flex: 1,
-  background: "#f5f6fa",
-  padding: 20,
-  borderRadius: 10,
-  border: "4px solid #170fa5ff"
-}}>
-  <strong>Gerar STAGING / Diário / Contábil</strong>
-
-  {ultimoFechamento && (
-    <div style={{
-      marginTop: 8,
-      padding: 8,
-      background: "#eef4ff",
-      borderRadius: 6,
-      fontWeight: "bold",
-      color: "#003ba2"
-    }}>
-      Último fechamento contábil: {ultimoFechamento}
-    </div>
-  )}
-
-  <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
-    <div>
-      <label className="font-bold text-[#1e40af]" >Data Inicial</label><br />
-      <input type="date"   className="border rounded-lg px-3 py-2 border-yellow-500"  value={dataIni} disabled />
+    {/* HEADER */}
+    <div className="mb-6">
+      <h2 className="text-2xl font-bold text-gray-800">
+        📥 Geração Contábil
+      </h2>
+      <p className="text-sm text-gray-500">
+        1) Pré-Diário → 2) Diário → 3) Geração Contábil
+      </p>
     </div>
 
-    <div>
-      <label className="font-bold text-[#1e40af]">Data Final</label><br />
-      <input
-        type="date"
-          className="border rounded-lg px-3 py-2 border-yellow-500"
-        value={dataFim}
-        max={new Date().toISOString().substring(0, 10)}
-        onChange={e => setDataFim(e.target.value)}
-      />
-    </div>
-  </div>
+    {/* CARD PROCESSAMENTO */}
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
 
-  <div style={{ marginTop: 15, display: "flex", gap: 10 }}>
-    <button
-      onClick={gerarStaging}
-      style={{ ...estilosBtn, background: "#0a8e32", color: "#fff" , padding: 10}}
-    >
-      ✔  STAGING (Fase 1)
-    </button>
+      <div className="flex flex-col gap-4">
 
-    <button
-      onClick={consolidarDiario}
-      style={{ ...estilosBtn, background: "#003ba2", color: "#fff" , padding: 10 }}
-    >
-      ✔  Diário (Fase 2)
-    </button>
-
-    <button
-      onClick={gerarContabil}
-      style={{ ...estilosBtn, background: "#0bd849", color: "#fff" , padding: 10 }}
-    >
-      ✔ Contábil (Fase Final)
-    </button>
-
-    <button
-      onClick={voltadata}
-      style={{ ...estilosBtn, background: "#cd0707ff", color: "#fff" , padding: 10 }}
-    >
-      ✔ Voltar Data  
-    </button>
-
-  </div>
-</div>
-  
-  
-  {/* INDICADORES */}
-  {lotes.length > 0 && (
-    <div
-      style={{
-        marginTop: 20,
-        display: "flex",
-        alignItems: "center",
-        gap: 20,
-        padding: 10,
-        background: "#eef4ff",
-        borderRadius: 6,
-        fontWeight: "bold",
-      }}
-    >
-      
-
-      {/* BOTÕES DE FILTRO */}
-      <div style={{ marginLeft: "auto", display: "flex", gap: 10 }}>
-        <button
-          onClick={() => setFiltro("ok")}
-          style={{ ...estilosBtn, background: "#19d357", color: "white" }}
-        >
-          ✔ Linhas OK
-        </button>
-
-        <button
-          onClick={() => setFiltro("erro")}
-          style={{ ...estilosBtn, background: "#f64949", color: "white" }}
-        >
-          ✖ Linhas com Erro
-        </button>
-
-        <button
-          onClick={() => setFiltro("todos")}
-          style={{ ...estilosBtn, background: "#003ba2", color: "white" }}
-        >
-          Mostrar Todos
-        </button>
-      </div>
-    </div>
-  )}
-     
-  </div>
- 
-      {msg && (
-    <div
-      style={{
-        marginTop: 15,
-        padding: 10,
-        background: "#e8f1ff",
-        borderRadius: 6,
-        color: "#003ba2",
-        fontWeight: "bold",
-        
-      }}
-    >
-      {msg}
-          
-       <span style={{   color: "#003ba2", padding: 70 }}
-       
-        >📄 Total de linhas: {totalLinhas}</span>
-
-      <span style={{ color: "#0a8e32" , padding: 10 }}>
-        ✔ Válidas: {totalOk} (R$ {somaOk.toFixed(2)})
-      </span>
-
-      <span style={{ color: "#cc0000", padding: 10 }}>
-        ✖ Com erro: {totalErro} (R$ {somaErro.toFixed(2)})
-      </span>
-    </div>
-  )}
-   
-</div>
-
-
-      {/* tabela */}
-      <div
-        style={{
-          marginTop: 30,
-          background: "white",
-          borderRadius: 10,
-          border: "2px solid #003ba2",
-          padding: 10,
-        }}
-      >
-        <table
-          className="tabela tabela-mapeamento"
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: 14,
-          }}
-        >
-          <thead>
-            <tr style={{ background: "#002b80", color: "white", height: 40 }}>
-              
-              <th>Data</th>
-              <th>Token</th>
-              <th>Histórico</th>
-              <th>Doc</th>
-              <th>Valor</th>
-              <th>CNPJ</th>
-              <th>Validação</th>
-              <th>Status</th>
-              <th>Lote</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {itensFiltrados.map((l) => (
-              <tr
-                key={l.id}
-                style={{
-                  background: l.status === "erro" ? "#f64949ff" : "#a4cdb2ff",
-                  borderBottom: "1px solid rgba(187, 187, 204, 1)",
-                }}
-              >
-                
-                <td>{l.data_mov?.substring(0, 10)}</td>
-                <td>{l.modelo_codigo}</td>
-                <td>{l.historico}</td>
-                <td>{l.doc_ref}</td>
-                <td>{l.valor_total}</td>
-                <td>{l.cnpj}</td>
-                <td>{l.validacao}</td>
-                <td>{l.status}</td>
-                <td>{l.lote_id}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {itensFiltrados.length === 0 && (
-          <div style={{ padding: 20, textAlign: "center", opacity: 0.5 }}>
-            Nenhum registro encontrado.
+        {ultimoFechamento && (
+          <div className="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg">
+            Último fechamento contábil: <b>{ultimoFechamento}</b>
           </div>
         )}
-      </div>
 
-      {/* modal de ajuda */}
-      {showHelp && helpModal}
+        <div className="flex gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">
+              Data Inicial
+            </label>
+            <input
+              type="date"
+              className="input-premium"
+              value={dataIni}
+              disabled
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-600 mb-1">
+              Data Final
+            </label>
+            <input
+              type="date"
+              className="input-premium"
+              value={dataFim}
+              max={new Date().toISOString().substring(0, 10)}
+              onChange={e => setDataFim(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 pt-2">
+          <button
+            onClick={gerarStaging}
+            className="px-5 py-2 rounded-lg bg-green-600 text-white font-semibold hover:opacity-90"
+          >
+            STAGING (Fase 1)
+          </button>
+
+          <button
+            onClick={consolidarDiario}
+            className="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:opacity-90"
+          >
+            Diário (Fase 2)
+          </button>
+
+          <button
+            onClick={gerarContabil}
+            className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:opacity-90"
+          >
+            Contábil (Fase Final)
+          </button>
+
+          <button
+            onClick={voltadata}
+            className="px-5 py-2 rounded-lg bg-red-500 text-white font-semibold hover:opacity-90"
+          >
+            Voltar Data
+          </button>
+        </div>
+      </div>
     </div>
-  );
+
+    {/* RESUMO */}
+    {msg && (
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 text-sm text-gray-700">
+        <div className="font-semibold mb-2">{msg}</div>
+        <div className="flex flex-wrap gap-6">
+          <span>📄 Total: {totalLinhas}</span>
+          <span className="text-green-600">
+            ✔ Válidas: {totalOk} (R$ {somaOk.toFixed(2)})
+          </span>
+          <span className="text-red-500">
+            ✖ Erros: {totalErro} (R$ {somaErro.toFixed(2)})
+          </span>
+        </div>
+      </div>
+    )}
+
+    {/* TABELA */}
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-gray-100 text-gray-700">
+          <tr>
+            <th className="p-3 text-left">Data</th>
+            <th className="p-3 text-left">Token</th>
+            <th className="p-3 text-left">Histórico</th>
+            <th className="p-3 text-left">Doc</th>
+            <th className="p-3 text-left">Valor</th>
+            <th className="p-3 text-left">CNPJ</th>
+            <th className="p-3 text-left">Validação</th>
+            <th className="p-3 text-left">Status</th>
+            <th className="p-3 text-left">Lote</th>
+          </tr>
+        </thead>
+        <tbody>
+          {itensFiltrados.map((l) => (
+            <tr
+              key={l.id}
+              className={`border-t ${
+                l.status === "erro"
+                  ? "bg-red-50"
+                  : "bg-green-50"
+              }`}
+            >
+              <td className="p-3">{l.data_mov?.substring(0, 10)}</td>
+              <td className="p-3">{l.modelo_codigo}</td>
+              <td className="p-3">{l.historico}</td>
+              <td className="p-3">{l.doc_ref}</td>
+              <td className="p-3">{l.valor_total}</td>
+              <td className="p-3">{l.cnpj}</td>
+              <td className="p-3">{l.validacao}</td>
+              <td className="p-3 font-semibold">{l.status}</td>
+              <td className="p-3">{l.lote_id}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {itensFiltrados.length === 0 && (
+        <div className="p-6 text-center text-gray-400">
+          Nenhum registro encontrado.
+        </div>
+      )}
+    </div>
+
+    {showHelp && helpModal}
+  </div>
+);
+
 }
