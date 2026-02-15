@@ -5,7 +5,7 @@ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
  import FormCategoria from "../components/forms/FormCategoria";
 import FormFornecedorModal from "../components/forms/FormFornecedorModal"; 
 import ModalBase from "../components/ModalBase";
-
+import  FormModeloContabil from "../components/forms/FormModeloContabil";
 
 
 export default function NovaContaReceber() {
@@ -29,8 +29,9 @@ export default function NovaContaReceber() {
   
 const [modalFornecedor, setModalFornecedor] = useState(false);
 const [modalCategoria, setModalCategoria] = useState(false);
-
-
+const [modelos, setModelos] = useState([]);
+const [modeloCodigo, setModeloCodigo] = useState("");
+const [modalModelo, setModalModelo] = useState(false);
   /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
 const THEME = {
   pageBg: "#0e2a3a",                 // fundo da página (escuro)
@@ -182,7 +183,8 @@ const THEME = {
         parcela_num: Number(form.parcela_num),
         status: form.status,
         doc_ref: form.doc_ref,
-        contabil_id:form.contabil_id
+        contabil_id:form.contabil_id,
+        codigo:modeloCodigo
       })
     });
 
@@ -208,28 +210,41 @@ const THEME = {
     setSalvando(false);
   }
 }
-useEffect(() => {
-  async function carregarContas() {
-    try {
-      const url = buildWebhookUrl("contasctbreceber") +
-        `?empresa_id=${empresa_id}`;
+ 
 
-      const resp = await fetch(url);
 
-      if (!resp.ok) {
-        console.error("Erro HTTP:", resp.status);
-        return;
-      }
-
-      const data = await resp.json();
-      setContas(data);
-    } catch (e) {
-      console.error("Erro ao carregar contas contábeis", e);
-    }
+ async function carregarModelos() {
+  try {
+    const r = await fetch(
+      buildWebhookUrl("modelos", { empresa_id, tipo_operacao:"CR" })
+    );
+    const j = await r.json();
+    setModelos(Array.isArray(j) ? j : []);
+  } catch (e) {
+    console.error("Erro ao carregar modelos", e);
+    setModelos([]);
   }
+}
 
-  carregarContas();
+useEffect(() => {
+  carregarModelos();
 }, [empresa_id]);
+
+
+  function getHelperTexto(tipo) {
+  switch (tipo) {
+    case 'CP':
+      return "Conta a Pagar: o crédito deve ser Passivo (2.1.x) e o débito pode ser Estoque, Despesa ou Imobilizado.";
+    case 'CR':
+      return "Conta a Receber: o débito deve ser Clientes (1.1.x) e o crédito Receita (5.x).";
+    case 'CX':
+      return "Movimento de Caixa: envolve Banco/Caixa e baixa de Cliente ou Fornecedor.";
+    case 'IM':
+      return "Imobilizado: débito em 1.2.x (bem durável) e crédito em Fornecedores (2.1.x).";
+    default:
+      return "Selecione as contas conforme sua estrutura contábil.";
+  }
+}
  
 
   return (
@@ -454,6 +469,52 @@ useEffect(() => {
               ))}
             </select>
 
+          
+          <label className="font-bold text-[#1e40af]">
+            Modelo Contábil (Token)
+          </label>
+
+         
+
+           <div className="flex items-center gap-2"> 
+                <input
+                  list="tokens"
+                  className="input-premium w-full"
+                  placeholder="Digite ou selecione o token"
+                  value={modeloCodigo}
+                  onChange={(e) => {
+                    setModeloCodigo(e.target.value);
+                    setForm(prev => ({
+                      ...prev,
+                      modelo_codigo: e.target.value
+                    }));
+                  }}
+                />
+
+                <datalist id="tokens">
+                  {modelos.map((m) => (
+                    <option key={m.id} value={m.codigo}>
+                      {m.codigo}
+                    </option>
+                  ))}
+                </datalist> 
+                    <button
+                    type="button"
+                    onClick={() => {
+                      console.log("CLICOU MODELO");
+                      setModalModelo(true);
+                    }}
+                    className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                  >
+                    ➕  
+                  </button>  
+            </div> 
+
+              
+                  <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
+                      💡 {getHelperTexto('CP')}
+                    </div>
+
         {/* BOTÕES */}
             <div className="flex gap-6 pt-8 pb-8 pl-1">
           <button
@@ -508,6 +569,29 @@ useEffect(() => {
             onCancel={() => setModalFornecedor(false)}
           />
         </ModalBase>
+
+           <ModalBase
+          open={modalModelo}
+          onClose={() => setModalModelo(false)}
+          title="Novo Modelo"
+        >
+          <FormModeloContabil
+            empresa_id={empresa_id}
+               tipo_operacao="CR"   // <-- AQUI
+            onSuccess={() => {
+              setModalModelo(false);
+              carregarModelos();
+            }} 
+
+            onCancel={() => setModalModelo(false)}
+          />
+        </ModalBase>
+
+
+
+
+
+
     </div>
   );
 }

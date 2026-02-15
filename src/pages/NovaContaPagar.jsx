@@ -5,13 +5,14 @@ import { buildWebhookUrl } from "../config/globals";
  import FormCategoria from "../components/forms/FormCategoria";
 import FormFornecedorModal from "../components/forms/FormFornecedorModal"; 
 import ModalBase from "../components/ModalBase";
-
+import  FormModeloContabil from "../components/forms/FormModeloContabil";
 
 
 export default function NovaContaPagar() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
-    const [contas, setContas] = useState([]);
+ const [contas, setContas] = useState([]);
+     
  const [modalCategoria, setModalCategoria] = useState(false);
  const [form, setForm] = useState({
   descricao: "",
@@ -23,7 +24,8 @@ export default function NovaContaPagar() {
   parcela_num: 1,
   status: "aberto",
   doc_ref: "",
-  contabil_id:0
+  contabil_id:0,
+  modelo_codigo:""
 });
 
 
@@ -54,8 +56,10 @@ const THEME = {
 
 const [modalFornecedor, setModalFornecedor] = useState(false);
 const [fornecedores, setFornecedores] = useState([]);
-
+ const [modalModelo, setModalModelo] = useState(false);
  
+const [modelos, setModelos] = useState([]);
+const [modeloCodigo, setModeloCodigo] = useState("");
 
   
   const [categorias, setCategorias] = useState([]);
@@ -162,10 +166,10 @@ if (form.vencimento <= hoje) {
   return;
 }
 
-if (!form.contabil_id) {
-  alert("Conta contábil de despesa é obrigatório.");
-  return;
-}
+//if (!form.contabil_id) {
+ // alert("Conta contábil de despesa é obrigatório.");
+ // return;
+//}
 
 
     const url = buildWebhookUrl("novacontapagar");
@@ -185,7 +189,8 @@ if (!form.contabil_id) {
         parcela_num: Number(form.parcela_num),
         status: form.status,
         doc_ref: form.doc_ref,
-        contabil_id:form.contabil_id
+        contabil_id:form.contabil_id,
+        codigo:modeloCodigo
       })
     });
 
@@ -216,34 +221,42 @@ if (!form.contabil_id) {
   }
 }
 
+ 
 
- useEffect(() => {
-  async function carregarContas() {
-    try {
-      const url = buildWebhookUrl("contascmv", { empresa_id });
 
-      const resp = await fetch(url);
-      const txt = await resp.text();
 
-      let data = [];
-      try {
-        data = JSON.parse(txt);
-      } catch {}
-
-      setContas(Array.isArray(data) ? data : []);
-    } catch (e) {
-      console.error("Erro ao carregar contas contábeis", e);
-      setContas([]);
-    }
+ async function carregarModelos() {
+  try {
+    const r = await fetch(
+      buildWebhookUrl("modelos", { empresa_id, tipo_operacao:"CP" })
+    );
+    const j = await r.json();
+    setModelos(Array.isArray(j) ? j : []);
+  } catch (e) {
+    console.error("Erro ao carregar modelos", e);
+    setModelos([]);
   }
+}
 
-  carregarContas();
-}, [form.empresa_id, empresa_id]);
-
-   
-
+useEffect(() => {
+  carregarModelos();
+}, [empresa_id]);
 
 
+  function getHelperTexto(tipo) {
+  switch (tipo) {
+    case 'CP':
+      return "Conta a Pagar: o crédito deve ser Passivo (2.1.x) e o débito pode ser Estoque, Despesa ou Imobilizado.";
+    case 'CR':
+      return "Conta a Receber: o débito deve ser Clientes (1.1.x) e o crédito Receita (5.x).";
+    case 'CX':
+      return "Movimento de Caixa: envolve Banco/Caixa e baixa de Cliente ou Fornecedor.";
+    case 'IM':
+      return "Imobilizado: débito em 1.2.x (bem durável) e crédito em Fornecedores (2.1.x).";
+    default:
+      return "Selecione as contas conforme sua estrutura contábil.";
+  }
+}
   return ( 
 
     
@@ -424,23 +437,20 @@ if (!form.contabil_id) {
             <option value="aberto">Aberto</option>
             <option value="pago">Pago</option>
           </select>
-        </div>
- 
-
-
+        </div> 
         </div>
 
          <div>
           
             
-            <label className="font-bold text-[#1e40af] flex items-center gap-2">
+          {/*  <label className="font-bold text-[#1e40af] flex items-center gap-2">
                 Conta Contábil *
                 <span className="relative group cursor-pointer">
                   <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
                     ?
                   </span>
 
-                  {/* Tooltip */}
+                  {/* Tooltip  
                   <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
                                   bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
                     <strong>O que é este campo?</strong>
@@ -455,10 +465,10 @@ if (!form.contabil_id) {
                     </p>
                   </div>
                 </span>
-              </label>
+              </label>*/}
 
 
-            <select
+             {/*  <select
               name="contabil_id"
               value={form.contabil_id || ""}
               onChange={handleChange}
@@ -471,7 +481,70 @@ if (!form.contabil_id) {
                   {c.codigo} — {c.nome}
                 </option>
               ))}
-            </select>
+            </select>*/}
+
+             
+         {/* MODELO CONTÁBIL (TOKEN) */}
+
+           
+                 
+                <label className="font-bold text-[#1e40af]">
+                  Modelo Contábil (Token)
+                </label>
+              <div className="flex items-center gap-2"> 
+                <input
+                  list="tokens"
+                  className="input-premium w-full"
+                  placeholder="Digite ou selecione o token"
+                  value={modeloCodigo}
+                  onChange={(e) => {
+                    setModeloCodigo(e.target.value);
+                    setForm(prev => ({
+                      ...prev,
+                      modelo_codigo: e.target.value
+                    }));
+                  }}
+                />
+
+                <datalist id="tokens">
+                  {modelos.map((m) => (
+                    <option key={m.id} value={m.codigo}>
+                      {m.codigo}
+                    </option>
+                  ))}
+                </datalist> 
+                    <button
+                    type="button"
+                    onClick={() => {
+                      console.log("CLICOU MODELO");
+                      setModalModelo(true);
+                    }}
+                    className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                  >
+                    ➕  
+                  </button> 
+            </div> 
+
+
+            <div className="
+                        absolute left-1/2 -translate-x-1/2 top-10
+                        hidden group-hover:block
+                        bg-black text-white text-xs
+                        px-2 py-1 rounded
+                        whitespace-nowrap
+                        z-50
+                      ">
+                      Adicionar Modelo
+             </div>
+                   
+             {/*    <p className="text-xs text-gray-500 mt-1">
+                  Exemplo: CMV_MERCADORIA, ESTOQUE, TRANS_CONTA
+                </p>*/}
+              
+             <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
+                💡 {getHelperTexto('CP')}
+              </div>
+                  
           </div>
          
 
@@ -533,7 +606,23 @@ if (!form.contabil_id) {
           />
         </ModalBase>
 
- 
+            <ModalBase
+          open={modalModelo}
+          onClose={() => setModalModelo(false)}
+          title="Novo Modelo"
+        >
+          <FormModeloContabil
+            empresa_id={empresa_id}
+               tipo_operacao="CP"   // <-- AQUI
+            onSuccess={() => {
+              setModalModelo(false);
+              carregarModelos();
+            }} 
+
+            onCancel={() => setModalModelo(false)}
+          />
+        </ModalBase>
+
 
     </div>
   );

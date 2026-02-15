@@ -1,6 +1,10 @@
  import React, { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
+import ModalBase from "../components/ModalBase";
+import  FormModeloContabil from "../components/forms/FormModeloContabil";
+
+
  
 /* 🎨 Tema azul coerente */
 const THEME = {
@@ -10,14 +14,16 @@ const THEME = {
 export default function ContasGerenciaisNovo() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
- 
+  
+const [modeloCodigo, setModeloCodigo] = useState("");
+const [modalModelo, setModalModelo] = useState(false);
   /* ===============================
      ESTADO DO FORMULÁRIO
   ================================== */
   const [form, setForm] = useState({
     nome: "",
     tipo: "entrada",
-    grupo_contabil: "",
+    classificacao: "",
   });
 
   /* modelos = tokens do diário */
@@ -42,60 +48,72 @@ export default function ContasGerenciaisNovo() {
   /* ===============================
      QUANDO O USUÁRIO ESCOLHE O TOKEN
   ================================== */
-  async function selecionarGrupo(token) {
-    setForm({ ...form, grupo_contabil: token });
-
-    const modelo = modelos.find((m) => m.codigo === token);
-    setModeloSelecionado(modelo);
-
-    if (!modelo) {
-      setLinhas([]);
-      return;
-    }
-
-    const url = buildWebhookUrl("modelos_linhas", {
-      empresa_id,
-      modelo_id: modelo.id,
-    });
-
-    const r = await fetch(url);
-    const dados = await r.json();
-    setLinhas(dados);
-  }
+ 
+    
 
   /* ===============================
      SALVAR NOVA CATEGORIA
   ================================== */
-  async function salvar() {
-    const url = buildWebhookUrl("novacategoriagerencial");
+   async function salvar() {
+  const url = buildWebhookUrl("novacategoriagerencial");
 
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id, ...form }),
-    });
-
-    const texto = await resp.text();
-    let json = {};
-
-    try { json = JSON.parse(texto); } catch {}
-
-    if (Array.isArray(json) && json.length > 0 && json[0].id) {
-      alert("Categoria criada!");
-      navigate(-1);
-      return;
-    }
-
-    alert("Erro ao salvar");
+  if (!form.classificacao || form.classificacao.trim() === "") {
+    alert("Classificação é obrigatória.");
+    return;
   }
 
-  useEffect(() => {
-    carregarModelos();
-  }, []);
+  if (!form.nome || form.nome.trim() === "") {
+    alert("Nome é obrigatório.");
+    return;
+  }
+
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ empresa_id, ...form }),
+  });
+
+  const texto = await resp.text();
+  let json = {};
+
+  try {
+    json = JSON.parse(texto);
+  } catch {}
+
+  if (
+    Array.isArray(json) &&
+    json.length > 0 &&
+    json[0].ff_insere_categoria_gerencial
+  ) {
+    alert("Categoria criada!");
+    navigate(-1);
+    return;
+  }
+
+  alert("Erro ao salvar");
+}
+
+  
 
   /* ===============================
         TELA
   ================================== */
+
+  
+  function getHelperTexto(tipo) {
+  switch (tipo) {
+    case 'CP':
+      return "Conta a Pagar: o crédito deve ser Passivo (2.1.x) e o débito pode ser Estoque, Despesa ou Imobilizado.";
+    case 'CR':
+      return "Conta a Receber: o débito deve ser Clientes (1.1.x) e o crédito Receita (5.x).";
+    case 'CX':
+      return "Movimento de Caixa: envolve Banco/Caixa e baixa de Cliente ou Fornecedor.";
+    case 'IM':
+      return "Imobilizado: débito em 1.2.x (bem durável) e crédito em Fornecedores (2.1.x).";
+    default:
+      return "Selecione as contas conforme sua estrutura contábil.";
+  }
+}
   return (
     <div className="min-h-screen py-6 px-4 bg-bgSoft">
         <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
@@ -129,77 +147,30 @@ export default function ContasGerenciaisNovo() {
             <option value="saida">Saída</option>
           </select>
 
+ 
+          
+                  {/* CLASSIFICAÇÃO CONTÁBIL */}
+            <label className="label label-required font-bold text-[#1e40af]">
+              Classificação
+            </label>
+
+            <select
+              className="input-premium"
+              value={form.classificacao}
+              onChange={(e) =>
+                setForm({ ...form, classificacao: e.target.value })
+              }
+            >
+              <option value="">Selecione...</option>
+              <option value="despesa">Despesa</option>
+              <option value="estoque">Estoque</option>
+              <option value="receita">Receita</option>
+              <option value="ativo">Ativo</option>
+              <option value="passivo">Passivo</option>
+            </select>
 
 
           
-
-          {/* GRUPO CONTÁBIL (TOKENS DO MODELO) */}
-          <label className="label label-required font-bold text-[#1e40af]">Grupo Contábil</label>
-
-          <select
-            className="input-premium"
-            value={form.grupo_contabil}
-            onChange={(e) => selecionarGrupo(e.target.value)}
-          >
-            <option value="">Selecione o Token...</option>
-            {modelos.map((m) => (
-              <option key={m.id} value={m.codigo}>
-                {m.codigo}
-              </option>
-            ))}
-          </select>
-
-          {/* MOSTRA O MODELO ESCOLHIDO (IGUAL AO DIÁRIO) */}
-          {modeloSelecionado && (
-            <div style={{ marginTop: 15 }}>
-              <div
-                style={{
-                  background: "#bfc0c2ff",
-                  padding: 10,
-                  borderRadius: 6,
-                  color: "#003ba2",
-                  marginBottom: 10,
-                }}
-              >
-                <b>Nome:</b> {modeloSelecionado.nome}
-              </div>
-
-              <table
-                className="tabela tabela-mapeamento"
-                style={{ width: "100%", borderCollapse: "collapse" }}
-              >
-                <thead>
-                  <tr style={{ background: "#002b80", color: "white" }}>
-                    <th>ID</th>
-                    <th>Conta</th>
-                    <th>Nome</th>
-                    <th>Tipo</th>
-                    <th>Natureza</th>
-                    <th>D/C</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {linhas.map((l, i) => (
-                    <tr
-                      key={i}
-                      style={{
-                             background: i % 2 === 0 ? "#eee4e4ff" : "#d2d2e8ff",
-                      }}
-                    >
-                      <td style={{ color:  "#003ba2" }} >{l.conta_id}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.codigo}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.nome}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.tipo}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.natureza}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.dc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
           {/* BOTÕES */}
           <div className="flex gap-6 pt-8 pb-8 pl-1">
 
@@ -222,6 +193,24 @@ export default function ContasGerenciaisNovo() {
 
         </div>
       </div>
+
+      
+           <ModalBase
+          open={modalModelo}
+          onClose={() => setModalModelo(false)}
+          title="Novo Modelo"
+        >
+          <FormModeloContabil
+            empresa_id={empresa_id}
+               tipo_operacao=""   // <-- AQUI
+            onSuccess={() => {
+              setModalModelo(false);
+              carregarModelos();
+            }} 
+
+            onCancel={() => setModalModelo(false)}
+          />
+        </ModalBase>
     </div>
   );
 }

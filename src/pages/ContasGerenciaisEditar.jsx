@@ -12,7 +12,7 @@ export default function ContasGerenciaisEditar() {
     id: state.id,
     nome: state.nome,
     tipo: state.tipo,
-    grupo_contabil: state.grupo_contabil,
+    classificacao: state.classificacao,
   });
 
   const [modelos, setModelos] = useState([]);
@@ -43,7 +43,7 @@ export default function ContasGerenciaisEditar() {
   /* =========================================
      2) Carregar linhas ao escolher grupo_contabil
   ============================================ */
-  async function selecionarGrupo(token) {
+  /*async function selecionarGrupo(token) {
     setForm({ ...form, grupo_contabil: token });
 
     const modelo = modelos.find((m) => m.codigo === token);
@@ -62,7 +62,7 @@ export default function ContasGerenciaisEditar() {
     const r = await fetch(url);
     const dados = await r.json();
     setLinhas(dados);
-  }
+  }*/
 
   /* =========================================
      3) Salvar
@@ -95,14 +95,14 @@ export default function ContasGerenciaisEditar() {
     alert("Erro ao atualizar");
   }
 
-  useEffect(() => {
+ /* useEffect(() => {
     carregarModelos();
 
     // Se já existe grupo_contabil salvo → carregar linhas automaticamente
     if (state.grupo_contabil) {
       selecionarGrupo(state.grupo_contabil);
     }
-  }, []);
+  }, []);*/
 
   return (
     <div className="min-h-screen py-6 px-4 bg-bgSoft">
@@ -136,15 +136,15 @@ export default function ContasGerenciaisEditar() {
             <option value="saida">Saída</option>
           </select>
 
-          {/* GRUPO CONTÁBIL (TOKEN) */}
-          <label className="font-bold text-[#1e40af]">Grupo Contábil</label>
+      {/* Classificao*/}
+          <label className="font-bold text-[#1e40af]">Classificação</label>
           <input
             list="listaGrupos"
             className="input-premium"
-            value={form.grupo_contabil}
+            value={form.classificacao}
             onChange={(e) => selecionarGrupo(e.target.value)}
             placeholder="Ex: VENDA_BEBIDA"
-          />
+          /> 
 
           <datalist id="listaGrupos">
             {modelos.map((m) => (
@@ -152,56 +152,7 @@ export default function ContasGerenciaisEditar() {
             ))}
           </datalist>
 
-          {/* EXIBE A TABELA DO MODELO - IGUAL AO DIÁRIO */}
-          {modeloSelecionado && (
-            <div style={{ marginTop: 10, marginBottom: 20 }}>
-                <div
-                style={{
-                  background: "#bfc0c2ff",
-                  padding: 10,
-                  borderRadius: 6,
-                  color: "#003ba2",
-                  marginBottom: 10,
-                }}
-              >
-                <b>Nome:</b> {modeloSelecionado.nome}
-              </div>
-
-              <table
-                className="tabela tabela-mapeamento"
-                style={{ width: "100%", borderCollapse: "collapse" }}
-              >
-                <thead>
-                  <tr style={{ background: "#09090aff", color: "white" }}>
-                    <th>ID</th>
-                    <th>Conta</th>
-                    <th>Nome</th>
-                    <th>Tipo</th>
-                    <th>Natureza</th>
-                    <th>D/C</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {linhas.map((l, i) => (
-                    <tr
-                      key={i}
-                      style={{
-                        background: i % 2 === 0 ? "#eee4e4ff" : "#d2d2e8ff",
-                      }}
-                    >
-                      <td  style={{ color:  "#003ba2" }} >{l.conta_id}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.codigo}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.nome}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.tipo}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.natureza}</td>
-                      <td style={{ color:  "#003ba2" }}>{l.dc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
+          
           {/* BOTÕES */}
           <div className="flex gap-6 pt-8 pb-8 pl-1">
             <button

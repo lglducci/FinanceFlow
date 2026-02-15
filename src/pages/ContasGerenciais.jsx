@@ -16,7 +16,7 @@ export default function ContasGerenciais() {
   const listaFiltrada = lista.filter((l) =>
   l.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
   l.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
-  l.grupo_contabil?.toLowerCase().includes(filtro.toLowerCase()) ||
+  l.classificacao?.toLowerCase().includes(filtro.toLowerCase()) ||
   String(l.id).includes(filtro)
 );
 
@@ -168,8 +168,8 @@ export default function ContasGerenciais() {
             <th className="px-3 py-2 text-left">ID</th>
             <th className="px-3 py-2 text-left">Nome</th>
             <th className="px-3 py-2 text-left">Tipo</th>
-            <th className="px-3 py-2 text-left">Grupo Contábil</th>
-            <th className="px-3 py-2 text-center">Ações</th>
+            <th className="px-3 py-2 text-left">Classificações</th>
+            <th className="px-3 py-2 text-left">Ações</th>
           </tr>
         </thead>
 
@@ -195,9 +195,9 @@ export default function ContasGerenciais() {
                 {l.tipo}
               </td>
 
-              <td className="px-3 py-2">{l.grupo_contabil}</td>
+              <td className="px-3 py-2 text-left">{l.classificacao}</td>
 
-              <td className="px-3 py-2 text-center space-x-4">
+              <td className="px-3 py-2 text-left space-x-4">
                 <button
                   onClick={() =>
                     navigate("/contasgerenciais/editar", { state: l })
@@ -205,18 +205,7 @@ export default function ContasGerenciais() {
                   className="text-blue-600 hover:underline font-semibold"
                 >
                   Editar
-                </button>
-
-                <button
-                  onClick={() =>
-                    navigate("/mapeamento-contabil/impacto", {
-                      state: { id: l.id, empresa_id },
-                    })
-                  }
-                  className="text-indigo-600 hover:underline font-semibold"
-                >
-                  Impacto contábil
-                </button>
+                </button> 
 
                 <button
                   onClick={() => excluir(l.id)}
