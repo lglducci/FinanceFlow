@@ -52,7 +52,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n SELECT  * from contab.modelos where empresa_id = \n  {{ $json.empresa_id }}  ORDER BY CODIGO ASC\n;\n",
+        "query": " \nSELECT *\nFROM contab.modelos\nWHERE empresa_id = {{ $json.empresa_id }}\nAND (\n      '{{ $json.tipo_operacao }}' IS NULL\n      OR '{{ $json.tipo_operacao }}' = ''\n      OR '{{ $json.tipo_operacao }}' = 'null'\n      OR tipo_operacao::text = '{{ $json.tipo_operacao }}'\n)\nORDER BY codigo ASC;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -79,6 +79,12 @@
               "name": "empresa_id",
               "value": "={{ $json.query.empresa_id}}",
               "type": "number"
+            },
+            {
+              "id": "984308d0-1935-4a56-a2f0-d674d9c74f81",
+              "name": "tipo_operacao",
+              "value": "={{ $json.query.tipo_operacao}}",
+              "type": "string"
             }
           ]
         },
@@ -1198,6 +1204,12 @@
               "name": "debito_id",
               "value": "={{ $json.body.debito_id}}",
               "type": "string"
+            },
+            {
+              "id": "1da80100-16d6-42a0-9fb2-859473005487",
+              "name": "tipo_operacao",
+              "value": "={{ $json.body.tipo_operacao}}",
+              "type": "string"
             }
           ]
         },
@@ -1206,7 +1218,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3184,
+        3216,
         1072
       ],
       "id": "7e43ce0a-f836-421f-9fea-e1347322ab3a",
@@ -1215,7 +1227,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n\nselect * from contab.ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}' ,  {{ $json.creditoId }},  {{ $json.debito_id }}  , '{{ $json.tipo_automacao }}')\n",
+        "query": " \n\nselect * from contab.ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}' ,  {{ $json.creditoId }},  {{ $json.debito_id }}  , '{{ $json.tipo_automacao }}','{{ $json.tipo_operacao }}')\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -2386,7 +2398,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "acb541d4-5a71-4179-9c62-20b71c5f2554",
+  "versionId": "d807c33f-b966-469d-8309-dfdf008c37e0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
