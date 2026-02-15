@@ -11,7 +11,7 @@ export default function FormCategoria({
 }) {
   const [form, setForm] = useState({
     nome: "",
-    grupo_contabil: "",
+   classificacao: "",
   });
 
   const handleSalvar = async () => {
@@ -24,7 +24,7 @@ export default function FormCategoria({
       const payload = {
         empresa_id,
         nome: form.nome,
-        grupo_contabil: form.grupo_contabil || null,
+        classificacao: form.classificacao || null,
         tipo,
         meu_negocio: true
       };
@@ -55,7 +55,7 @@ export default function FormCategoria({
       // limpa form
       setForm({
         nome: "",
-        grupo_contabil: ""
+        classificacao: ""
       });
 
       onClose();
@@ -73,7 +73,7 @@ export default function FormCategoria({
       title="Nova Categoria"
     >
       <div className="flex flex-col gap-4">
-
+      <label> Nome da Categoria </label>
         <input
           type="text"
           placeholder="Nome da categoria"
@@ -86,20 +86,24 @@ export default function FormCategoria({
             }))
           }
         />
-
-        <input
-          type="text"
-          placeholder="Grupo contábil (opcional)"
-          className="input-premium"
-          value={form.grupo_contabil}
-          onChange={(e) =>
-            setForm(prev => ({
-              ...prev,
-              grupo_contabil: e.target.value
-            }))
-          }
-        />
-
+        <div className="flex flex-col gap-4">
+         <label> Classificação </label>  
+       <select
+              className="input-premium"
+              placeholder="Classificação"
+              value={form.classificacao}
+              onChange={(e) =>
+                setForm({ ...form, classificacao: e.target.value })
+              }
+            >
+              <option value="">Selecione...</option>
+              <option value="despesa">Despesa</option>
+              <option value="estoque">Estoque</option>
+              <option value="receita">Receita</option>
+              <option value="ativo">Ativo</option>
+              <option value="passivo">Passivo</option>
+            </select>
+           </div>
         <div className="text-sm text-gray-600">
           Tipo: <strong>{tipo === "entrada" ? "Entrada" : "Saída"}</strong>
         </div>
