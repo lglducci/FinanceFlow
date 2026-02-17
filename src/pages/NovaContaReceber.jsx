@@ -23,7 +23,8 @@ export default function NovaContaReceber() {
     parcela_num: 1,
     status: "aberto",
     doc_ref:"",
-    contabil_id: 0 
+    contabil_id: 0 ,
+    modelo_codigo:""
   });
 
   
@@ -162,10 +163,7 @@ const THEME = {
             return;
           }
 
-          if (!form.contabil_id) {
-            alert("Conta contábil de despesa é obrigatório.");
-            return;
-          }
+          
           
     const url = buildWebhookUrl("novacontareceber");
  
@@ -425,55 +423,28 @@ useEffect(() => {
           </select>
         </div>
         </div>
-             
-            <label className="font-bold text-[#1e40af] flex items-center gap-2 label label-required block ">
-                Conta Contábil *
-                <span className="relative group cursor-pointer">
-                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
-                    ?
-                  </span>
+            
+   <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                  Modelo Contábil *
+                  <span className="relative group cursor-pointer">
+                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                      ?
+                    </span>
 
-                  {/* Tooltip */}
-                  <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                    {/* Tooltip  */}
+                    <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
                                   bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
-                    <strong>O que é este campo?</strong>
-
-                          <p className="mt-1">
-                            Esta conta define <b>onde a receita será registrada na contabilidade</b>.
-                          </p>
-
-                          <p className="mt-1">
-                            Exemplo: Receita de Vendas, Receita de Serviços ou Outras Receitas.
-                          </p>
-
-                          <p className="mt-1 text-yellow-300">
-                            ⚠ O cliente (ativo a receber) é definido automaticamente pelo sistema.
-                          </p>
-
-                  </div>
-                </span>
-              </label>
-              
-            <select
-              name="contabil_id"
-              value={form.contabil_id || ""}
-              onChange={handleChange}
-              className="input-base w-full h-10"
-            >
-              <option value="">Selecione a conta contábil…</option>
-
-              {contas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.codigo} — {c.nome}
-                </option>
-              ))}
-            </select>
-
-          
-          <label className="font-bold text-[#1e40af]">
-            Modelo Contábil (Token)
-          </label>
-
+                      <strong>O que é este campo?</strong>
+                      <p className="mt-1">
+                        Esta campo define <b>customizacao de modelo contábil de apropriacão de dividas (Fornecedor ou Financiamento). </b>.
+                      </p>
+                      <p className="mt-1">
+                        Este campo perfmite <b> registar passivo em contas de passivo diferentes (2.1.X). </b>.
+                      </p>
+                        
+                    </div>
+                  </span>
+                </label>
          
 
            <div className="flex items-center gap-2"> 

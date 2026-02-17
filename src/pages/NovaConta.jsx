@@ -57,6 +57,11 @@ const THEME = {
   };
 
   const salvar = async () => {
+
+     if (!form.conta_contabil.startsWith("1.1.1.")) {
+      alert("Conta financeira deve estar no grupo 1.1.1 (Disponibilidades). Ex: 1.1.1.01");
+      return;
+    }
   try {
     setLoading(true);
 
@@ -78,6 +83,9 @@ const THEME = {
     };
 
     console.log("ENVIANDO PRO WEBHOOK:", payload);
+
+    
+
 
     const resp = await fetch(
       buildWebhookUrl("novacontafinanceira"),
@@ -304,7 +312,7 @@ const THEME = {
                     </p>
 
                     <p className="mt-1 text-yellow-300">
-                      Exemplo: Bradesco Agência X → Conta contábil <b>1.1.2.23.1</b>
+                      Exemplo: Bradesco Agência X → Conta contábil <b>1.1.1.23</b>
                     </p>
 
                     <p className="mt-1 text-yellow-300">
@@ -320,7 +328,7 @@ const THEME = {
             value={form.conta_contabil}
             onChange={handleChange}
              className="input-base w-full h-10"
-             placeholder="Nome da sua conta contábil (exemplo) 1.1.23.1"
+             placeholder="Nome da sua conta contábil (exemplo) 1.1.1.231"
           />
         </div>
        

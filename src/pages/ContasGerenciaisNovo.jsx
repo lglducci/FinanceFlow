@@ -114,6 +114,14 @@ const [modalModelo, setModalModelo] = useState(false);
       return "Selecione as contas conforme sua estrutura contábil.";
   }
 }
+
+const opcoesClassificacao = {
+  entrada: ["receita", "ativo"],
+  saida: ["despesa", "estoque", "passivo"]
+};
+
+const opcoes = opcoesClassificacao[form.tipo] || [];
+
   return (
     <div className="min-h-screen py-6 px-4 bg-bgSoft">
         <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
@@ -155,19 +163,21 @@ const [modalModelo, setModalModelo] = useState(false);
             </label>
 
             <select
-              className="input-premium"
-              value={form.classificacao}
-              onChange={(e) =>
-                setForm({ ...form, classificacao: e.target.value })
-              }
-            >
-              <option value="">Selecione...</option>
-              <option value="despesa">Despesa</option>
-              <option value="estoque">Estoque</option>
-              <option value="receita">Receita</option>
-              <option value="ativo">Ativo</option>
-              <option value="passivo">Passivo</option>
-            </select>
+                required
+                className="input-premium"
+                value={form.classificacao}
+                onChange={(e) =>
+                  setForm({ ...form, classificacao: e.target.value })
+                }
+              >
+                <option value="">Selecione...</option>
+
+                {opcoes.includes("despesa") && <option value="despesa">Despesa</option>}
+                {opcoes.includes("estoque") && <option value="estoque">Estoque</option>}
+                {opcoes.includes("receita") && <option value="receita">Receita</option>}
+                {opcoes.includes("ativo") && <option value="ativo">Ativo</option>}
+                {opcoes.includes("passivo") && <option value="passivo">Passivo</option>}
+              </select>
 
 
           

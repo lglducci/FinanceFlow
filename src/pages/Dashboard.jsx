@@ -93,9 +93,22 @@ export default function Dashboard() {
       {/* CONTAS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card title="A receber em aberto" value={data.receber_aberto} color="bg-blue-100" />
-        <Card title="A receber vencido" value={data.receber_vencido.valor_total} color="bg-red-100" />
+
+ 
+ 
+       <Card title="A receber vencido"  value={data.receber_vencido?.valor_total ?? 0} color="bg-red-100"/>
+
+<Card
+  title="A pagar vencido"
+  value={data.pagar_vencido?.valor_total ?? 0}
+  color="bg-red-100"
+/>
+
+     
+
+
         <Card title="A pagar em aberto" value={data.pagar_aberto} color="bg-yellow-100" />
-        <Card title="A pagar vencido" value={data.pagar_vencido.valor_total} color="bg-red-100" />
+      
         <Card title="Resultado 12 Meses" value={data.resultado_12_meses} color="bg-green-100" />
          <Card title="Despesas 12 Meses" value={data.despesa_12_meses} color="bg-red-100" />
       </div>

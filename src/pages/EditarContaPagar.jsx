@@ -22,6 +22,8 @@ export default function EditarContaPagar() {
     parcelas: 1,
     parcela_num: 1,
     status: "aberto",
+    forma_operacao:"FORNECEDOR",
+    modelo_codigo:""
   });
 
   function handleChange(e) {
@@ -138,7 +140,8 @@ async function carregar() {
       parcela_num: dado.parcela_num,
       status: dado.status,
       doc_ref: dado.doc_ref,
-      
+      forma_operacao: dado.forma_operacao,
+        modelo_codigo: dado.modelo_codigo,
     });
 
 
@@ -297,6 +300,7 @@ async function carregar() {
           <select
             name="categoria_id"
             value={form.categoria_id}
+              disabled
             onChange={handleChange}
              className="input-premium"
             placeholder="categoria"
@@ -388,6 +392,39 @@ async function carregar() {
 
           />
         </div> 
+
+         <div>
+          <label className="label label-required font-bold text-[#1e40af]">Modelo</label>
+          <input
+            name="modelo_codigo"
+              disabled
+            value={form.modelo_codigo}
+            onChange={handleChange}
+            className="input-premium"
+            placeholder="Nro Documento "
+
+          />
+        </div> 
+
+
+         
+              <div className="w-3/4">
+                <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                  Forma Operação  
+                </label>
+                <select
+                  name="forma_operacao"
+                  value={form.forma_operacao}
+                  onChange={handleChange}
+                    disabled
+                  className="input-premium w-24"
+                  placeholder="Forma Operacao"
+                >
+                  <option value="FORNECEDOR">Fornecedor</option>
+                  <option value="FINANCIAMENTO">Financiamento</option>
+                </select>
+              </div>
+ 
 
         {/* BOTÕES */}
         <div className="flex gap-6 pt-8 pb-8 pl-1">
