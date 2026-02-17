@@ -46,10 +46,17 @@ export default function FormConta({
       return;
     }
 
+    if (!form.conta_contabil.startsWith("1.1.1.")) {
+  alert("Conta financeira deve estar no grupo 1.1.1 (Disponibilidades). Ex: 1.1.1.01");
+  return;
+}
+
+
     try {
       setLoading(true);
 
-      const resp = await fetch(
+      const resp = await fetch( 
+        
         buildWebhookUrl("novacontafinanceira"),
         {
           method: "POST",
@@ -74,7 +81,7 @@ export default function FormConta({
 
       if (onSuccess) {
            
-       alert("⚠ Conta criada com cadastro mínimo. Complete os dados depois em Cadastros-> Contas Financeiras.");
+       alert("⚠ Conta criada com cadastro mínimo. Complete os dados em Cadastros-> Contas Financeiras.");
         onSuccess(nova);
       }
 

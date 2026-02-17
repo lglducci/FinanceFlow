@@ -46,7 +46,7 @@ export default function FormCategoria({
         return;
       }
      
-       alert("⚠ Categoria criada com cadastro mínimo. Complete os dados depois em Cadastros-> Categorias Gerenciais.");
+      
       // 🔥 devolve para tela pai
       if (onCategoriaCriada) {
         onCategoriaCriada(nova);
@@ -66,6 +66,13 @@ export default function FormCategoria({
     }
   };
 
+  const opcoesClassificacao = {
+  entrada: ["receita", "ativo"],
+  saida: ["despesa", "estoque", "passivo"]
+};
+
+  const opcoes = opcoesClassificacao[tipo] || [];
+
   return (
     <ModalBase
       open={open}
@@ -73,9 +80,13 @@ export default function FormCategoria({
       title="Nova Categoria"
     >
       <div className="flex flex-col gap-4">
-      <label> Nome da Categoria </label>
+       <label className="font-medium">
+      Nome da Categoria <span className="text-red-500">*</span>
+    </label>
+
         <input
           type="text"
+          
           placeholder="Nome da categoria"
           className="input-premium"
           value={form.nome}
@@ -86,24 +97,50 @@ export default function FormCategoria({
             }))
           }
         />
-        <div className="flex flex-col gap-4">
-         <label> Classificação </label>  
-       <select
-              className="input-premium"
-              placeholder="Classificação"
-              value={form.classificacao}
-              onChange={(e) =>
-                setForm({ ...form, classificacao: e.target.value })
-              }
-            >
-              <option value="">Selecione...</option>
-              <option value="despesa">Despesa</option>
-              <option value="estoque">Estoque</option>
-              <option value="receita">Receita</option>
-              <option value="ativo">Ativo</option>
-              <option value="passivo">Passivo</option>
-            </select>
-           </div>
+            <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <label className="font-medium">
+                    Classificação <span className="text-red-500">*</span>
+                  </label>
+
+                  <div className="relative group cursor-pointer">
+                    <span className="text-sm bg-gray-200 text-gray-700 rounded-full w-5 h-5 flex items-center justify-center">
+                          <strong>?</strong>
+                        </span>
+
+
+                    <div className="absolute left-0 mt-2 w-72 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                      Este campo define a natureza contábil da categoria.
+                      <br /><br />
+                      • Receita → entradas de dinheiro<br />
+                      • Despesa → gastos operacionais<br />
+                      • Estoque → mercadorias<br />
+                      • Ativo → bens e direitos<br />
+                      • Passivo → obrigações e dívidas
+                      <br /><br />
+                      Essa classificação é usada para gerar corretamente os lançamentos contábeis.
+                    </div>
+                  </div>
+                </div>
+             
+                <select
+                    required
+                    className="input-premium"
+                    value={form.classificacao}
+                    onChange={(e) =>
+                      setForm({ ...form, classificacao: e.target.value })
+                    }
+                  >
+                    <option value="">Selecione...</option>
+
+                    {opcoes.includes("despesa") && <option value="despesa">Despesa</option>}
+                    {opcoes.includes("estoque") && <option value="estoque">Estoque</option>}
+                    {opcoes.includes("receita") && <option value="receita">Receita</option>}
+                    {opcoes.includes("ativo") && <option value="ativo">Ativo</option>}
+                    {opcoes.includes("passivo") && <option value="passivo">Passivo</option>}
+                  </select>
+              </div>
+
         <div className="text-sm text-gray-600">
           Tipo: <strong>{tipo === "entrada" ? "Entrada" : "Saída"}</strong>
         </div>
