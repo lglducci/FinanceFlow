@@ -311,28 +311,14 @@ return (
           Consulte, selecione e pague contas com poucos cliques.
         </p>
       </div>
-
-      <div className="flex flex-wrap items-center gap-3">
+<div className="flex flex-wrap items-center gap-3">
   {/* AÇÃO PRINCIPAL */}
   <button
     onClick={() => navigate("/nova-conta-pagar")}
     className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
   >
     + Nova conta
-  </button>
-
-  {/* AÇÃO CRÍTICA */}
-  <button
-    onClick={pagarSelecionadas}
-    className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
-  >
-    Pagar selecionadas
-    {selecionadas.length > 0 && (
-      <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
-        {selecionadas.length}
-      </span>
-    )}
-  </button>
+  </button> 
 
   {/* AÇÕES SECUNDÁRIAS */}
   <button
@@ -388,121 +374,150 @@ return (
     <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
 
       {/* FILTROS */}
-      <details className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
-        <summary className="cursor-pointer text-sm font-semibold text-slate-900">
-          🔎 Filtros
-        </summary>
+<details className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
+  <summary className="cursor-pointer text-sm font-semibold text-slate-900">
+    🔎 Filtros
+  </summary>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <input
-            type="date"
-            value={dataIni}
-            onChange={e => setDataIni(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm"
-          />
+  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-7">
 
-          <input
-            type="date"
-            value={dataFim}
-            onChange={e => setDataFim(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm"
-          />
+    {/* Data Inicial */}
+    <div>
+      <label className="block text-xs font-semibold text-slate-600 mb-1">
+        Data inicial
+      </label>
+      <input
+        type="date"
+        value={dataIni}
+        onChange={e => setDataIni(e.target.value)}
+        className="w-full rounded-lg border px-3 py-2 text-sm"
+      />
+    </div>
 
-          <select
-            value={status}
-            onChange={e => setStatus(e.target.value)}
-            className="rounded-lg border px-3 py-2 text-sm font-semibold"
-          >
-            <option value="0">Todos</option>
-            <option value="aberto">Aberto</option>
-            <option value="pago">Pago</option>
-          </select>
+    {/* Data Final */}
+    <div>
+      <label className="block text-xs font-semibold text-slate-600 mb-1">
+        Data final
+      </label>
+      <input
+        type="date"
+        value={dataFim}
+        onChange={e => setDataFim(e.target.value)}
+        className="w-full rounded-lg border px-3 py-2 text-sm"
+      />
+    </div>
 
-          <select
-            value={fornecedor_id}
-            onChange={e => setFornecedorId(Number(e.target.value))}
-            className="rounded-lg border px-3 py-2 text-sm font-semibold md:col-span-2"
-          >
-            <option value={0}>Todos</option>
-            {fornecedores.map(f => (
-              <option key={f.id} value={f.id}>{f.nome}</option>
-            ))}
-          </select>
+    {/* Status */}
+    <div>
+      <label className="block text-xs font-semibold text-slate-600 mb-1">
+        Status
+      </label>
+      <select
+        value={status}
+        onChange={e => setStatus(e.target.value)}
+        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
+      >
+        <option value="0">Todos</option>
+        <option value="aberto">Aberto</option>
+        <option value="pago">Pago</option>
+      </select>
+    </div>
 
-          <label className="flex items-center gap-2 text-sm font-semibold">
-            <input
-              type="checkbox"
-              checked={somenteVencidas}
-              onChange={e => setSomenteVencidas(e.target.checked)}
-            />
-            Somente vencidas
-          </label>
-        </div>
+    {/* Fornecedor */}
+    <div>
+      <label className="block text-xs font-semibold text-slate-600 mb-1">
+        Fornecedor
+      </label>
+      <select
+        value={fornecedor_id}
+        onChange={e => setFornecedorId(Number(e.target.value))}
+        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
+      >
+        <option value={0}>Todos</option>
+        {fornecedores.map(f => (
+          <option key={f.id} value={f.id}>{f.nome}</option>
+        ))}
+      </select>
+    </div>
 
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={pesquisar}
-            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
-          >
-            Pesquisar
-          </button>
-        </div>
-      </details>
+    {/* Conta Bancária */}
+    <div>
+      <label className="block text-xs font-semibold text-slate-600 mb-1">
+        Conta bancária
+      </label>
+      <select
+        value={conta_id}
+        onChange={async (e) => {
+          const id = Number(e.target.value);
+          setContaId(id);
+
+          if (id === 0) {
+            setDadosConta(null);
+            return;
+          }
+
+          const empresa = localStorage.getItem("empresa_id") || 1;
+
+          const url = buildWebhookUrl("consultasaldo", {
+            inicio: new Date().toISOString().split("T")[0],
+            fim: new Date().toISOString().split("T")[0],
+            empresa_id: empresa,
+            conta_id: id,
+          });
+
+          const resp = await fetch(url);
+          const json = await resp.json();
+          setDadosConta(json[0]);
+        }}
+        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
+      >
+        <option value={0}>Selecione...</option>
+        {contas.map(ct => (
+          <option key={ct.id} value={ct.id}>{ct.nome}</option>
+        ))}
+      </select>
+    </div>
+
+    {/* Checkbox */}
+    <div className="flex items-center">
+      <label className="flex items-center gap-10 text-sm font-semibold">
+        <input
+          type="checkbox"
+          checked={somenteVencidas}
+          onChange={e => setSomenteVencidas(e.target.checked)}
+        />
+        Somente vencidas
+      </label>
+    </div>
+
+  </div>
+
+  {/* BOTÕES */}
+  <div className="mt-6 flex flex-wrap justify-end gap-3 border-t pt-4">
+    <button
+      onClick={pagarSelecionadas}
+      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+    >
+      Pagar selecionadas
+      {selecionadas.length > 0 && (
+        <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
+          {selecionadas.length}
+        </span>
+      )}
+    </button>
+
+    <button
+      onClick={pesquisar}
+      className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 transition"
+    >
+      Pesquisar
+    </button>
+  </div>
+</details>
+
 
       {/* CONTA BANCÁRIA */}
-      <div className="rounded-xl border-l-4 border-emerald-600 bg-white p-4">
-        <label className="block text-xs font-semibold text-slate-600">
-          Conta bancária
-        </label>
-
-        <select
-          value={conta_id}
-          onChange={async (e) => {
-            const id = Number(e.target.value);
-            setContaId(id);
-
-            if (id === 0) {
-              setDadosConta(null);
-              return;
-            }
-
-            const empresa = localStorage.getItem("empresa_id") || 1;
-
-            const url = buildWebhookUrl("consultasaldo", {
-              inicio: new Date().toISOString().split("T")[0],
-              fim: new Date().toISOString().split("T")[0],
-              empresa_id: empresa,
-              conta_id: id,
-            });
-
-            const resp = await fetch(url);
-            const json = await resp.json();
-            setDadosConta(json[0]);
-          }}
-          className="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
-        >
-          <option value={0}>Selecione...</option>
-          {contas.map(ct => (
-            <option key={ct.id} value={ct.id}>{ct.nome}</option>
-          ))}
-        </select>
-
-        <div className="mt-4 rounded-lg bg-emerald-50 p-3">
-          <p className="text-sm font-semibold text-slate-900">
-            {dadosConta ? `🏦 ${dadosConta.conta_nome}` : "Nenhuma conta selecionada"}
-          </p>
-                 <div className="mt-2 space-y-1 text-sm text-slate-700">
-            <div><strong>Banco:</strong> {dadosConta?.nro_banco ?? "-"}</div>
-            <div><strong>Agência:</strong> {dadosConta?.agencia ?? "-"}</div>
-            <div><strong>Conta:</strong> {dadosConta?.conta ?? "-"}</div>
-          </div>
-          {/*<div className="mt-3 text-lg font-bold text-emerald-700">
-            Saldo: {dadosConta
-              ? `R$ ${Number(dadosConta.saldo_final).toLocaleString("pt-BR")}`
-              : "—"}
-          </div>*/}
-        </div>
-      </div>
+       
     </div>
 
     {/* TABELA */}

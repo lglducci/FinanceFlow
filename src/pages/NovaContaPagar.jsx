@@ -299,28 +299,30 @@ export default function NovaContaPagar() {
 
               <select
                 name="categoria_id"
-                value={form.categoria_id}
+                value={String(form.categoria_id || "")}
                 onChange={(e) => {
-                  if (e.target.value === "__nova__") {
+                  const v = e.target.value;
+
+                  if (v === "__nova__") {
                     setModalCategoria(true);
                     return;
                   }
-                  handleChange(e);
+
+                  setForm(prev => ({ ...prev, categoria_id: v }));
                 }}
                 className="input-premium"
               >
                 <option value="">Selecione</option>
 
                 {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <option key={c.id} value={String(c.id)}>
                     {c.nome}
                   </option>
                 ))}
 
-                <option value="__nova__">
-                  ➕ Nova Categoria
-                </option>
+                <option value="__nova__">➕ Nova Categoria</option>
               </select>
+
             </div>
           </div>
 
@@ -442,11 +444,7 @@ export default function NovaContaPagar() {
             </div>
           </div>
 
-          <div>
-
-
-
-
+          <div> 
 
             <div className="space-y-4">
 
@@ -586,19 +584,24 @@ export default function NovaContaPagar() {
         </div>
       </div>
 
-      <FormCategoria
+      
+       <FormCategoria
         open={modalCategoria}
         onClose={() => setModalCategoria(false)}
         empresa_id={empresa_id}
         tipo={'saida'}
         onCategoriaCriada={(nova) => {
-          setCategorias(prev => [nova, ...prev]);
+          carregarCategorias();   // 🔥 FALTAVA ISSO
+
           setForm(prev => ({
             ...prev,
-            categoria_id: nova.id
+            categoria_id: String(nova.id)
           }));
+
+          setModalCategoria(false);
         }}
       />
+
 
       <ModalBase
         open={modalFornecedor}

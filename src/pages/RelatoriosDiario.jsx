@@ -82,9 +82,7 @@ const filtrados = dados.filter(item => {
     (item.modelo_codigo || "").toLowerCase().includes(f)
   );
 });
-
-
- async function Estornar(lote_id) {
+async function Estornar(lote_id) {
   if (!confirm("Tem certeza que deseja estornar este lote de lançamento?")) return;
 
   try {
@@ -93,27 +91,35 @@ const filtrados = dados.filter(item => {
     const resp = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id: empresaId, lote_id}),
+      body: JSON.stringify({ empresa_id: empresaId, lote_id }),
     });
 
     const texto = await resp.text();
-    const arr = JSON.parse(texto);
 
-    const resultado = arr?.[0]?.data?.ff_excluir_lancamentos_lote;
+    console.log("🔎 Resposta bruta:", texto);
 
-    if (!resultado) {
-      alert("Resposta inválida do servidor");
+    let arr;
+    try {
+      arr = JSON.parse(texto);
+    } catch (err) {
+      console.error("❌ Erro ao fazer parse do JSON:", err);
+      alert("Servidor retornou algo inválido.");
       return;
     }
 
-    if (!resultado.success) {
-      alert(resultado.message || "Erro ao excluir lote");
+    console.log("🔎 JSON parseado:", arr);
+
+    const item = arr?.[0];
+
+    console.log("🔎 Item[0]:", item);
+
+    if (!item?.ok) {
+      alert(item?.message || "Erro no servidor");
       return;
     }
 
     alert("Lote excluído com sucesso!");
 
-    // ✅ RECARREGA A LISTA COM dataIni / dataFim ATUAIS
     consultar();
 
   } catch (e) {
@@ -121,6 +127,8 @@ const filtrados = dados.filter(item => {
     alert("Erro ao estornar.");
   }
 }
+
+ 
 
 return (
   <div className="p-4 bg-gray-100 rounded-xl">

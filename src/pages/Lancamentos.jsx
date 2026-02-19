@@ -1,7 +1,8 @@
    import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
-
+import ModalBase from "../components/ModalBase";
+import FormConta from "../components/forms/FormConta";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
  
 
@@ -12,7 +13,7 @@ export default function Lancamentos() {
   const [carregando, setCarregando] = useState(false);
   const [total, setTotal] = useState(0);
   const [periodo, setPeriodo] = useState("mes");
-
+  const [modalConta, setModalConta] = useState(false);
   
 const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
@@ -20,7 +21,8 @@ const [saldoInicial, setSaldoInicial] = useState(0);
 const [saldoFinal, setSaldoFinal] = useState(0);
  
  
-const [contas, setContas] = useState([0]);
+ 
+const [contas, setContas] = useState([]);
 const [loading, setLoading] = useState(false);
 
   const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
@@ -196,33 +198,26 @@ const [fornecedores, setFornecedores] = useState([]);
 }, [dataIni, dataFim, contaId]);*/}
 
 
+ async function carregarContas() {
+  try {
+    const url = buildWebhookUrl("listacontas", { empresa_id });
+    const resp = await fetch(url);
+    const data = await resp.json();
+    setContas(data);
+  } catch (error) {
+    console.error("Erro ao carregar contas:", error);
+  }
+}
+useEffect(() => {
+  carregarContas();
+}, [empresa_id]);
 
- useEffect(() => {
-     
-
-    const carregarContas = async () => {
-      try {
-        const url = buildWebhookUrl("listacontas", { empresa_id });
-        const resp = await fetch(url);
-        const data = await resp.json();
-        setContas(data);
-      } catch (error) {
-        console.error("Erro ao carregar contas:", error);
-      }
-    }; 
-    carregarContas();
-    
-  }, [empresa_id]);
-  // ⭐ AQUI EMBAIXO
-   
-
-
-      useEffect(() => {
+ 
+useEffect(() => {
   if (contaId) {
     carregarSaldoConta(contaId);
   }
 }, [contaId]);
-
 
   useEffect(() => {
     setPeriodo("mes");
@@ -493,17 +488,34 @@ return (
         </div>
 
         <div>
-          <label className="text-sm font-semibold text-gray-700">Conta</label>
+          <label className="text-sm font-semibold text-gray-700">Conta Bancária</label>
           <select
             value={contaId}
-            onChange={(e) => setContaId(Number(e.target.value))}
+            onChange={(e) => {
+                if (e.target.value === "__nova__") {
+                  setModalConta(true);
+                  return;
+                }
+
+                setContaId(e.target.value);
+              }}
+ 
+            
             className="block border rounded-lg px-3 py-2 text-sm"
           >
-            <option value={0}>Todas</option>
-            {contas.map((c) => (
-              <option key={c.id} value={c.id}>{c.nome}</option>
-            ))}
-          </select>
+          <option value="">Selecione</option>
+
+          {contas.map((c) => (
+            <option key={c.id} value={String(c.id)}>
+              {c.nome}
+            </option>
+          ))}
+
+          <option value="__nova__">➕ Nova Conta Financeira</option>
+        </select>
+ 
+ 
+
         </div>
 
         
@@ -578,6 +590,36 @@ return (
         </table>
       )}
     </div>
+
+
+ <ModalBase
+            open={modalConta}
+            onClose={() => setModalConta(false)}
+            title="Nova Conta Financeira"
+          >
+            <FormConta
+              empresa_id={empresa_id}
+              onSuccess={(novaConta) => {
+                    console.log("RETORNO RAW:", novaConta);
+                    carregarContas()
+                    const conta = Array.isArray(novaConta)
+                      ? novaConta[0]
+                      : novaConta;
+
+                    console.log("CONTA TRATADA:", conta);
+
+                    setContas(prev => {
+                      console.log("ANTES:", prev);
+                      return [conta, ...prev];
+                    });
+
+                    setContaId(String(conta.id));
+
+                    setModalConta(false);
+                  }}
+              onCancel={() => setModalConta(false)}
+            />
+          </ModalBase>
 
   </div>
 );

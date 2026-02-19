@@ -315,18 +315,7 @@ async function receberSelecionadas() {
           + Nova conta
         </button>
 
-        <button
-          onClick={receberSelecionadas}
-          className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-        >
-          Receber selecionadas
-          {selecionadas.length > 0 && (
-            <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">
-              {selecionadas.length}
-            </span>
-          )}
-        </button>
-
+       
         {/* MENU “MAIS AÇÕES” (simples) */}
         <div className="flex gap-2">
           <button
@@ -396,7 +385,7 @@ async function receberSelecionadas() {
           </div>
         </summary>
 
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-7">
           {/* DATA INÍCIO */}
           <div>
             <label className="block text-xs font-bold text-blue-800">Data início</label>
@@ -456,8 +445,52 @@ async function receberSelecionadas() {
             </select>
           </div>
 
+             {/* CONTA BANCÁRIA */}
+     
+         
+    {/* Conta Bancária */}
+    <div>
+      <label className="block text-xs font-semibold text-slate-600 mb-1">
+        Conta bancária
+      </label>
+      <select
+        value={conta_id}
+        onChange={async (e) => {
+          const id = Number(e.target.value);
+          setContaId(id);
+
+          if (id === 0) {
+            setDadosConta(null);
+            return;
+          }
+
+          const empresa = localStorage.getItem("empresa_id") || 1;
+
+          const url = buildWebhookUrl("consultasaldo", {
+            inicio: new Date().toISOString().split("T")[0],
+            fim: new Date().toISOString().split("T")[0],
+            empresa_id: empresa,
+            conta_id: id,
+          });
+
+          const resp = await fetch(url);
+          const json = await resp.json();
+          setDadosConta(json[0]);
+        }}
+        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
+      >
+        <option value={0}>Selecione...</option>
+        {contas.map(ct => (
+          <option key={ct.id} value={ct.id}>{ct.nome}</option>
+        ))}
+      </select>
+    </div>
+
+        
+      
+
           {/* SOMENTE VENCIDAS */}
-          <div className="flex items-end gap-2">
+          <div className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={somenteVencidas}
@@ -468,8 +501,26 @@ async function receberSelecionadas() {
           </div>
         </div>
 
+
+    <div className="mt-6 flex flex-wrap justify-end gap-5 border-t pt-4"> 
+    
+         <button
+          onClick={receberSelecionadas}
+          className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+        >
+          Receber selecionadas
+          {selecionadas.length > 0 && (
+            <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">
+              {selecionadas.length}
+            </span>
+          )}
+        </button>
+ 
+
+
+
         {/* BOTÃO PESQUISAR (só 1 aqui) */}
-        <div className="mt-4 flex justify-end">
+       
           <button
             onClick={pesquisar}
             className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
@@ -477,63 +528,11 @@ async function receberSelecionadas() {
             Pesquisar
           </button>
         </div>
+       
       </details>
 
       {/* CONTA / SALDO */}
-         {/* CONTA BANCÁRIA */}
-      <div className="rounded-xl border-l-4 border-emerald-600 bg-white p-4">
-        <label className="block text-xs font-semibold text-slate-600">
-          Conta bancária
-        </label>
-
-        <select
-          value={conta_id}
-          onChange={async (e) => {
-            const id = Number(e.target.value);
-            setContaId(id);
-
-            if (id === 0) {
-              setDadosConta(null);
-              return;
-            }
-
-            const empresa = localStorage.getItem("empresa_id") || 1;
-
-            const url = buildWebhookUrl("consultasaldo", {
-              inicio: new Date().toISOString().split("T")[0],
-              fim: new Date().toISOString().split("T")[0],
-              empresa_id: empresa,
-              conta_id: id,
-            });
-
-            const resp = await fetch(url);
-            const json = await resp.json();
-            setDadosConta(json[0]);
-          }}
-          className="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
-        >
-          <option value={0}>Selecione...</option>
-          {contas.map(ct => (
-            <option key={ct.id} value={ct.id}>{ct.nome}</option>
-          ))}
-        </select>
-
-        <div className="mt-4 rounded-lg bg-emerald-50 p-3">
-          <p className="text-sm font-semibold text-slate-900">
-            {dadosConta ? `🏦 ${dadosConta.conta_nome}` : "Nenhuma conta selecionada"}
-          </p>
-                <div className="mt-2 space-y-1 text-sm text-slate-700">
-            <div><strong>Banco:</strong> {dadosConta?.nro_banco ?? "-"}</div>
-            <div><strong>Agência:</strong> {dadosConta?.agencia ?? "-"}</div>
-            <div><strong>Conta:</strong> {dadosConta?.conta ?? "-"}</div>
-          </div>
-          {/*<div className="mt-3 text-lg font-bold text-emerald-700">
-            Saldo: {dadosConta
-              ? `R$ ${Number(dadosConta.saldo_final).toLocaleString("pt-BR")}`
-              : "—"}
-          </div>*/}
-        </div>
-      </div>
+       
     </div>
 
     {/* TABELA */}

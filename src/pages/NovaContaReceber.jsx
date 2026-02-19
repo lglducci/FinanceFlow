@@ -16,7 +16,7 @@ export default function NovaContaReceber() {
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
-    vencimento: hojeLocal(),
+    vencimento: hojeMaisDias(1),
     categoria_id: "",
     fornecedor_id: "",
     parcelas: 1,
@@ -363,6 +363,7 @@ useEffect(() => {
           <label   className="label label-required">Vencimento</label>
           <input
             type="date"
+             min={hojeMaisDias(1)}
             name="vencimento"
             value={form.vencimento}
             onChange={handleChange}
@@ -424,25 +425,25 @@ useEffect(() => {
         </div>
         </div>
             
-   <label className="font-bold text-[#1e40af] flex items-center gap-2">
-                  Modelo Contábil *
+              <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                  Modelo Contábil  
                   <span className="relative group cursor-pointer">
                     <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
                       ?
                     </span>
 
-                    {/* Tooltip  */}
-                    <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
-                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
-                      <strong>O que é este campo?</strong>
-                      <p className="mt-1">
-                        Esta campo define <b>customizacao de modelo contábil de apropriacão de dividas (Fornecedor ou Financiamento). </b>.
-                      </p>
-                      <p className="mt-1">
-                        Este campo perfmite <b> registar passivo em contas de passivo diferentes (2.1.X). </b>.
-                      </p>
-                        
-                    </div>
+                    {/* Tooltip */}
+                      <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                      bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                        <strong>O que é este campo?</strong>
+                        <p className="mt-1">
+                          Este campo define a <b>conta contábil onde será registrado o direito a receber</b>.
+                        </p>
+                        <p className="mt-1">
+                          Normalmente corresponde a contas do <b>Ativo Circulante (1.1.X – Clientes ou Duplicatas a Receber)</b>.
+                        </p>
+                      </div>
+
                   </span>
                 </label>
          
@@ -483,7 +484,7 @@ useEffect(() => {
 
               
                   <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
-                      💡 {getHelperTexto('CP')}
+                      💡 {getHelperTexto('CR')}
                     </div>
 
         {/* BOTÕES */}

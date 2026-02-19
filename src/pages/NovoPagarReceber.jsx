@@ -1,4 +1,10 @@
-import { useState } from "react";
+ 
+
+import { useEffect, useState } from "react";
+ import { buildWebhookUrl } from "../config/globals";
+ 
+ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+
 
 export default function NovoPagarReceber({ setPage, tipoInicial }) {
   // tipoInicial: "pagar" ou "receber"
@@ -7,9 +13,7 @@ export default function NovoPagarReceber({ setPage, tipoInicial }) {
 
   const [descricao, setDescricao] = useState("");
   const [valor, setValor] = useState("");
-  const [vencimento, setVencimento] = useState(
-    new Date().toISOString().slice(0, 10)
-  ); // yyyy-mm-dd
+  const [vencimento, setVencimento] = hojeMaisDias(1);
   const [categoriaId, setCategoriaId] = useState("");
   const [cliente, setCliente] = useState("");       // só usado em receber
   const [parcelas, setParcelas] = useState(1);      // só usado em pagar
@@ -48,17 +52,15 @@ export default function NovoPagarReceber({ setPage, tipoInicial }) {
         cliente: tipo === "receber" ? cliente || null : null,
         parcelas: tipo === "pagar" ? Number(parcelas || 1) : null,
       };
+      const url = buildWebhookUrl("novopagarreceber");
 
-      const resp = await fetch(
-        "https://n8n.lglducci.com.br/webhook-test/novopagarreceber",
-        {
+        const resp = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
-        }
-      );
+        });
 
-      const dados = await resp.json();
+        const dados = await resp.json();
 
       // backend devolve array [ {...} ] tanto pra pagar quanto pra receber
       const titulo = Array.isArray(dados) ? dados[0] : dados;

@@ -94,24 +94,27 @@ export default function NovoCardTransaction() {
     }
   };
 
-
-  useEffect(() => {
+ useEffect(() => {
   async function carregarContas() {
     try {
-      const resp = await fetch(
-        "https://webhook-homolog.lglducci.com.br/webhook/contascontabilcartao?empresa_id=" +
-          empresa_id,
-      );
+      const url = buildWebhookUrl("contascontabilcartao", {
+        empresa_id: empresa_id
+      });
 
+      const resp = await fetch(url);
       const data = await resp.json();
-      setContas(data);
+
+      setContas(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Erro ao carregar contas contábeis", e);
     }
   }
 
   carregarContas();
-}, [form.empresa_id]);
+}, []); // executa uma vez
+
+ 
+
 
 
   return (

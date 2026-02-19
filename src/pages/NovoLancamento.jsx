@@ -234,8 +234,7 @@ export default function NovoLancamento() {
                       if (e.target.value === "__nova__") {
                         setModalConta(true);
                         return;
-                      }
-
+                      } 
                       setForm(prev => ({
                         ...prev,
                         conta_id: e.target.value
@@ -243,14 +242,12 @@ export default function NovoLancamento() {
                     }}
                     className="input-premium"
                   >
-                    <option value="">Selecione</option>
-
+                    <option value="">Selecione</option> 
                     {contas.map((c) => (
                       <option key={c.id} value={String(c.id)}>
                         {c.nome}
                       </option>
-                    ))}
-
+                    ))} 
                     <option value="__nova__">➕ Nova Conta Financeira</option>
                   </select>
 
@@ -313,10 +310,7 @@ export default function NovoLancamento() {
 
           {/* Botões */}
           
-          <div className="flex gap-6 pt-8 pb-8 pl-1">
-
-
-          
+          <div className="flex gap-6 pt-8 pb-8 pl-1"> 
 
             <button
               type="button"
@@ -332,9 +326,7 @@ export default function NovoLancamento() {
               className="flex-1 bg-gray-500 text-white px-4 py-3  rounded-lg font-semibold"
             >
               Voltar
-            </button>
-
-           
+            </button> 
 
           </div> 
         </div>
