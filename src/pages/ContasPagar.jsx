@@ -307,7 +307,7 @@ return (
     <div className="mb-4 flex flex-col gap-3 rounded-xl bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <h2 className="text-xl font-bold text-blue-800">Contas a Pagar</h2>
-        <p className="text-sm text-slate-600">
+        <p className="text-base font-bold text-slate-600">
           Consulte, selecione e pague contas com poucos cliques.
         </p>
       </div>
@@ -375,8 +375,16 @@ return (
 
       {/* FILTROS */}
 <details className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
-  <summary className="cursor-pointer text-sm font-semibold text-slate-900">
-    🔎 Filtros
+  <summary className="cursor-pointer text-base font-bold text-slate-900">
+     <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
+              <span className="text-xs text-slate-500">
+                {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
+              </span>
+            </div>
+            <span className="text-xs text-slate-500">clique para abrir/fechar</span>
+          </div>
   </summary>
 
   <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-7">

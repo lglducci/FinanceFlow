@@ -376,7 +376,7 @@ async function receberSelecionadas() {
         <summary className="cursor-pointer list-none">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-slate-900">🔎 Filtros</span>
+              <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
               <span className="text-xs text-slate-500">
                 {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
               </span>

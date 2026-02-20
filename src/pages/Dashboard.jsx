@@ -16,7 +16,7 @@ function Card({ title, value, color = "bg-gray-100" }) {
   return (
     <div className={`rounded-xl p-4 shadow ${color}`}>
       <p className="text-sm text-gray-600">{title}</p>
-      <p className="text-2xl font-bold text-gray-900">
+      <p className="text-2xl font-bold text-gray-700">
         {value?.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
@@ -83,41 +83,55 @@ export default function Dashboard() {
         📊 Dashboard Financeiro
       </h2>
 
-      {/* RECEITA */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card title="Receita do mês" value={data.receita_mes} color="bg-green-100" />
-        <Card title="Receita 6 meses" value={data.receita_6m} color="bg-green-100" />
-        <Card title="Receita 12 meses" value={data.receita_12m} color="bg-green-100" />
-      </div>
+ {/* RECEITA */}
+<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+  <Card title="Receita do mês" value={data.receita_mes} color="border-l-4 border-emerald-600 bg-white "/>
+  <Card title="Receita 6 meses" value={data.receita_6m} color="border-l-4 border-emerald-600 bg-white" />
+  <Card title="Receita 12 meses" value={data.receita_12m} color="border-l-4 border-emerald-600 bg-white" />
+   <Card title="A receber em aberto" value={data.receber_aberto} color="border-l-4 border-slate-600 bg-white" />
 
-      {/* CONTAS */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card title="A receber em aberto" value={data.receber_aberto} color="bg-blue-100" />
+  <Card
+    title="A receber vencido"
+    value={data.receber_vencido?.valor_total ?? 0}
+    color="border-l-4 border-rose-600 bg-white"
+  />
+</div>
 
- 
- 
-       <Card title="A receber vencido"  value={data.receber_vencido?.valor_total ?? 0} color="bg-red-100"/>
+{/* CONTAS */}
+<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+  
 
-<Card
-  title="A pagar vencido"
-  value={data.pagar_vencido?.valor_total ?? 0}
-  color="bg-red-100"
-/>
+  <Card
+    title="A pagar vencido"
+    value={data.pagar_vencido?.valor_total ?? 0}
+    color="border-l-4 border-rose-600 bg-white"
+  />
 
-     
+  <Card title="Cartão em aberto" value={data.faturas_aberto} color="border-l-4 border-amber-600 bg-white" />
 
+  <Card title="A pagar em aberto" value={data.pagar_aberto} color="border-l-4 border-amber-600 bg-white" />
 
-        <Card title="A pagar em aberto" value={data.pagar_aberto} color="bg-yellow-100" />
-      
-        <Card title="Resultado 12 Meses" value={data.resultado_12_meses} color="bg-green-100" />
-         <Card title="Despesas 12 Meses" value={data.despesa_12_meses} color="bg-red-100" />
-      </div>
+  <Card title="Resultado 12 Meses" value={data.resultado_12_meses} color="border-l-4 border-emerald-700 bg-white" />
 
-      {/* CAIXA */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card title="Saldo atual" value={data.saldo_atual} color="bg-slate-100" />
-        <Card title="Saldo projetado (30 dias)" value={data.saldo_projetado} color="bg-indigo-100" />
-      </div>
+  <Card title="Despesas 12 Meses" value={data.despesa_12_meses} color="border-l-4 border-rose-700 bg-white" />
+</div>
+
+{/* CAIXA */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <Card title="Saldo atual" value={data.saldo_atual} color="border-l-4 border-slate-700 bg-white" />
+
+  <Card
+    title="Saldo projetado (30 dias)"
+    value={data.saldo_projetado_30_dias}
+    color="border-l-4 border-indigo-600 bg-white"
+  />
+
+  <Card
+    title="Saldo projetado"
+    value={data.saldo_projetado}
+    color="border-l-4 border-indigo-700 bg-white"
+  />
+</div>
 
       {/* LISTAS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

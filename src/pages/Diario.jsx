@@ -72,12 +72,12 @@ async function carregar() {
           📘 Diário Contábil
         </h2>
 
-        <button
+       {/*} <button
           onClick={() => navigate("/novo-diario")}
           className={`${btnPadrao} bg-green-700 hover:bg-green-800`}
         >
           + Novo
-        </button>
+        </button>*/}
       </div>
     </div>
 
