@@ -28,6 +28,7 @@ export default function NovoLancamento() {
     descricao: "",
     tipo: "saida",
     origem: "Web",
+    classificacao:""
   });
 
   const [categorias, setCategorias] = useState([]);
@@ -81,6 +82,7 @@ export default function NovoLancamento() {
     descricao: form.descricao,
     data: form.data,
     origem: "WebApp",
+    classificacao:form.classificacao 
   };
 
   
@@ -114,6 +116,12 @@ export default function NovoLancamento() {
          
         if (!form.descricao) {
           alert(" Descricao é obrigatório.");
+          return;
+        } 
+       
+
+            if (!form.classificacao ) {
+          alert(" Classificação é obrigatória.");
           return;
         } 
  
@@ -155,6 +163,33 @@ export default function NovoLancamento() {
   }
 };
 
+
+const classificacoesPorNatureza = {
+  entrada: [
+    { value: "receita", label: "Receita" },
+    { value: "ativo", label: "Aumento de Ativo" },
+    { value: "passivo", label: "Aumento de Passivo" }
+  ],
+  saida: [
+    { value: "despesa", label: "Despesa" },
+    { value: "estoque", label: "Compra para Estoque" },
+    { value: "imobilizado", label: "Aquisição de Imobilizado" },
+    { value: "passivo", label: "Redução de Passivo" }
+  ]
+};
+
+const getClassificacoes = () => {
+  if (!form.tipo) return [];
+  return classificacoesPorNatureza[form.tipo] || [];
+};
+
+
+useEffect(() => {
+  setForm((prev) => ({
+    ...prev,
+    classificacao: ""
+  }));
+}, [form.natureza]);
 
   return (
           
@@ -279,20 +314,29 @@ export default function NovoLancamento() {
               />
             </div>
 
-          {/*}  <div>
-              <label className="block text-base font-bold text-[#1e40af]">Origem</label>
-              
-              <input
-                type="text"
-                name="origem"
-                value={form.origem}
-                
-                onChange={handleChange}
-                 placeholder="conta corrente"
-                 className= "border font-bold rounded px-2 py-2 w-72 mb-4  border-gray-300"
-              />
-            
-            </div>*/}
+           <div>
+                <div className="w-4/5">
+                  <label className="label label-required">
+                    Classificação
+                  </label>
+
+                  <select
+                    name="classificacao"
+                    value={form.classificacao}
+                    onChange={handleChange}
+                    className="input-premium w-64"
+                    required
+                    disabled={!form.tipo}
+                  >
+                    <option value="">Selecione...</option>
+                    {getClassificacoes().map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
           </div>
 
           {/* Descrição */}

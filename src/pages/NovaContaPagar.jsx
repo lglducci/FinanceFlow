@@ -25,8 +25,8 @@ export default function NovaContaPagar() {
     status: "aberto",
     doc_ref: "",
     contabil_id: 0,
-    modelo_codigo: "",
-    forma_operacao: "FORNECEDOR",
+    modelo_codigo: "" ,
+    classificacao:"despesa"
   });
 
 
@@ -167,11 +167,7 @@ export default function NovaContaPagar() {
         return;
       }
 
-      //if (!form.contabil_id) {
-      // alert("Conta contábil de despesa é obrigatório.");
-      // return;
-      //}
-
+      
 
       const url = buildWebhookUrl("novacontapagar");
 
@@ -191,8 +187,8 @@ export default function NovaContaPagar() {
           status: form.status,
           doc_ref: form.doc_ref,
           contabil_id: form.contabil_id,
-          codigo: modeloCodigo,
-          forma_operacao: form.forma_operacao
+          codigo: modeloCodigo ,
+          classificacao:form.classificacao 
         })
       });
 
@@ -290,129 +286,145 @@ export default function NovaContaPagar() {
             </div>
           </div>
 
-
-
+          
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
           {/* CATEGORIA */}
-          <div>
-            <div className="w-2/3">
-              <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
+              <div>
+                <div className="w-3/3">
+                  <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
 
-              <select
-                name="categoria_id"
-                value={String(form.categoria_id || "")}
-                onChange={(e) => {
-                  const v = e.target.value;
+                  <select
+                    name="categoria_id"
+                    value={String(form.categoria_id || "")}
+                    onChange={(e) => {
+                      const v = e.target.value;
 
-                  if (v === "__nova__") {
-                    setModalCategoria(true);
-                    return;
-                  }
+                      if (v === "__nova__") {
+                        setModalCategoria(true);
+                        return;
+                      }
 
-                  setForm(prev => ({ ...prev, categoria_id: v }));
-                }}
-                className="input-premium"
-              >
-                <option value="">Selecione</option>
+                      setForm(prev => ({ ...prev, categoria_id: v }));
+                    }}
+                    className="input-premium"
+                  >
+                    <option value="">Selecione</option>
 
-                {categorias.map((c) => (
-                  <option key={c.id} value={String(c.id)}>
-                    {c.nome}
-                  </option>
-                ))}
+                    {categorias.map((c) => (
+                      <option key={c.id} value={String(c.id)}>
+                        {c.nome}
+                      </option>
+                    ))}
 
-                <option value="__nova__">➕ Nova Categoria</option>
-              </select>
+                    <option value="__nova__">➕ Nova Categoria</option>
+                  </select>
 
+                </div>
+              </div>
+
+              {/* FORNECEDOR */}
+              <div>
+                <div className="w-3/3">
+                  <label className=" label label-required font-bold text-[#1e40af]">Fornecedor</label>
+
+                  <select
+                    name="fornecedor_id"
+                    value={String(form.fornecedor_id || "")}
+                    onChange={(e) => {
+                      const v = e.target.value;
+
+                      if (v === "__novo__") {
+                        setModalFornecedor(true);
+                        return;
+                      }
+
+                      setForm(prev => ({ ...prev, fornecedor_id: v }));
+                    }}
+                    className="input-premium w-full"
+                  >
+                    <option value="">Nenhum</option>
+
+                    {fornecedores.map((f) => (
+                      <option key={f.id} value={String(f.id)}>
+                        {f.nome}
+                      </option>
+                    ))}
+
+                    <option value="__novo__">➕ Novo Fornecedor / Cliente</option>
+                  </select>
+
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* FORNECEDOR */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {/* VALOR */}
+                <div  className="w-3/4">
+                  <label className="label label-required font-bold text-[#1e40af]">
+                    Valor
+                  </label>
+                  <input
+                    type="number"
+                    name="valor"
+                    value={form.valor}
+                    onChange={handleChange}
+                    className="input-premium w-full"
+                    placeholder="00,00"
+                  />
+                </div>
+
+                {/* VENCIMENTO */}
+                <div className="w-3/4">
+                  <label className="label label-required font-bold text-[#1e40af]">
+                    Vencimento
+                  </label>
+                  <input
+                    type="date"
+                    name="vencimento"
+                    min={hojeMaisDias(1)}
+                    value={form.vencimento}
+                    onChange={handleChange}
+                    className="input-premium w-full"
+                  />
+                </div> 
+              </div>
+      
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+            {/* PARCELAS */}
+                <div className="w-2/4">
+                  <label className="label label-required font-bold text-[#1e40af]">
+                    Parcelas
+                  </label>
+                  <input
+                    type="number"
+                    name="parcelas"
+                    min="1"
+                    value={form.parcelas}
+                    onChange={handleChange}
+                    className="input-premium w-full"
+                    placeholder="parcelas"
+                  />
+                </div>
+
+          {/* STATUS */}
           <div>
-            <div className="w-2/3">
-              <label className=" label label-required font-bold text-[#1e40af]">Fornecedor</label>
-
+            <div className="w-2/4">
+              <label className="label label-required font-bold text-[#1e40af]">Status</label>
               <select
-                name="fornecedor_id"
-                value={String(form.fornecedor_id || "")}
-                onChange={(e) => {
-                  const v = e.target.value;
-
-                  if (v === "__novo__") {
-                    setModalFornecedor(true);
-                    return;
-                  }
-
-                  setForm(prev => ({ ...prev, fornecedor_id: v }));
-                }}
+                name="status"
+                value={form.status}
+                onChange={handleChange}
                 className="input-premium w-full"
+                placeholder="status"
               >
-                <option value="">Nenhum</option>
-
-                {fornecedores.map((f) => (
-                  <option key={f.id} value={String(f.id)}>
-                    {f.nome}
-                  </option>
-                ))}
-
-                <option value="__novo__">➕ Novo Fornecedor / Cliente</option>
+                <option value="aberto">Aberto</option>
+                <option value="pago">Pago</option>
               </select>
-
             </div>
           </div>
-
-
-          {/* VALOR */}
-          <div>
-            <div className="w-1/2">
-              <label className="label label-required font-bold text-[#1e40af]">Valor</label>
-              <input
-                type="number"
-                name="valor"
-                value={form.valor}
-                onChange={handleChange}
-                className="input-premium w-64"
-                placeholder="00,00"
-              />
-            </div>
-          </div>
-
-          {/* VENCIMENTO */}
-          <div>
-            <div className="w-1/3">
-              <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
-              <input
-                type="date"
-                name="vencimento"
-                min={hojeMaisDias(1)}   // 🔒 trava ontem e hoje 
-                value={form.vencimento}
-                onChange={handleChange}
-                className="input-premium w-24"
-                placeholder="vencto"
-              />
-            </div>
-          </div>
-
-
-
-
-          {/* PARCELAS */}
-          <div>
-
-            <div className="w-1/5">
-              <label className="label label-required font-bold text-[#1e40af]">Parcelas</label>
-              <input
-                type="number"
-                name="parcelas"
-                min="1"
-                value={form.parcelas}
-                onChange={handleChange}
-                className="input-premium w-24"
-                placeholder="parcelas"
-              />
-            </div>
-          </div>
-
-
+           </div>
+          
           {/* Numero documento ou nota fiscal  */}
           <div>
             <div className="w-2/3">
@@ -427,60 +439,34 @@ export default function NovaContaPagar() {
             </div>
           </div>
 
-          {/* STATUS */}
-          <div>
-            <div className="w-1/4">
-              <label className="label label-required font-bold text-[#1e40af]">Status</label>
-              <select
-                name="status"
-                value={form.status}
-                onChange={handleChange}
-                className="input-premium w-24"
-                placeholder="status"
-              >
-                <option value="aberto">Aberto</option>
-                <option value="pago">Pago</option>
-              </select>
-            </div>
-          </div>
-
           <div> 
 
-            <div className="space-y-4">
-
-              <div className="w-3/4">
-                <label className="font-bold text-[#1e40af] flex items-center gap-2">
-                  Forma Operação *
-                  <span className="relative group cursor-pointer">
-                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
-                      ?
-                    </span>
-
-                    {/* Tooltip  */}
-                    <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
-                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
-                      <strong>O que é este campo?</strong>
-                      <p className="mt-1">
-                        Esta conta define <b>onde o custo será registrado na contabilidade</b>.
-                      </p>
-                    </div>
-                  </span>
-                </label>
-                <select
-                  name="forma_operacao"
-                  value={form.forma_operacao}
-                  onChange={handleChange}
-                  className="input-premium w-24"
-                  placeholder="Forma Operacao"
-                >
-                  <option value="FORNECEDOR">Fornecedor</option>
-                  <option value="FINANCIAMENTO">Financiamento</option>
-                </select>
-              </div>
+      
 
 
-
+            <div className="space-y-4"> 
               {/* MODELO CONTÁBIL (TOKEN) */}
+
+                     
+          {/* DESCRIÇÃO  */}
+          <div>
+            <div className="w-4/5">
+              <label className="label label-required">Classsificação</label>
+               <select
+              name="classificacao"
+              value={form.classificacao}
+              onChange={handleChange}
+              className="input-premium w-64"
+              required
+            >
+              <option value="">Selecione...</option>
+              <option value="despesa">Despesa</option>
+              <option value="estoque">Estoque</option>
+              <option value="imobilizado">Imobilizado</option>
+              <option value="passivo">Passivo (Financiamento/Dívida)</option>
+            </select>
+            </div>
+          </div>
 
               <div>
 

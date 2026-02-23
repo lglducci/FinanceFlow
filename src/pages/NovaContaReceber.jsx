@@ -24,7 +24,8 @@ export default function NovaContaReceber() {
     status: "aberto",
     doc_ref:"",
     contabil_id: 0 ,
-    modelo_codigo:""
+    modelo_codigo:"",
+    classificacao:"ativo"
   });
 
   
@@ -182,7 +183,8 @@ const THEME = {
         status: form.status,
         doc_ref: form.doc_ref,
         contabil_id:form.contabil_id,
-        codigo:modeloCodigo
+        codigo:modeloCodigo,
+        classificacao:form.classificacao
       })
     });
 
@@ -276,7 +278,7 @@ useEffect(() => {
           </div>
 
           
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">  
         {/* CATEGORIA */}
         <div>
             <div className="w-2/3"> 
@@ -340,8 +342,9 @@ useEffect(() => {
               </select>
         </div>
         </div>
+         </div>
 
- 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
         {/* VALOR */}
         <div>
            <div className="w-1/2"> 
@@ -359,7 +362,7 @@ useEffect(() => {
     
         {/* VENCIMENTO */}
         <div>
-            <div className="w-1/3"> 
+            <div className="w-2/3"> 
           <label   className="label label-required">Vencimento</label>
           <input
             type="date"
@@ -372,14 +375,14 @@ useEffect(() => {
           />
         </div>
          </div>
-          
- 
-
+         </div>  
+       
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">  
          
         {/* PARCELAS */}
         <div>
             
-          <div className="w-1/5"> 
+          <div className="w-2/5"> 
           <label   className="label label-required">Parcelas</label>
           <input
             type="number"
@@ -407,10 +410,12 @@ useEffect(() => {
                 />
             </div> 
          </div> 
+      </div> 
 
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">  
         {/* STATUS */}
         <div>
-           <div className="w-1/4"> 
+           <div className="w-2/4"> 
           <label   className="label label-required">Status</label>
           <select
             name="status"
@@ -425,27 +430,47 @@ useEffect(() => {
         </div>
         </div>
             
-              <label className="font-bold text-[#1e40af] flex items-center gap-2">
-                  Modelo Contábil  
-                  <span className="relative group cursor-pointer">
-                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
-                      ?
-                    </span>
 
-                    {/* Tooltip */}
-                      <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
-                                      bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
-                        <strong>O que é este campo?</strong>
-                        <p className="mt-1">
-                          Este campo define a <b>conta contábil onde será registrado o direito a receber</b>.
-                        </p>
-                        <p className="mt-1">
-                          Normalmente corresponde a contas do <b>Ativo Circulante (1.1.X – Clientes ou Duplicatas a Receber)</b>.
-                        </p>
-                      </div>
+           {/* cLASSIFICAAO  */}
+          <div>
+            <div className="w-4/5">
+              <label className="label label-required">Classsificação</label>
+               <select
+              name="classificacao"
+              value={form.classificacao}
+              onChange={handleChange}
+              className="input-premium w-64"
+              required
+            >
+              <option value="">Selecione...</option>
+              <option value="receita">Receita</option>
+              <option value="ativo">Ativo</option> 
+            </select>
+            </div>
+          </div>
+          </div>
 
-                  </span>
-                </label>
+        <label className="font-bold text-[#1e40af] flex items-center gap-2">
+            Modelo Contábil  
+            <span className="relative group cursor-pointer">
+              <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                ?
+              </span>
+
+              {/* Tooltip */}
+                <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                  <strong>O que é este campo?</strong>
+                  <p className="mt-1">
+                    Este campo define a <b>conta contábil onde será registrado o direito a receber</b>.
+                  </p>
+                  <p className="mt-1">
+                    Normalmente corresponde a contas do <b>Ativo Circulante (1.1.X – Clientes ou Duplicatas a Receber)</b>.
+                  </p>
+                </div>
+
+            </span>
+          </label>
          
 
            <div className="flex items-center gap-2"> 
