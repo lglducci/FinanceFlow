@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        192,
-        -192
+        800,
+        176
       ],
-      "id": "0af1ba36-5bf0-478e-a548-efe7a1cd63fe",
+      "id": "16f88bde-9717-4693-949a-c6976d013268",
       "name": "Respond to Webhook7"
     },
     {
@@ -24,13 +24,13 @@
         "width": 1248,
         "color": 5
       },
-      "id": "3ad300de-d3e7-420d-b1f9-9e632352fbce",
+      "id": "2588a39c-61f2-4f4b-a930-0111248ae664",
       "name": "Sticky Note8",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -608,
-        -368
+        0,
+        0
       ]
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        192,
-        0
+        800,
+        368
       ],
-      "id": "c1e53c01-ab81-4b0e-aa02-364e14e22f4f",
+      "id": "36f9fa54-3613-475c-bb82-08975c44d8c8",
       "name": "Respond to Webhook47"
     },
     {
@@ -58,10 +58,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -496,
-        -192
+        112,
+        176
       ],
-      "id": "05a47c87-f229-486e-8049-d9a4fb64017a",
+      "id": "7e4057c5-a3f1-44ce-9e1b-4aca713b6cb7",
       "name": "MeuNegocio",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -88,10 +88,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -240,
-        -192
+        368,
+        176
       ],
-      "id": "86b774cc-142e-4a18-8418-baa4501e667b",
+      "id": "4ba8a1bd-5bad-4620-ab3f-e02aa42abc68",
       "name": "EditMeuNegocio"
     },
     {
@@ -103,16 +103,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -32,
-        -192
+        576,
+        176
       ],
-      "id": "4196958b-c21e-4024-a318-d70cae0e7baa",
+      "id": "73469c37-40ad-410c-b91a-c0a93318394e",
       "name": "categorias_meunegocio",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -127,10 +127,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -480,
-        0
+        128,
+        368
       ],
-      "id": "31b53197-c277-40f1-a4ef-d557a15fc042",
+      "id": "889001db-b5a6-464a-b2b1-654c6ec223c2",
       "name": "AdicionaMeuNegocio",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -163,10 +163,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -240,
-        0
+        368,
+        368
       ],
-      "id": "1e581e04-24b3-44ba-8981-b3604596e443",
+      "id": "adf26b82-e11b-4c82-95a4-30c7b50a0dbd",
       "name": "EdittransMeuNegocio"
     },
     {
@@ -178,16 +178,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -16,
-        0
+        592,
+        368
       ],
-      "id": "808b15b4-c995-456d-bba8-0eac3933e542",
+      "id": "f5965edf-b325-46f6-b8eb-78869dcbe208",
       "name": "AdicionaMeuNegocio1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -202,10 +202,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        400,
-        224
+        1008,
+        592
       ],
-      "id": "3d193668-0f92-4863-8a9f-1cfea973ee1b",
+      "id": "7c24054a-4a28-4d56-b7dd-eb72c6bdf0eb",
       "name": "Respond to Webhook"
     },
     {
@@ -218,10 +218,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -496,
-        224
+        112,
+        592
       ],
-      "id": "5930579c-dffc-4ea2-8eb3-89f4ea22b1d3",
+      "id": "9f6a3519-93b0-4396-bddb-0191a4183844",
       "name": "CriaModelo",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -260,10 +260,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -256,
-        224
+        352,
+        592
       ],
-      "id": "2f83eade-de2f-43bc-8978-730cf1696e32",
+      "id": "63285d3c-556c-445d-aab4-1649fa899abb",
       "name": "EditCriaModelo"
     },
     {
@@ -273,10 +273,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        192,
-        224
+        800,
+        592
       ],
-      "id": "846f3878-6024-47fb-95cc-f4709207d19e",
+      "id": "2bce4615-43c4-4a71-8fd7-7f7ed2d2892c",
       "name": "Code in JavaScript2"
     },
     {
@@ -288,16 +288,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -32,
-        224
+        576,
+        592
       ],
-      "id": "29c31d58-11ad-4987-93a8-45ecb1f4b45c",
+      "id": "53f91142-d3ab-4d31-88a0-51c44019aaa2",
       "name": "criar_receita_meu_negocio",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -429,10 +429,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0b049f05-e1bc-4c54-83b9-6467631d27f4",
+  "versionId": "040d06d6-2b03-4fe5-a310-72a7495f5d64",
   "meta": {
-    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
-  "id": "i0ztXVVu03seGopK",
+  "id": "Bog1dts15MdvX6f4",
   "tags": []
 }

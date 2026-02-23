@@ -52,7 +52,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \nSELECT *\nFROM contab.modelos\nWHERE empresa_id = {{ $json.empresa_id }}\nAND (\n      '{{ $json.tipo_operacao }}' IS NULL\n      OR '{{ $json.tipo_operacao }}' = ''\n      OR '{{ $json.tipo_operacao }}' = 'null'\n      OR tipo_operacao::text = '{{ $json.tipo_operacao }}'\n)\nORDER BY codigo ASC;\n",
+        "query": " \nSELECT *\nFROM contab.modelos\nWHERE empresa_id = {{ $json.empresa_id }}\nAND (\n      '{{ $json.tipo_evento }}' IS NULL\n      OR '{{ $json.tipo_evento }}' = ''\n      OR '{{ $json.tipo_evento }}' = 'null'\n      OR tipo_evento::text = '{{ $json.tipo_evento }}'\n)\nORDER BY codigo ASC;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -82,8 +82,8 @@
             },
             {
               "id": "984308d0-1935-4a56-a2f0-d674d9c74f81",
-              "name": "tipo_operacao",
-              "value": "={{ $json.query.tipo_operacao}}",
+              "name": "tipo_evento",
+              "value": "={{ $json.query.tipo_evento}}",
               "type": "string"
             }
           ]
@@ -2398,7 +2398,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d807c33f-b966-469d-8309-dfdf008c37e0",
+  "versionId": "da4673e8-46f8-43e8-b5a2-d2f7acf3f9df",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

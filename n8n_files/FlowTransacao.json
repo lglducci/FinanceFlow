@@ -52,6 +52,12 @@
               "name": "origem",
               "value": "={{ $json.body.origem}}",
               "type": "string"
+            },
+            {
+              "id": "7f15c97f-9b29-4d9e-bb17-8a48048d3caf",
+              "name": "classificacao",
+              "value": "={{ $json.body.classificacao}}",
+              "type": "string"
             }
           ]
         },
@@ -63,7 +69,7 @@
         384,
         304
       ],
-      "id": "ad99be65-1f0a-478f-be35-70a3f57710b9",
+      "id": "0eb6c09f-1262-4c2c-b592-089259bf2cc1",
       "name": "Edit Fields"
     },
     {
@@ -82,8 +88,7 @@
               "rightValue": "saida",
               "operator": {
                 "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
+                "operation": "equals"
               }
             }
           ],
@@ -97,7 +102,7 @@
         544,
         304
       ],
-      "id": "f3221227-e5c7-428d-a789-c1e6aa9d4ad4",
+      "id": "308e19d4-59a9-4eea-9dcc-67d507e6ba07",
       "name": "If"
     },
     {
@@ -110,17 +115,17 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        192,
+        112,
         304
       ],
-      "id": "b98ce4b4-0adc-488f-9f03-1a997b0aab33",
+      "id": "9b6e4e4a-f918-4d18-8676-d9bce169b8bd",
       "name": "NovoLancamento",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}'\n   \n)",
+        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}'\n   \n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -129,15 +134,15 @@
         736,
         144
       ],
-      "id": "b8797356-7f1f-4e15-ae63-d915fcb83b0c",
+      "id": "9834a904-c399-4084-bfd8-80df8747c8ce",
       "name": "registrar_despesa",
       "alwaysOutputData": true,
       "retryOnFail": false,
       "executeOnce": false,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -145,7 +150,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}'\n   \n)",
+        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}'\n   \n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -154,14 +159,14 @@
         736,
         416
       ],
-      "id": "8a104590-3be9-4f94-9872-2e6dfdeb696a",
+      "id": "b2802f08-32e1-4a34-85a7-cef21a6cb23c",
       "name": "registrar_receita",
       "alwaysOutputData": true,
       "executeOnce": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -179,7 +184,7 @@
         1184,
         256
       ],
-      "id": "482f5e34-d549-4912-9e84-520cbadec44f",
+      "id": "6238f6fb-c8a3-4be3-8e95-3eebba7e3e5b",
       "name": "Respond to Webhook13"
     },
     {
@@ -189,7 +194,7 @@
         "width": 1472,
         "color": 5
       },
-      "id": "b3f0a945-8f93-4c82-926d-7c1eec405370",
+      "id": "1b80dfd5-14a9-4f74-9975-06cb57ee3c0d",
       "name": "Sticky Note6",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -208,7 +213,7 @@
         912,
         144
       ],
-      "id": "d7608e54-fd0a-45de-b44a-68197b7e567c",
+      "id": "9e881456-22d2-4518-be95-0ea5927ce434",
       "name": "Code in JavaScript1"
     },
     {
@@ -221,11 +226,27 @@
         928,
         416
       ],
-      "id": "b8c62fa1-f3b0-40e1-8598-9d2cd6696989",
+      "id": "c5a2faf7-f993-430c-b456-daf8a6f92582",
       "name": "Code in JavaScript"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Edit Fields": [
+      {
+        "json": {
+          "id_empresa": null,
+          "tipo": "saida",
+          "conta": null,
+          "categoria": null,
+          "valor": null,
+          "descricao": null,
+          "data": null,
+          "origem": null,
+          "classificacao": null
+        }
+      }
+    ]
+  },
   "connections": {
     "Edit Fields": {
       "main": [
@@ -316,11 +337,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4df4e8f1-14b4-4710-8eb2-95698b350a81",
+  "versionId": "cd99ff5b-59e7-4fb0-91eb-a52998a303cd",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
-  "id": "uaWS1lWi8UFJTaj2",
+  "id": "jaCOUUgt6hlpnWB7",
   "tags": []
 }

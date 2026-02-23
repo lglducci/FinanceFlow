@@ -154,12 +154,6 @@
               "name": "tipo",
               "value": "={{ $json.body.tipo}}",
               "type": "string"
-            },
-            {
-              "id": "25647865-3a6a-41f5-b45f-b75fe6d5c15f",
-              "name": "classificaao",
-              "value": "={{ $json.body.classificacao }}",
-              "type": "string"
             }
           ]
         },
@@ -439,7 +433,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select * from  public.ff_insere_categoria_gerencial({{ $json.empresa_id }}, '{{ $json.nome }}','{{ $json.tipo }}','{{ $json.classificaao }}')",
+        "query": "select * from  public.ff_insere_categoria_gerencial({{ $json.empresa_id }}, '{{ $json.nome }}','{{ $json.tipo }}' )",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -449,7 +443,7 @@
         352
       ],
       "id": "c6c4b5d5-6e79-4379-a1a2-405080d16cdc",
-      "name": "Execute a SQL query",
+      "name": "ff_insere_categoria_gerencial",
       "credentials": {
         "postgres": {
           "id": "wvOAuqaHViEwm60r",
@@ -508,7 +502,7 @@
       "main": [
         [
           {
-            "node": "Execute a SQL query",
+            "node": "ff_insere_categoria_gerencial",
             "type": "main",
             "index": 0
           }
@@ -586,7 +580,7 @@
         ]
       ]
     },
-    "Execute a SQL query": {
+    "ff_insere_categoria_gerencial": {
       "main": [
         [
           {
@@ -602,7 +596,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "fcfd0e7f-ff78-4d7f-9890-1547b50740c8",
+  "versionId": "d03be958-3aeb-451b-984e-c8d882139d0a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

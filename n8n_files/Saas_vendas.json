@@ -904,8 +904,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2448,
-        1184
+        2416,
+        1136
       ],
       "id": "69364bfc-2882-4583-bf02-a63eb6e53a3d",
       "name": "Respond to Webhook26"
@@ -919,8 +919,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1952,
-        1184
+        1920,
+        1136
       ],
       "id": "c5596fda-14e4-4a81-9641-ec65af6d745e",
       "name": "modelos_temp",
@@ -935,11 +935,65 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2224,
-        1184
+        2192,
+        1136
       ],
       "id": "3bd44164-8f35-45e5-b67c-6e6a1b6ac688",
       "name": "modelos_temp1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2432,
+        1312
+      ],
+      "id": "14b8fe99-8dc7-4730-8dfb-3ab20b3f97a6",
+      "name": "Respond to Webhook27"
+    },
+    {
+      "parameters": {
+        "path": "categoria_modelo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1936,
+        1312
+      ],
+      "id": "10581d33-e65d-418d-85f6-18affc3f880d",
+      "name": "Categoria Modelo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n SELECT *\nFROM public.vw_categorias_modelos\nORDER BY 1;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2208,
+        1312
+      ],
+      "id": "8bb075e9-f96c-4242-a960-87ea06a56c74",
+      "name": "public.vw_categorias_modelos",
       "credentials": {
         "postgres": {
           "id": "wvOAuqaHViEwm60r",
@@ -1331,13 +1385,35 @@
           }
         ]
       ]
+    },
+    "Categoria Modelo": {
+      "main": [
+        [
+          {
+            "node": "public.vw_categorias_modelos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "public.vw_categorias_modelos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook27",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d8155e70-cd57-4475-a023-1366eccf0c46",
+  "versionId": "984bee58-57b2-49e7-8dff-1945717f0078",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

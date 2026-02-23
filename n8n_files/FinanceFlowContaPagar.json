@@ -142,8 +142,8 @@
             },
             {
               "id": "b5a8de92-dfd5-4f17-81b7-ed513922b223",
-              "name": "contabil_id",
-              "value": "={{ $json.body.contabil_id}}",
+              "name": "classificacao",
+              "value": "={{$json.body.classificacao}}",
               "type": "string"
             },
             {
@@ -280,7 +280,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}',\n    {{ $json.contabil_id }},\n    '{{ $json.codigo }}'\n)\n  \n ",
+        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}',\n   '{{$json.classificacao}}',\n    '{{ $json.codigo }}'\n)\n  \n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -844,7 +844,13 @@
   "connections": {
     "InsereContapagar": {
       "main": [
-        []
+        [
+          {
+            "node": "EditaaContapagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "EditaaContapagar": {
@@ -1083,7 +1089,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e3216cee-c00b-4a82-a856-8089f48a1d1d",
+  "versionId": "5e3a9f95-8057-4887-88e3-2a0f27169125",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

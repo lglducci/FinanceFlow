@@ -14,7 +14,7 @@
         384,
         1040
       ],
-      "id": "5afbc8f8-2a82-406b-b64e-9d912a5c013d",
+      "id": "a4e7d75f-ca85-46e5-b74a-65e5b30f5be3",
       "name": "Respond to Webhook4"
     },
     {
@@ -67,7 +67,7 @@
         -272,
         1040
       ],
-      "id": "24edd5b9-550e-4296-9c77-2856e2751e6e",
+      "id": "caf4c9d5-754c-4853-a1a3-587dd5a299ae",
       "name": "CartãoTransacaoEdit1"
     },
     {
@@ -82,7 +82,7 @@
         -496,
         1040
       ],
-      "id": "af9c2df2-3e82-4e91-98a2-f143caff505c",
+      "id": "bf9c1780-cc83-4261-8f87-945269624cf5",
       "name": "InseretransacaoCartão",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -98,12 +98,12 @@
         176,
         1040
       ],
-      "id": "f89fcc8b-417a-47d2-8766-28e98f7c9b78",
+      "id": "37bae725-0bb4-410f-ba4f-3bf8d9c02c55",
       "name": "Execute a SQL query",
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -117,7 +117,7 @@
         0,
         0
       ],
-      "id": "5f8e35ad-c300-4b28-8dad-1f5328b36baa",
+      "id": "e11ff31f-f383-4a35-bec8-35905f995636",
       "name": "Sim",
       "disabled": true
     },
@@ -131,7 +131,7 @@
         -16,
         256
       ],
-      "id": "f823b7b3-df42-4068-908f-bc77179033ac",
+      "id": "b7bf1c29-5222-434b-8813-31231daf5ad7",
       "name": "Não",
       "disabled": true
     },
@@ -158,12 +158,12 @@
         -592,
         112
       ],
-      "id": "b0bc6007-c655-42c0-a1e1-44d41cf724c2",
+      "id": "ef8036e2-a3d9-4e6e-9c9c-2d8a6229fd6d",
       "name": "DadosUsuario",
       "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
-          "id": "GfCFzcpZSxkxWy1M",
+          "id": "rC5LgeRcKghHCrKW",
           "name": "FinanceFlow"
         }
       },
@@ -181,12 +181,12 @@
         576,
         96
       ],
-      "id": "464eaafd-9f4c-4566-91bc-4c2e81481298",
+      "id": "361126c5-bed5-468a-8323-21a446d98f46",
       "name": "DadosEmpresa",
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -203,7 +203,7 @@
         -1024,
         112
       ],
-      "id": "3dbfe472-0236-4ae1-85c0-eaf16a353d8b",
+      "id": "00a3048a-f26e-4f05-8b57-469aa171103e",
       "name": "Login",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb",
       "disabled": true
@@ -249,7 +249,7 @@
         -320,
         112
       ],
-      "id": "bef3c8d8-a7fe-4daf-8b5d-d3e1ad652a4d",
+      "id": "ca1a90b3-bcf4-46ef-a672-a710a78e1085",
       "name": "If2",
       "disabled": true
     },
@@ -261,7 +261,7 @@
         304,
         96
       ],
-      "id": "22f94dcb-d337-422c-b012-eae92eeac6a4",
+      "id": "7be0b341-443b-4edc-b9b6-05c6d4d6005c",
       "name": "Merge2"
     },
     {
@@ -276,7 +276,7 @@
         800,
         96
       ],
-      "id": "103fd1a2-88c1-4686-a92d-d3aa155faa41",
+      "id": "846cab02-53a6-4bb9-a2ec-e637c41b9949",
       "name": "Respond to Webhook12"
     },
     {
@@ -305,7 +305,7 @@
         -816,
         112
       ],
-      "id": "444cb90d-a7b0-4eaf-841d-7855cc0356e8",
+      "id": "a4eb4f87-5675-4982-b376-58d33ab7daa7",
       "name": "Usuario",
       "disabled": true
     },
@@ -322,7 +322,7 @@
         224,
         1248
       ],
-      "id": "9f0a7fec-06fa-46ce-85d4-849a97268bf3",
+      "id": "ea830a94-0ca1-446f-96ef-b7a9f2f87c9c",
       "name": "Respond to Webhook20"
     },
     {
@@ -338,7 +338,7 @@
         -480,
         1248
       ],
-      "id": "405accc4-c48b-4a7d-aae7-2910f0145e8d",
+      "id": "c5d0d217-707e-4f50-b9d7-7b1ded1eb7e5",
       "name": "NovoCartao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -354,13 +354,13 @@
         -32,
         1040
       ],
-      "id": "5c5e0caf-219b-4a6a-b124-745d0386ac2b",
+      "id": "e6cda8a9-27c2-4954-aa85-c2268cd699ff",
       "name": "ff_registrar_compra_credito",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -370,7 +370,7 @@
         "height": 1356,
         "width": 1312
       },
-      "id": "5923ce79-66e3-4387-8d70-1cd6b71fb3bc",
+      "id": "d55cfa61-7f13-4edb-95bb-2b1b0c4f0e21",
       "name": "Sticky Note4",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -391,7 +391,7 @@
         -496,
         848
       ],
-      "id": "9f213b76-bb0c-43c3-9a4f-13ef74de96f6",
+      "id": "cae60b80-0d51-4856-b38b-152249cffaa3",
       "name": "ListaCartões",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -407,13 +407,13 @@
         -32,
         848
       ],
-      "id": "53d72a6d-bd32-4b83-87cf-03ec01d83540",
+      "id": "3ab71283-b414-44fc-aa9c-9e2e3bbfb5dd",
       "name": "Cartoes",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -437,7 +437,7 @@
         -288,
         848
       ],
-      "id": "849bf947-74f3-4d18-adeb-eee07b0b516e",
+      "id": "6ecd9c49-6444-4fac-8c13-d4f49f14085f",
       "name": "cartoesEdit"
     },
     {
@@ -453,7 +453,7 @@
         176,
         848
       ],
-      "id": "c4170ca9-22e4-4ab1-9189-ba36afb81450",
+      "id": "85d48d6b-ef58-44e2-ad9d-3e1be0d42771",
       "name": "Respond to Webhook8"
     },
     {
@@ -469,7 +469,7 @@
         176,
         688
       ],
-      "id": "eb8f19bc-f700-4bee-9790-efe929270f9b",
+      "id": "ac0d6b05-e59f-4848-80dd-125d8f34d8fe",
       "name": "Respond to Webhook21"
     },
     {
@@ -484,7 +484,7 @@
         -496,
         688
       ],
-      "id": "04776100-9ddc-4689-8bea-c6d29636eaeb",
+      "id": "189bdb1e-d71d-4519-b807-38a1692860d9",
       "name": "EditarCartões",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -514,7 +514,7 @@
         -288,
         688
       ],
-      "id": "6a9abfef-743f-4126-bf0b-69c3c4ac604b",
+      "id": "d2bb5f0b-4f3b-4214-9c87-2a3a45c1d09f",
       "name": "EditarCartões1"
     },
     {
@@ -529,13 +529,13 @@
         -32,
         688
       ],
-      "id": "7ed28061-7133-4f3a-96c3-1944e4438b27",
+      "id": "4deb6e6a-1f5a-40bf-a009-6a492f807332",
       "name": "EditarCartão",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -552,7 +552,7 @@
         192,
         1424
       ],
-      "id": "e668dc80-055b-41f7-9c94-0d8576766b6c",
+      "id": "5e60964f-3d0f-45c4-a2a1-832059d96556",
       "name": "Respond to Webhook22"
     },
     {
@@ -641,7 +641,7 @@
         -256,
         1424
       ],
-      "id": "2108033a-3d0b-4893-b9cf-6df5af361763",
+      "id": "0e6b8000-8d8d-4b55-8262-ac2e61522ccb",
       "name": "EditNewCartao1"
     },
     {
@@ -714,11 +714,11 @@
         -32,
         1424
       ],
-      "id": "129ec32a-747b-41cf-b078-0f4fd0fbc46a",
+      "id": "ad54f910-02c3-4325-b5e0-fe71f11d47b8",
       "name": "SalvaCartao",
       "credentials": {
         "supabaseApi": {
-          "id": "GfCFzcpZSxkxWy1M",
+          "id": "rC5LgeRcKghHCrKW",
           "name": "FinanceFlow"
         }
       }
@@ -736,7 +736,7 @@
         -480,
         1424
       ],
-      "id": "83ba3aea-8d63-47a1-a491-a2655973375a",
+      "id": "fd069367-f5a2-434a-b626-55fe8427abd6",
       "name": "SalvaCartao1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -814,7 +814,7 @@
         -224,
         1248
       ],
-      "id": "5e3c8be1-d963-4a24-9c20-5fffcadbacf3",
+      "id": "a5adc928-72b8-439d-ba47-03056841a375",
       "name": "EditNewCartao"
     },
     {
@@ -871,11 +871,11 @@
         -16,
         1248
       ],
-      "id": "ac13f776-5fcd-4ac1-8f1c-c2f4e2284089",
+      "id": "18fb8ad2-6a4b-4c83-a580-51de93ebb08c",
       "name": "SalvaCartao2",
       "credentials": {
         "supabaseApi": {
-          "id": "GfCFzcpZSxkxWy1M",
+          "id": "rC5LgeRcKghHCrKW",
           "name": "FinanceFlow"
         }
       }
@@ -893,7 +893,7 @@
         192,
         1600
       ],
-      "id": "b82f65ae-2154-49d0-baeb-8dbed33f2ab4",
+      "id": "8224af7f-ee7f-4454-8404-59ea9687570c",
       "name": "Respond to Webhook23"
     },
     {
@@ -908,13 +908,13 @@
         -32,
         1600
       ],
-      "id": "33d4f6de-c94e-48bd-8583-22306460a5f4",
+      "id": "c3a0ea02-f5cb-4f61-89f6-f807747a96ee",
       "name": "DelCartões",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -945,7 +945,7 @@
         -288,
         1600
       ],
-      "id": "11b43533-5939-4e5d-bce7-7b2e7cdb3e80",
+      "id": "381a4e4c-97e9-435d-8a6a-094677ab31f7",
       "name": "Delcartoes"
     },
     {
@@ -961,7 +961,7 @@
         -496,
         1600
       ],
-      "id": "d22138a0-a58e-4778-8b5b-979449cd96a3",
+      "id": "5b5ee1ef-876d-4437-af57-b480e6e0e689",
       "name": "DelCard",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -972,7 +972,7 @@
         "width": 1312,
         "color": 4
       },
-      "id": "4cc2112a-cb62-4d59-b273-8958d708411c",
+      "id": "7dea06a9-59bd-461c-8042-63db78787e50",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
@@ -994,7 +994,7 @@
         -1680,
         832
       ],
-      "id": "136bc331-5bb7-4c92-b9c7-52d6e1f9a923",
+      "id": "f1698753-10e7-430c-bc1f-f559fdc41036",
       "name": "Respond to Webhook"
     },
     {
@@ -1010,7 +1010,7 @@
         -2304,
         832
       ],
-      "id": "7142fc1f-c6e2-4350-a8d0-0331d41a69b9",
+      "id": "ed7f97b4-3f60-43ad-b7d2-1c1ee9599c01",
       "name": "CompraCartoes",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1026,13 +1026,13 @@
         -1888,
         832
       ],
-      "id": "49c51f39-1b84-475d-b57e-8b65a5fa4bd8",
+      "id": "e5f75ee2-811b-4354-8917-a9e3491889a5",
       "name": "CompraCartoes1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1069,7 +1069,7 @@
         -2096,
         832
       ],
-      "id": "6bd1a452-4dfd-4778-b88a-15ebe54c0400",
+      "id": "92d41ec9-499f-4039-8bf2-dd9b985ea587",
       "name": "CompraCartoes2"
     },
     {
@@ -1085,7 +1085,7 @@
         -1616,
         1024
       ],
-      "id": "829fa52d-967a-45c9-bd27-fef50da9e968",
+      "id": "28582a32-48bd-4ff9-b576-b135cec77f5a",
       "name": "Respond to Webhook24"
     },
     {
@@ -1101,7 +1101,7 @@
         -2304,
         1024
       ],
-      "id": "8e9e8dcc-968a-4a2a-8bd8-63fdcc3102e9",
+      "id": "813a6c21-2fcf-425a-8d52-d2d15b81adc1",
       "name": "ExcluirCompra",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1131,7 +1131,7 @@
         -2096,
         1024
       ],
-      "id": "e66705d5-b251-44b6-adfd-0c83ecd19939",
+      "id": "7b740c18-6a0e-43d3-9220-a776401302bc",
       "name": "ExcluirCompraEdit"
     },
     {
@@ -1146,13 +1146,13 @@
         -1872,
         1024
       ],
-      "id": "c754b274-010d-40c0-924b-33fd6d37c7eb",
+      "id": "acc646dc-438e-419b-9831-6243b237a1ba",
       "name": "ff_excluir_compra_cartao",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1545,11 +1545,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d3201487-4dc0-430d-9252-bb12ccea745f",
+  "versionId": "a89c75ec-18aa-42d5-95bc-c82a1c6424ec",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
-  "id": "LbIec65ByAAFk2Ij",
+  "id": "3L5UMX7fW6Y3Ntms",
   "tags": []
 }

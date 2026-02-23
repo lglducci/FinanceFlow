@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        800,
-        256
+        752,
+        240
       ],
-      "id": "bb814f6d-460b-4b53-9a03-5bf413b17c6c",
+      "id": "5752085d-d244-41ad-b62b-c35fd5e28649",
       "name": "Respond to Webhook32"
     },
     {
@@ -27,10 +27,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1040,
-        80
+        992,
+        64
       ],
-      "id": "5c7a1aa1-8b04-4281-b157-1910ba6040e6",
+      "id": "f58c0fc8-6a4b-442c-84b9-935e7c3a65ae",
       "name": "Respond to Webhook41"
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        816,
-        432
+        768,
+        416
       ],
-      "id": "ea126466-af80-423b-b3b0-52267dcdde73",
+      "id": "e4ee6114-3322-4209-82ee-ea7121a69f10",
       "name": "Respond to Webhook42"
     },
     {
@@ -59,10 +59,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        832,
-        624
+        784,
+        608
       ],
-      "id": "99ecb6ab-3aa6-4068-a0ec-6cb66c063380",
+      "id": "7918ff1c-5fee-4aac-91a8-14313b9f1df9",
       "name": "Respond to Webhook43"
     },
     {
@@ -75,10 +75,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        832,
-        816
+        784,
+        800
       ],
-      "id": "b7432131-ea25-4301-954a-ce1e56ecd5f3",
+      "id": "91df3862-e49f-41a2-9086-80d631798003",
       "name": "Respond to Webhook44"
     },
     {
@@ -88,13 +88,13 @@
         "width": 1328,
         "color": 7
       },
-      "id": "f47f6596-f02c-44f0-abc3-bfa693e2382a",
+      "id": "3b9e52a5-3394-42ba-b0d3-8f4c17d4c09c",
       "name": "Sticky Note7",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        48,
-        16
+        32,
+        0
       ]
     },
     {
@@ -107,10 +107,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        176,
-        80
+        112,
+        64
       ],
-      "id": "90be6c64-0b39-41a9-b440-8eda568ab9e9",
+      "id": "27f1f95f-29ae-410d-a7e5-0f83bc741e0b",
       "name": "InsereContaReber",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -180,8 +180,8 @@
             },
             {
               "id": "e0435548-c62a-412e-8f8c-25feb81faa27",
-              "name": "=forma_recebimento",
-              "value": "={{ $json.body.forma_recebimento}}",
+              "name": "=classificacao",
+              "value": "={{ $json.body.classificacao}}",
               "type": "string"
             },
             {
@@ -195,6 +195,18 @@
               "name": "canal",
               "value": "={{ $json.body.canal}}",
               "type": "string"
+            },
+            {
+              "id": "c4fd3c0a-6a6c-4cbb-b65a-70297084cf3e",
+              "name": "codigo",
+              "value": "={{ $json.body.codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "86bbc006-d869-4498-b699-792689b07c19",
+              "name": "categoria",
+              "value": "",
+              "type": "string"
             }
           ]
         },
@@ -203,30 +215,30 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        80
+        352,
+        64
       ],
-      "id": "08a1a031-bf73-4f6c-81d5-6fb8f8c8e715",
+      "id": "0f66077f-3c86-4716-ace1-3961a8c01026",
       "name": "EditContaReceber"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}',\n   {{ $json.contabil_id }},\n      {{ $json.conta_id }},\n   '{{ $json.forma_recebimento}}',\n   '{{ $json.canal }}'\n)\n ",
+        "query": "  select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   '{{ $json.categoria }}' , \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}', \n      {{ $json.conta_id }},\n   '{{ $json.classificacao }}',\n   '{{ $json.canal }}',\n   '{{ $json.codigo }}'\n)\n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        592,
-        80
+        544,
+        64
       ],
-      "id": "8a2861f3-1db8-4a61-8214-d964068e53f4",
+      "id": "51fe6cdb-8432-4e93-ae2f-c0332ac9c8e7",
       "name": "ff_registrar_conta_receber_com_parcelas",
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -240,15 +252,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1408,
-        160
+        1360,
+        144
       ],
-      "id": "1fb1700a-c277-49e0-ad1b-611ffe3b17b6",
+      "id": "02f94e41-dd2b-4508-b9de-3bbdfba3989f",
       "name": "ResultContaReceber",
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -261,10 +273,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        160,
-        256
+        112,
+        240
       ],
-      "id": "8dc3f22c-249d-4b3a-9349-37a2943d57e0",
+      "id": "0155c1ba-521b-4aae-94e1-99e1e822ae8a",
       "name": "ConsultarContaReceber",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -315,10 +327,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        256
+        352,
+        240
       ],
-      "id": "e96bf727-d3b4-4bd1-b36a-675308d01e86",
+      "id": "51cdcba1-39a2-4ee7-89b6-5ffb4458faf0",
       "name": "EdContareceber"
     },
     {
@@ -330,16 +342,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        592,
-        256
+        544,
+        240
       ],
-      "id": "6e3b1f5a-70e5-4770-b568-05e517a7d03c",
+      "id": "da1fb638-a469-4710-b05e-3fd85e23ff59",
       "name": "ff_consultar_contas_receber",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -353,10 +365,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        160,
-        432
+        112,
+        416
       ],
-      "id": "489e64fa-89d4-4bde-8c21-f43af59681bb",
+      "id": "17169198-95d6-4279-8ccb-0fe8bc06d302",
       "name": "ExcluiContaReceber",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -383,10 +395,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        368,
-        432
+        320,
+        416
       ],
-      "id": "4ccb7e5b-e7e4-42da-9532-1068f9764c88",
+      "id": "cdb1c305-8cd9-404f-89b7-c1c694a788a9",
       "name": "ExcluircontaReceber"
     },
     {
@@ -398,16 +410,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        592,
-        432
+        544,
+        416
       ],
-      "id": "e25ba0b5-31fe-43c1-9c7c-26d4364797f4",
+      "id": "87ff4ebf-9d3c-479b-89c5-efa19e8a832d",
       "name": "ExcluiConta_a_receber",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -421,10 +433,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        160,
-        624
+        112,
+        608
       ],
-      "id": "79acbe88-62a5-4977-a5ad-a0fdad091bfb",
+      "id": "6d546ea2-2621-42d1-8897-59a27e2e6eb1",
       "name": "SalvaContaReceber",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -499,10 +511,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        624
+        352,
+        608
       ],
-      "id": "5d975081-81cd-4ec7-9ffa-24982c033811",
+      "id": "e6e95eb6-9b2b-429a-a37f-3e0a8d5a13e0",
       "name": "EditaaContaReceberr"
     },
     {
@@ -565,14 +577,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        608,
-        624
+        560,
+        608
       ],
-      "id": "38a07815-7046-451f-a6f2-e6079fe2b6bd",
+      "id": "24aabf06-a366-4dc4-964d-f5139381e17e",
       "name": "SalvaContaReceber1",
       "credentials": {
         "supabaseApi": {
-          "id": "GfCFzcpZSxkxWy1M",
+          "id": "rC5LgeRcKghHCrKW",
           "name": "FinanceFlow"
         }
       }
@@ -586,10 +598,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        144,
-        816
+        96,
+        800
       ],
-      "id": "e13aaecb-1323-4db6-8e09-780d6ea812c6",
+      "id": "e28f4f54-d6c7-4456-8013-19896f96e088",
       "name": "ContaReceber",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -616,10 +628,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        368,
-        816
+        320,
+        800
       ],
-      "id": "ac021627-bec9-4254-8996-3871581f402e",
+      "id": "4e13ae2c-6411-49b8-b8b3-a845a57c414c",
       "name": "EditarContaRecebe"
     },
     {
@@ -631,16 +643,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        608,
-        816
+        560,
+        800
       ],
-      "id": "395a4158-eddf-4211-a80e-fe147f058dbe",
+      "id": "8d80245c-57c6-4b27-9773-64819a3412e2",
       "name": "ConsulaConaReceber",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -654,10 +666,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        800,
-        1008
+        752,
+        992
       ],
-      "id": "97d4f1fd-1e9f-4f00-a788-c15f0483009e",
+      "id": "4d99e6c4-a691-4c93-86de-bd20b6457695",
       "name": "Respond to Webhook50"
     },
     {
@@ -669,16 +681,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        544,
-        1008
+        496,
+        992
       ],
-      "id": "30c09ecf-91d8-4ae8-a1af-7dafbca25e92",
+      "id": "65af102b-312c-4962-9321-6a2defa9c2db",
       "name": "Parcelamento1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -692,10 +704,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        800,
-        1184
+        752,
+        1168
       ],
-      "id": "6c63beb8-f5dc-4053-b3e3-ea69f28048df",
+      "id": "1d292e42-ab33-4721-862b-8e988367b347",
       "name": "Respond to Webhook51"
     },
     {
@@ -733,10 +745,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        336,
-        1008
+        288,
+        992
       ],
-      "id": "abd1e393-e47e-42e8-96fa-9587ce6fd47c",
+      "id": "6cd7fd76-d709-4375-85dc-02bf5ce33c73",
       "name": "EditarContaRece_parce"
     },
     {
@@ -762,10 +774,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        336,
-        1184
+        288,
+        1168
       ],
-      "id": "d65bb263-9298-4498-9642-18ffa6c3f55a",
+      "id": "109d29ad-9a0f-4c34-9c35-24602b115de9",
       "name": "Excluircontareceberparce"
     },
     {
@@ -777,10 +789,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        128,
-        1008
+        80,
+        992
       ],
-      "id": "35079b75-49ed-47ee-9182-b05fc96eb0d9",
+      "id": "b1a9ed04-942a-4837-b9c0-4bf1b31b823e",
       "name": "ReceberParcelado",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -794,10 +806,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        144,
-        1184
+        96,
+        1168
       ],
-      "id": "0a6f8c1f-29ad-4ce9-bd1c-ad03912784a4",
+      "id": "c0848910-d7d9-4a56-96a6-8e3d84d53d2f",
       "name": "ExcluiParcelaReceber",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -810,16 +822,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        560,
-        1184
+        512,
+        1168
       ],
-      "id": "c6ba05d1-e1e8-4974-9c10-6f3a0bac9819",
+      "id": "68fedbe2-b5b0-488f-847a-6cbb28e5a11c",
       "name": "ExcluiConta_a_receber1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "2CNjdfsJzrRLFqHu",
-          "name": "FinanceFlow"
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
         }
       }
     },
@@ -830,14 +842,35 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        784,
-        80
+        736,
+        64
       ],
-      "id": "80930937-039d-4af6-ae22-5b0b924d6c26",
+      "id": "0076d78e-4bcd-43a3-867b-47ccd14d4571",
       "name": "Code in JavaScript1"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "EditContaReceber": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "descricao": "",
+          "valor": 50,
+          "vencimento": "20260315",
+          "categoria_id": 2,
+          "parcelas": 1,
+          "fornecedor_id": 29,
+          "doc_ref": "dddd",
+          "contabil_id": null,
+          "classificacao": "receita",
+          "conta_id": null,
+          "canal": null,
+          "codigo": null,
+          "categoria": ""
+        }
+      }
+    ]
+  },
   "connections": {
     "InsereContaReber": {
       "main": [
@@ -1086,11 +1119,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "706ad975-304e-4f3b-906e-ada769682d4d",
+  "versionId": "4b903e59-2eb8-49a9-9444-e2efa2fd6822",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
   },
-  "id": "oZLSHlguqqSbgyMg",
+  "id": "Y7h5kLw0DDEos2q3",
   "tags": []
 }
