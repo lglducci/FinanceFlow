@@ -328,7 +328,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -544,
+        -336,
         768
       ],
       "id": "331ab41c-b585-41b2-bbd3-1f632dc1c26f",
@@ -341,7 +341,7 @@
             {
               "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
               "name": "empresa_id",
-              "value": "={{ $json.query.empresa_id}}",
+              "value": "={{ $json.body.empresa_id}}",
               "type": "string"
             }
           ]
@@ -794,7 +794,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \nCALL contab.sp_reset_contabil_desde_data(1);",
+        "query": " \nCALL contab.sp_reset_contabil_desde_data({{ $json.empresa_id }});",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -862,6 +862,19 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        768
+      ],
+      "id": "7d183e2a-f5b7-4cca-8cad-b701d945ca6d",
+      "name": "Code in JavaScript4"
     }
   ],
   "pinData": {
@@ -879,6 +892,13 @@
         "json": {
           "empresa_id": 1,
           "lote_id": 22
+        }
+      }
+    ],
+    "EditUltimo_process1": [
+      {
+        "json": {
+          "empresa_id": 1
         }
       }
     ]
@@ -1196,7 +1216,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook5",
+            "node": "Code in JavaScript4",
             "type": "main",
             "index": 0
           }
@@ -1224,13 +1244,24 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "75b7f1c5-542f-432b-925f-c9138f262b08",
+  "versionId": "b75b2ad3-32cd-4ede-b825-c5de44db89e8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

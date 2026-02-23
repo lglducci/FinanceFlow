@@ -15,7 +15,8 @@
         1040
       ],
       "id": "a4e7d75f-ca85-46e5-b74a-65e5b30f5be3",
-      "name": "Respond to Webhook4"
+      "name": "Respond to Webhook4",
+      "disabled": true
     },
     {
       "parameters": {
@@ -68,7 +69,8 @@
         1040
       ],
       "id": "caf4c9d5-754c-4853-a1a3-587dd5a299ae",
-      "name": "CartãoTransacaoEdit1"
+      "name": "CartãoTransacaoEdit1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -84,7 +86,8 @@
       ],
       "id": "bf9c1780-cc83-4261-8f87-945269624cf5",
       "name": "InseretransacaoCartão",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb",
+      "disabled": true
     },
     {
       "parameters": {
@@ -105,7 +108,8 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -362,7 +366,8 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
@@ -752,8 +757,8 @@
             },
             {
               "id": "373fba2f-5a95-41d7-8881-ed39611774b5",
-              "name": "nome_cartao",
-              "value": "={{ $json.body.NomeCartao}}",
+              "name": "nomecartao",
+              "value": "={{ $json.body.nomecartao}}",
               "type": "string"
             },
             {
@@ -828,7 +833,7 @@
             },
             {
               "fieldId": "nomecartao",
-              "fieldValue": "= {{ $json.nome_cartao }}"
+              "fieldValue": "={{ $json.nomecartao }}"
             },
             {
               "fieldId": "bandeira",
@@ -1017,7 +1022,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \nSELECT \n    c.*,\n    ca.nome     AS cartao_nome,\n    ca.numero   AS cartao_numero,\n    ca.bandeira AS cartao_bandeira,\n    f.id        AS fatura_id,\n    to_char(f.mes_referencia, 'MM/YYYY') AS mes_referencia,\n    f.status    AS status_fatura\nFROM cartoes_compras c\nJOIN cartoes ca\n  ON ca.id = c.cartao_id\nJOIN cartoes_transacoes t\n  ON t.compra_id = c.id\nJOIN cartoes_faturas f\n  ON f.id = t.fatura_id\nWHERE c.empresa_id =  {{ $json.id_empresa }} \n  AND f.empresa_id =  {{ $json.id_empresa }} \n  AND ca.empresa_id = {{ $json.id_empresa }} \n  and c.data_compra between  '{{ $json.data_ini }}' and '{{ $json.data_fim }}' ;\n",
+        "query": " SELECT \n    c.*,\n    ca.nome     AS cartao_nome,\n    ca.numero   AS cartao_numero,\n    ca.bandeira AS cartao_bandeira  \nFROM cartoes_compras c\nJOIN cartoes ca\n  ON ca.id = c.cartao_id  \nWHERE c.empresa_id =   {{ $json.id_empresa }}\n  AND ca.empresa_id =  {{ $json.id_empresa }}\n  and c.data_compra between  '{{ $json.data_ini }}' and '{{ $json.data_fim }}' ;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1137,7 +1142,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select * from ff_excluir_compra_cartao(   {{ $json.empresa_id }}, {{ $json.id }} )\n",
+        "query": "select * from ff_excluir_compra_cartao( {{ $json.empresa_id }}, {{ $json.id }} )\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1545,7 +1550,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a89c75ec-18aa-42d5-95bc-c82a1c6424ec",
+  "versionId": "51937796-630a-4ce4-80d4-757d58fe20d8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
