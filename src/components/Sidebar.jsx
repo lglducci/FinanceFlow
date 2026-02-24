@@ -85,20 +85,47 @@ function podeVer(menuKey) {
           {podeVer("visao_geral") && (
          <MenuGroup
            icon={<IconMoney />}
-           label="Transações Financeiras"
+           label="Movimentacoes"
            open={open === "financeiro"}
            onClick={() => toggle("financeiro")}
-         >
-           
+         > 
            <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
-           <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
+         {/*}  <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
            <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />
            <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
            <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
            <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} />
-           <SubItem icon={<IconBook />} label="Receita Rapida" onClick={() => navigate("/registrareceitarapida")} />  
+           <SubItem icon={<IconBook />} label="Receita Rapida" onClick={() => navigate("/registrareceitarapida")} />  */}
          </MenuGroup>
          )}
+
+
+        {podeVer("visao_geral") && (
+         <MenuGroup
+           icon={<IconMoney />}
+           label="Contas"
+           open={open === "contas"}
+           onClick={() => toggle("contas")}
+         > 
+           <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
+           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
+           <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
+         </MenuGroup>
+         )}
+
+         {podeVer("visao_geral") && (
+         <MenuGroup
+           icon={<IconMoney />}
+           label="Cartões"
+           open={open === "cartoes"}
+           onClick={() => toggle("cartoes")}
+         > 
+           <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
+           <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
+           
+         </MenuGroup>
+         )}
+         
 
          
        {(podeVer("diario_contabil") || podeVer("configuracoes")) && (
@@ -130,7 +157,7 @@ function podeVer(menuKey) {
          </MenuGroup>
         )}
  
-         {podeVer("visao_geral") && (   <MenuGroup
+        {/*} {podeVer("visao_geral") && (   <MenuGroup
            icon={<IconBuilding />}
            label="Apurações/Obrigações"
            open={open === "tributos"}
@@ -140,7 +167,7 @@ function podeVer(menuKey) {
           
                
           
-         </MenuGroup>)}
+         </MenuGroup>)}*/}
  
  
          <MenuGroup
@@ -167,9 +194,9 @@ function podeVer(menuKey) {
            onClick={() => toggle("Configurações")}
          > 
            {podeVer("visao_geral") && (  <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />)}
-           {podeVer("visao_geral") && ( <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> )}
+         {/*{podeVer("visao_geral") && ( <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> )}*/}
             <SubItem icon={<IconMap />} label="Minha Empresa" onClick={() => navigate("/editar-empresa")} /> 
-               <SubItem icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
+             <SubItem icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
 
  
 
