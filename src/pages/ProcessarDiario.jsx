@@ -187,50 +187,48 @@ async function gerarContabil() {
   }
 }
  
-  
- useEffect(() => {
-  async function carregar() {
-    try {
-      if (!empresa_id) {
-        console.error("empresa_id ausente");
-        return;
-      }
-
-      const url = buildWebhookUrl("ultimo_processamento", { empresa_id });
-
-      const r = await fetch(url);
-      const text = await r.text();
-      if (!text) return;
-
-      const resp = JSON.parse(text);
-      const item = Array.isArray(resp) ? resp[0] : resp;
-
-      if (!item?.ultimo_dia_processado) return;
-
-      const data = item.ultimo_dia_processado.slice(0, 10);
-
-      setUltimoFechamento(data);
-      setDataIni(data);
-      setDataFim(data);
-    } finally {
-      setLoadingDatas(false);
+ async function carregar() {
+  try {
+    if (!empresa_id) {
+      console.error("empresa_id ausente");
+      return;
     }
-  }
 
+    const url = buildWebhookUrl("ultimo_processamento", { empresa_id });
+
+    const r = await fetch(url);
+    const text = await r.text();
+    if (!text) return;
+
+    const resp = JSON.parse(text);
+    const item = Array.isArray(resp) ? resp[0] : resp;
+
+    if (!item?.ultimo_dia_processado) return;
+
+    const data = item.ultimo_dia_processado.slice(0, 10);
+
+    setUltimoFechamento(data);
+    setDataIni(data);
+    setDataFim(data);
+  } finally {
+    setLoadingDatas(false);
+  }
+}
+
+useEffect(() => {
   carregar();
 }, [empresa_id]);
 
+
  
- async function voltadata() {
+  async function voltadata() {
   try {
     setMsg("⏳ Gerando Contábil...");
-    await callApi(
-      buildWebhookUrl("voltadata"),
-      { empresa_id  }
-    );
-     carregar();
-    setMsg("✅ Contábil gerado com sucesso. Fase 3 concluida");
-   
+    await callApi(buildWebhookUrl("voltadata"), { empresa_id });
+
+    await carregar();  // ✅ agora existe
+
+    setMsg("✅ Contábil gerado com sucesso. Fase 3 concluída");
   } catch (e) {
     alert("❌ " + e.message);
   }

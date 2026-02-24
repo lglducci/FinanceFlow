@@ -77,7 +77,14 @@ export default function TitulosVencidos() {
 
       const r = await fetch(url);
       const j = await r.json();
-      setLista(Array.isArray(j) ? j : []);
+     // setLista(Array.isArray(j) ? j : []);
+
+     if (Array.isArray(j) && j[0]?.ok) {
+        const dados = j[0].data;
+        setLista(Array.isArray(dados) ? dados : [dados]);
+      } else {
+        setLista([]);
+      }
     } finally {
       setLoading(false);
     }

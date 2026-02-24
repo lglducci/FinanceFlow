@@ -226,7 +226,7 @@ export default function NovaContaPagar() {
   async function carregarModelos() {
     try {
       const r = await fetch(
-        buildWebhookUrl("modelos", { empresa_id, tipo_operacao: "CP" })
+        buildWebhookUrl("modelos", { empresa_id, classificacao: "pagar" })
       );
       const j = await r.json();
       setModelos(Array.isArray(j) ? j : []);
@@ -448,10 +448,10 @@ export default function NovaContaPagar() {
               {/* MODELO CONTÁBIL (TOKEN) */}
 
                      
-          {/* DESCRIÇÃO  */}
+          {/* classificacao  */}
           <div>
             <div className="w-4/5">
-              <label className="label label-required">Classsificação</label>
+              <label className="label label-required">Classificação</label>
                <select
               name="classificacao"
               value={form.classificacao}
@@ -468,8 +468,8 @@ export default function NovaContaPagar() {
             </div>
           </div>
 
-              <div>
-
+              
+              <div className="hidden">  
                 <label className="font-bold text-[#1e40af] flex items-center gap-2">
                   Modelo Contábil *
                   <span className="relative group cursor-pointer">

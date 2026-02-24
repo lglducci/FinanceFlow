@@ -25,7 +25,7 @@ export default function NovaContaReceber() {
     doc_ref:"",
     contabil_id: 0 ,
     modelo_codigo:"",
-    classificacao:"ativo"
+    classificacao:"receita"
   });
 
   
@@ -137,12 +137,12 @@ const THEME = {
             return;
           }
 
-          if (!form.categoria_id) {
+          if (!Number.isFinite(Number(form.categoria_id)) || Number(form.categoria_id) <= 0) {
             alert("Categoria é obrigatória.");
             return;
           }
 
-          if (!form.fornecedor_id) {
+          if (!form.fornecedor_id) { 
             alert("Fornecedor é obrigatório.");
             return;
           }
@@ -176,7 +176,7 @@ const THEME = {
         descricao: form.descricao,
         valor: Number(form.valor),
         vencimento: form.vencimento,
-        categoria_id: Number(form.categoria_id) || null,
+        categoria_id: Number(form.categoria_id) ,
         fornecedor_id: Number(form.fornecedor_id) || null,
         parcelas: Number(form.parcelas),
         parcela_num: Number(form.parcela_num),
@@ -395,8 +395,29 @@ useEffect(() => {
           />
         </div>
          </div>
- 
+          <div className="w-2/4"> 
+          <label   className="label label-required">Status</label>
+          <select
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            className="input-premium w-24"
+            placeholder="status"
+          >
+            <option value="aberto">Aberto</option>
+            <option value="recebido">Recebido</option>
+          </select>
+        </div>
 
+ 
+      </div> 
+
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">  
+        {/* STATUS */}
+        <div>
+          
+
+        
             {/* Numero documento ou nota fiscal  */}
         <div>
           <div className="w-2/3"> 
@@ -410,46 +431,30 @@ useEffect(() => {
                 />
             </div> 
          </div> 
-      </div> 
-
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">  
-        {/* STATUS */}
-        <div>
-           <div className="w-2/4"> 
-          <label   className="label label-required">Status</label>
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="input-premium w-24"
-            placeholder="status"
-          >
-            <option value="aberto">Aberto</option>
-            <option value="recebido">Recebido</option>
-          </select>
-        </div>
         </div>
             
 
            {/* cLASSIFICAAO  */}
-          <div>
-            <div className="w-4/5">
-              <label className="label label-required">Classsificação</label>
-               <select
-              name="classificacao"
-              value={form.classificacao}
-              onChange={handleChange}
-              className="input-premium w-64"
-              required
-            >
-              <option value="">Selecione...</option>
-              <option value="receita">Receita</option>
-              <option value="ativo">Ativo</option> 
-            </select>
-            </div>
-          </div>
+          
           </div>
 
+           <div >
+            <div className="w-4/5">
+                  <label className="label label-required">Classificação</label>
+                  <select
+                  name="classificacao"
+                  value={form.classificacao}
+                  onChange={handleChange}
+                  className="input-premium w-64"
+                  required
+                >
+                  <option value="">Selecione...</option>
+                  <option value="receita">Receita</option>
+                  <option value="ativo">Ativo</option> 
+                </select>
+            </div>
+          </div>
+     <div className="hidden"> 
         <label className="font-bold text-[#1e40af] flex items-center gap-2">
             Modelo Contábil  
             <span className="relative group cursor-pointer">
@@ -470,48 +475,46 @@ useEffect(() => {
                 </div>
 
             </span>
-          </label>
-         
+          </label> 
+              <div className="flex items-center gap-2"> 
+                    <input
+                      list="tokens"
+                      className="input-premium w-full"
+                      placeholder="Digite ou selecione o token"
+                      value={modeloCodigo}
+                      onChange={(e) => {
+                        setModeloCodigo(e.target.value);
+                        setForm(prev => ({
+                          ...prev,
+                          modelo_codigo: e.target.value
+                        }));
+                      }}
+                    />
 
-           <div className="flex items-center gap-2"> 
-                <input
-                  list="tokens"
-                  className="input-premium w-full"
-                  placeholder="Digite ou selecione o token"
-                  value={modeloCodigo}
-                  onChange={(e) => {
-                    setModeloCodigo(e.target.value);
-                    setForm(prev => ({
-                      ...prev,
-                      modelo_codigo: e.target.value
-                    }));
-                  }}
-                />
-
-                <datalist id="tokens">
-                  {modelos.map((m) => (
-                    <option key={m.id} value={m.codigo}>
-                      {m.codigo}
-                    </option>
-                  ))}
-                </datalist> 
-                    <button
-                    type="button"
-                    onClick={() => {
-                      console.log("CLICOU MODELO");
-                      setModalModelo(true);
-                    }}
-                    className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
-                  >
-                    ➕  
-                  </button>  
-            </div> 
+                    <datalist id="tokens">
+                      {modelos.map((m) => (
+                        <option key={m.id} value={m.codigo}>
+                          {m.codigo}
+                        </option>
+                      ))}
+                    </datalist> 
+                        <button
+                        type="button"
+                        onClick={() => {
+                          console.log("CLICOU MODELO");
+                          setModalModelo(true);
+                        }}
+                        className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                      >
+                        ➕  
+                      </button>  
+                </div> 
 
               
                   <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
                       💡 {getHelperTexto('CR')}
-                    </div>
-
+                    </div> 
+           </div>
         {/* BOTÕES */}
             <div className="flex gap-6 pt-8 pb-8 pl-1">
           <button

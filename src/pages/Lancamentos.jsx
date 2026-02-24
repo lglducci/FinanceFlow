@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 import ModalBase from "../components/ModalBase";
 import FormConta from "../components/forms/FormConta";
-import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
  
 
 export default function Lancamentos() {
@@ -19,7 +19,7 @@ const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
 const [saldoInicial, setSaldoInicial] = useState(0);
 const [saldoFinal, setSaldoFinal] = useState(0);
- 
+const [refreshKey, setRefreshKey] = useState(0);
  
  
 const [contas, setContas] = useState([]);
@@ -64,56 +64,7 @@ const [fornecedores, setFornecedores] = useState([]);
     setDadosConta(json[0]);
   }
   
-  async function Estornar(id) {
-   if (!confirm("Tem certeza que deseja estornar este lancamento?")) return;
-
-  try {
-    const url = buildWebhookUrl("estornarlancto");
-
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id, id }),
-    });
-
-    const texto = await resp.text();
-    console.log("RETORNO:", texto);
-
-    let json = {};
-    try { json = JSON.parse(texto); } catch {}
-
-    // 🔥 TRATAMENTO CORRETO DO SEU FORMATO
-   const sucesso =
-  Array.isArray(json) &&
-  json.length > 0 &&
-  (json[0].success === true || json[0].ff_estornar_transacao === "sucesso");
-
-
-    if (sucesso) {
-      alert("Lancamento estornado com sucesso!");
-
-      // remove visualmente da tela ANTES de recarregar do backend
-        setLista((prev) => prev.filter((x) => x.id !== id));
-      
-        // depois recarrega real do webhook
-        setTimeout(() => carregarLista(), 150);
-     {/*} carregarLista();  // atualiza tabela*/}
-           carregarSaldoConta(contaId);  // 🔥 Atualiza dados da conta
-          pesquisar();   // <-- AQUI!!!
-
-      return;
-    }
-
-    // Se não entrou no sucesso, então deu erro (provavelmente FK)
-    alert(json[0]?.message || "Erro ao Estornar. Verifique vínculos (FK).");
-
-  } catch (e) {
-    console.log("ERRO Estornar:", e);
-    alert("Erro ao estornar.");
-  }
-}
-
-
+   
   function aplicarPeriodo(tipo) {
     const hoje = new Date( hojeLocal() ); 
     let ini, fim;
@@ -138,8 +89,8 @@ const [fornecedores, setFornecedores] = useState([]);
       return;
     }
 
-    setDataIni(ini.toISOString().substring(0, 10));
-    setDataFim(fim.toISOString().substring(0, 10));
+    setDataIni(  hojeMaisDias(-2));
+    setDataFim(  hojeLocal());
   }
 
   function handlePeriodoChange(tipo) {
@@ -225,10 +176,12 @@ useEffect(() => {
   }, []);
 
   async function pesquisar() {
+ 
     if (!dataIni || !dataFim) {
       alert("Informe o período.");
       return;
     }
+   
      await carregar(); // <-- Atualiza SALDO aqui e somente aqui
     setCarregando(true);
     try {
@@ -367,13 +320,57 @@ function calcularPeriodoDias(inicio, fim) {
 }
 
 
+
+async function Estornar(id) {
+   if (!confirm("Tem certeza que deseja estornar este lancamento?")) return;
+
+  try {
+    const url = buildWebhookUrl("estornarlancto");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ empresa_id, id }),
+    });
+
+    const texto = await resp.text();
+    console.log("RETORNO:", texto);
+
+    let json = {};
+    try { json = JSON.parse(texto); } catch {}
+
+    // 🔥 TRATAMENTO CORRETO DO SEU FORMATO
+  const sucesso = json?.[0]?.ok === true;
+ 
+    if (sucesso) {
+     //wait carregarSaldoConta(contaId);
+        setRefreshKey(prev => prev + 1);
+        alert("Lancamento estornado com sucesso!");
+        return;
+      }
+
+    // Se não entrou no sucesso, então deu erro (provavelmente FK)
+    alert(json[0]?.message || "Erro ao Estornar. Verifique vínculos (FK).");
+
+  } catch (e) {
+    console.log("ERRO Estornar:", e);
+    alert("Erro ao estornar.");
+  }
+}
+
+ useEffect(() => {
+  if (refreshKey > 0) {
+    pesquisar();
+  }
+}, [refreshKey]);
+
 return (
   <div className="p-4 space-y-4">
 
     {/* HEADER */}
    <div className="flex justify-between items-start">
   <div>
-    <h1 className="text-xl font-bold text-blue-800">Lançamentos</h1>
+    <h1 className="text-xl font-bold text-blue-800">Transações Financeiras</h1>
     <p className="text-sm text-gray-500">
       Consulte entradas e saídas financeiras com poucos cliques.
     </p>

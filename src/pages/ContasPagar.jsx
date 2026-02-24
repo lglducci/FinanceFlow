@@ -113,50 +113,14 @@ useEffect(() => {
     setDataFim(fim.toISOString().split("T")[0]);
   }
 
-    if (periodo === "bimestre") {
-    // Próximos 30 dias
-    const ini = new Date();               // hoje
-    const fim = new Date();
-    fim.setDate(hoje.getDate() + 60);     // hoje + 60 dias
-
-    setDataIni(ini.toISOString().split("T")[0]);
-    setDataFim(fim.toISOString().split("T")[0]);
-  } 
-
-  if (periodo === "mes") {
-    // Próximos 30 dias
-    const ini = new Date();               // hoje
-    const fim = new Date();
-    fim.setDate(hoje.getDate() + 30);     // hoje + 30 dias
-
-    setDataIni(ini.toISOString().split("T")[0]);
-    setDataFim(fim.toISOString().split("T")[0]);
-  }
-
-  if (periodo === "15") {
-    // Próximos 15 dias
-    const ini = new Date();
-    const fim = new Date();
-    fim.setDate(hoje.getDate() + 15);
-
-    setDataIni(ini.toISOString().split("T")[0]);
-    setDataFim(fim.toISOString().split("T")[0]);
-  }
-
-  if (periodo === "semana") {
-    // Próximos 7 dias
-    const ini = new Date();
-    const fim = new Date();
-    fim.setDate(hoje.getDate() + 7);
-
-    setDataIni(ini.toISOString().split("T")[0]);
-    setDataFim(fim.toISOString().split("T")[0]);
-  }
+  
+  
+ 
 
   if (periodo === "hoje") {
     const d = hoje.toISOString().split("T")[0];
-    setDataIni(hojeMaisDias(-7));
-    setDataFim(hojeMaisDias(15));
+    setDataIni(hojeMaisDias(-1));
+    setDataFim(hojeMaisDias(7));
   }
 }, [periodo]);
 

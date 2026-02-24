@@ -21,6 +21,9 @@ export default function NovoCardTransaction() {
     valor: "",
     parcelas: 1,
     data_parcela: hojeLocal(),
+    classificacao:""
+                    
+
   });
 
   // --------------------------
@@ -68,6 +71,11 @@ export default function NovoCardTransaction() {
       return;
     }
 
+    if (!form.classificacao) {
+  alert("Selecione a classificação.");
+  return;
+}
+
     try {
       const url = buildWebhookUrl("novatranscartao");
 
@@ -81,7 +89,8 @@ export default function NovoCardTransaction() {
           valor_total: form.valor,
           parcelas: form.parcelas,
           data_compra: form.data_parcela,
-          contabil_id:form.contabil_id
+          contabil_id:form.contabil_id,
+          classificacao:form.classificacao
         }),
       });
 
@@ -114,8 +123,7 @@ export default function NovoCardTransaction() {
 }, []); // executa uma vez
 
  
-
-
+ 
 
   return (
       <div className="min-h-screen py-6 px-4 bg-bgSoft">
@@ -178,45 +186,74 @@ export default function NovoCardTransaction() {
          placeholder="data compra"
            className="input-premium"
       />
+           
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-end mt-3">
 
-      
-      {/* Parcelas */}
-      <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Parcelas</label>
-      <input
-        type="number"
-        name="parcelas"
-        min="1"
-        value={form.parcelas}
-        onChange={handleChange}
-          placeholder="parcela"
-            className="input-premium"
-      />
+                {/* PARCELAS */}
+                <div>
+                  <label className="label label-required">
+                    Parcelas
+                  </label>
+                  <input
+                    type="number"
+                    name="parcelas"
+                    min="1"
+                    value={form.parcelas}
+                    onChange={handleChange}
+                    placeholder="Qtd"
+                    className="input-premium w-full h-8"
+                  />
+                </div>
 
-      {/* Valor */}
-      <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Valor</label>
-      <input
-        type="number"
-        name="valor"
-        value={form.valor}
-        onChange={handleChange}
-          placeholder="valor"
-           className="input-premium"
-      />
-  
+                {/* VALOR */}
+                <div>
+                  <label className="label label-required">
+                    Valor
+                  </label>
+                  <input
+                    type="number"
+                    name="valor"
+                    value={form.valor}
+                    onChange={handleChange}
+                    placeholder="0,00"
+                    className="input-premium w-full h-8"
+                  />
+                </div>
 
-      {/* Descrição */}
-      <label className="block mb-1 text-base  font-bold  text-[#1e40af] label label-required ">Descrição</label>
-      <input
-        type="text"
-        name="descricao"
-        value={form.descricao}
-        onChange={handleChange}
-        placeholder="descricao"
-         className="input-premium"
-         rows={3}
-      /> 
-           <div>
-            
+                {/* CLASSIFICAÇÃO */}
+                <div>
+                  <label className="label label-required">
+                    Classificação
+                  </label>
+                  <select
+                    name="classificacao"
+                    value={form.classificacao}
+                    onChange={handleChange}
+                    className="input-premium w-full h-8 appearance-none"
+                    required
+                  >
+                    <option value="">Selecione...</option>
+                    <option value="despesa">Despesa</option>
+                    <option value="estoque">Compra para Estoque</option>
+                    <option value="imobilizado">Aquisição de Imobilizado</option>
+                  </select>
+                </div>
+
+              </div>
+           
+           
+                       {/* Descrição */}
+            <label className="block mb-1 text-base  font-bold  text-[#1e40af] label label-required mt-4 ">Descrição</label>
+            <input
+              type="text"
+              name="descricao"
+              value={form.descricao}
+              onChange={handleChange}
+              placeholder="descricao"
+              className="input-premium"
+              rows={3}
+            /> 
+             <div className="hidden"> 
                 <label className="font-bold text-[#1e40af] flex items-center gap-2 label label-required">
                 Conta Contábil *
                 <span className="relative group cursor-pointer">

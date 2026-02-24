@@ -166,17 +166,18 @@ export default function NovoLancamento() {
 
 const classificacoesPorNatureza = {
   entrada: [
-    { value: "receita", label: "Receita" },
-    { value: "ativo", label: "Aumento de Ativo" },
-    { value: "passivo", label: "Aumento de Passivo" }
+    { value: "receita", label: "Receita" }, 
+    { value: "passivo", label: "Empréstimo / Financiamento Recebido" }
   ],
   saida: [
     { value: "despesa", label: "Despesa" },
     { value: "estoque", label: "Compra para Estoque" },
-    { value: "imobilizado", label: "Aquisição de Imobilizado" },
-    { value: "passivo", label: "Redução de Passivo" }
+    { value: "imobilizado", label: "Aquisição de Imobilizado" } 
   ]
 };
+ 
+
+
 
 const getClassificacoes = () => {
   if (!form.tipo) return [];
@@ -379,16 +380,17 @@ useEffect(() => {
       
       <FormCategoria
         open={modalCategoria}
-        onClose={() => setModalCategoria(false)}
+        onClose={() => setModalCategoria(false)} 
         empresa_id={empresa_id}
         tipo={form.tipo}
-        onCategoriaCriada={(nova) => {
-          setCategorias(prev => [nova, ...prev]);
-          setForm(prev => ({
-            ...prev,
-            categoria_id: nova.id
-          }));
-        }}
+                  onCategoriaCriada={async (nova) => {
+            setModalCategoria(false);
+            await carregarCategorias();   // 🔥 recarrega a lista oficial
+            setForm(prev => ({
+              ...prev,
+              categoria_id: nova.id
+            }));
+          }}
       />
 
         <ModalBase
