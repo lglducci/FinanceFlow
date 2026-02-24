@@ -81,7 +81,7 @@ export default function FormConta({
 
       if (onSuccess) {
            
-       alert("⚠ Conta criada com cadastro mínimo. Complete os dados em Cadastros-> Contas Financeiras.");
+       alert("⚠ Conta criada com cadastro mínimo.");
         onSuccess(nova);
       }
 

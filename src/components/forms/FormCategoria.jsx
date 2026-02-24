@@ -74,9 +74,7 @@ export default function FormCategoria({
       title="Nova Categoria"
     >
       <div className="flex flex-col gap-4">
-       <label className="font-medium">
-      Nome  <span className="text-red-500">*</span>
-    </label>
+       
 
         <input
           type="text"
@@ -91,21 +89,9 @@ export default function FormCategoria({
             }))
           }
         />
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <label className="font-medium">
-                    Classificação <span className="text-red-500">*</span>
-                  </label>
+             
 
-                  
-                </div>
-              
-
-               
-
-              </div>
-
-        <div className="text-sm text-gray-600">
+        <div className="text-base text-gray-600">
           Tipo: <strong>{tipo === "entrada" ? "Entrada" : "Saída"}</strong>
         </div>
 
