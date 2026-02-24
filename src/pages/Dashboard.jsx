@@ -79,12 +79,19 @@ export default function Dashboard() {
   return (
     <div className="p-4 space-y-6">
 
-      <h2 className="text-2xl font-bold text-gray-800">
+      <h2 className="text-3xl font-bold text-gray-800">
         📊 Dashboard Financeiro
       </h2>
 
  {/* RECEITA */}
-<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+ {/* ================= SITUAÇÃO ATUAL ================= */}
+<div className="bg-gray-50 rounded-2xl p-4 space-y-4">
+
+  <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">
+    Situação Atual
+  </h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4"> 
   <Card title="Receita do mês" value={data.receita_mes} color="border-l-4 border-emerald-600 bg-white "/>
   <Card title="Receita 6 meses" value={data.receita_6m} color="border-l-4 border-emerald-600 bg-white" />
   <Card title="Receita 12 meses" value={data.receita_12m} color="border-l-4 border-emerald-600 bg-white" />
@@ -96,9 +103,20 @@ export default function Dashboard() {
     color="border-l-4 border-rose-600 bg-white"
   />
 </div>
+</div>
 
-{/* CONTAS */}
-<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+
+
+
+ {/* ================= COMPROMISSOS ================= */}
+<div className="bg-gray-50 rounded-2xl p-4 space-y-4">
+
+  <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">
+    Compromissos
+  </h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-4"> 
   
 
   <Card
@@ -115,9 +133,16 @@ export default function Dashboard() {
 
   <Card title="Despesas 12 Meses" value={data.despesa_12_meses} color="border-l-4 border-rose-700 bg-white" />
 </div>
+</div>
 
-{/* CAIXA */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+ {/* ================= CAIXA & PROJEÇÃO ================= */}
+<div className="bg-gray-50 rounded-2xl p-4 space-y-4">
+
+  <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">
+    Caixa & Projeção
+  </h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4"> 
   <Card title="Saldo atual" value={data.saldo_atual} color="border-l-4 border-slate-700 bg-white" />
 
   <Card
@@ -132,10 +157,14 @@ export default function Dashboard() {
     color="border-l-4 border-indigo-700 bg-white"
   />
 </div>
-
+</div>
       {/* LISTAS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+       {/* ================= TENDÊNCIAS ================= */}
+<div className="bg-gray-50 rounded-2xl p-6 space-y-6 mt-6">
 
+  <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">
+    Tendências
+  </h3>
         {/* RECEBER */}
         <div className="bg-white rounded-xl shadow p-4">
           <h3 className="font-bold mb-3 text-green-700">
