@@ -171,7 +171,7 @@ const classificacoesPorNatureza = {
   ],
   saida: [
     { value: "despesa", label: "Despesa" },
-    { value: "estoque", label: "Compra para Estoque" },
+    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
     { value: "imobilizado", label: "Aquisição de Imobilizado" } 
   ]
 };

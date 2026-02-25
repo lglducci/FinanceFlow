@@ -461,8 +461,8 @@ export default function NovaContaPagar() {
             >
               <option value="">Selecione...</option>
               <option value="despesa">Despesa</option>
-              <option value="estoque">Estoque</option>
-              <option value="imobilizado">Imobilizado</option>
+              <option value="custo">Custo de Mercadoria / Insumo</option>
+              <option value="imobilizado">Aquisição de Imobilizado</option>
               <option value="passivo">Passivo (Financiamento/Dívida)</option>
             </select>
             </div>
@@ -541,7 +541,7 @@ export default function NovaContaPagar() {
                   Exemplo: CMV_MERCADORIA, ESTOQUE, TRANS_CONTA
                 </p>*/}
 
-              <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
+              <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700 hidden">
                 💡 {getHelperTexto('CP')}
               </div>
             </div>
