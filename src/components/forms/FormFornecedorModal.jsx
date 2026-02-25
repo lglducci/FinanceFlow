@@ -9,7 +9,8 @@ export default function FormFornecedorModal({
 }) {
 
   const [loading, setLoading] = useState(false);
-
+  const [telefone, setTelefone] = useState("");
+   const [whatsapp, setWhatsapp] = useState("");
   const [form, setForm] = useState({
     
     nome: "",
@@ -67,6 +68,26 @@ export default function FormFornecedorModal({
     }
   }
 
+  
+function maskTelefone(value) {
+  let v = value.replace(/\D/g, "");
+
+  // força +55
+  if (!v.startsWith("55")) {
+    v = "55" + v;
+  }
+
+  // limita tamanho (55 + DDD + 9 dígitos)
+  v = v.substring(0, 13);
+
+  v = v.replace(/^(\d{2})(\d)/, "+$1 $2");                 // +55
+  v = v.replace(/^(\+\d{2})\s(\d{2})(\d)/, "$1 ($2) $3");  // (DD)
+  v = v.replace(/(\d{5})(\d{4})$/, "$1-$2");               // 99999-9999
+
+  return v;
+}
+
+
   return (
     <div className="flex flex-col gap-4">
 
@@ -85,22 +106,34 @@ export default function FormFornecedorModal({
         value={form.cpf_cnpj}
         onChange={handleChange}
       />
+      
 
-      <input
-        name="telefone"
-        placeholder="Telefone"
-        className="input-premium"
-        value={form.telefone}
-        onChange={handleChange}
-      />
+         <input
+          name="telefone"
+          placeholder="Telefone"
+          className="input-premium"
+          value={form.telefone}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              telefone: maskTelefone(e.target.value)
+            })
+          }
+        />
 
       <input
         name="whatsapp"
         placeholder="WhatsApp"
         className="input-premium"
         value={form.whatsapp}
-        onChange={handleChange}
-      />
+         onChange={(e) =>
+            setForm({
+              ...form,
+              whatsapp: maskTelefone(e.target.value)
+            })
+          }
+        />
+
 
       <div className="flex gap-4 pt-4">
         <button
