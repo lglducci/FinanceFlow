@@ -117,6 +117,26 @@ const THEME = {
     }
   }
 
+  
+function maskTelefone(value) {
+  let v = value.replace(/\D/g, "");
+
+  // força +55
+  if (!v.startsWith("55")) {
+    v = "55" + v;
+  }
+
+  // limita tamanho (55 + DDD + 9 dígitos)
+  v = v.substring(0, 13);
+
+  v = v.replace(/^(\d{2})(\d)/, "+$1 $2");                 // +55
+  v = v.replace(/^(\+\d{2})\s(\d{2})(\d)/, "$1 ($2) $3");  // (DD)
+  v = v.replace(/(\d{5})(\d{4})$/, "$1-$2");               // 99999-9999
+
+  return v;
+}
+
+
   return (
         <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
        
@@ -185,7 +205,13 @@ const THEME = {
             <input
               name="telefone"
               value={form.telefone}
-              onChange={handleChange}
+              onChange={(e) =>
+            setForm({
+              ...form,
+              telefone: maskTelefone(e.target.value)
+            })
+          }
+      
               className="input-premium"
               placeholder="Telefone"
             />
@@ -196,7 +222,13 @@ const THEME = {
             <input
               name="whatsapp"
               value={form.whatsapp}
-              onChange={handleChange}
+              onChange={(e) =>
+            setForm({
+              ...form,
+              whatsapp: maskTelefone(e.target.value)
+            })
+          }
+        
               className="input-premium"
               placeholder="whatsApp"
             />

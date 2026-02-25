@@ -15,8 +15,7 @@ const [telefone, setTelefone] = useState("");
 const [erro, setErro] = useState("");
 const [mensagem, setMensagem] = useState("");
 
- 
-
+  
   async function cadastrar(e) {
   e.preventDefault();
   setErro("");
