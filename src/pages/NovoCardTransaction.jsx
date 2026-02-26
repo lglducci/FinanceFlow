@@ -234,7 +234,7 @@ export default function NovoCardTransaction() {
                   >
                     <option value="">Selecione...</option>
                     <option value="despesa">Despesa</option>
-                    <option value="estoque">Compra para Estoque</option>
+                    <option value="custo">Custo de Mercadoria / Insumo</option>
                     <option value="imobilizado">Aquisição de Imobilizado</option>
                   </select>
                 </div>
