@@ -93,13 +93,20 @@ export default function NovoCardTransaction() {
           classificacao:form.classificacao
         }),
       });
+     
+       const raw = await response.json();
 
-      const data = await response.json();
+        console.log("RAW RESPONSE:", raw);
 
-  // 👇 TRATAMENTO DO 400
-  if (!response.ok) {
-    throw new Error(data?.message || "Erro ao registrar transação.");
-  }
+        // 👇 se vier array pega o primeiro
+        const data = Array.isArray(raw) ? raw[0] : raw;
+
+        console.log("DATA TRATADA:", data);
+
+        if (!response.ok || data?.ok === false) {
+          throw new Error(data?.message || "Erro ao registrar transação.");
+        }
+
 
 
       alert("Transação registrada com sucesso!");
