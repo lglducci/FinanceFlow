@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
  
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
@@ -94,28 +94,8 @@ export default function NovoCardTransaction() {
         }),
       });
      
-        const texto = await resp.text();
-  console.log("TEXTO BRUTO:", texto);
 
-  let json = null;
 
-  try {
-    json = JSON.parse(texto);
-  } catch (e) {
-    console.log("JSON inválido:", texto);
-    alert("Erro inesperado no servidor.");
-    return;
-  }
-
-  console.log("JSON PARSEADO:", json);
-
-  const item = Array.isArray(json) ? json[0] : json;
-
-  // 🔴 Se backend mandou erro
-  if (!resp.ok || item?.ok === false) {
-    alert(item?.message || "Erro ao registrar transação.");
-    return;
-  }
       alert("Transação registrada com sucesso!");
       navigate(-1);
 
@@ -366,4 +346,3 @@ export default function NovoCardTransaction() {
      </div>
   );
 }
-
