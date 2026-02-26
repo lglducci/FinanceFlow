@@ -94,6 +94,14 @@ export default function NovoCardTransaction() {
         }),
       });
 
+      const data = await response.json();
+
+  // 👇 TRATAMENTO DO 400
+  if (!response.ok) {
+    throw new Error(data?.message || "Erro ao registrar transação.");
+  }
+
+
       alert("Transação registrada com sucesso!");
       navigate(-1);
 
