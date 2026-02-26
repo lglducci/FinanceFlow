@@ -94,21 +94,28 @@ export default function NovoCardTransaction() {
         }),
       });
      
-       const raw = await response.json();
+        const texto = await resp.text();
+  console.log("TEXTO BRUTO:", texto);
 
-        console.log("RAW RESPONSE:", raw);
+  let json = null;
 
-        // 👇 se vier array pega o primeiro
-        const data = Array.isArray(raw) ? raw[0] : raw;
+  try {
+    json = JSON.parse(texto);
+  } catch (e) {
+    console.log("JSON inválido:", texto);
+    alert("Erro inesperado no servidor.");
+    return;
+  }
 
-        console.log("DATA TRATADA:", data);
+  console.log("JSON PARSEADO:", json);
 
-        if (!response.ok || data?.ok === false) {
-          throw new Error(data?.message || "Erro ao registrar transação.");
-        }
+  const item = Array.isArray(json) ? json[0] : json;
 
-
-
+  // 🔴 Se backend mandou erro
+  if (!resp.ok || item?.ok === false) {
+    alert(item?.message || "Erro ao registrar transação.");
+    return;
+  }
       alert("Transação registrada com sucesso!");
       navigate(-1);
 
@@ -359,3 +366,4 @@ export default function NovoCardTransaction() {
      </div>
   );
 }
+
