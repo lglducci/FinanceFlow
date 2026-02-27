@@ -193,7 +193,7 @@ function podeVer(menuKey) {
            open={open === "Configurações"}
            onClick={() => toggle("Configurações")}
          > 
-           {podeVer("visao_geral") && (  <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />)}
+           {/* {podeVer("visao_geral") && (  <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />)}*/}
          {/*{podeVer("visao_geral") && ( <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> )}*/}
             <SubItem icon={<IconMap />} label="Minha Empresa" onClick={() => navigate("/editar-empresa")} /> 
              <SubItem icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
