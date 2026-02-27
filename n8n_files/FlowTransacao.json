@@ -8,7 +8,7 @@
             {
               "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
               "name": "id_empresa",
-              "value": "={{ $json.body.id_empresa}}",
+              "value": "={{ $json.body.empresa_id}}",
               "type": "string"
             },
             {
@@ -26,7 +26,7 @@
             {
               "id": "089dd36c-f804-400a-9ad4-6bdb0e824caf",
               "name": "categoria",
-              "value": "={{ $json.body.categoria}}",
+              "value": "={{ $json.body.categoria_id}}",
               "type": "string"
             },
             {
@@ -337,7 +337,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "cd99ff5b-59e7-4fb0-91eb-a52998a303cd",
+  "versionId": "d1af143b-3b09-4854-9f40-3e7c784a027d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

@@ -445,7 +445,7 @@
             {
               "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
               "name": "empresa_id",
-              "value": "={{ $json.body.id_empresa}}",
+              "value": "={{ $json.body.empresa_id}}",
               "type": "number"
             },
             {
@@ -693,7 +693,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "82e8ca47-d07b-4737-b716-151d4b77c36a",
+  "versionId": "1d9a43b0-4c0b-4606-90ca-6fafd944f041",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

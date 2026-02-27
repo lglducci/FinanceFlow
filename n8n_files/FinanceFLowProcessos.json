@@ -5,13 +5,13 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        944,
+        1136,
         208
       ],
       "id": "b5c85b1b-88ef-4e29-a28f-ee2c834b9157",
@@ -87,19 +87,20 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        960,
+        1088,
         400
       ],
       "id": "b19acde2-b04c-4a73-b677-8230cacba800",
@@ -183,7 +184,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        768,
+        704,
         400
       ],
       "id": "17d97dd4-fce6-4963-a95d-790b1d6d588c",
@@ -193,7 +194,8 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -202,7 +204,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        560,
+        528,
         400
       ],
       "id": "f4150057-53e4-48c7-8b6e-c64fe0daab20",
@@ -225,13 +227,13 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        992,
+        1072,
         592
       ],
       "id": "b60442e8-ba95-4a70-81a2-9427b19d5be0",
@@ -283,7 +285,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        336,
+        304,
         592
       ],
       "id": "40ce78a3-93eb-4871-b188-cc3592110ab9",
@@ -298,7 +300,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        784,
+        704,
         592
       ],
       "id": "24606b14-de43-4905-b0c9-d7ed02124e33",
@@ -308,7 +310,8 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -317,7 +320,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        560,
+        512,
         592
       ],
       "id": "1e5ae6f0-06ca-444e-88e9-783e88901b5c",
@@ -327,13 +330,13 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        832,
+        944,
         832
       ],
       "id": "1f584265-b102-4bd4-8e66-5d3b283a068a",
@@ -393,7 +396,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        368,
+        336,
         832
       ],
       "id": "3b20fa1e-1172-493d-8ae6-61b254a5bb0d",
@@ -408,7 +411,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        608,
+        544,
         832
       ],
       "id": "fa6601d6-57f7-4c29-8179-30fca16b763b",
@@ -418,19 +421,20 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        848,
+        1008,
         1056
       ],
       "id": "53c3bac9-d288-4f92-bb0f-8604540d869b",
@@ -484,7 +488,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT tipo_origem, origem_id, descricao, \n   parceiro, valor, vencimento, dias_atraso, status, evento_codigo, conta_contabil_id ,critico, critico_msg, origem_tabela  from  ff_titulos_vencidos(\n  {{ $json.empresa_id }} , {{ $json.dias }}\n);\n\n \n ",
+        "query": " SELECT tipo_origem, origem_id, descricao, \n   parceiro, valor, vencimento, dias_atraso, status, evento_codigo,  critico, critico_msg, origem_tabela  from  ff_titulos_vencidos(\n  {{ $json.empresa_id }} , {{ $json.dias }}\n);\n\n \n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -500,7 +504,8 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -634,6 +639,71 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        592
+      ],
+      "id": "1904eca1-867f-4128-ba7f-6a0e31e4553b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        400
+      ],
+      "id": "d09d159b-d8b8-4be4-a8e7-1d5ab7919487",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        208
+      ],
+      "id": "1a74febf-b27a-4747-954c-9bef3fe48bb4",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        832
+      ],
+      "id": "40579e64-5353-46d2-bf9b-91b3bc2bae83",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        1056
+      ],
+      "id": "28e44533-a5a9-4643-ad26-15a9cc05ce86",
+      "name": "Code in JavaScript5"
     }
   ],
   "pinData": {
@@ -662,7 +732,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook19",
+            "node": "Code in JavaScript3",
             "type": "main",
             "index": 0
           }
@@ -706,7 +776,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Code in JavaScript2",
             "type": "main",
             "index": 0
           }
@@ -761,7 +831,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook1",
+            "node": "Code in JavaScript",
             "type": "main",
             "index": 0
           }
@@ -805,7 +875,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook2",
+            "node": "Code in JavaScript4",
             "type": "main",
             "index": 0
           }
@@ -838,7 +908,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook3",
+            "node": "Code in JavaScript5",
             "type": "main",
             "index": 0
           }
@@ -888,13 +958,68 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook19",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "5c17a434-6365-4fe8-8a1c-520d9652f2fe",
+  "versionId": "322e6b36-c268-4ddf-a69e-ebeff19a5b06",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

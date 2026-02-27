@@ -89,7 +89,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n  t.id,\n  t.descricao,\n  c.nome AS categoria_nome,\n  f.nome AS conta_nome,\n  t.tipo,\n  t.data_movimento,\n  t.origem,\n  t.valor,\n   t.origem_id,\n   t.evento_codigo\nFROM transacoes t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.data_movimento >= '{{ $json.data_ini }}'\n  AND t.data_movimento <= '{{ $json.data_fim }}' \n  and ( t.conta_id = {{ $json.conta_id }} or {{ $json.conta_id }} = 0)    \n   and  ( categoria_id =  {{ $json.categoria_id }}  or  {{ $json.categoria_id }}  =0 )  \nORDER BY t.data_movimento asc, t.id asc;\n",
+        "query": " SELECT \n  t.id,\n  t.descricao,\n  c.nome AS categoria_nome,\n  f.nome AS conta_nome,\n  t.tipo,\n  t.data_movimento,\n  t.origem,\n  t.valor,\n   t.origem_id,\n   t.evento_codigo, \n   t.conta_id, t.classificacao\nFROM transacoes t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.data_movimento >= '{{ $json.data_ini }}'\n  AND t.data_movimento <= '{{ $json.data_fim }}' \n  and ( t.conta_id = {{ $json.conta_id }} or {{ $json.conta_id }} = 0)    \n   and  ( categoria_id =  {{ $json.categoria_id }}  or  {{ $json.categoria_id }}  =0 )  \nORDER BY t.data_movimento asc, t.id asc;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -304,7 +304,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n  t.id,\n  t.conta_id, \n  t.categoria_id,\n   t.descricao, \n  t.tipo,\n  t.data_movimento,\n  t.origem,\n  t.valor\nFROM transacoes t\n \nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.id = {{ $json.id }} \n",
+        "query": " SELECT \n  t.id,\n  t.conta_id, \n  t.categoria_id,\n   t.descricao, \n  t.tipo,\n  t.data_movimento,\n  t.origem,\n  t.valor, t.conta_id, t.classificacao \nFROM transacoes t\n \nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.id = {{ $json.id }} \n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -845,7 +845,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "760ba1f6-b8a6-4d3c-8506-92587f9f6649",
+  "versionId": "b3d758ba-d3ea-4420-b3a2-bb0768c4ba80",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
