@@ -59,7 +59,47 @@ export default function NovoLancamento() {
     carregarCartoes();
   }, []);
 
+   const validarFormulario = () => {
+  const erros = [];
 
+  if (!form.categoria_id || Number(form.categoria_id) <= 0)
+    erros.push("Categoria é obrigatória.");
+
+  if (!form.valor || Number(form.valor) <= 0)
+    erros.push("Valor inválido.");
+
+  if (!form.descricao?.trim())
+    erros.push("Descrição é obrigatória.");
+
+  if (!form.data)
+    erros.push("Data é obrigatória.");
+
+  if (!form.classificacao)
+    erros.push("Classificação é obrigatória.");
+
+  if (modo === "financeiro") {
+    if (!form.conta_id || Number(form.conta_id) <= 0)
+      erros.push("Conta financeira é obrigatória.");
+  }
+
+  if (modo === "receber" || modo === "pagar") {
+    if (!form.vencimento)
+      erros.push("Vencimento é obrigatório.");
+
+    if (!form.parcelas || Number(form.parcelas) < 1)
+      erros.push("Parcelas inválidas.");
+  }
+
+  if (modo === "cartao") {
+    if (!cartaoSelecionado)
+      erros.push("Selecione um cartão.");
+
+    if (!form.parcelas || Number(form.parcelas) < 1)
+      erros.push("Parcelas inválidas.");
+  }
+
+  return erros;
+};
     async function carregarFornecedores() {
     try {
       const url = buildWebhookUrl("fornecedorcliente", {
@@ -82,6 +122,7 @@ export default function NovoLancamento() {
   }
 
   useEffect(() => {
+      carregarFornecedores();
     carregarCategorias();
   }, [form.tipo, empresa_id]);
 
@@ -238,17 +279,50 @@ const classificacoesPorNatureza = {
     { value: "despesa", label: "Despesa" },
     { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
     { value: "imobilizado", label: "Aquisição de Imobilizado" } 
-  ]
+  ],
+  pagar: [
+    { value: "despesa", label: "Despesa" },
+    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
+    { value: "imobilizado", label: "Aquisição de Imobilizado" } ,
+    { value: "passivo", label: "Passivo (Financiamento/Dívida)"}
+
+  ],
+
+  cartao: [
+    { value: "despesa", label: "Despesa" },
+    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
+    { value: "imobilizado", label: "Aquisição de Imobilizado" }  
+
+  ] 
 };
  
 
 
 
-const getClassificacoes = () => {
-  if (!form.tipo) return [];
-  return classificacoesPorNatureza[form.tipo] || [];
-};
+ const getClassificacoes = () => {
 
+  if (modo === "receber") {
+    return [
+      { value: "receita", label: "Receita" },
+        { value: "ativo", label: "Ativo" }
+    ];
+  }
+
+  if (modo === "pagar" ) {
+    return classificacoesPorNatureza.pagar;
+  }
+
+     if ( modo === "cartao") {
+    return classificacoesPorNatureza.cartao;
+ 
+  };
+
+  if (modo === "financeiro") {
+    return classificacoesPorNatureza[form.tipo] || [];
+  }
+
+  return [];
+};
 
 useEffect(() => {
   setForm((prev) => ({
@@ -315,7 +389,12 @@ const modo = (() => {
 
  const handleSalvarGeral = async () => {
  
- 
+ const erros = validarFormulario();
+
+      if (erros.length > 0) {
+        alert(erros.join("\n"));
+        return;
+}
   // 🔵 PAYLOAD ÚNICO E COMPLETO
   const payload = {
     empresa_id: form.empresa_id,
