@@ -241,20 +241,7 @@ export default function NovaContaPagar() {
   }, [empresa_id]);
 
 
-  function getHelperTexto(tipo) {
-    switch (tipo) {
-      case 'CP':
-        return "Conta a Pagar: o crédito deve ser Passivo (2.1.x) e o débito pode ser Estoque, Despesa ou Imobilizado.";
-      case 'CR':
-        return "Conta a Receber: o débito deve ser Clientes (1.1.x) e o crédito Receita (5.x).";
-      case 'CX':
-        return "Movimento de Caixa: envolve Banco/Caixa e baixa de Cliente ou Fornecedor.";
-      case 'IM':
-        return "Imobilizado: débito em 1.2.x (bem durável) e crédito em Fornecedores (2.1.x).";
-      default:
-        return "Selecione as contas conforme sua estrutura contábil.";
-    }
-  }
+ 
   return (
 
 
@@ -541,9 +528,7 @@ export default function NovaContaPagar() {
                   Exemplo: CMV_MERCADORIA, ESTOQUE, TRANS_CONTA
                 </p>*/}
 
-              <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700 hidden">
-                💡 {getHelperTexto('CP')}
-              </div>
+              
             </div>
           </div>
 

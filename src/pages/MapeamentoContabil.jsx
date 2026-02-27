@@ -244,6 +244,8 @@ const [filtro, setFiltro] = useState("");
             <th className="p-2 text-left">Token</th>
             <th className="p-2 text-left">Descrição</th>
             <th className="p-2 text-left">Tipo</th>
+             <th className="p-2 text-left">Classificação</th>
+             <th className="p-2 text-left">Evento</th>
             <th className="p-2 text-left">Ações</th>
             <th className="p-2 text-center">Origem</th>
           </tr>
@@ -259,7 +261,8 @@ const [filtro, setFiltro] = useState("");
               <td className="p-2 font-semibold">{m.codigo}</td>
               <td className="p-2">{m.nome}</td>
               <td className="p-2">{m.tipo_automacao}</td>
-
+              <td className="p-2">{m.classificacao}</td>
+               <td className="p-2">{m.tipo_evento}</td>
               <td className="p-2 flex gap-4">
                 <span
                   onClick={() => visualizar(m.id)}

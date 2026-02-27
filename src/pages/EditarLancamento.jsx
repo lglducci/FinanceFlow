@@ -25,6 +25,7 @@ export default function EditarLancamento() {
     data_movimento: "",
     tipo: "",
     origem: "",
+    classificacao:""
   });
 
   /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
@@ -78,6 +79,7 @@ const THEME = {
       data_movimento: dados.data_movimento?.substring(0, 10) || "",
       tipo: dados.tipo || "",
       origem: dados.origem || "",
+     classificacao: dados.classificacao || "",
     });
 
     await carregarCategorias();
@@ -190,6 +192,26 @@ const salvar = async () => {
 };
 
 
+const classificacoesPorNatureza = {
+  entrada: [
+    { value: "receita", label: "Receita" }, 
+    { value: "passivo", label: "Empréstimo / Financiamento Recebido" }
+  ],
+  saida: [
+    { value: "despesa", label: "Despesa" },
+    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
+    { value: "imobilizado", label: "Aquisição de Imobilizado" } 
+  ]
+};
+ 
+
+
+
+const getClassificacoes = () => {
+  if (!form.tipo) return [];
+  return classificacoesPorNatureza[form.tipo] || [];
+};
+
  
  return (
       <div className="min-h-screen py-6 px-4 bg-bgSoft">
@@ -295,6 +317,35 @@ const salvar = async () => {
           </div>
 
         </div>
+         
+
+          <div> 
+          <div>
+                <div className="w-4/5">
+                  <label className="label label-required">
+                    Classificação
+                  </label>
+
+                  <select
+                    name="classificacao"
+                    value={form.classificacao}
+                    onChange={onChange}
+                    className="input-premium w-64"
+                    required
+                    disabled={!form.tipo}
+                  >
+                    <option value="">Selecione...</option>
+                    {getClassificacoes().map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+          </div>
+
+
 
         {/* 5 — Descrição */}
         <div>

@@ -1,11 +1,11 @@
- import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
  
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
 import ModalBase from "../components/ModalBase";
 import FormCartaoModal from "../components/forms/FormCartaoModal";
-
+import { postWebhook } from "../utils/api";
 
 export default function NovoCardTransaction() {
   const navigate = useNavigate();
@@ -76,33 +76,24 @@ export default function NovoCardTransaction() {
   return;
 }
 
-    try {
-      const url = buildWebhookUrl("novatranscartao");
+  try {
+  await postWebhook("novatranscartao", {
+    id_empresa: empresa_id,
+    cartao_nome: cartaoSelecionado,
+    descricao: form.descricao,
+    valor_total: form.valor,
+    parcelas: form.parcelas,
+    data_compra: form.data_parcela,
+    contabil_id: form.contabil_id,
+    classificacao: form.classificacao
+  });
 
-      await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_empresa: empresa_id,
-          cartao_nome: cartaoSelecionado,
-          descricao: form.descricao,
-          valor_total: form.valor,
-          parcelas: form.parcelas,
-          data_compra: form.data_parcela,
-          contabil_id:form.contabil_id,
-          classificacao:form.classificacao
-        }),
-      });
-     
+  alert("Transação registrada com sucesso!");
+  navigate(-1);
 
-
-      alert("Transação registrada com sucesso!");
-      navigate(-1);
-
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao registrar transação.");
-    }
+} catch (err) {
+  alert(err.message);
+}
   };
 
  useEffect(() => {

@@ -3,7 +3,7 @@
 
 import { buildWebhookUrl } from "../config/globals";
 import { callApi } from "../utils/api";   
-import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 
 export default function ProcessarDiario() {
@@ -180,8 +180,8 @@ async function gerarContabil() {
     setMsg("✅ Contábil gerado com sucesso. 3º Fase concluida. Verifique seus relatórios contábeis.");
     alert("✅ Contábil gerado com sucesso. Verifique seus relatórios contábeis.");
      
-    setDataIni(addOneDay(dataFim));
-    setDataFim(addOneDay(dataFim));
+    setDataIni(dataFim);
+    setDataFim(dataFim);
   } catch (e) {
     alert("❌ " + e.message);
   }
@@ -209,7 +209,7 @@ async function gerarContabil() {
 
     setUltimoFechamento(data);
     setDataIni(data);
-    setDataFim(data);
+    setDataFim(addOneDay(data));
   } finally {
     setLoadingDatas(false);
   }
@@ -345,8 +345,7 @@ useEffect(() => {
             <th className="p-3 text-left">Token</th>
             <th className="p-3 text-left">Histórico</th>
             <th className="p-3 text-left">Doc</th>
-            <th className="p-3 text-left">Valor</th>
-            <th className="p-3 text-left">CNPJ</th>
+            <th className="p-3 text-right">Valor</th> 
             <th className="p-3 text-left">Validação</th>
             <th className="p-3 text-left">Status</th>
             <th className="p-3 text-left">Lote</th>
@@ -366,10 +365,15 @@ useEffect(() => {
               <td className="p-3">{l.modelo_codigo}</td>
               <td className="p-3">{l.historico}</td>
               <td className="p-3">{l.doc_ref}</td>
-              <td className="p-3">{l.valor_total}</td>
-              <td className="p-3">{l.cnpj}</td>
-              <td className="p-3">{l.validacao}</td>
-              <td className="p-3 font-semibold">{l.status}</td>
+              <td className="p-3 text-right font-semibold">
+                  {Number(l.valor_total).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </td>
+             
+              <td className="p-3 text-left font-semibold">{l.validacao}</td>
+              <td className= "p-3 text-left font-semibold">{l.status}</td>
               <td className="p-3">{l.lote_id}</td>
             </tr>
           ))}
