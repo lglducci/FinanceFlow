@@ -4,7 +4,7 @@ import { buildWebhookUrl } from '../config/globals';
 import ModalBase from "../components/ModalBase";
 import FormConta from "../components/forms/FormConta";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
- 
+import { Link } from "react-router-dom";
 
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
@@ -514,16 +514,31 @@ return (
  
 
         </div>
+       <div className="flex items-center gap-10">
 
-        
-       <button
-          onClick={pesquisar}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm "
-        >
-          Pesquisar
-        </button>
+          <button
+            onClick={pesquisar}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm"
+          >
+            Pesquisar
+          </button>
 
-        
+          <div className="flex gap-5 text-sm font-semibold">
+            <Link className="text-blue-700 hover:underline" to="/contas-receber">
+              Contas a Receber
+            </Link>
+
+            <Link className="text-red-700 hover:underline" to="/contas-pagar">
+              Contas a Pagar
+            </Link>
+
+            <Link className="text-green-700 hover:underline" to="/compras-cartao">
+              Compras no Cartão
+            </Link>
+          </div>
+
+        </div>
+                
       </div>
     </div>
 

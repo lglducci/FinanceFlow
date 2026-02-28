@@ -78,7 +78,7 @@ export default function NovoCardTransaction() {
 
   try {
   await postWebhook("novatranscartao", {
-    id_empresa: empresa_id,
+    empresa_id: empresa_id,
     cartao_nome: cartaoSelecionado,
     descricao: form.descricao,
     valor_total: form.valor,
@@ -319,20 +319,20 @@ export default function NovoCardTransaction() {
      </div>
 
      <ModalBase
-  open={modalCartao}
-  onClose={() => setModalCartao(false)}
-  title="Novo Cartão"
->
-  <FormCartaoModal
-    empresa_id={empresa_id}
-    onSuccess={() => {
-      setModalCartao(false);
-      // se quiser recarregar lista:
-     carregarCartoes();   // 👈 AQUI ESTÁ O RELOAD
-    }}
-    onCancel={() => setModalCartao(false)}
-  />
-</ModalBase>
+    open={modalCartao}
+    onClose={() => setModalCartao(false)}
+    title="Novo Cartão"
+  >
+    <FormCartaoModal
+      empresa_id={empresa_id}
+      onSuccess={() => {
+        setModalCartao(false);
+        // se quiser recarregar lista:
+      carregarCartoes();   // 👈 AQUI ESTÁ O RELOAD
+      }}
+      onCancel={() => setModalCartao(false)}
+    />
+  </ModalBase>
 
      </div>
   );

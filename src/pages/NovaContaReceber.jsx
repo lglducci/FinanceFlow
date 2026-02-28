@@ -515,25 +515,25 @@ useEffect(() => {
                       💡 {getHelperTexto('CR')}
                     </div> 
            </div>
-        {/* BOTÕES */}
-            <div className="flex gap-6 pt-8 pb-8 pl-1">
-          <button
-            onClick={salvar}
-            disabled={salvando}
-            className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
-          >
-            {salvando ? "Salvando..." : "Salvar"}
-          </button>
+              {/* BOTÕES */}
+                  <div className="flex gap-6 pt-8 pb-8 pl-1">
+                <button
+                  onClick={salvar}
+                  disabled={salvando}
+                  className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
+                >
+                  {salvando ? "Salvando..." : "Salvar"}
+                </button>
 
-          <button
-            onClick={() => navigate("/contas-receber")}
-            className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-semibold"
-          >
-            Cancelar
-          </button>
-        </div>
-           </div>
-      </div>
+                <button
+                  onClick={() => navigate("/contas-receber")}
+                  className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-semibold"
+                >
+                  Cancelar
+                </button>
+              </div>
+                </div>
+            </div>
            <FormCategoria
         open={modalCategoria}
         onClose={() => setModalCategoria(false)}

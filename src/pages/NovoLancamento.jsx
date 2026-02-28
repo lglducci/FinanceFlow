@@ -7,6 +7,7 @@ import FormCategoria from "../components/forms/FormCategoria";
 import FormConta from "../components/forms/FormConta";
 import FormFornecedorModal from "../components/forms/FormFornecedorModal";
 import FormCartaoModal from "../components/forms/FormCartaoModal";
+import FormModeloContabil from "../components/forms/FormModeloContabil";
 
 export default function NovoLancamento() {
   const navigate = useNavigate();   
@@ -16,7 +17,7 @@ export default function NovoLancamento() {
    const [modalConta, setModalConta] = useState(false);
   const [fornecedores, setFornecedores] = useState([]);
    const [modalModelo, setModalModelo] = useState(false);
-
+    const [linhas, setLinhas] = useState([]);
  
   const [modalFornecedor, setModalFornecedor] = useState(false);
 
@@ -33,16 +34,60 @@ export default function NovoLancamento() {
     descricao: "",
     tipo: "saida",
     origem: "Web",
-    classificacao:""
+    classificacao:"",
+    modelo_codigo:""
   });
 
   const [categorias, setCategorias] = useState([]);
   const [contas, setContas] = useState([]);
-
+ 
  const [listaCartoes, setListaCartoes] = useState([]);
   const [cartaoSelecionado, setCartaoSelecionado] = useState("");
-  
+  const [aba, setAba] = useState("principal"); 
  const [modalCartao, setModalCartao] = useState(false);
+ const [modeloCodigo, setModeloCodigo] = useState("");
+  const [modelos, setModelos] = useState([]);
+  
+  const [resultadoBusca, setResultadoBusca] = useState([]); // contas retornadas
+  const [modeloSelecionado, setModeloSelecionado] = useState(null);
+  async function buscarContas(linha, texto) {
+      if (!texto || texto.length < 2) {
+        setResultadoBusca([]);
+        return;
+      }
+  
+      try {
+        const url = buildWebhookUrl("buscar_contas", {
+          empresa_id,
+          nome: texto  
+         // dc:  linha.natureza,     // <-- AQUI: usa o D/C da linha (D ou C)
+       });
+  
+        const resp = await fetch(url);
+        const dados = await resp.json();
+  
+        setResultadoBusca(dados);
+      } catch (e) {
+        console.log("ERRO BUSCAR CONTAS:", e);
+      }
+    }
+  
+ 
+  async function carregarDadosLinhas(modeloId) {
+  try {
+    const url = buildWebhookUrl("modelos_linhas", {
+      empresa_id,
+      modelo_id: modeloId,
+    });
+
+    const resp = await fetch(url);
+    const dados = await resp.json();
+    setLinhas(Array.isArray(dados) ? dados : []);
+  } catch (e) {
+    console.log("ERRO:", e);
+    setLinhas([]);
+  }
+}
 
    const carregarCartoes = async () => {
     try {
@@ -104,7 +149,7 @@ export default function NovoLancamento() {
     try {
       const url = buildWebhookUrl("fornecedorcliente", {
         empresa_id,
-        tipo: "fornecedor",
+        tipo: "ambos",
       });
 
       const resp = await fetch(url);
@@ -161,17 +206,7 @@ export default function NovoLancamento() {
   if (!form.descricao.trim()) return alert("Informe uma descrição.");
   if (!form.tipo) return alert("Selecione o tipo.");
 
- {/*} const payload = {
-    id_empresa: form.empresa_id,
-    tipo: form.tipo,
-    conta: form.conta_id,
-    categoria: form.categoria_id,
-    valor: form.valor,
-    descricao: form.descricao,
-    data: form.data,
-    origem: "WebApp",
-    classificacao:form.classificacao 
-  };*/}
+ 
 
   const payload = {
   id_empresa: form.empresa_id,
@@ -188,6 +223,7 @@ export default function NovoLancamento() {
   data: form.data,
   origem: "WebApp",
   classificacao: form.classificacao,
+  modelo_codigo:modeloCodigo
 };
 
   
@@ -293,6 +329,14 @@ const classificacoesPorNatureza = {
     { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
     { value: "imobilizado", label: "Aquisição de Imobilizado" }  
 
+  ] ,
+
+  
+  cartao_compra: [
+    { value: "despesa", label: "Despesa" },
+    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
+    { value: "imobilizado", label: "Aquisição de Imobilizado" }  
+
   ] 
 };
  
@@ -314,6 +358,12 @@ const classificacoesPorNatureza = {
 
      if ( modo === "cartao") {
     return classificacoesPorNatureza.cartao;
+ 
+  };
+
+
+   if ( modo === "cartao_compra") {
+    return classificacoesPorNatureza.cartao_compra;
  
   };
 
@@ -378,14 +428,16 @@ const modo = (() => {
 
   if (form.tipo === "saida") {
     if (form.forma_pagamento === "cartao_credito")
-      return "cartao";
+      return "cartao_compra";
     if (form.forma_pagamento === "aprazo")
       return "pagar";
     return "financeiro";
-  }
-
+  } 
   return "financeiro";
 })();
+
+ 
+
 
  const handleSalvarGeral = async () => {
  
@@ -439,12 +491,14 @@ const modo = (() => {
     endpoint = "novacontapagar";
   }
 
-  if (modo === "cartao") {
+  if (modo === "cartao_compra") {
     endpoint = "novatranscartao";
   }
 
-  const url = buildWebhookUrl(endpoint);
+ 
 
+  const url = buildWebhookUrl(endpoint);
+ 
   try {
     await fetch(url, {
       method: "POST",
@@ -460,18 +514,83 @@ const modo = (() => {
   }
 };
 
+
+
+ async function carregarModelos() {
+  try {
+    const r = await fetch(
+      buildWebhookUrl("modelos", { empresa_id, tipo_evento:modo ,sistema:false})
+    );
+    const j = await r.json();
+    setModelos(Array.isArray(j) ? j : []);
+  } catch (e) {
+    console.error("Erro ao carregar modelos", e);
+    setModelos([]);
+  }
+}
+
+ useEffect(() => {
+  carregarModelos();
+}, [empresa_id, modo]);
+
+  function getHelperTexto(tipo) {
+  switch (tipo) {
+    case 'pagar':
+      return "Conta a Pagar: o crédito deve ser Passivo (2.1.x) e o débito pode ser Estoque, Despesa ou Imobilizado.";
+    case 'receber':
+      return "Conta a Receber: o débito deve ser Clientes (1.1.x) e o crédito Receita (5.x).";
+    case 'financeiro':
+      return "Movimento de Caixa: envolve Banco/Caixa e baixa de Cliente ou Fornecedor.";
+    case 'Financeiro':
+      return "Imobilizado: débito em 1.2.x (bem durável) e crédito em Fornecedores (2.1.x).";
+    default:
+      return "Selecione as contas conforme sua estrutura contábil.";
+  }
+}
+ 
  
 
   return (
           
+
+     
       <div className="min-h-screen py-6 px-4 bg-bgSoft">
         <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
         {/* TÍTULO IGUAL AO EDITAR */}
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center" style={{ color: "#ff9f43" }}>
             {titulo}
           </h1>
+      
+ 
+       <div className="flex border-b mb-4">
 
-        <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
+  <button
+    onClick={() => setAba("principal")}
+    className={`px-4 py-2 font-semibold ${
+      aba === "principal"
+        ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
+        : "text-gray-500"
+    }`}
+  >
+    Principal
+  </button>
+
+  <button
+    onClick={() => setAba("contabil")}
+    className={`px-4 py-2 font-semibold ${
+      aba === "contabil"
+        ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
+        : "text-gray-500"
+    }`}
+  >
+    Customização Contábil
+  </button>
+
+  </div>
+        <div className="bg-gray-100 p-5 rounded-xl shadow">
+
+  {aba === "principal" && (
+    <div className="flex flex-col gap-4">
 
           {mostrarCartao && (   <div>      {/* Cartão */}
               <label className="block label label-required">Cartão</label>
@@ -806,20 +925,121 @@ const modo = (() => {
                             </select>
                           </div>
                         </div>)}
-           </div>  
-            </div>  )}
+                          </div>  
+                            </div>  )}
+                            </div>
+                       )}
+               {aba === "contabil" && (
+                         <div  > 
+                    <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                        Modelo Contábil  
+                        <span className="relative group cursor-pointer">
+                          <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                            ?
+                          </span>
 
-          <div className="flex gap-6 pt-8 pb-8 pl-1"> 
+                          {/* Tooltip */}
+                            <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                            bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                              <strong>O que é este campo?</strong>
+                              <p className="mt-1">
+                                Este campo define a <b>conta contábil onde será registrado o direito a receber</b>.
+                              </p>
+                              <p className="mt-1">
+                                Normalmente corresponde a contas do <b>Ativo Circulante (1.1.X – Clientes ou Duplicatas a Receber)</b>.
+                              </p>
+                            </div>
 
+                        </span>
+                      </label> 
+                        <div className="flex items-center gap-2"> 
+                              <input
+                                list="tokens"
+                                className="input-premium w-full"
+                                placeholder="Digite ou selecione o token"
+                                value={modeloCodigo}
+                               onChange={(e) => {
+                                    const valor = e.target.value; 
+                                    setModeloCodigo(valor); 
+                                    const modeloSelecionado = modelos.find(
+                                      (m) => m.codigo === valor
+                                    ); 
+                                    if (modeloSelecionado) {
+                                      setForm(prev => ({
+                                        ...prev,
+                                        modelo_codigo: valor,
+                                        modelo_id: modeloSelecionado.id
+                                      })); 
+                                      carregarDadosLinhas(modeloSelecionado.id);
+                                      setModeloSelecionado(modeloSelecionado);
+                                    }
+                                  }}                           
+                              />
+
+                              <datalist id="tokens">
+                                {modelos.map((m) => (
+                                  <option key={m.id} value={m.codigo}>
+                                    {m.codigo}
+                                  </option>
+                                ))}
+                              </datalist> 
+                                  <button
+                                  type="button"
+                                  onClick={() => {
+                                    console.log("CLICOU MODELO");
+                                    setModalModelo(true);
+                                  }}
+                                  className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                                >
+                                  ➕  
+                                </button>  
+                          </div>  
+
+                 
+                {/* ===== TABELA ===== */}
+            <div className="bg-white rounded-xl shadow-sm p-4">
+              <table className="w-full text-sm border-collapse">
+                <thead className="bg-gray-100 text-gray-700">
+                  <tr> 
+                    <th className="p-2 text-left">Código</th>
+                    <th className="p-2 text-left">Nome</th>
+                    <th className="p-2 text-left">Tipo</th>
+                    <th className="p-2 text-left">Natureza</th>
+                    <th className="p-2 text-center">D/C</th>
+                  </tr>
+                </thead>
+
+                <tbody> 
+                  {Array.isArray(linhas) && linhas.map((l, i) => (
+                
+                    <tr
+                      key={i}
+                      className={i % 2 === 0 ? "bg-gray-300" : "bg-gray-250"}
+                    >  
+                      <td className="p-2">{l.codigo}</td>
+                      <td className="p-2">{l.nome}</td>
+                      <td className="p-2">{l.tipo}</td>
+                      <td className="p-2">{l.natureza}</td>
+                      <td className="p-2 text-center font-bold">{l.dc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div> 
+                  <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
+                      💡 {getHelperTexto(modo)}
+                    </div>  
+             </div>
+                    )} 
+
+          <div className="flex gap-6 pt-8 pb-8 pl-1">  
             <button
               type="button"
               onClick={handleSalvarGeral}
               className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded-lg font-semibold"
             >
               Salvar
-            </button>
-
-
+            </button>  
             <button
               onClick={() => navigate(-1)}
               className="flex-1 bg-gray-500 text-white px-4 py-3  rounded-lg font-semibold"
@@ -901,9 +1121,45 @@ const modo = (() => {
                 onCancel={() => setModalFornecedor(false)}
               />
             </ModalBase>
+          
+
+             <ModalBase
+                  open={modalModelo}
+                  onClose={() => setModalModelo(false)}
+                  title="Novo Modelo"
+                >
+                  <FormModeloContabil
+                    empresa_id={empresa_id}
+                    tipo_evento={modo}   // <-- AQUI
+                    onSuccess={() => {
+                      setModalModelo(false);
+                      carregarModelos();
+                    }}
+          
+                    onCancel={() => setModalModelo(false)}
+                  />
+                </ModalBase>
+ 
+             
+                  <ModalBase
+                 open={modalCartao}
+                 onClose={() => setModalCartao(false)}
+                 title="Novo Cartão"
+               >
+                 <FormCartaoModal
+                   empresa_id={empresa_id}
+                   onSuccess={() => {
+                     setModalCartao(false);
+                     // se quiser recarregar lista:
+                   carregarCartoes();   // 👈 AQUI ESTÁ O RELOAD
+                   }}
+                   onCancel={() => setModalCartao(false)}
+                 />
+               </ModalBase>
+
 
     </div>
-
+   
     
   );
 }

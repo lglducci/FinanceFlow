@@ -19,7 +19,7 @@ const [filtro, setFiltro] = useState("");
 
   async function carregarModelos() {
     try {
-      const url = buildWebhookUrl("modelos", { empresa_id });
+      const url = buildWebhookUrl("modelos", {  empresa_id, tipo_evento:""  });
       const r = await fetch(url);
       const j = await r.json();
       setLista(j);

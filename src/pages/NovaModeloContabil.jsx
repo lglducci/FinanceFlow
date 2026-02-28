@@ -40,7 +40,8 @@ export default function NovaModeloContabil() {
         tipo: 'FINANCEIRO_PADRAO',
         dc: "", 
         credito_id:creditoId ,
-        debito_id:debitoId,
+        debito_id:debitoId ,
+        tipo_operacao:"customizado"
       }),
     });
 
@@ -66,9 +67,9 @@ export default function NovaModeloContabil() {
     }
 
     // sucesso
-    alert("Modelo criado com sucesso!");
-     alert("Configure as contas para este novo modelo em editar mapeameto.");
-    navigate(-1);
+   // alert("Modelo criado com sucesso!");
+   //  alert("Configure as contas para este novo modelo em editar mapeameto.");
+   // navigate(-1);
 
   } catch (e) {
     console.log("ERRO REQUEST:", e);
