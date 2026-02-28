@@ -6,7 +6,7 @@ import { determinarTipoOperacao } from "../../utils/determinarTipoOperacao";
 
 export default function FormModeloContabil ({
   empresa_id,
-  tipo_operacao,   // NOVO
+  tipo_evento,   // NOVO
   lado,            // NOVO
   onSuccess,
   onCancel
@@ -16,21 +16,21 @@ export default function FormModeloContabil ({
   const [creditoId, setCreditoId] = useState("");
 const [contasDebito, setContasDebito] = useState([]);
 const [contasCredito, setContasCredito] = useState([]);
-const tipo = tipo_operacao || null;
+const tipo = tipo_evento || null;
 const [modalContaAberto, setModalContaAberto] = useState(false);
-
- const [tipoInterno, setTipoInterno] = useState(tipo_operacao || null);
+ 
+ const [tipoInterno, setTipoInterno] = useState(tipo_evento || null);
 
 // Se veio da tela pai (CP, CR etc)
 useEffect(() => {
-  if (tipo_operacao) {
-    setTipoInterno(tipo_operacao);
+  if (tipo_evento) {
+    setTipoInterno(tipo_evento);
   }
-}, [tipo_operacao]);
+}, [tipo_evento]);
 
 // Detecta automático somente se NÃO veio tipo_operacao
 useEffect(() => {
-  if (tipo_operacao) return; // 👈 trava se veio da tela pai
+  if (tipo_evento) return; // 👈 trava se veio da tela pai
   if (!debitoId || !creditoId) return;
 
   const contaDebito = [...contasDebito, ...contasCredito]
@@ -48,7 +48,7 @@ useEffect(() => {
 
   setTipoInterno(tipo);
 
-}, [debitoId, creditoId, tipo_operacao]);
+}, [debitoId, creditoId, tipo_evento]);
 
 
 
@@ -57,13 +57,14 @@ console.log("Tipo detectado:", tipo);
   const [form, setForm] = useState({
     codigo: "",
     nome: "",
-    tipo_automacao: "FINANCEIRO_PADRAO"
+    tipo_automacao: "FINANCEIRO_PADRAO",
+    tipo_evento:tipo_evento
   });
  
   async function carregarContas() {
 
-    console.log("tipo_operacao:", tipo_operacao);
-    console.log("typeof:", typeof tipo_operacao);
+    console.log("tipo_evento:", tipo_evento);
+    console.log("typeof:", typeof tipo_evento);
     
     console.log("tipo:", tipo);
 
@@ -109,7 +110,7 @@ console.log("Tipo detectado:", tipo);
 
 useEffect(() => {
   if (empresa_id) carregarContas();
-}, [empresa_id, tipo_operacao]);
+}, [empresa_id, tipo_evento]);
 
   async function salvar() {
     try {
@@ -125,7 +126,7 @@ useEffect(() => {
           tipo: "FINANCEIRO_PADRAO",
           credito_id: creditoId,
           debito_id: debitoId,
-           tipo_operacao: tipoInterno,   // 👈 ISSO AQUI
+           tipo_evento: tipoInterno,   // 👈 ISSO AQUI
         }),
       });
 
@@ -158,13 +159,13 @@ useEffect(() => {
 
   function getHelperTexto(tipo) {
   switch (tipo) {
-    case 'CP':
+    case 'pagar':
       return "Conta a Pagar: o crédito deve ser Passivo (2.1.x) e o débito pode ser Estoque, Despesa ou Imobilizado.";
-    case 'CR':
+    case 'receber':
       return "Conta a Receber: o débito deve ser Clientes (1.1.x) e o crédito Receita (5.x).";
-    case 'CX':
+    case 'financeiro':
       return "Movimento de Caixa: envolve Banco/Caixa e baixa de Cliente ou Fornecedor.";
-    case 'IM':
+    case 'cartao_compra':
       return "Imobilizado: débito em 1.2.x (bem durável) e crédito em Fornecedores (2.1.x).";
     default:
       return "Selecione as contas conforme sua estrutura contábil.";
@@ -174,16 +175,18 @@ useEffect(() => {
 
 function descricaoTipo(tipo) {
   switch (tipo) {
-    case "CP":
+    case "pagar":
       return "Conta a Pagar (Passivo)";
-    case "CR":
+    case "receber":
       return "Conta a Receber (Receita)";
-    case "CX":
+    case "financeiro":
       return "Movimento de Caixa / Transferência";
-    case "IM":
+    case "financeiro":
       return "Imobilizado / Ativo Permanente";
-    case "AJ":
+    case "financeiro":
       return "Ajuste Contábil";
+       case "cartao_compra":
+      return "Compra no Cartão de Crédito";
     default:
       return "";
   }
@@ -195,7 +198,7 @@ function descricaoTipo(tipo) {
        
 
         <div className="text-sm bg-blue-150 p-2 rounded mb-3 text-gray-700 font-semibold">
-          💡 {getHelperTexto(tipo_operacao)}
+          💡 {getHelperTexto(tipo_evento)}
         </div> 
 
 
