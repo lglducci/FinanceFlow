@@ -209,7 +209,7 @@ async function gerarContabil() {
 
     setUltimoFechamento(data);
     setDataIni(data);
-    setDataFim(addOneDay(data));
+    setDataFim( data);
   } finally {
     setLoadingDatas(false);
   }

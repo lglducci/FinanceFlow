@@ -30,12 +30,14 @@ export default function NovoLancamento() {
     fornecedor_id:"",
     valor: "",
     data:  hojeLocal()  ,
-     vencimento: hojeMaisDias(1), // amanhã (BR)
+    vencimento: hojeMaisDias(1), // amanhã (BR)
     descricao: "",
     tipo: "saida",
     origem: "Web",
     classificacao:"",
-    modelo_codigo:""
+    modelo_codigo:"",
+    parcela_num:1,
+    parcelas:1
   });
 
   const [categorias, setCategorias] = useState([]);
@@ -135,7 +137,7 @@ export default function NovoLancamento() {
       erros.push("Parcelas inválidas.");
   }
 
-  if (modo === "cartao") {
+  if (modo === "cartao_compra") {
     if (!cartaoSelecionado)
       erros.push("Selecione um cartão.");
 
@@ -198,111 +200,8 @@ export default function NovoLancamento() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
- const handleSalvar = async () => {
-  // VALIDACOES SIMPLES
-  if (!form.categoria_id) return alert("Selecione uma categoria.");
-  if (!form.conta_id) return alert("Selecione uma conta.");
-  if (!form.valor || Number(form.valor) <= 0) return alert("Informe um valor válido.");
-  if (!form.descricao.trim()) return alert("Informe uma descrição.");
-  if (!form.tipo) return alert("Selecione o tipo.");
-
  
-
-  const payload = {
-  id_empresa: form.empresa_id,
-  tipo: form.tipo,
-  categoria_id: form.categoria_id,
-  conta: form.conta_id || null,
-  fornecedor_id: form.fornecedor_id || null,
-  cartao_id: cartaoSelecionado || null,
-  forma_pagamento: form.forma_pagamento || null,
-  forma_recebimento: form.forma_recebimento || null,
-  vencimento: form.vencimento || null,
-  valor: form.valor,
-  descricao: form.descricao,
-  data: form.data,
-  origem: "WebApp",
-  classificacao: form.classificacao,
-  modelo_codigo:modeloCodigo
-};
-
-  
-  try {
-    const url = buildWebhookUrl("novolancamento"); 
-
-       if (!form.tipo) {
-          alert(" Tipo  é obrigatório.");
-          return;
-        }
-       
-         const categoria = parseFloat(form.categoria_id); 
-        if  (!Number.isFinite(categoria) || categoria <= 0) {
-          alert("Categoria é obrigatório.");
-          return;
-        }
-        
-            const conta = parseFloat(form.conta_id); 
-        if  (!Number.isFinite(conta) || conta <= 0) {
-          alert("Conta Financeira é obrigatório.");
-          return;
-        }
-         
-        if (!form.data) {
-          alert(" Data de Movimento é obrigatório.");
-          return;
-        }
-
-          // ================== VALIDAÇÕES ==================
-        
-         
-        if (!form.descricao) {
-          alert(" Descricao é obrigatório.");
-          return;
-        } 
-       
-
-            if (!form.classificacao ) {
-          alert(" Classificação é obrigatória.");
-          return;
-        } 
- 
-        
-
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const texto = await resp.text();
-    let json = null;
-
-    try {
-      json = JSON.parse(texto);
-    } catch (e) {
-      console.log("JSON inválido:", texto);
-      alert("Erro inesperado no servidor.");
-      return;
-    }
-
-    // json É UM ARRAY — SEMPRE PEGAMOS O PRIMEIRO ITEM
-    const item = Array.isArray(json) ? json[0] : json;
-
-    // SE OK == FALSE, MOSTRA A MENSAGEM DO BACKEND
-    if (item?.ok === false) {
-      alert(item.message || "Erro ao salvar.");
-      return;
-    }
-
-    // SE CHEGOU AQUI, DEU CERTO
-    alert("Lançamento salvo!");
-    navigate(-1);
-
-  } catch (e) {
-    console.log("ERRO REQUEST:", e);
-    alert("Erro de comunicação com o servidor.");
-  }
-};
+   
 
 
 const classificacoesPorNatureza = {
@@ -437,7 +336,40 @@ const modo = (() => {
 })();
 
  
+const limparFormulario = () => {
+  setForm({
+    id: "",
+    empresa_id: empresa_id,
+    categoria_id: "",
+    conta_id: "",
+    fornecedor_id: "",
+    valor: "",
+    data: hojeLocal(),
+    vencimento: hojeMaisDias(1),
+    descricao: "",
+    tipo: form.tipo, // 🔵 mantém o tipo atual
+    origem: "Web",
+    classificacao: "",
+    modelo_codigo: "",
+    parcela_num: 1,
+    parcelas: 1,
+    forma_pagamento: "",
+    forma_recebimento: "",
+    status: "aberto",
+    doc_ref: ""
+  });
 
+  // 🔵 limpa personalização contábil
+  setModeloCodigo("");
+  setModeloSelecionado(null);
+  setLinhas([]);
+
+  // 🔵 limpa cartão
+  setCartaoSelecionado("");
+
+  // 🔵 volta para aba principal
+  setAba("principal");
+};
 
  const handleSalvarGeral = async () => {
  
@@ -469,11 +401,8 @@ const modo = (() => {
     doc_ref: form.doc_ref , 
     cartao_nome: cartaoSelecionado, 
     valor_total: form.valor, 
-    data_compra:  form.data
-   
-
-
-
+    data_compra:  form.data  ,
+   modelo_codigo:modeloCodigo
   };
 
   // 🔵 DECIDE APENAS O ENDPOINT
@@ -508,6 +437,7 @@ const modo = (() => {
  
     
     alert("Salvo com sucesso!");
+    limparFormulario();
   } catch (err) {
     console.error(err);
     alert("Erro ao salvar.");
@@ -996,40 +926,40 @@ const modo = (() => {
                           </div>  
 
                  
-                {/* ===== TABELA ===== */}
-            <div className="bg-white rounded-xl shadow-sm p-4">
-              <table className="w-full text-sm border-collapse">
-                <thead className="bg-gray-100 text-gray-700">
-                  <tr> 
-                    <th className="p-2 text-left">Código</th>
-                    <th className="p-2 text-left">Nome</th>
-                    <th className="p-2 text-left">Tipo</th>
-                    <th className="p-2 text-left">Natureza</th>
-                    <th className="p-2 text-center">D/C</th>
-                  </tr>
-                </thead>
+                        {/* ===== TABELA ===== */}
+                    <div className="bg-white rounded-xl shadow-sm p-4">
+                      <table className="w-full text-sm border-collapse">
+                        <thead className="bg-gray-100 text-gray-700">
+                          <tr> 
+                            <th className="p-2 text-left">Código</th>
+                            <th className="p-2 text-left">Nome</th>
+                            <th className="p-2 text-left">Tipo</th>
+                            <th className="p-2 text-left">Natureza</th>
+                            <th className="p-2 text-center">D/C</th>
+                          </tr>
+                        </thead>
 
-                <tbody> 
-                  {Array.isArray(linhas) && linhas.map((l, i) => (
-                
-                    <tr
-                      key={i}
-                      className={i % 2 === 0 ? "bg-gray-300" : "bg-gray-250"}
-                    >  
-                      <td className="p-2">{l.codigo}</td>
-                      <td className="p-2">{l.nome}</td>
-                      <td className="p-2">{l.tipo}</td>
-                      <td className="p-2">{l.natureza}</td>
-                      <td className="p-2 text-center font-bold">{l.dc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div> 
-                  <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
-                      💡 {getHelperTexto(modo)}
-                    </div>  
-             </div>
+                        <tbody> 
+                          {Array.isArray(linhas) && linhas.map((l, i) => (
+                        
+                            <tr
+                              key={i}
+                              className={i % 2 === 0 ? "bg-gray-300" : "bg-gray-250"}
+                            >  
+                              <td className="p-2">{l.codigo}</td>
+                              <td className="p-2">{l.nome}</td>
+                              <td className="p-2">{l.tipo}</td>
+                              <td className="p-2">{l.natureza}</td>
+                              <td className="p-2 text-center font-bold">{l.dc}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div> 
+                          <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
+                              💡 {getHelperTexto(modo)}
+                            </div>  
+                    </div>
                     )} 
 
           <div className="flex gap-6 pt-8 pb-8 pl-1">  
@@ -1131,6 +1061,8 @@ const modo = (() => {
                   <FormModeloContabil
                     empresa_id={empresa_id}
                     tipo_evento={modo}   // <-- AQUI
+                    tipo_es={form.tipo}
+                    classificacao={form.classificacao}
                     onSuccess={() => {
                       setModalModelo(false);
                       carregarModelos();
