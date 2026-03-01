@@ -8,6 +8,8 @@ export default function FormModeloContabil ({
   empresa_id,
   tipo_evento,   // NOVO
   lado,            // NOVO
+   tipo_es ,
+  classificacao,
   onSuccess,
   onCancel
 }) {
@@ -74,7 +76,9 @@ console.log("Tipo detectado:", tipo);
       const url = buildWebhookUrl("contas_contabeis_lancaveis", {
         empresa_id,
         tipo: null,
-        lado: null
+        lado: null,
+        tipo_es:tipo_es  ,
+        classificacao:classificacao 
       });
 
       const r = await fetch(url);
@@ -89,7 +93,9 @@ console.log("Tipo detectado:", tipo);
       
       empresa_id,
       tipo,
-      lado: 'D'
+      lado: 'D',
+      tipo_es:tipo_es  ,
+      classificacao:classificacao 
     });
    
     const rD = await fetch(urlD);
@@ -100,7 +106,9 @@ console.log("Tipo detectado:", tipo);
     const urlC = buildWebhookUrl("contas_contabeis_lancaveis", {
       empresa_id,
       tipo,
-      lado: 'C'
+      lado: 'C',
+      tipo_es:tipo_es  ,
+      classificacao:classificacao 
     });
 
     const rC = await fetch(urlC);
