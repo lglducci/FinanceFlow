@@ -45,7 +45,7 @@ import FaturasCartao from "./pages/FaturasCartao";
 // import ContasReceber from "./pages/ContasReceber";
 
 // ✅ IMPORTA AS PÁGINAS QUE EXISTEM
-import SaldosPorConta from "./pages/SaldosPorConta";
+import ContaFinanceira  from "./pages/ContaFinanceira";
 import ConsultaTransacaoCartao from "./pages/ConsultaTransacaoCartao";
  import ExcluirParcelamentoPagar from "./pages/ExcluirParcelamentoPagar.jsx";
   import ExcluirParcelamentoReceber from "./pages/ExcluirParcelamentoReceber.jsx";
@@ -214,7 +214,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   <Route path="/categories" element={<Categories />} />
   <Route path="/reports" element={<Reports />} />
   <Route path="/settings" element={<Settings />} />
-  <Route path="/saldos" element={<SaldosPorConta />} />
+  <Route path="/saldos" element={<ContaFinanceira />} />
   <Route path="/cartao-transacoes" element={<ConsultaTransacaoCartao />} />
   <Route path="/nova-conta" element={<NovaConta />} />
   <Route path="/editar-conta" element={<EditarConta />} />
