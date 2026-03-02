@@ -134,7 +134,8 @@ useEffect(() => {
           tipo: "FINANCEIRO_PADRAO",
           credito_id: creditoId,
           debito_id: debitoId,
-           tipo_evento: tipoInterno,   // 👈 ISSO AQUI
+          tipo_evento: tipoInterno, 
+          classificacao   // 👈 ISSO AQUI
         }),
       });
 
@@ -209,6 +210,11 @@ function descricaoTipo(tipo) {
           💡 {getHelperTexto(tipo_evento)}
         </div> 
 
+        <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800">
+  <div><b>tipo_evento:</b> {tipo_evento ?? "null"}</div> 
+  <div><b>tipo_es:</b> {tipo_es ?? "null"}</div>
+  <div><b>classificacao:</b> {classificacao ?? "null"}</div>
+</div>
 
       <input
         type="text"
