@@ -228,8 +228,18 @@ export default function TitulosVencidos() {
         {/* AÇÃO */}
         <button
           onClick={pesquisar}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-        >
+         className="
+                      px-5 py-2 rounded-full
+                      font-bold text-sm tracking-wide
+                      text-white
+                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                      border-2 border-black
+                      shadow-md
+                      hover:brightness-110 hover:scale-105
+                      active:scale-95
+                      transition-all duration-200
+                    "
+                  >
           Atualizar
         </button>
       </div>

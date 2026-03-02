@@ -36,7 +36,9 @@ export default function Cartoes({ setPage }) {
   }
 
  
- 
+ useEffect(() => {
+  carregar();
+}, []);
 
 function novoCartao() {
   navigate("/new-card");

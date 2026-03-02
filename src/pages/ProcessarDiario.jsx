@@ -291,29 +291,72 @@ useEffect(() => {
         <div className="flex flex-wrap gap-3 pt-2">
           <button
             onClick={gerarStaging}
-            className="px-5 py-2 rounded-lg bg-green-600 text-white font-semibold hover:opacity-90"
-          >
+             className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             STAGING (Fase 1)
           </button>
 
           <button
             onClick={consolidarDiario}
-            className="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:opacity-90"
-          >
+             className="
+                          px-5 py-2 rounded-full
+                          font-bold text-sm tracking-wide
+                          text-white
+                          bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                          border-2 border-black
+                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                          hover:brightness-110 hover:scale-105
+                          active:scale-95
+                          transition-all duration-200
+                          inline-flex items-center gap-2
+                        ">
             Diário (Fase 2)
           </button>
 
           <button
             onClick={gerarContabil}
-            className="px-5 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:opacity-90"
-          >
+           
+
+             className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-indigo-500 via-indigo-600 to-indigo-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             Contábil (Fase Final)
           </button>
 
           <button
             onClick={voltadata}
-            className="px-5 py-2 rounded-lg bg-red-500 text-white font-semibold hover:opacity-90"
-          >
+             className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-red-500 via-red-600 to-red-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      "
+                      >
             Voltar Data
           </button>
         </div>

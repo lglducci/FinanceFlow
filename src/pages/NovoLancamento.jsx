@@ -143,8 +143,13 @@ export default function NovoLancamento() {
 
     if (!form.parcelas || Number(form.parcelas) < 1)
       erros.push("Parcelas inválidas.");
-  }
+  } 
+  if (modo === "receber" || modo === "pagar") {
+    if (!form.fornecedor_id)
+      erros.push("Fornecedor é obrigatório.");
+   }
 
+   
   return erros;
 };
     async function carregarFornecedores() {
@@ -402,7 +407,7 @@ const limparFormulario = () => {
     cartao_nome: cartaoSelecionado, 
     valor_total: form.valor, 
     data_compra:  form.data  ,
-   modelo_codigo:modeloCodigo
+    modelo_codigo:modeloCodigo 
   };
 
   // 🔵 DECIDE APENAS O ENDPOINT
@@ -444,12 +449,12 @@ const limparFormulario = () => {
   }
 };
 
-
-
+ 
  async function carregarModelos() {
   try {
     const r = await fetch(
-      buildWebhookUrl("modelos", { empresa_id, tipo_evento:modo ,sistema:false})
+      buildWebhookUrl("modelos", { empresa_id, tipo_evento:modo ,sistema:false,  
+ classificacao: form.classificacao  })
     );
     const j = await r.json();
     setModelos(Array.isArray(j) ? j : []);
@@ -460,8 +465,10 @@ const limparFormulario = () => {
 }
 
  useEffect(() => {
-  carregarModelos();
-}, [empresa_id, modo]);
+  if (form.classificacao) {
+    carregarModelos();
+  }
+}, [empresa_id, modo, form.classificacao]);
 
   function getHelperTexto(tipo) {
   switch (tipo) {
@@ -478,7 +485,23 @@ const limparFormulario = () => {
   }
 }
  
- 
+ useEffect(() => {
+  // 🔵 limpa modelo contábil sempre que mudar regra de negócio
+  setForm(prev => ({
+    ...prev,
+    modelo_codigo: ""
+  }));
+
+  setModeloCodigo("");
+  setModeloSelecionado(null);
+  setLinhas([]);
+
+}, [
+  form.tipo,
+  form.forma_pagamento,
+  form.forma_recebimento,
+  form.classificacao
+]);
 
   return (
           
@@ -861,6 +884,13 @@ const limparFormulario = () => {
                        )}
                {aba === "contabil" && (
                          <div  > 
+
+                            <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800">
+                              <div><b>tipo_evento:</b> {modo ?? "null"}</div>
+                            
+                              <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
+                              <div><b>classificacao:</b> {form.classificacao ?? "null"}</div>
+                            </div>
                     <label className="font-bold text-[#1e40af] flex items-center gap-2">
                         Modelo Contábil  
                         <span className="relative group cursor-pointer">

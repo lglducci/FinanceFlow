@@ -78,16 +78,38 @@ return (
 
       <div className="flex gap-3">
         <button
-          onClick={() => navigate("/nova-conta-contabil")}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-        >
-          + Nova conta
+          onClick={() => navigate("/nova-conta-contabil")} 
+            className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-'95'
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+          + Nova conta 
         </button>
 
         <button
           onClick={() => window.print()}
-          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-        >
+       
+            className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+       
           🖨️ Imprimir
         </button>
       </div>

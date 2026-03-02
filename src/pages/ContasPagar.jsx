@@ -112,9 +112,7 @@ useEffect(() => {
     setDataIni(ini.toISOString().split("T")[0]);
     setDataFim(fim.toISOString().split("T")[0]);
   }
-
-  
-  
+ 
  
 
   if (periodo === "hoje") {
@@ -261,7 +259,12 @@ async function pagarSelecionadas() {
   }, []);
 
 
-  
+   useEffect(() => {
+    pesquisar();
+     
+  }, []);
+
+
 
   //------------------------------------------------------------------
 return (
@@ -279,23 +282,53 @@ return (
   {/* AÇÃO PRINCIPAL */}
   <button
     onClick={() => navigate("/nova-conta-pagar")}
-    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-  >
+     className="
+        px-5 py-2 rounded-full
+        font-bold text-sm tracking-wide
+        text-white
+        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+        border-2 border-black
+        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+        hover:brightness-110 hover:scale-105
+        active:scale-95
+        transition-all duration-200
+        inline-flex items-center gap-2
+      ">
     + Nova conta
   </button> 
 
   {/* AÇÕES SECUNDÁRIAS */}
   <button
     onClick={() => window.print()}
-    className="text-sm font-semibold text-slate-600 hover:text-slate-800"
-  >
+     className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
     🖨️ Imprimir
   </button>
 
   <button
     onClick={() => navigate("/excluir-parcelamento-pagar")}
-    className="text-sm font-semibold text-red-600 hover:text-red-700"
-  >
+     className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-red-700
+                        bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
     Excluir parcelamento
   </button>
 </div>
@@ -338,7 +371,7 @@ return (
     <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
 
       {/* FILTROS */}
-<details className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
+<details open  className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
   <summary className="cursor-pointer text-base font-bold text-slate-900">
      <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -468,7 +501,19 @@ return (
   <div className="mt-6 flex flex-wrap justify-end gap-3 border-t pt-4">
     <button
       onClick={pagarSelecionadas}
-      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+       className="
+              px-5 py-2 rounded-full
+              font-bold text-sm tracking-wide
+              text-white
+              bg-gradient-to-b from-slate-800 to-black
+              border-2 border-black
+              shadow-md
+              hover:brightness-110 hover:scale-105
+              active:scale-95
+              transition-all duration-200
+              inline-flex items-center gap-2
+            "
+           
     >
       Pagar selecionadas
       {selecionadas.length > 0 && (
@@ -477,13 +522,34 @@ return (
         </span>
       )}
     </button>
+ 
+ 
 
-    <button
-      onClick={pesquisar}
-      className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 transition"
-    >
-      Pesquisar
-    </button>
+      {/* BOTÃO PESQUISAR (só 1 aqui)   */}
+
+          <button
+            onClick={pesquisar}
+            className="
+              px-5 py-2 rounded-full
+              font-bold text-sm tracking-wide
+              text-black
+              bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b]
+              border-2 border-black
+              shadow-md
+              hover:brightness-110 hover:scale-105
+              active:scale-95
+              transition-all duration-200
+            "
+          >
+            🔎 Pesquisar
+        </button> 
+ 
+
+
+
+
+
+
   </div>
 </details>
 
@@ -553,6 +619,7 @@ return (
                       >
                         Editar
                       </button>
+                      
                       <button
                         onClick={() => excluir(c.id)}
                         className="text-red-700 hover:underline"

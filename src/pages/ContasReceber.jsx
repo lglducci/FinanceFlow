@@ -232,7 +232,11 @@ async function receberSelecionadas() {
   }, []);
 
 
-  
+     useEffect(() => {
+    pesquisar();
+     
+  }, []);
+
 
   //------------------------------------------------------------------
 
@@ -252,8 +256,18 @@ async function receberSelecionadas() {
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => navigate("/nova-conta-receber")}
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-        >
+            className="
+        px-5 py-2 rounded-full
+        font-bold text-sm tracking-wide
+        text-white
+        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+        border-2 border-black
+        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+        hover:brightness-110 hover:scale-105
+        active:scale-95
+        transition-all duration-200
+        inline-flex items-center gap-2
+      ">
           + Nova conta
         </button>
 
@@ -262,15 +276,37 @@ async function receberSelecionadas() {
         <div className="flex gap-2">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
+              className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+       
             🖨️ Imprimir
           </button>
 
           <button
-            onClick={() => navigate("/excluir-parcelamento-receber")}
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
+            onClick={() => navigate("/excluir-parcelamento-receber")} 
+              className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-red-700
+                        bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+       
             Excluir parcelamento
           </button>
         </div>
@@ -314,18 +350,19 @@ async function receberSelecionadas() {
     {/* FILTROS + CONTA (layout moderno) */}
     <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
       {/* FILTROS (COLAPSÁVEL) */}
-      <details className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4 open:shadow-sm">
-        <summary className="cursor-pointer list-none">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
-              <span className="text-xs text-slate-500">
-                {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
-              </span>
-            </div>
-            <span className="text-xs text-slate-500">clique para abrir/fechar</span>
-          </div>
-        </summary>
+      <details open className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4 open:shadow-sm">
+          
+            <summary className="cursor-pointer list-none">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
+                  <span className="text-xs text-slate-500">
+                    {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
+                  </span>
+                </div>
+                <span className="text-xs text-slate-500">clique para abrir/fechar</span>
+              </div>
+            </summary>
 
         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-7">
           {/* DATA INÍCIO */}
@@ -447,34 +484,51 @@ async function receberSelecionadas() {
     <div className="mt-6 flex flex-wrap justify-end gap-5 border-t pt-4"> 
     
          <button
-          onClick={receberSelecionadas}
-          className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
-        >
-          Receber selecionadas
-          {selecionadas.length > 0 && (
-            <span className="ml-1 rounded-full bg-white/20 px-2 py-0.5 text-xs">
-              {selecionadas.length}
-            </span>
-          )}
-        </button>
- 
+            onClick={receberSelecionadas}
+            className="
+              px-5 py-2 rounded-full
+              font-bold text-sm tracking-wide
+              text-white
+              bg-gradient-to-b from-slate-800 to-black
+              border-2 border-black
+              shadow-md
+              hover:brightness-110 hover:scale-105
+              active:scale-95
+              transition-all duration-200
+              inline-flex items-center gap-2
+            "
+          >
+            Receber selecionadas
+            {selecionadas.length > 0 && (
+              <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
+                {selecionadas.length}
+              </span>
+            )}
+          </button>
 
+        {/* BOTÃO PESQUISAR (só 1 aqui)   */}
 
-
-        {/* BOTÃO PESQUISAR (só 1 aqui) */}
-       
           <button
             onClick={pesquisar}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+            className="
+              px-5 py-2 rounded-full
+              font-bold text-sm tracking-wide
+              text-black
+              bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b]
+              border-2 border-black
+              shadow-md
+              hover:brightness-110 hover:scale-105
+              active:scale-95
+              transition-all duration-200
+            "
           >
-            Pesquisar
-          </button>
-        </div>
-       
-      </details>
+            🔎 Pesquisar
+        </button> 
+ 
 
-      {/* CONTA / SALDO */}
-       
+        </div> 
+      </details> 
+      {/* CONTA / SALDO */} 
     </div>
 
     {/* TABELA */}

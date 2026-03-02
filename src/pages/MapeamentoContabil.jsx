@@ -46,7 +46,7 @@ const [filtro, setFiltro] = useState("");
     setSelecionado({
       codigo: modeloInfo?.codigo || "",
       nome: modeloInfo?.nome || "",
-      tipo: modeloInfo?.tipo_automacao || "",
+      class: modeloInfo?.classificacao || "",
     });
 
     setLinhas(dados);
@@ -133,7 +133,8 @@ const [filtro, setFiltro] = useState("");
   const filtrados = lista.filter((m) =>
   m.codigo?.toLowerCase().includes(filtro.toLowerCase()) ||
   m.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
-  m.tipo_automacao?.toLowerCase().includes(filtro.toLowerCase())
+  m.classificacao?.toLowerCase().includes(filtro.toLowerCase()) ||
+  m.tipo_evento?.toLowerCase().includes(filtro.toLowerCase())
 );
  return (
   <div className="p-4 w-full">
@@ -148,16 +149,37 @@ const [filtro, setFiltro] = useState("");
         <div className="flex gap-4">
           <button
             onClick={() => navigate("/novo-modelo")}
-            className="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
-          >
+              className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             + Novo Modelo
           </button>
  
          
           <button
             onClick={() => setModalContaContabil(true)}
-            className="px-6 py-2 rounded-lg bg-[#061f4a] text-white font-semibold hover:brightness-110"
-          >
+           
+            className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             ➕ Adicionar Conta
           </button>
 
@@ -243,7 +265,7 @@ const [filtro, setFiltro] = useState("");
             <th className="p-2 text-left">ID</th>
             <th className="p-2 text-left">Token</th>
             <th className="p-2 text-left">Descrição</th>
-            <th className="p-2 text-left">Tipo</th>
+          
              <th className="p-2 text-left">Classificação</th>
              <th className="p-2 text-left">Evento</th>
             <th className="p-2 text-left">Ações</th>
@@ -260,7 +282,7 @@ const [filtro, setFiltro] = useState("");
               <td className="p-2 font-semibold">{m.id}</td>
               <td className="p-2 font-semibold">{m.codigo}</td>
               <td className="p-2">{m.nome}</td>
-              <td className="p-2">{m.tipo_automacao}</td>
+               
               <td className="p-2">{m.classificacao}</td>
                <td className="p-2">{m.tipo_evento}</td>
               <td className="p-2 flex gap-4">

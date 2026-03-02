@@ -137,8 +137,18 @@ async function carregar() {
 
         <button
           onClick={carregar}
-          className={`${btnPadrao} bg-blue-700 hover:bg-blue-800`}
-        >
+             className="
+                          px-5 py-2 rounded-full
+                          font-bold text-sm tracking-wide
+                          text-white
+                          bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                          border-2 border-black
+                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                          hover:brightness-110 hover:scale-105
+                          active:scale-95
+                          transition-all duration-200
+                          inline-flex items-center gap-2
+                        ">
           Filtrar
         </button>
       </div>

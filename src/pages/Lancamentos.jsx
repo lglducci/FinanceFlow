@@ -302,6 +302,8 @@ async function carregarCategorias() {
   }
 }
 
+ 
+
 useEffect(() => {
   carregarFornecedores();
   carregarCategorias();
@@ -384,17 +386,27 @@ return (
    
      <button
       onClick={abrirNovoLancamento}
-      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-    >
+      className="
+        px-5 py-2 rounded-full
+        font-bold text-sm tracking-wide
+        text-white
+        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+        border-2 border-black
+        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+        hover:brightness-110 hover:scale-105
+        active:scale-95
+        transition-all duration-200
+        inline-flex items-center gap-2
+      ">
       + Novo lançamento
     </button>
 
-      <button
+     {/*} <button
       onClick={abrirNovaReceita}
        className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
     >
       💰 Nova receita
-     </button>
+     </button>*/}
 
     <a
       href="#"
@@ -469,6 +481,7 @@ return (
           <input
             type="date"
             value={dataIni}
+            max={hojeLocal()}
             onChange={(e) => setDataIni(e.target.value)}
             className="block border rounded-lg px-3 py-2 text-sm"
           />
@@ -479,6 +492,7 @@ return (
           <input
             type="date"
             value={dataFim}
+            max={hojeLocal()}
             onChange={(e) => setDataFim(e.target.value)}
             className="block border rounded-lg px-3 py-2 text-sm"
           />
@@ -514,29 +528,79 @@ return (
  
 
         </div>
-       <div className="flex items-center gap-10">
+       <div className="flex items-center gap-10"> 
+                  <button
+                    onClick={pesquisar}
+                    className="
+                      px-5 py-2 rounded-full
+                      font-bold text-sm tracking-wide
+                      text-black
+                      bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b]
+                      border-2 border-black
+                      shadow-md
+                      hover:brightness-110 hover:scale-105
+                      active:scale-95
+                      transition-all duration-200
+                    "
+                  >
+                    🔎 Pesquisar
+                </button> 
+                <div className="flex gap-6 text-sm font-semibold">
 
-          <button
-            onClick={pesquisar}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm"
-          >
-            Pesquisar
-          </button>
+                  <Link
+                    to="/contas-receber"
+                     className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+                    🔎  Contas a Receber
+                  </Link>
 
-          <div className="flex gap-5 text-sm font-semibold">
-            <Link className="text-blue-700 hover:underline" to="/contas-receber">
-              Contas a Receber
-            </Link>
+                  <Link
+                    to="/contas-pagar"
+                    className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-red-500 via-red-600 to-red-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      "
+                      >
+                     🔎 Contas a Pagar
+                  </Link>
 
-            <Link className="text-red-700 hover:underline" to="/contas-pagar">
-              Contas a Pagar
-            </Link>
+                  <Link
+                    to="/compras-cartao"
+                      className="
+                          px-5 py-2 rounded-full
+                          font-bold text-sm tracking-wide
+                          text-white
+                          bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                          border-2 border-black
+                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                          hover:brightness-110 hover:scale-105
+                          active:scale-95
+                          transition-all duration-200
+                          inline-flex items-center gap-2
+                        ">
+                     🔎 Compras no Cartão
+                  </Link>
 
-            <Link className="text-green-700 hover:underline" to="/compras-cartao">
-              Compras no Cartão
-            </Link>
-          </div>
-
+                </div>
+         
         </div>
                 
       </div>

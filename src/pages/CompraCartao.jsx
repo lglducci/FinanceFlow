@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { callApi } from "../utils/api";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
  
  
 
@@ -13,15 +13,15 @@ export default function CompraCartao() {
 
   const hoje = new Date().toISOString().substring(0, 10);
 
-  const [dataIni, setDataIni] = useState(hoje);
-  const [dataFim, setDataFim] = useState(hoje);
+  const [dataIni, setDataIni] = useState(hojeMaisDias(-7));
+  const [dataFim, setDataFim] = useState( hojeLocal()  );
   const [cartao, setCartao] = useState(null);
   const [mesRef, setMesRef] = useState(null);
   const [lista, setLista] = useState([]);
   const navigate = useNavigate();
 const location = useLocation();
 
-const rotaOrigem = location.state?.from || "/dashboard";
+const rotaOrigem = location.state?.from || "/transactions";
  
 async function pesquisar() {
   try {
@@ -51,6 +51,12 @@ async function pesquisar() {
   }
 }
 
+
+useEffect(() => {
+  if (dataIni && dataFim) {
+    pesquisar();
+  }
+}, [dataIni, dataFim]);
 
  async function excluir(compra) {
  
@@ -117,14 +123,35 @@ function isHoje(data) {
 
         <button
           onClick={pesquisar}
-          className="bg-blue-600 text-white px-6 py-2 rounded"
-        >
+          className="
+              px-5 py-2 rounded-full
+              font-bold text-sm tracking-wide
+              text-black
+              bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b]
+              border-2 border-black
+              shadow-md
+              hover:brightness-110 hover:scale-105
+              active:scale-95
+              transition-all duration-200
+            "
+          >
           Pesquisar
         </button>
 
          <button
            onClick={() => navigate(rotaOrigem)}
-          className="bg-gray-500 text-white px-6 py-2 rounded"
+          className="
+            px-5 py-2 rounded-full
+            font-bold text-sm tracking-wide
+            text-white
+            bg-gradient-to-b from-slate-500 via-slate-600 to-slate-800
+            border-2 border-black
+            shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+            hover:brightness-110 hover:scale-105
+            active:scale-95
+            transition-all duration-200
+            inline-flex items-center gap-2
+          "
         >
           Voltar
         </button>
