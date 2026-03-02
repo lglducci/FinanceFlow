@@ -263,7 +263,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_compra_credito(\n  {{ $json.empresa_id }} ,\n  '{{ $json.cartao_nome }}',\n '{{ $json.descricao }}' ,\n {{ $json.valor }}  ,\n  {{ $json.parcela_num }},\n '{{ $json.data_parcela }}'  ,{{ $json.contabil_id }}, '{{ $json.classificacao }}'\n)",
+        "query": " select  * from ff_registrar_compra_credito(\n  {{ $json.empresa_id }} ,\n  '{{ $json.cartao_nome }}',\n '{{ $json.descricao }}' ,\n {{ $json.valor }}  ,\n  {{ $json.parcela_num }},\n '{{ $json.data_parcela }}'  ,{{ $json.contabil_id }}, '{{ $json.classificacao }}','{{ $json.modelo_codigo }}'\n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -495,6 +495,12 @@
               "name": "classificacao",
               "value": "={{$json.body.classificacao}}",
               "type": "string"
+            },
+            {
+              "id": "ef481811-7bb9-4be3-97aa-45980ec02645",
+              "name": "modelo_codigo",
+              "value": "={{$json.body.modelo_codigo}}",
+              "type": "string"
             }
           ]
         },
@@ -693,7 +699,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "1d9a43b0-4c0b-4606-90ca-6fafd944f041",
+  "versionId": "f9448cec-8a67-4f52-aa53-e2f6203cd872",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

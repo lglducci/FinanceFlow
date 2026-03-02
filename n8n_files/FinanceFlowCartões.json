@@ -3,116 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {
-          "responseCode": 200
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        384,
-        1040
-      ],
-      "id": "a4e7d75f-ca85-46e5-b74a-65e5b30f5be3",
-      "name": "Respond to Webhook4",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
-              "name": "id_empresa",
-              "value": "={{ $json.query.empresa_id}} ",
-              "type": "number"
-            },
-            {
-              "id": "24afd85d-d5a2-48b2-be90-942470e0438f",
-              "name": "nomecartao",
-              "value": "=Nubank",
-              "type": "string"
-            },
-            {
-              "id": "230b6c3d-f5c9-4757-b5af-a3b0958c839d",
-              "name": "descricao",
-              "value": "Compra no posto do Carlin gasolina aditivada",
-              "type": "string"
-            },
-            {
-              "id": "5a635fe2-ab7b-4d45-9dc5-e5f2f4eea1c9",
-              "name": "valor",
-              "value": 150,
-              "type": "number"
-            },
-            {
-              "id": "f30f2fa4-b62e-4b2c-89dd-2af16c86bab4",
-              "name": "parcelas",
-              "value": 1,
-              "type": "number"
-            },
-            {
-              "id": "aa3b2e2e-a468-4dae-9cf8-67e4dcef888e",
-              "name": "data_compra",
-              "value": "20251116",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -272,
-        1040
-      ],
-      "id": "caf4c9d5-754c-4853-a1a3-587dd5a299ae",
-      "name": "CartãoTransacaoEdit1",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "path": "novatransacaocartao",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "position": [
-        -496,
-        1040
-      ],
-      "id": "bf9c1780-cc83-4261-8f87-945269624cf5",
-      "name": "InseretransacaoCartão",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " select * from cartoes_transacoes\n     where empresa_id = {{ $('CartãoTransacaoEdit1').item.json.id_empresa }}\n     and   id =  {{ $json.ff_registrar_compra_credito }};",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        176,
-        1040
-      ],
-      "id": "37bae725-0bb4-410f-ba4f-3bf8d9c02c55",
-      "name": "Execute a SQL query",
-      "credentials": {
-        "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
-        }
-      },
-      "disabled": true
-    },
-    {
-      "parameters": {
         "jsCode": "return [{ json: { success: true, message: 'usuario ok' } }];"
       },
       "type": "n8n-nodes-base.code",
@@ -323,8 +213,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        224,
-        1248
+        192,
+        1040
       ],
       "id": "ea830a94-0ca1-446f-96ef-b7a9f2f87c9c",
       "name": "Respond to Webhook20"
@@ -339,35 +229,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -480,
-        1248
+        -512,
+        1040
       ],
       "id": "c5d0d217-707e-4f50-b9d7-7b1ded1eb7e5",
       "name": "NovoCartao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "   select * from ff_registrar_compra_credito(\n   {{ $json.id_empresa }} ,\n  '{{ $json.nomecartao }}',\n   '{{ $json.descricao }}', \n    {{ $json.valor }},\n   {{ $json.parcelas }} ,\n   '{{ $json.data_compra }}' \n ) \n\n ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        -32,
-        1040
-      ],
-      "id": "e6cda8a9-27c2-4954-aa85-c2268cd699ff",
-      "name": "ff_registrar_compra_credito",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
-        }
-      },
-      "disabled": true
     },
     {
       "parameters": {
@@ -554,8 +421,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        192,
-        1424
+        160,
+        1216
       ],
       "id": "5e60964f-3d0f-45c4-a2a1-832059d96556",
       "name": "Respond to Webhook22"
@@ -643,8 +510,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -256,
-        1424
+        -288,
+        1216
       ],
       "id": "0e6b8000-8d8d-4b55-8262-ac2e61522ccb",
       "name": "EditNewCartao1"
@@ -716,8 +583,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -32,
-        1424
+        -64,
+        1216
       ],
       "id": "ad54f910-02c3-4325-b5e0-fe71f11d47b8",
       "name": "SalvaCartao",
@@ -738,8 +605,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -480,
-        1424
+        -512,
+        1216
       ],
       "id": "fd069367-f5a2-434a-b626-55fe8427abd6",
       "name": "SalvaCartao1",
@@ -816,8 +683,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        1248
+        -256,
+        1040
       ],
       "id": "a5adc928-72b8-439d-ba47-03056841a375",
       "name": "EditNewCartao"
@@ -873,8 +740,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -16,
-        1248
+        -48,
+        1040
       ],
       "id": "18fb8ad2-6a4b-4c83-a580-51de93ebb08c",
       "name": "SalvaCartao2",
@@ -895,8 +762,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        192,
-        1600
+        160,
+        1392
       ],
       "id": "8224af7f-ee7f-4454-8404-59ea9687570c",
       "name": "Respond to Webhook23"
@@ -910,8 +777,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -32,
-        1600
+        -64,
+        1392
       ],
       "id": "c3a0ea02-f5cb-4f61-89f6-f807747a96ee",
       "name": "DelCartões",
@@ -947,8 +814,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -288,
-        1600
+        -320,
+        1392
       ],
       "id": "381a4e4c-97e9-435d-8a6a-094677ab31f7",
       "name": "Delcartoes"
@@ -963,8 +830,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -496,
-        1600
+        -528,
+        1392
       ],
       "id": "5b5ee1ef-876d-4437-af57-b480e6e0e689",
       "name": "DelCard",
@@ -1175,39 +1042,6 @@
     ]
   },
   "connections": {
-    "CartãoTransacaoEdit1": {
-      "main": [
-        [
-          {
-            "node": "ff_registrar_compra_credito",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "InseretransacaoCartão": {
-      "main": [
-        [
-          {
-            "node": "CartãoTransacaoEdit1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Execute a SQL query": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook4",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Sim": {
       "main": [
         [
@@ -1308,17 +1142,6 @@
         [
           {
             "node": "EditNewCartao",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ff_registrar_compra_credito": {
-      "main": [
-        [
-          {
-            "node": "Execute a SQL query",
             "type": "main",
             "index": 0
           }
@@ -1550,7 +1373,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "51937796-630a-4ce4-80d4-757d58fe20d8",
+  "versionId": "5e70120a-7140-4968-b468-108c2f0724ef",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

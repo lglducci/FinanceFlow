@@ -52,7 +52,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \nSELECT *\nFROM contab.modelos\nWHERE empresa_id = {{ $json.empresa_id }}\nAND (\n      '{{ $json.tipo_evento }}' IS NULL\n      OR '{{ $json.tipo_evento }}' = ''\n      OR '{{ $json.tipo_evento }}' = 'null'\n      OR tipo_evento::text = '{{ $json.tipo_evento }}'\n)\nORDER BY codigo ASC;\n",
+        "query": " SELECT *\nFROM contab.modelos\nWHERE empresa_id = {{ $json.empresa_id }}\n\nAND (\n      NULLIF('{{ $json.tipo_evento }}','') IS NULL\n      OR tipo_evento::text = '{{ $json.tipo_evento }}'\n)\n\nAND (\n      '{{ $json.sistema }}' IS NULL\n      OR '{{ $json.sistema }}' = ''\n      OR '{{ $json.sistema }}' = 'null'\n      OR sistema::text = '{{ $json.sistema }}'\n)\n\nAND (\n      '{{ $json.classificacao }}' IS NULL\n      OR '{{ $json.classificacao }}' = ''\n      OR '{{ $json.classificacao }}' = 'null'\n      OR classificacao::text = '{{ $json.classificacao }}'\n)\n\nORDER BY codigo ASC;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -84,6 +84,18 @@
               "id": "984308d0-1935-4a56-a2f0-d674d9c74f81",
               "name": "tipo_evento",
               "value": "={{ $json.query.tipo_evento}}",
+              "type": "string"
+            },
+            {
+              "id": "edffb59c-abf2-4bd3-a363-bf42d6c48cdc",
+              "name": "sistema",
+              "value": "={{ $json.query.sistema}}",
+              "type": "boolean"
+            },
+            {
+              "id": "5ab9891a-d161-4234-b5bc-79de5e212303",
+              "name": "classificacao",
+              "value": "={{ $json.query.classificacao}}",
               "type": "string"
             }
           ]
@@ -1207,8 +1219,14 @@
             },
             {
               "id": "1da80100-16d6-42a0-9fb2-859473005487",
-              "name": "tipo_operacao",
-              "value": "={{ $json.body.tipo_operacao}}",
+              "name": "tipo_evento",
+              "value": "={{ $json.body.tipo_evento}}",
+              "type": "string"
+            },
+            {
+              "id": "d0d54149-f764-44dd-92fd-ae6b5c97b3e7",
+              "name": "classificacao",
+              "value": "={{ $json.body.classificacao}}",
               "type": "string"
             }
           ]
@@ -1223,28 +1241,6 @@
       ],
       "id": "7e43ce0a-f836-421f-9fea-e1347322ab3a",
       "name": "EditNovoModelo"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " \n\nselect * from contab.ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}' ,  {{ $json.creditoId }},  {{ $json.debito_id }}  , '{{ $json.tipo_automacao }}','{{ $json.tipo_operacao }}')\n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        3424,
-        1072
-      ],
-      "id": "25744f81-be04-45bc-8ff5-7ad88548f9f9",
-      "name": "ff_criar_modelo",
-      "credentials": {
-        "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
-        }
-      },
-      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -1797,6 +1793,28 @@
           "name": "FInanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nselect * from contab.ff_criar_modelo({{ $json.empresa_id }}, '{{$json.nome}}','{{ $json.codigo}}' ,  {{ $json.creditoId }},  {{ $json.debito_id }}  , '{{ $json.tipo_automacao }}','{{ $json.tipo_evento }}','{{ $json.classificacao }}')\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3424,
+        1072
+      ],
+      "id": "25744f81-be04-45bc-8ff5-7ad88548f9f9",
+      "name": "ff_criar_modelo",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -2140,17 +2158,6 @@
         ]
       ]
     },
-    "ff_criar_modelo": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "modelogerencial": {
       "main": [
         [
@@ -2392,13 +2399,24 @@
           }
         ]
       ]
+    },
+    "ff_criar_modelo": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "da4673e8-46f8-43e8-b5a2-d2f7acf3f9df",
+  "versionId": "7159bc02-ba41-4945-af07-fb00078d19c2",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

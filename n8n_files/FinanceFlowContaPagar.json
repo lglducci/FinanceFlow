@@ -151,6 +151,12 @@
               "name": "codigo",
               "value": "={{ $json.body.codigo}}",
               "type": "string"
+            },
+            {
+              "id": "4b05e2a2-4d6a-4da2-9f7d-2e7b293ad547",
+              "name": "forma_pagamento",
+              "value": "={{ $json.body.forma_pagamento}}",
+              "type": "string"
             }
           ]
         },
@@ -280,7 +286,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}',\n   '{{$json.classificacao}}',\n    '{{ $json.codigo }}'\n)\n  \n ",
+        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}',\n   '{{$json.classificacao}}',\n    '{{ $json.codigo }}',\n   '{{$json.forma_pagamento }}'\n)\n  \n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1089,7 +1095,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "5e3a9f95-8057-4887-88e3-2a0f27169125",
+  "versionId": "2b5e3861-9a91-4913-85e4-42c5f0e3fcfc",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

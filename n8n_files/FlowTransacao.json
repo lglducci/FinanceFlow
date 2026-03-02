@@ -58,6 +58,24 @@
               "name": "classificacao",
               "value": "={{ $json.body.classificacao}}",
               "type": "string"
+            },
+            {
+              "id": "9238c269-b00b-4874-b8eb-04ee258e6e29",
+              "name": "modelo_codigo",
+              "value": "={{ $json.body.modelo_codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "7c50df6f-1c8f-4723-9f53-a532e22602bf",
+              "name": "forma_pagamento",
+              "value": "={{$json.body.forma_pagamento.trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "5486a996-9ea6-4a8e-8ee6-d8e2a25f2a64",
+              "name": "forma_recebimento",
+              "value": "={{$json.body.forma_recebimento.trim()}}",
+              "type": "string"
             }
           ]
         },
@@ -66,7 +84,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        384,
+        320,
         304
       ],
       "id": "0eb6c09f-1262-4c2c-b592-089259bf2cc1",
@@ -125,7 +143,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}'\n   \n)",
+        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}','{{ $json.modelo_codigo }}','{{ $json.forma_pagamento}}'\n   \n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -150,7 +168,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}'\n   \n)",
+        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}','{{ $json.modelo_codigo }}','{{$json.forma_recebimento}}')",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -230,23 +248,7 @@
       "name": "Code in JavaScript"
     }
   ],
-  "pinData": {
-    "Edit Fields": [
-      {
-        "json": {
-          "id_empresa": null,
-          "tipo": "saida",
-          "conta": null,
-          "categoria": null,
-          "valor": null,
-          "descricao": null,
-          "data": null,
-          "origem": null,
-          "classificacao": null
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "Edit Fields": {
       "main": [
@@ -337,7 +339,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d1af143b-3b09-4854-9f40-3e7c784a027d",
+  "versionId": "2e9537e4-b5ef-41f9-8cbb-7979f5b0a94d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

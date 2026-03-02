@@ -27,7 +27,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        992,
+        976,
         64
       ],
       "id": "f58c0fc8-6a4b-442c-84b9-935e7c3a65ae",
@@ -198,14 +198,20 @@
             },
             {
               "id": "c4fd3c0a-6a6c-4cbb-b65a-70297084cf3e",
-              "name": "codigo",
-              "value": "={{ $json.body.codigo}}",
+              "name": "modelo_codigo",
+              "value": "={{ $json.body.modelo_codigo}}",
               "type": "string"
             },
             {
               "id": "86bbc006-d869-4498-b699-792689b07c19",
               "name": "categoria",
               "value": "",
+              "type": "string"
+            },
+            {
+              "id": "541e251a-cad7-4573-90f4-a0cca331634f",
+              "name": "forma_recebimento",
+              "value": "={{ $json.body.forma_recebimento}}",
               "type": "string"
             }
           ]
@@ -224,7 +230,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   '{{ $json.categoria }}' , \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}', \n      {{ $json.conta_id }},\n   '{{ $json.classificacao }}',\n   '{{ $json.canal }}',\n   '{{ $json.codigo }}'\n)\n ",
+        "query": "  select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   '{{ $json.categoria }}' , \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}', \n      {{ $json.conta_id }},\n   '{{ $json.classificacao }}',\n   '{{ $json.canal }}',\n   '{{ $json.modelo_codigo }}',\n  '{{ $json.forma_recebimento }}'\n)\n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -849,28 +855,7 @@
       "name": "Code in JavaScript1"
     }
   ],
-  "pinData": {
-    "EditContaReceber": [
-      {
-        "json": {
-          "empresa_id": 1,
-          "descricao": "",
-          "valor": 50,
-          "vencimento": "20260315",
-          "categoria_id": 2,
-          "parcelas": 1,
-          "fornecedor_id": 29,
-          "doc_ref": "dddd",
-          "contabil_id": null,
-          "classificacao": "receita",
-          "conta_id": null,
-          "canal": null,
-          "codigo": null,
-          "categoria": ""
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "InsereContaReber": {
       "main": [
@@ -1119,7 +1104,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4b903e59-2eb8-49a9-9444-e2efa2fd6822",
+  "versionId": "e07214b3-e2c3-47bf-b880-ee15e75bb495",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
