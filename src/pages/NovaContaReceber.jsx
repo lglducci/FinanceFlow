@@ -66,12 +66,8 @@ const THEME = {
   const [categorias, setCategorias] = useState([]);
   const [salvando, setSalvando] = useState(false);
 
-  const modo = (() => {
-
+  const modo = (() => { 
  
-
-if (form.tipo === "entrada") {
-
   if (form.forma_recebimento === "cartao_credito")
     return "receber_cartao";
 
@@ -79,16 +75,9 @@ if (form.tipo === "entrada") {
     return "receber";
 
   return "financeiro";
-} 
+ 
 
-  if (form.tipo === "saida") {
-    if (form.forma_pagamento === "cartao_credito")
-      return "cartao_compra";
-    if (form.forma_pagamento === "aprazo")
-      return "pagar";
-    return "financeiro";
-  } 
-  return "financeiro";
+   
 })();
 
   function handleChange(e) {
@@ -244,7 +233,7 @@ if (form.tipo === "entrada") {
   async function carregarModelos() {
   try {
     const r = await fetch(
-      buildWebhookUrl("modelos", { empresa_id, tipo_evento:'receber' ,sistema:false,  
+      buildWebhookUrl("modelos", { empresa_id, tipo_evento:modo ,sistema:false,  
  classificacao: form.classificacao  })
     );
     const j = await r.json();
@@ -259,7 +248,29 @@ if (form.tipo === "entrada") {
   if (form.classificacao) {
     carregarModelos();
   }
-}, [empresa_id, 'receber', form.classificacao]);
+}, [empresa_id, modo, form.classificacao]);
+
+
+useEffect(() => {
+  // limpa seleção atual
+  setModeloCodigo("");
+  setModeloSelecionado(null);
+  setLinhas([]);
+
+  // limpa dentro do form também
+  setForm(prev => ({
+    ...prev,
+    modelo_codigo: "",
+    modelo_id: null
+  }));
+
+  // recarrega modelos novos
+  if (form.classificacao) {
+    carregarModelos();
+  }
+
+}, [form.forma_recebimento, form.classificacao]);
+
 
 
   function getHelperTexto(tipo) {
@@ -550,8 +561,8 @@ if (form.tipo === "entrada") {
                          <div  > 
 
                             <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800"> 
-                                 <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
-                                <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
+                                <div><b>tipo_evento:</b> {modo ?? "null"}</div>
+                              <div><b>tipo_es:</b> { "Entrada"}</div>
                               <div><b>classificacao:</b> {form.classificacao ?? "null"}</div>
                             </div>
                     <label className="font-bold text-[#1e40af] flex items-center gap-2">
@@ -713,8 +724,10 @@ if (form.tipo === "entrada") {
           title="Novo Modelo"
         >
           <FormModeloContabil
-            empresa_id={empresa_id}
-               tipo_operacao="CR"   // <-- AQUI
+             empresa_id={empresa_id}
+              tipo_evento={modo}   // <-- AQUI
+              tipo_es="entrada"
+              classificacao={form.classificacao}
             onSuccess={() => {
               setModalModelo(false);
               carregarModelos();
@@ -732,4 +745,3 @@ if (form.tipo === "entrada") {
     </div>
   );
 }
-

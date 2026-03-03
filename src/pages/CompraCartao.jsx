@@ -100,6 +100,10 @@ function isHoje(data) {
   return data.substring(0, 10) === hoje;
 }
 
+ const novaTransacao = () => {
+    navigate("/new-card-transaction");
+  };
+
 
   return (
     <div className="p-6">
@@ -137,6 +141,23 @@ function isHoje(data) {
           >
           Pesquisar
         </button>
+
+        <button
+            onClick={novaTransacao}
+             className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+            + Nova Compra
+          </button>
 
          <button
            onClick={() => navigate(rotaOrigem)}

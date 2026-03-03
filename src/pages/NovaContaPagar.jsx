@@ -26,7 +26,8 @@ export default function NovaContaPagar() {
     doc_ref: "",
     contabil_id: 0,
     modelo_codigo: "" ,
-    classificacao:"despesa"
+    classificacao:"despesa",
+    forma_pagamento:"aprazo"
   });
 
 
@@ -184,6 +185,7 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
           vencimento: form.vencimento,
           categoria_id: Number(form.categoria_id) || null,
           fornecedor_id: Number(form.fornecedor_id) || null,
+          forma_pagamento: form.forma_pagamento || null,
           parcelas: Number(form.parcelas),
           parcela_num: Number(form.parcela_num),
           status: form.status,
@@ -224,34 +226,22 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
 
   const modo = (() => {
 
- 
-
-if (form.tipo === "entrada") {
-
-  if (form.forma_recebimento === "cartao_credito")
-    return "receber_cartao";
-
-  if (["boleto","aprazo"].includes(form.forma_recebimento))
-    return "receber";
-
-  return "financeiro";
-} 
+  
 
   if (form.tipo === "saida") {
-    if (form.forma_pagamento === "cartao_credito")
-      return "cartao_compra";
+   
     if (form.forma_pagamento === "aprazo")
       return "pagar";
-    return "financeiro";
+  
   } 
-  return "financeiro";
+  return "pagar";
 })();
 
  
   async function carregarModelos() {
   try {
     const r = await fetch(
-      buildWebhookUrl("modelos", { empresa_id, tipo_evento:'pagar' ,sistema:false,  
+      buildWebhookUrl("modelos", { empresa_id, tipo_evento:modo ,sistema:false,  
  classificacao: form.classificacao  })
     );
     const j = await r.json();
@@ -261,15 +251,39 @@ if (form.tipo === "entrada") {
     setModelos([]);
   }
 }
+ 
+
 
  useEffect(() => {
   if (form.classificacao) {
     carregarModelos();
   }
-}, [empresa_id, 'pagar', form.classificacao]);
-
+}, [empresa_id, modo, form.classificacao]);
 
  
+
+
+useEffect(() => {
+  // limpa seleção atual
+  setModeloCodigo("");
+  setModeloSelecionado(null);
+  setLinhas([]);
+
+  // limpa dentro do form também
+  setForm(prev => ({
+    ...prev,
+    modelo_codigo: "",
+    modelo_id: null
+  }));
+
+  // recarrega modelos novos
+  if (form.classificacao) {
+    carregarModelos();
+  }
+
+}, [form.classificacao]);
+
+
 
   
   async function carregarDadosLinhas(modeloId) {
@@ -534,7 +548,9 @@ if (form.tipo === "entrada") {
                          <div  > 
 
                             <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800"> 
-                              <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
+                                <div><b>tipo_evento:</b> {modo ?? "null"}</div>
+                              <div><b>tipo_es:</b> { "saida"}</div>
+                             
                               <div><b>classificacao:</b> {form.classificacao ?? "null"}</div>
                             </div>
                     <label className="font-bold text-[#1e40af] flex items-center gap-2">
@@ -707,8 +723,9 @@ if (form.tipo === "entrada") {
         <FormModeloContabil  
             empresa_id={empresa_id}
             tipo_evento='pagar'   // <-- AQUI
-            tipo_es={form.tipo}
+            tipo_es='saida'
             classificacao={form.classificacao}
+            
           onSuccess={() => {
             setModalModelo(false);
             carregarModelos();

@@ -95,10 +95,7 @@ export default function ConsultaTransacaoCartao() {
     });
   };
 
-  const novaTransacao = () => {
-    navigate("/new-card-transaction");
-  };
-
+  
   function compra() {
   navigate("/compras-cartao" , {
   state: { from: location.pathname }
@@ -158,22 +155,37 @@ return (
           <button
             onClick={pesquisar}
             disabled={loading}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-          >
+             className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             {loading ? "Carregando..." : "Pesquisar"}
           </button>
 
-          <button
-            onClick={novaTransacao}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-          >
-            + Nova transação
-          </button>
+           
 
           <button
             onClick={compra}
-            className="text-sm font-semibold text-blue-700 hover:text-blue-900"
-          >
+             className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-red-500 via-red-600 to-red-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             Compra
           </button>
         </div>
