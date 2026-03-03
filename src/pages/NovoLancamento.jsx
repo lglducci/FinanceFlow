@@ -8,6 +8,7 @@ import FormConta from "../components/forms/FormConta";
 import FormFornecedorModal from "../components/forms/FormFornecedorModal";
 import FormCartaoModal from "../components/forms/FormCartaoModal";
 import FormModeloContabil from "../components/forms/FormModeloContabil";
+import { fetchSeguro } from "../utils/apiSafe";
 
 export default function NovoLancamento() {
   const navigate = useNavigate();   
@@ -129,11 +130,11 @@ export default function NovoLancamento() {
       erros.push("Conta financeira é obrigatória.");
   }
 
-  if (modo === "receber" || modo === "pagar") {
+  if (modo === "receber" || modo === "pagar" || modo === "receber_cartao") {
     if (!form.vencimento)
       erros.push("Vencimento é obrigatório.");
 
-    if (!form.parcelas || Number(form.parcelas) < 1)
+    if (!form.parcelas || Number(form.parcelas) < 1 )
       erros.push("Parcelas inválidas.");
   }
 
@@ -144,7 +145,7 @@ export default function NovoLancamento() {
     if (!form.parcelas || Number(form.parcelas) < 1)
       erros.push("Parcelas inválidas.");
   } 
-  if (modo === "receber" || modo === "pagar") {
+  if (modo === "receber" || modo === "pagar" || modo === "receber_cartao" ) {
     if (!form.fornecedor_id)
       erros.push("Fornecedor é obrigatório.");
    }
@@ -256,6 +257,13 @@ const classificacoesPorNatureza = {
     ];
   }
 
+   if (modo === "receber_cartao") {
+    return [
+      { value: "receita", label: "Receita" },
+        { value: "ativo", label: "Ativo" }
+    ];
+  }
+
   if (modo === "pagar" ) {
     return classificacoesPorNatureza.pagar;
   }
@@ -324,11 +332,19 @@ const mostrarContaFinanceira =
 
 
 const modo = (() => {
-  if (form.tipo === "entrada") {
-    if (["cartao_credito","boleto","aprazo"].includes(form.forma_recebimento))
-      return "receber";
-    return "financeiro";
-  }
+
+ 
+
+if (form.tipo === "entrada") {
+
+  if (form.forma_recebimento === "cartao_credito")
+    return "receber_cartao";
+
+  if (["boleto","aprazo"].includes(form.forma_recebimento))
+    return "receber";
+
+  return "financeiro";
+} 
 
   if (form.tipo === "saida") {
     if (form.forma_pagamento === "cartao_credito")
@@ -421,6 +437,11 @@ const limparFormulario = () => {
     endpoint = "novacontareceber";
   }
 
+  if (modo === "receber_cartao") {
+    endpoint = "novacontareceber";
+  }
+
+
   if (modo === "pagar") {
     endpoint = "novacontapagar";
   }
@@ -433,20 +454,30 @@ const limparFormulario = () => {
 
   const url = buildWebhookUrl(endpoint);
  
-  try {
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
- 
-    
-    alert("Salvo com sucesso!");
-    limparFormulario();
-  } catch (err) {
-    console.error(err);
-    alert("Erro ao salvar.");
-  }
+   
+   try {
+  await fetchSeguro(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  alert("Salvo com sucesso!");
+  limparFormulario();
+
+} catch (err) {
+  console.error("ERRO CAPTURADO:", err.message);
+
+  alert(
+    err.message ||
+    "Erro inesperado ao salvar. Verifique os dados."
+  );
+}
+
+
+
+
+
 };
 
  
@@ -515,31 +546,29 @@ const limparFormulario = () => {
           </h1>
       
  
-       <div className="flex border-b mb-4">
+       <div className="flex border-b mb-4"> 
+          <button
+            onClick={() => setAba("principal")}
+            className={`px-4 py-2 font-semibold ${
+              aba === "principal"
+                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
+                : "text-gray-500"
+            }`}
+          >
+            Principal
+          </button>
 
-  <button
-    onClick={() => setAba("principal")}
-    className={`px-4 py-2 font-semibold ${
-      aba === "principal"
-        ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
-        : "text-gray-500"
-    }`}
-  >
-    Principal
-  </button>
-
-  <button
-    onClick={() => setAba("contabil")}
-    className={`px-4 py-2 font-semibold ${
-      aba === "contabil"
-        ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
-        : "text-gray-500"
-    }`}
-  >
-    Customização Contábil
-  </button>
-
-  </div>
+          <button
+            onClick={() => setAba("contabil")}
+            className={`px-4 py-2 font-semibold ${
+              aba === "contabil"
+                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
+                : "text-gray-500"
+            }`}
+          >
+            Customização Contábil
+          </button> 
+       </div>
         <div className="bg-gray-100 p-5 rounded-xl shadow">
 
   {aba === "principal" && (

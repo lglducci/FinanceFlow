@@ -61,7 +61,9 @@ export default function NovaContaPagar() {
 
   const [modelos, setModelos] = useState([]);
   const [modeloCodigo, setModeloCodigo] = useState("");
-
+  const [aba, setAba] = useState("principal"); 
+const [modeloSelecionado, setModeloSelecionado] = useState(null);
+ const [linhas, setLinhas] = useState([]);  
 
   const [categorias, setCategorias] = useState([]);
   const [salvando, setSalvando] = useState(false);
@@ -220,26 +222,71 @@ export default function NovaContaPagar() {
   }
 
 
+  const modo = (() => {
 
+ 
 
+if (form.tipo === "entrada") {
 
+  if (form.forma_recebimento === "cartao_credito")
+    return "receber_cartao";
+
+  if (["boleto","aprazo"].includes(form.forma_recebimento))
+    return "receber";
+
+  return "financeiro";
+} 
+
+  if (form.tipo === "saida") {
+    if (form.forma_pagamento === "cartao_credito")
+      return "cartao_compra";
+    if (form.forma_pagamento === "aprazo")
+      return "pagar";
+    return "financeiro";
+  } 
+  return "financeiro";
+})();
+
+ 
   async function carregarModelos() {
-    try {
-      const r = await fetch(
-        buildWebhookUrl("modelos", { empresa_id, classificacao: "pagar" })
-      );
-      const j = await r.json();
-      setModelos(Array.isArray(j) ? j : []);
-    } catch (e) {
-      console.error("Erro ao carregar modelos", e);
-      setModelos([]);
-    }
+  try {
+    const r = await fetch(
+      buildWebhookUrl("modelos", { empresa_id, tipo_evento:'pagar' ,sistema:false,  
+ classificacao: form.classificacao  })
+    );
+    const j = await r.json();
+    setModelos(Array.isArray(j) ? j : []);
+  } catch (e) {
+    console.error("Erro ao carregar modelos", e);
+    setModelos([]);
   }
+}
 
-  useEffect(() => {
+ useEffect(() => {
+  if (form.classificacao) {
     carregarModelos();
-  }, [empresa_id]);
+  }
+}, [empresa_id, 'pagar', form.classificacao]);
 
+
+ 
+
+  
+  async function carregarDadosLinhas(modeloId) {
+  try {
+    const url = buildWebhookUrl("modelos_linhas", {
+      empresa_id,
+      modelo_id: modeloId,
+    });
+
+    const resp = await fetch(url);
+    const dados = await resp.json();
+    setLinhas(Array.isArray(dados) ? dados : []);
+  } catch (e) {
+    console.log("ERRO:", e);
+    setLinhas([]);
+  }
+}
 
  
   return (
@@ -257,9 +304,34 @@ export default function NovaContaPagar() {
 
         <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
 
+            <div className="flex border-b mb-4"> 
+          <button
+            onClick={() => setAba("principal")}
+            className={`px-4 py-2 font-semibold ${
+              aba === "principal"
+                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
+                : "text-gray-500"
+            }`}
+          >
+            Principal
+          </button>
 
+          <button
+            onClick={() => setAba("contabil")}
+            className={`px-4 py-2 font-semibold ${
+              aba === "contabil"
+                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
+                : "text-gray-500"
+            }`}
+          >
+            Customização Contábil
+          </button> 
+       </div>
+
+        {aba === "principal" && (
+  <>
           {/* DESCRIÇÃO 
-    <label className="label label-required">Descrição</label>*/}
+         <label className="label label-required">Descrição</label>*/}
           <div>
             <div className="w-4/5">
               <label className="label label-required">Descrição</label>
@@ -453,86 +525,117 @@ export default function NovaContaPagar() {
               <option value="passivo">Passivo (Financiamento/Dívida)</option>
             </select>
             </div>
-          </div>
-
-              
-              <div className="hidden">  
-                <label className="font-bold text-[#1e40af] flex items-center gap-2">
-                  Modelo Contábil *
-                  <span className="relative group cursor-pointer">
-                    <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
-                      ?
-                    </span>
-
-                    {/* Tooltip  */}
-                    <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
-                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
-                      <strong>O que é este campo?</strong>
-                      <p className="mt-1">
-                        Esta campo define <b>customizacao de modelo contábil de apropriacão de dividas (Fornecedor ou Financiamento). </b>.
-                      </p>
-                      <p className="mt-1">
-                        Este campo perfmite <b> registar passivo em contas de passivo diferentes (2.1.X). </b>.
-                      </p>
-                        
-                    </div>
-                  </span>
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    list="tokens"
-                    className="input-premium w-full"
-                    placeholder="Digite ou selecione o token"
-                    value={modeloCodigo}
-                    onChange={(e) => {
-                      setModeloCodigo(e.target.value);
-                      setForm(prev => ({
-                        ...prev,
-                        modelo_codigo: e.target.value
-                      }));
-                    }}
-                  />
-
-                  <datalist id="tokens">
-                    {modelos.map((m) => (
-                      <option key={m.id} value={m.codigo}>
-                        {m.codigo}
-                      </option>
-                    ))}
-                  </datalist>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      console.log("CLICOU MODELO");
-                      setModalModelo(true);
-                    }}
-                    className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
-                  >
-                    ➕
-                  </button>
-                </div>
-              </div>
-
-              <div className="
-                        absolute left-1/2 -translate-x-1/2 top-10
-                        hidden group-hover:block
-                        bg-black text-white text-xs
-                        px-2 py-1 rounded
-                        whitespace-nowrap
-                        z-50
-                      ">
-                Adicionar Modelo
-              </div>
-
-              {/*    <p className="text-xs text-gray-500 mt-1">
-                  Exemplo: CMV_MERCADORIA, ESTOQUE, TRANS_CONTA
-                </p>*/}
-
-              
+          </div> 
             </div>
           </div>
+           </>  )}
 
+           {aba === "contabil" && (
+                         <div  > 
 
+                            <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800"> 
+                              <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
+                              <div><b>classificacao:</b> {form.classificacao ?? "null"}</div>
+                            </div>
+                    <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                        Modelo Contábil  
+                        <span className="relative group cursor-pointer">
+                          <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
+                            ?
+                          </span>
+
+                          {/* Tooltip */}
+                            <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
+                                            bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
+                              <strong>O que é este campo?</strong>
+                              <p className="mt-1">
+                                Este campo define a <b>conta contábil onde será registrado o direito a receber</b>.
+                              </p>
+                              <p className="mt-1">
+                                Normalmente corresponde a contas do <b>Ativo Circulante (1.1.X – Clientes ou Duplicatas a Receber)</b>.
+                              </p>
+                            </div>
+
+                        </span>
+                      </label> 
+                        <div className="flex items-center gap-2"> 
+                              <input
+                                list="tokens"
+                                className="input-premium w-full"
+                                placeholder="Digite ou selecione o token"
+                                value={modeloCodigo}
+                               onChange={(e) => {
+                                    const valor = e.target.value; 
+                                    setModeloCodigo(valor); 
+                                    const modeloSelecionado = modelos.find(
+                                      (m) => m.codigo === valor
+                                    ); 
+                                    if (modeloSelecionado) {
+                                      setForm(prev => ({
+                                        ...prev,
+                                        modelo_codigo: valor,
+                                        modelo_id: modeloSelecionado.id
+                                      })); 
+                                      carregarDadosLinhas(modeloSelecionado.id);
+                                      setModeloSelecionado(modeloSelecionado);
+                                    }
+                                  }}                           
+                              />
+
+                              <datalist id="tokens">
+                                {modelos.map((m) => (
+                                  <option key={m.id} value={m.codigo}>
+                                    {m.codigo}
+                                  </option>
+                                ))}
+                              </datalist> 
+                                  <button
+                                  type="button"
+                                  onClick={() => {
+                                    console.log("CLICOU MODELO");
+                                    setModalModelo(true);
+                                  }}
+                                  className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                                >
+                                  ➕  
+                                </button>  
+                          </div>  
+
+                 
+                        {/* ===== TABELA ===== */}
+                    <div className="bg-white rounded-xl shadow-sm p-4">
+                      <table className="w-full text-sm border-collapse">
+                        <thead className="bg-gray-100 text-gray-700">
+                          <tr> 
+                            <th className="p-2 text-left">Código</th>
+                            <th className="p-2 text-left">Nome</th>
+                            <th className="p-2 text-left">Tipo</th>
+                            <th className="p-2 text-left">Natureza</th>
+                            <th className="p-2 text-center">D/C</th>
+                          </tr>
+                        </thead>
+
+                        <tbody> 
+                          {Array.isArray(linhas) && linhas.map((l, i) => (
+                        
+                            <tr
+                              key={i}
+                              className={i % 2 === 0 ? "bg-gray-300" : "bg-gray-250"}
+                            >  
+                              <td className="p-2">{l.codigo}</td>
+                              <td className="p-2">{l.nome}</td>
+                              <td className="p-2">{l.tipo}</td>
+                              <td className="p-2">{l.natureza}</td>
+                              <td className="p-2 text-center font-bold">{l.dc}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div> 
+                        
+                    </div>
+                    )} 
+            
           {/* BOTÕES */}
 
           <div className="flex gap-6 pt-8 pb-8 pl-1">
@@ -601,9 +704,11 @@ export default function NovaContaPagar() {
         onClose={() => setModalModelo(false)}
         title="Novo Modelo"
       >
-        <FormModeloContabil
-          empresa_id={empresa_id}
-          tipo_operacao="CP"   // <-- AQUI
+        <FormModeloContabil  
+            empresa_id={empresa_id}
+            tipo_evento='pagar'   // <-- AQUI
+            tipo_es={form.tipo}
+            classificacao={form.classificacao}
           onSuccess={() => {
             setModalModelo(false);
             carregarModelos();
