@@ -550,7 +550,8 @@ if (form.tipo === "entrada") {
                          <div  > 
 
                             <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800"> 
-                              <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
+                                 <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
+                                <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
                               <div><b>classificacao:</b> {form.classificacao ?? "null"}</div>
                             </div>
                     <label className="font-bold text-[#1e40af] flex items-center gap-2">
@@ -731,3 +732,4 @@ if (form.tipo === "entrada") {
     </div>
   );
 }
+
