@@ -2,17 +2,24 @@ import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
-
+import { fetchSeguro } from "../utils/apiSafe";
 export default function NovaModeloContabil() {
   const navigate = useNavigate();
   const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
   const [contas, setContas] = useState([]);
   const [debitoId, setDebitoId] = useState("");
   const [creditoId, setCreditoId] = useState("");
+
+ 
+
+
   const [form, setForm] = useState({
     codigo: "",
     nome: "",
-    tipo_automacao:"FINANCEIRO_PADRAO"
+    tipo_automacao:"FINANCEIRO_PADRAO",
+    tipo_evento:"",
+    classificacao:""
+
   });
 
   useEffect(() => {
@@ -25,55 +32,34 @@ export default function NovaModeloContabil() {
     carregarContas();
   }, [empresa_id]);
  
-
  async function salvar() {
   try {
     const url = buildWebhookUrl("inseremodelo");
 
-    const resp = await fetch(url, {
+    const data = await fetchSeguro(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        empresa_id: empresa_id,
+        empresa_id,
         codigo: form.codigo,
         nome: form.nome,
-        tipo: 'FINANCEIRO_PADRAO',
-        dc: "", 
-        credito_id:creditoId ,
-        debito_id:debitoId ,
-        tipo_operacao:"customizado"
+        tipo: "FINANCEIRO_PADRAO",
+        dc: "",
+        credito_id: creditoId,
+        debito_id: debitoId,
+        tipo_operacao: "customizado",
+        tipo_evento: form.tipo_evento,
+        classificacao: form.classificacao,
       }),
     });
 
-    // ----- TRATAMENTO DO RETORNO (mesmo padrão da Nova Transação) -----
-    const texto = await resp.text();
-    let json = null;
+    // 🔵 Se chegou aqui, deu certo
+    alert("Modelo criado com sucesso!");
+     navigate(-1); // 👈 AQUI
 
-    try {
-      json = JSON.parse(texto);
-    } catch (e) {
-      console.log("JSON inválido:", texto);
-      alert("Erro inesperado no servidor.");
-      return;
-    }
-
-    // sempre pegar o primeiro item
-    const item = Array.isArray(json) ? json[0] : json;
-
-    // se retorno indicar erro
-    if (item?.ok === false) {
-      alert(item.message || "Erro ao salvar o modelo.");
-      return;
-    }
-
-    // sucesso
-   // alert("Modelo criado com sucesso!");
-   //  alert("Configure as contas para este novo modelo em editar mapeameto.");
-   // navigate(-1);
-
-  } catch (e) {
-    console.log("ERRO REQUEST:", e);
-    alert("Erro de comunicação com o servidor.");
+  } catch (error) {
+    console.log("ERRO:", error);
+    alert(error.message);
   }
 }
 
@@ -113,103 +99,131 @@ export default function NovaModeloContabil() {
             borderRadius: 10,
           }}
         >
-          {/* CÓDIGO */}
-          <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Código</label>
-          <input
-            type="text"
-            value={form.codigo}
-               className="input-premium"
-            onChange={(e) =>
-              setForm((f) => ({ ...f, codigo: e.target.value }))
-            }
-            placeholder="Ex: VENDA01"
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 15,
-              borderRadius: 6,
-              border: "1px solid #ccc",
-            }}
-          />
+         
+           {/* CÓDIGO */}
+                  <div className="mb-4">
+                    <label className="block mb-1 font-bold text-[#1e40af] label-required">
+                      Código
+                    </label>
+                    <input
+                      type="text"
+                      value={form.codigo}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, codigo: e.target.value }))
+                      }
+                      placeholder="Ex: VENDA01"
+                      className="input-premium w-full"
+                    />
+                  </div>
 
-          {/* NOME */}
-          <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Nome</label>
-          <input
-            type="text"
-            value={form.nome}
-               className="input-premium"
-            onChange={(e) =>
-              setForm((f) => ({ ...f, nome: e.target.value }))
-            }
-            placeholder="Ex: Modelo venda à vista"
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 15,
-              borderRadius: 6,
-              border: "1px solid #ccc",
-            }}
-          />
+                  {/* NOME */}
+                  <div className="mb-4">
+                    <label className="block mb-1 font-bold text-[#1e40af] label-required">
+                      Nome
+                    </label>
+                    <input
+                      type="text"
+                      value={form.nome}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, nome: e.target.value }))
+                      }
+                      placeholder="Ex: Modelo venda à vista"
+                      className="input-premium w-full"
+                    />
+                  </div>
+          
+           <div className="flex flex-col gap-4"> 
+                  <div className="mb-4">
+                        <label className="block mb-1 font-bold text-[#1e40af] label-required">
+                          Tipo Evento
+                        </label>
 
-          {/* TIPO  
-          <label className="block mb-1 text-base font-bold  text-[#1e40af] label label-required">Tipo Automação</label>
-          <input
-            type="text"
-            value={form.tipo_automacao}
-               className="input-premium"
-              disabled
-            onChange={(e) =>
-              setForm((f) => ({ ...f, tipo_automacao: e.target.value }))
-            }
-            placeholder="Ex: ESTORNO_PAGATO OU PAGAMENTO_CONTA"
-            style={{
-              width: "100%",
-              padding: 10,
-              marginBottom: 15,
-              borderRadius: 6,
-              border: "1px solid #ccc",
-            }}
-          /> */}
+                        <select
+                          name="tipo_evento"
+                          value={form.tipo_evento || ""}
+                          onChange={(e) =>
+                            setForm((prev) => ({
+                              ...prev,
+                              tipo_evento: e.target.value,
+                            }))
+                          }
+                          className="input-premium w-full"
+                          required
+                        >
+                          <option value="">Selecione...</option>
+                          <option value="receber">Receber</option>
+                          <option value="receber_cartao">Receber Cartão</option>
+                          <option value="pagar">Pagar</option>
+                          <option value="financeiro">Financeiro</option>
+                        </select>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block mb-1 font-bold text-[#1e40af] label-required">
+                          Classificação
+                        </label>
 
-           {/* DÉBITO */}
-          <div className="mb-4">
-            <label className="label label-required font-bold text-[#1e40af]">
-              Conta Contábil – Débito (Saida)
-            </label>
-            <select
-              value={debitoId}
-              onChange={(e) => setDebitoId(e.target.value)}
-              className="input-premium"
-            >
-              <option value="">Selecione</option>
-              {contas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.codigo} - {c.nome}
-                </option>
-              ))}
-            </select>
-          </div>
+                        <select
+                          name="classificacao"
+                          value={form.classificacao || ""}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              classificacao: e.target.value,
+                            }))
+                          }
+                          className="input-premium w-full"
+                          required
+                        >
+                           <option value="">Selecione...</option>
+                              <option value="receita">Receita</option>
+                              <option value="custo">Custo</option>
+                              <option value="despesa">Despesa</option>
+                              <option value="imobilizado">Imobilizado</option>
+                              <option value="ativo">Ativo</option>
+                              <option value="passivo">Passivo</option>
+                        </select>
+                      </div>
+             
+                  {/* DÉBITO */}
+                    
+                        <div className="mb-4">
+                    <label className="label label-required font-bold text-[#1e40af]">
+                      Conta Contábil – Débito (Saida)
+                    </label>
+                    <select
+                      value={debitoId}
+                      onChange={(e) => setDebitoId(e.target.value)}
+                      className="input-premium"
+                    >
+                      <option value="">Selecione</option>
+                      {contas.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.codigo} - {c.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-          {/* CRÉDITO */}
-          <div className="mb-4">
-            <label className="label label-required font-bold text-[#1e40af]">
-              Conta Contábil – Crédito (Entrada)
-            </label>
-            <select
-              value={creditoId}
-              onChange={(e) => setCreditoId(e.target.value)}
-              className="input-premium"
-            >
-              <option value="">Selecione</option>
-              {contas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.codigo} - {c.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-
-
+                  {/* CRÉDITO */}
+                  <div className="mb-4">
+                    <label className="label label-required font-bold text-[#1e40af]">
+                      Conta Contábil – Crédito (Entrada)
+                    </label>
+                    <select
+                      value={creditoId}
+                      onChange={(e) => setCreditoId(e.target.value)}
+                      className="input-premium"
+                    >
+                      <option value="">Selecione</option>
+                      {contas.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.codigo} - {c.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+            </div>
+ 
 
           {/* BOTÕES */}
           <div
