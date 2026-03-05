@@ -172,7 +172,7 @@ const btnPadrao =
             </select>
           </div>
 
-          {/* MÊS */}
+          {/* MÊS 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Mês de referência
@@ -183,7 +183,7 @@ const btnPadrao =
               onChange={(e) => setMes(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
-          </div>
+          </div> */}
 
           {/* CONTA */}
           <div>
@@ -213,15 +213,35 @@ const btnPadrao =
         <div className="flex flex-wrap gap-3 pt-2">
           <button
             onClick={pesquisar}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-          >
+           className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             Pesquisar
           </button>
 
           <button
             onClick={fecharFaturas}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
-          >
+           className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             Fechar faturas selecionadas
             {selecionadas.length > 0 && (
               <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
@@ -231,9 +251,20 @@ const btnPadrao =
           </button>
 
           <button
-            onClick={() => window.print()}
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
+            onClick={() => window.print()} 
+
+            className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-slate-500 via-slate-600 to-slate-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
             🖨️ Imprimir
           </button>
         </div>

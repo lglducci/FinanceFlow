@@ -9,16 +9,18 @@ import FormFornecedorModal from "../components/forms/FormFornecedorModal";
 import FormCartaoModal from "../components/forms/FormCartaoModal";
 import FormModeloContabil from "../components/forms/FormModeloContabil";
 import { fetchSeguro } from "../utils/apiSafe";
+import { explicarLancamento } from "../helpers/contabilHelper";
+
 
 export default function NovoLancamento() {
   const navigate = useNavigate();   
 
   const empresa_id = localStorage.getItem("empresa_id") || "1";
   const [modalCategoria, setModalCategoria] = useState(false);
-   const [modalConta, setModalConta] = useState(false);
+  const [modalConta, setModalConta] = useState(false);
   const [fornecedores, setFornecedores] = useState([]);
-   const [modalModelo, setModalModelo] = useState(false);
-    const [linhas, setLinhas] = useState([]);
+  const [modalModelo, setModalModelo] = useState(false);
+  const [linhas, setLinhas] = useState([]);
  
   const [modalFornecedor, setModalFornecedor] = useState(false);
 
@@ -291,7 +293,7 @@ useEffect(() => {
     ...prev,
     classificacao: ""
   }));
-}, [form.natureza]);
+}, [form.tipo]);
 
 const mostrarContaFinanceira =
   (form.tipo === "entrada" &&
@@ -357,6 +359,7 @@ if (form.tipo === "entrada") {
 })();
 
  
+ 
 const limparFormulario = () => {
   setForm({
     id: "",
@@ -392,6 +395,8 @@ const limparFormulario = () => {
   setAba("principal");
 };
 
+
+ const helper = explicarLancamento(modo, form.tipo, form.classificacao);
  const handleSalvarGeral = async () => {
  
  const erros = validarFormulario();
@@ -533,6 +538,49 @@ const limparFormulario = () => {
   form.forma_recebimento,
   form.classificacao
 ]);
+
+
+function validarAbrirModelo() {
+
+  if (!form.tipo) {
+    alert("Selecione o Tipo primeiro.");
+    return false;
+  }
+
+  if (!form.classificacao) {
+    alert("Selecione a Classificação primeiro.");
+    return false;
+  }
+
+  if (form.tipo === "entrada" && !form.forma_recebimento) {
+    alert("Selecione a Forma de Recebimento.");
+    return false;
+  }
+
+  if (form.tipo === "saida" && !form.forma_pagamento) {
+    alert("Selecione a Forma de Pagamento.");
+    return false;
+  }
+
+  return true;
+}
+
+const podeCriarModelo =
+  form.tipo &&
+  form.classificacao &&
+  (
+    (form.tipo === "entrada" && form.forma_recebimento) ||
+    (form.tipo === "saida" && form.forma_pagamento)
+  );
+
+   
+
+  const faltamCamposContabeis =
+  !form.tipo ||
+  !form.classificacao?.trim() ||
+  (form.tipo === "entrada" && !form.forma_recebimento?.trim()) ||
+  (form.tipo === "saida" && !form.forma_pagamento?.trim());
+
 
   return (
           
@@ -912,15 +960,53 @@ const limparFormulario = () => {
                             </div>
                        )}
                {aba === "contabil" && (
-                         <div  > 
+                          <div>
 
-                            <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800">
-                              <div><b>tipo_evento:</b> {modo ?? "null"}</div>
+                           {faltamCamposContabeis && (
+                                <div className="bg-yellow-100 text-yellow-800 p-3 rounded mb-3 text-sm">
+                                  ⚠️ Preencha os campos abaixo para configurar o modelo contábil:
+                                  <ul className="list-disc ml-5 mt-1">
+
+                                    {!form.tipo && <li>Tipo</li>}
+
+                                    {!form.classificacao?.trim() && (
+                                      <li>Classificação</li>
+                                    )}
+
+                                    {form.tipo === "entrada" && !form.forma_recebimento?.trim() && (
+                                      <li>Forma de Recebimento</li>
+                                    )}
+
+                                    {form.tipo === "saida" && !form.forma_pagamento?.trim() && (
+                                      <li>Forma de Pagamento</li>
+                                    )}
+
+                                  </ul>
+                                </div>
+                              )}
+
+
+                          
+
+                      {helper && (
+                          <div className="mt-2 mb-4 text-sm bg-yellow-50 border border-yellow-400 rounded-lg p-2 text-slate-800 font-semibold">
                             
-                              <div><b>tipo_es:</b> {form.tipo ?? "null"}</div>
-                              <div><b>classificacao:</b> {form.classificacao ?? "null"}</div>
-                            </div>
-                    <label className="font-bold text-[#1e40af] flex items-center gap-2">
+                          <hr className="my-1"/>
+                            <div><b>-----------------------------------</b></div>
+                          <div><b>Evento:</b> {modo}</div>
+                          <div><b>Tipo:</b> {form.tipo}</div>
+                          <div><b>Classificação:</b> {form.classificacao}</div>
+                          <div><b>-----------------------------------</b></div>
+                          <div><b>Débito:</b> {helper.debito}</div>
+                          <div><b>Crédito:</b> {helper.credito}</div> 
+                          <div className="mt-1 text-slate-600">
+                          {helper.texto}
+                          </div>
+
+                          </div>
+                          )}
+
+                    <label className="font-bold text-[#1e40af] flex items-center gap-4">
                         Modelo Contábil  
                         <span className="relative group cursor-pointer">
                           <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
@@ -974,9 +1060,16 @@ const limparFormulario = () => {
                               </datalist> 
                                   <button
                                   type="button"
+                                
                                   onClick={() => {
+
+                                    if (!validarAbrirModelo()) {
+                                      return;
+                                    }
+
                                     console.log("CLICOU MODELO");
                                     setModalModelo(true);
+
                                   }}
                                   className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
                                 >

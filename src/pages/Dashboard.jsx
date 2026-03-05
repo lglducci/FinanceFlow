@@ -33,7 +33,7 @@ export default function Dashboard() {
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [aba, setAba] = useState("principal"); 
   async function carregar() {
     setLoading(true);
     try {
@@ -83,10 +83,13 @@ export default function Dashboard() {
         📊 Dashboard Financeiro
       </h2>
 
+     
+
  {/* RECEITA */}
  {/* ================= SITUAÇÃO ATUAL ================= */}
+  
 <div className="bg-gray-50 rounded-2xl p-4 space-y-4">
-
+ 
   <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">
     Situação Atual
   </h3>
@@ -103,35 +106,26 @@ export default function Dashboard() {
     color="border-l-4 border-rose-600 bg-white"
   />
 </div>
-</div>
+</div>  
 
 
 
-
-
- {/* ================= COMPROMISSOS ================= */}
-<div className="bg-gray-50 rounded-2xl p-4 space-y-4">
-
-  <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">
-    Compromissos
-  </h3>
-
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-4"> 
   
-
-  <Card
-    title="A pagar vencido"
-    value={data.pagar_vencido?.valor_total ?? 0}
-    color="border-l-4 border-rose-600 bg-white"
-  />
-
-  <Card title="Cartão em aberto" value={data.faturas_aberto} color="border-l-4 border-amber-600 bg-white" />
-
-  <Card title="A pagar em aberto" value={data.pagar_aberto} color="border-l-4 border-amber-600 bg-white" />
-
-  <Card title="Resultado 12 Meses" value={data.resultado_12_meses} color="border-l-4 border-emerald-700 bg-white" />
-
-  <Card title="Despesas 12 Meses" value={data.despesa_12_meses} color="border-l-4 border-rose-700 bg-white" />
+ {/* ================= COMPROMISSOS ================= */}
+<div className="bg-gray-50 rounded-2xl p-4 space-y-4"> 
+      <h3 className="text-base font-bold text-gray-700 uppercase tracking-wide">
+        Compromissos
+      </h3> 
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">  
+      <Card
+        title="A pagar vencido"
+        value={data.pagar_vencido?.valor_total ?? 0}
+        color="border-l-4 border-rose-600 bg-white"
+      /> 
+      <Card title="Cartão em aberto" value={data.faturas_aberto} color="border-l-4 border-amber-600 bg-white" /> 
+      <Card title="A pagar em aberto" value={data.pagar_aberto} color="border-l-4 border-amber-600 bg-white" /> 
+      <Card title="Resultado 12 Meses" value={data.resultado_12_meses} color="border-l-4 border-emerald-700 bg-white" /> 
+      <Card title="Despesas 12 Meses" value={data.despesa_12_meses} color="border-l-4 border-rose-700 bg-white" />
 </div>
 </div>
 

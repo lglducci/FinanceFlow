@@ -4,7 +4,7 @@
 import { buildWebhookUrl } from "../config/globals";
 import { callApi } from "../utils/api";   
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
-
+import { fetchSeguro } from "../utils/apiSafe";
 
 export default function ProcessarDiario() {
   const empresa_id = localStorage.getItem("empresa_id") || "1";
@@ -23,12 +23,26 @@ const [dataFim, setDataFim] = useState(hojeLocal());
 const [loadingDatas, setLoadingDatas] = useState(true);
 const [ultimoFechamento, setUltimoFechamento] = useState("15/04/2025"); 
 // depois você liga no webhook
-
+const [mostrarContabil, setMostrarContabil] = useState(false);
+const [dados, setDados] = useState([]);
+const [loading, setLoading] = useState(false);
  const btnPadrao =
   "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
      
- 
+ function formatarDataBR(data) {
+  if (!data) return "";
+  const d = new Date(data);
+  const dia = String(d.getUTCDate()).padStart(2, "0");
+  const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const ano = d.getUTCFullYear();
+  return `${dia}-${mes}-${ano}`;
+}
+
+  const fmt = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   // ---------------------------------------
   // EXCLUIR LOTE
@@ -131,7 +145,7 @@ async function gerarStaging() {
     );
 
     setLotes(data); 
-
+    setMostrarContabil(false ); // mostra a primeira tabepla 
     const qtdErros = data.filter(l => l.status === "erro").length;
 
     if (qtdErros > 0) {
@@ -153,6 +167,7 @@ async function consolidarDiario() {
   try {
     setMsg("⏳ Consolidando diário...");
      setLotes([]);
+         setMostrarContabil(false); // mostra segunda tabela
    const data = await callApi(
       buildWebhookUrl("consolidar_diario"),
       { empresa_id }
@@ -168,20 +183,27 @@ async function consolidarDiario() {
 }
 
  
-async function gerarContabil() {
+ async function gerarContabil() {
   try {
     setMsg("⏳ Gerando Contábil...");
+    setMostrarContabil(false); // esconde tabela antiga
+
     await callApi(
       buildWebhookUrl("gerar_contabil"),
-      { empresa_id ,
-    data_ini: dataIni,
-    data_fim: dataFim }
+      {
+        empresa_id,
+        data_ini: dataIni,
+        data_fim: dataFim
+      }
     );
-    setMsg("✅ Contábil gerado com sucesso. 3º Fase concluida. Verifique seus relatórios contábeis.");
-    alert("✅ Contábil gerado com sucesso. Verifique seus relatórios contábeis.");
-     
-    setDataIni(dataFim);
-    setDataFim(dataFim);
+
+    // 🔥 agora consulta os lançamentos
+    await consultar();
+
+    setMostrarContabil(true); // mostra segunda tabela
+
+    setMsg("✅ Contábil gerado com sucesso.");
+
   } catch (e) {
     alert("❌ " + e.message);
   }
@@ -234,10 +256,39 @@ useEffect(() => {
   }
 }
  
+ 
+  async function consultar() {
+    if (!empresa_id) return alert("Empresa não carregada");
+
+    setLoading(true);
+   // setDados([]);
+
+    try {
+      const r = await fetch(buildWebhookUrl("movimento_contabil"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id: empresa_id,
+          data_ini: dataIni,
+          data_fim: dataFim,
+        }),
+      });
+
+      const json = await r.json();
+      setDados(Array.isArray(json) ? json : []);
+    } catch {
+      alert("Erro ao carregar diário contábil");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // ---------------------------------------
   // RENDER
  return (
+
+
+  
   <div className="min-h-screen bg-gray-50 p-6">
 
     {/* HEADER */}
@@ -380,7 +431,7 @@ useEffect(() => {
     )}
 
     {/* TABELA */}
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+     {!mostrarContabil && ( <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
       <table className="w-full text-sm">
         <thead className="bg-gray-100 text-gray-700">
           <tr>
@@ -428,10 +479,61 @@ useEffect(() => {
           Nenhum registro encontrado.
         </div>
       )}
-    </div>
+    </div>)}
+
+    {mostrarContabil && (
+  <div className="mt-8 bg-white rounded-xl shadow p-4 border border-gray-600">
+    <h3 className="text-lg font-bold mb-4 text-gray-700 bg-yellow-50">
+      📊 Lançamentos Contábeis Gerados
+    </h3>
+
+    <table className="w-full text-sm border-collapse">
+      <thead className="bg-gray-200 text-blue-800">
+        <tr>
+          <th className="p-2 text-left">Lançamento</th>
+          <th className="p-2 text-left">Data</th>
+          <th className="p-2 text-left">Histórico</th>
+          <th className="p-2 text-left">Débito</th>
+          <th className="p-2 text-left">Crédito</th>
+          <th className="p-2 text-right">Valor</th>
+          <th className="p-2 text-center">Lote</th>
+         
+        </tr>
+      </thead>
+
+      <tbody>
+        {dados.map((l, i) => (
+          <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-gray-100"}>
+            <td className="p-2 font-bold">{l.id}</td>
+               <td className="p-2 font-bold">{formatarDataBR(l.data)}</td>
+            <td className="p-2 font-bold">{l.historico}</td>
+            <td className="p-2 font-bold">{l.conta_debito}</td>
+            <td className="p-2 font-bold">{l.conta_credito}</td>
+             <td className="p-2 text-right font-bold">
+                {fmt.format(l.credito)}
+              </td>
+            <td className="p-2 text-center font-bold">{l.lote_id}</td>
+            <td className="p-2 text-center">
+              
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    {loading && (
+      <div className="p-6 text-center text-blue-600 font-semibold">
+        Carregando...
+      </div>
+    )}
+  </div>
+)}
 
     {showHelp && helpModal}
   </div>
+
+
+
 );
 
 }
