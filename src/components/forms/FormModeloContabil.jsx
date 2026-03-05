@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../../config/globals"; // ajuste o caminho se necessário
 import FormContaContabilModal from "./FormContaContabilModal";
 import { determinarTipoOperacao } from "../../utils/determinarTipoOperacao";
+import { explicarLancamento } from "../../helpers/contabilHelper";
+import { useMemo } from "react";
 
 
 export default function FormModeloContabil ({
@@ -22,6 +24,11 @@ const tipo = tipo_evento || null;
 const [modalContaAberto, setModalContaAberto] = useState(false);
  
  const [tipoInterno, setTipoInterno] = useState(tipo_evento || null);
+ 
+ const helper = useMemo(() => {
+  return explicarLancamento(tipo_evento, tipo_es, classificacao);
+}, [tipo_evento, tipo_es, classificacao]);
+
 
 // Se veio da tela pai (CP, CR etc)
 useEffect(() => {
@@ -116,9 +123,11 @@ console.log("Tipo detectado:", tipo);
     setContasCredito(Array.isArray(jC) ? jC : []);
  }
 
+ 
+
 useEffect(() => {
   if (empresa_id) carregarContas();
-}, [empresa_id, tipo_evento]);
+}, [empresa_id, tipo_evento, tipo_es, classificacao]);
 
   async function salvar() {
     try {
@@ -192,8 +201,8 @@ function descricaoTipo(tipo) {
       return "Movimento de Caixa / Transferência";
     case "financeiro":
       return "Imobilizado / Ativo Permanente";
-    case "financeiro":
-      return "Ajuste Contábil";
+    case "receber_cartao":
+      return "Receitas no Cartão de Credito";
        case "cartao_compra":
       return "Compra no Cartão de Crédito";
     default:
@@ -206,15 +215,34 @@ function descricaoTipo(tipo) {
     <div className="p-4 space-y-6">
        
 
-        <div className="text-sm bg-blue-150 p-2 rounded mb-3 text-gray-700 font-semibold">
+        {/* <div className="text-sm bg-blue-150 p-2 rounded mb-3 text-gray-700 font-semibold">
           💡 {getHelperTexto(tipo_evento)}
-        </div> 
+        </div> */}
 
-        <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800">
-  <div><b>tipo_evento:</b> {tipo_evento ?? "null"}</div> 
-  <div><b>tipo_es:</b> {tipo_es ?? "null"}</div>
-  <div><b>classificacao:</b> {classificacao ?? "null"}</div>
-</div>
+    {/*}    <div className="mt-2 mb-4 text-xs bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800">
+          <div><b>tipo_evento:</b> {tipo_evento ?? "null"}</div> 
+          <div><b>tipo_es:</b> {tipo_es ?? "null"}</div>
+          <div><b>classificacao:</b> {classificacao ?? "null"}</div>
+        </div>*/}
+      
+
+      {helper && (
+          <div className="mt-2 mb-4 text-sm bg-yellow-50 border border-yellow-300 rounded-lg p-3 text-slate-800 font-semibold">
+
+         {/*} <div><b>Evento:</b> {tipo_evento}</div>
+          <div><b>Tipo:</b> {tipo_es}</div>
+          <div><b>Classificação:</b> {classificacao}</div>*/}
+
+          <hr className="my-2"/> 
+          <div><b>Débito:</b> {helper.debito}</div>
+          <div><b>Crédito:</b> {helper.credito}</div> 
+          <div className="mt-1 text-slate-600">
+          {helper.texto}
+          </div>
+
+          </div>
+          )}
+
 
       <input
         type="text"
