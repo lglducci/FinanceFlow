@@ -122,7 +122,7 @@ function podeVer(menuKey) {
          > 
            <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
            <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
-           
+           <SubItem icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />
          </MenuGroup>
          )}
          
