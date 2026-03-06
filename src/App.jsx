@@ -117,6 +117,8 @@ import LembretesContabeis from   "./pages/LembretesContabeis"
 
  import MinhasAssinaturas from "./pages/MinhasAssinaturas";
  import RelatoriosLanctoPartida from "./pages/RelatoriosLanctoPartida";
+import FaturaTransacoes from "./pages/FaturaTransacoes";
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -358,7 +360,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
  <Route path="/rel-lancto_partida" element={<RelatoriosLanctoPartida />} />
 
  
- 
+ <Route path="/fatura-transacoes" element={<FaturaTransacoes />} />
    
 
 </Routes>

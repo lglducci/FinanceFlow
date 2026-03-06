@@ -147,3 +147,34 @@ body {
   cursor: not-allowed;
   
 }
+
+
+.btn-pill {
+  @apply px-5 py-2 rounded-full font-bold text-sm tracking-wide text-white
+  border-2 border-black
+  shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+  hover:brightness-110 hover:scale-105
+  active:scale-95
+  transition-all duration-200
+  inline-flex items-center gap-2;
+}
+
+.btn-blue {
+  @apply bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800;
+}
+
+.btn-green {
+  @apply bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800;
+}
+
+.btn-red {
+  @apply bg-gradient-to-b from-red-500 via-red-600 to-red-800;
+}
+
+.btn-yellow {
+  @apply text-black bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b];
+}
+
+.btn-purple {
+   @apply bg-gradient-to-b from-purple-500 via-purple-600 to-purple-800;
+}
