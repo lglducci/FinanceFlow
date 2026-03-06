@@ -36,7 +36,7 @@ const [fornecedorId, setFornecedorId] = useState("");
 const [categorias, setCategorias] = useState([]);
 const [fornecedores, setFornecedores] = useState([]);
   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
-
+const [tipoOperacao, setTipoOperacao] = useState("");
 
  function formatarDataBR(data) {
   if (!data) return "-";
@@ -69,27 +69,8 @@ const [fornecedores, setFornecedores] = useState([]);
     const hoje = new Date( hojeLocal() ); 
     let ini, fim;
 
-    if (tipo === "mes") {
-      ini = new Date(hoje.getFullYear(), hoje.getMonth()-1, hoje.getDay());
-      fim = new Date( hojeLocal() );
-    } else if (tipo === "15") {
-      ini = new Date( hojeLocal() );
-      ini.setDate(hoje.getDate() - 15);
-      fim = new Date( hojeLocal() );
-    } else if (tipo === "semana") {
-      ini = new Date( hojeLocal() );
-      ini.setDate(hoje.getDate() - 7);
-      fim = new Date( hojeLocal() );
-    } else if (tipo === "hoje") {
-      ini = new Date( hojeLocal() );
-      fim = new Date( hojeLocal() );
-    } else {
-      setDataIni("");
-      setDataFim("");
-      return;
-    }
-
-    setDataIni(  hojeMaisDias(-2));
+ 
+    setDataIni(   hojeMaisDias(-2) );
     setDataFim(  hojeLocal());
   }
 
@@ -175,13 +156,13 @@ useEffect(() => {
     aplicarPeriodo("mes");
   }, []);
 
-  async function pesquisar() {
- 
+ async function pesquisar(tipo = "") {
+  tipo = tipo || "";
     if (!dataIni || !dataFim) {
       alert("Informe o período.");
       return;
     }
-   
+    setLista([]);   // LIMPA A TELA
      await carregar(); // <-- Atualiza SALDO aqui e somente aqui
     setCarregando(true);
     try {
@@ -191,10 +172,12 @@ useEffect(() => {
         data_ini: dataIni,
         data_fim: dataFim,
         categoria_id: Number(categoriaId) || 0,
-        fornecedor_id: Number(fornecedorId) || 0
+        fornecedor_id: Number(fornecedorId) || 0, 
+          tipo_operacao: tipo ?? ""
       });
 
       const resp = await fetch(url);
+      
       const dados = await resp.json();
       
       let soma = 0;
@@ -229,7 +212,11 @@ useEffect(() => {
             ? l.origem.charAt(0).toUpperCase() + l.origem.slice(1)
             : "-",
           evento_codigo: l.evento_codigo,
-          origem_id:l.origem_id
+          origem_id:l.origem_id,
+          tipo_operacao:l.tipo_operacao,
+          vencimento:l.vencimento,
+          parcelas:l.parcelas,
+          status:l.status
         };
       });
        //  ✔️ EXATAMENTE AQUI  
@@ -359,10 +346,9 @@ async function Estornar(id) {
     alert("Erro ao estornar.");
   }
 }
-
  useEffect(() => {
   if (refreshKey > 0) {
-    pesquisar();
+    pesquisar(tipoOperacao || "");
   }
 }, [refreshKey]);
 
@@ -502,7 +488,7 @@ return (
           <input
             type="date"
             value={dataFim}
-            max={hojeLocal()}
+            max={hojeMaisDias(5)}
             onChange={(e) => setDataFim(e.target.value)}
             className="block border rounded-lg px-3 py-2 text-sm"
           />
@@ -539,75 +525,72 @@ return (
 
         </div>
        <div className="flex items-center gap-10"> 
-                  <button
-                    onClick={pesquisar}
-                    className="
-                      px-5 py-2 rounded-full
-                      font-bold text-sm tracking-wide
-                      text-black
-                      bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b]
-                      border-2 border-black
-                      shadow-md
-                      hover:brightness-110 hover:scale-105
-                      active:scale-95
-                      transition-all duration-200
-                    "
-                  >
-                    🔎 Pesquisar
-                </button> 
+
+                  
+                  
                 <div className="flex gap-6 text-sm font-semibold">
+                 
+                    <button
+                    
+                       onClick={() => {
+                              setTipoOperacao("");
+                              pesquisar("");
+                            }}
+                      className="btn-pill btn-blue"
+                    >
+                      🔎 Todos
+                    </button>
 
-                  <Link
-                    to="/contas-receber"
-                     className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-                    🔎  Contas a Receber
-                  </Link>
+                    <button
+                      onClick={() => {
+                                setTipoOperacao("transacao");
+                                pesquisar("transacao");
+                              }}
+                      className="btn-pill btn-yellow"
+                    >
+                      💰 Financeiro
+                    </button>
 
-                  <Link
-                    to="/contas-pagar"
-                    className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-red-500 via-red-600 to-red-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      "
-                      >
-                     🔎 Contas a Pagar
-                  </Link>
+                    <button
+                      onClick={() => {
+                        setTipoOperacao("conta_receber");
+                        pesquisar("conta_receber");
+                      }}
+                      className="btn-pill btn-green"
+                    >
+                      📥 Contas a Receber
+                    </button>
 
-                  <Link
-                    to="/compras-cartao"
-                      className="
-                          px-5 py-2 rounded-full
-                          font-bold text-sm tracking-wide
-                          text-white
-                          bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                          border-2 border-black
-                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                          hover:brightness-110 hover:scale-105
-                          active:scale-95
-                          transition-all duration-200
-                          inline-flex items-center gap-2
-                        ">
-                     🔎 Compras no Cartão
-                  </Link>
+                    <button
+                       onClick={() => {
+                            setTipoOperacao("conta_pagar");
+                            pesquisar("conta_pagar");
+                          }}
+                      className="btn-pill btn-red"
+                    >
+                      📤 Contas a Pagar
+                    </button>
+
+                    <button
+                       onClick={() => {
+                            setTipoOperacao("cartao_compra");
+                            pesquisar("cartao_compra");
+                          }}
+                      className="btn-pill btn-blue"
+                    >
+                      💳 Cartão
+                    </button>
+          
+                    <button
+                       onClick={() => {
+                            setTipoOperacao("fatura_cartao");
+                            pesquisar("fatura_cartao");
+                          }}
+                      className="btn-pill btn-purple"
+                    >
+                      💳 Fatura Cartão
+                    </button>
+  
 
                 </div>
          
@@ -629,12 +612,16 @@ return (
               <th className="px-3 py-2 text-left">Categoria</th>
               <th className="px-3 py-2 text-left">Conta</th>
               <th className="px-3 py-2 text-left">Tipo</th>
-              <th className="px-3 py-2 text-left">Data</th>
+               <th className="px-3 py-2 text-left">Data Movimento</th>
+                 <th className="px-3 py-2 text-left">Parcela</th>
+                <th className="px-3 py-2 text-left">Vencimento</th>
+                 <th className="px-3 py-2 text-left">Status</th>
               <th className="px-3 py-2 text-right">Valor</th>
                <th className="px-3 py-2 text-right"> Id Estorno</th>
+                <th className="px-3 py-2 text-left "> Operação</th>
               <th className="px-3 py-2 text-center">Ações</th>
             </tr>
-          </thead>
+          </thead>  
 
           <tbody>
             {lista.map((l, i) => (
@@ -647,8 +634,54 @@ return (
                   {l.tipo}
                 </td>
                 <td className="px-3 py-2">{l.data}</td>
+                <td className="px-3 py-2">
+                    {Number(l.parcelas) > 0 ? l.parcelas : "-"}
+                  </td>
+                 <td className="px-3 py-2">{formatarDataBR(l.vencimento)}</td>
+                 <td className="px-3 py-2">
+                     <td className="px-3 py-2">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-semibold ${
+                            l.status === "paga" || l.status === "recebido"
+                              ? "bg-green-100 text-green-700"
+                              : l.status === "aberta" || l.status === "aberto"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {l.status || "-"}
+                        </span>
+                      </td>
+                  </td>
                 <td className="px-3 py-2 text-right font-semibold">{l.valor}</td>
                  <td className="px-3 py-2 text-right font-semibold">{l.origem_id}</td>
+                 <td className="px-3 py-2 text-left">
+                   
+                     <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        l.tipo_operacao === "conta_pagar"
+                          ? "bg-red-100 text-red-700"
+                          : l.tipo_operacao === "conta_receber"
+                          ? "bg-green-100 text-green-700"
+                          : l.tipo_operacao === "cartao_compra"
+                          ? "bg-blue-100 text-blue-700"
+                          : l.tipo_operacao === "fatura_cartao"
+                          ? "bg-purple-100 text-purple-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {l.tipo_operacao === "conta_pagar"
+                        ? "A pagar"
+                        : l.tipo_operacao === "conta_receber"
+                        ? "A receber"
+                        : l.tipo_operacao === "cartao_compra"
+                        ? "Compra cartão"
+                        : l.tipo_operacao === "fatura_cartao"
+                        ? "Fatura cartão"
+                        : "À vista"}
+                    </span>
+                    </td>
+                  
                 <td className="px-3 py-2 text-center space-x-2">
                   <button
                     onClick={() => editarLancamento(l.id)}
@@ -656,18 +689,60 @@ return (
                   >
                     Editar
                   </button>
-                <button
-                  onClick={() => l.origem_id == null && Estornar(l.id)}
-                  disabled={l.origem_id != null}
-                  title={l.origem_id != null ? "Esta transação já foi estornada." : ""}
-                  className={`font-semibold ${
-                    l.origem_id == null
-                      ? "text-red-600 hover:underline"
-                      : "text-gray-400 cursor-not-allowed"
-                  }`}
-                >
-                  Estornar
-                </button>
+                 {l.tipo_operacao === "transacao" && (
+                    <button
+                      onClick={() => l.origem_id == null && Estornar(l.id)}
+                      disabled={l.origem_id != null}
+                      title={l.origem_id != null ? "Esta transação já foi estornada." : ""}
+                      className={`font-semibold ${
+                        l.origem_id == null
+                          ? "text-red-600 hover:underline"
+                          : "text-gray-400 cursor-not-allowed"
+                      }`}
+                    >
+                      Estornar
+                    </button>
+                  )}
+
+                  {l.tipo_operacao === "fatura_cartao" && (
+                    <button
+                      onClick={() =>  Estornar(l.id)} 
+                      className="text-blue-600 hover:underline font-semibold"
+                     
+                    >
+                      Pagar Faturas
+                    </button>
+                  )}
+                  {l.tipo_operacao === "conta_receber" && (
+                    <button
+                      onClick={() =>  Estornar(l.id)} 
+                      className="text-green-600 hover:underline font-semibold"
+                     
+                    >
+                      Receber   
+                    </button>
+                  )}
+                 
+                    {l.tipo_operacao === "conta_pagar" && (
+                    <button
+                      onClick={() =>  Estornar(l.id)} 
+                      className="text-red-600 hover:underline font-semibold"
+                     
+                    >
+                      Pagar   
+                    </button>
+                  )}
+
+                    {l.tipo_operacao === "cartao_compra" && (
+                    <button
+                      onClick={() =>  Estornar(l.id)} 
+                      className="text-red-600 hover:underline font-semibold"
+                     
+                    >
+                      Excluir   
+                    </button>
+                  )}
+
 
                 </td>
               </tr>

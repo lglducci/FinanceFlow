@@ -3,7 +3,7 @@ import { buildWebhookUrl } from "../config/globals";
 import { callApi } from "../utils/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
- 
+import { fetchSeguro } from "../utils/apiSafe";
  
 
 export default function CompraCartao() {
@@ -59,28 +59,29 @@ useEffect(() => {
 }, [dataIni, dataFim]);
 
  async function excluir(compra) {
- 
-  
-
   if (!window.confirm("Excluir compra do cartão?")) return;
 
   try {
-    await callApi(
+
+    const data = await fetchSeguro(
       buildWebhookUrl("excluircompras"),
       {
-        empresa_id: empresa_id,
-        compra_id: compra.id
-      },
-      "POST"
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id: empresa_id,
+          compra_id: compra.id
+        })
+      }
     );
 
     alert("Compra excluída com sucesso.");
-    pesquisar(); // recarrega a lista
+    pesquisar(); // recarrega lista
+
   } catch (e) {
     alert("Erro ao excluir compra: " + e.message);
   }
 }
-
 
   function corStatus(status) {
     if (status === "aberta") return "text-green-600 font-bold";
@@ -190,7 +191,7 @@ function isHoje(data) {
         <th className="text-left py-3 px-3">Descrição</th>
         <th className="text-center py-3 px-3 w-20">Parcelas</th>
         <th className="text-right py-3 px-3 w-32">Valor</th>
-               <th className="text-left py-3 px-3">Classificacão</th>
+          <th className="text-right py-3 px-3 w-32">Valor Parcela</th> 
         <th className="text-left py-3 px-3 w-40">Cartão</th>
         <th className="text-center py-3 px-3 w-28">Bandeira</th>
         <th className="text-center py-3 px-3 w-40">Número</th>
@@ -226,10 +227,11 @@ function isHoje(data) {
             <td className="text-right px-3 py-2 font-semibold text-green-700">
               R$ {Number(c.valor_total || 0).toFixed(2)}
             </td>
-     
-               <td className="px-3 py-2 max-w-[350px] truncate">
-              {c.classificacao }
+            <td className="text-right px-3 py-2 font-semibold text-green-700">
+              R$ {Number(c.valor_pacela  || 0).toFixed(2)}
             </td>
+            
+      
 
             <td className="px-3 py-2 truncate">
               {c.cartao_nome}

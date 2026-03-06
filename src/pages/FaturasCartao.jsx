@@ -115,6 +115,11 @@ const btnPadrao =
     setDadosConta(json[0]);
   }
 
+
+  function VisualizarFatura(id) {
+  navigate(`/fatura-transacoes?id=${id}&empresa=${empresa_id}`);
+} 
+
   // ============================================================
   // ========================= RENDER ============================
   // ============================================================
@@ -137,78 +142,64 @@ const btnPadrao =
       {/* COLUNA ESQUERDA */}
       <div className="bg-white rounded-xl shadow-sm p-5 space-y-4">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-2">
 
-          {/* CARTÃO */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Cartão
-            </label>
-            <select
-              value={cartao_id}
-              onChange={(e) => setCartaoId(Number(e.target.value))}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            >
-              <option value={0}>Todos</option>
-              {cartoes.map(c => (
-                <option key={c.id} value={c.id}>{c.nome}</option>
-              ))}
-            </select>
+            {/* CARTÃO */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Cartão
+              </label>
+              <select
+                value={cartao_id}
+                onChange={(e) => setCartaoId(Number(e.target.value))}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value={0}>Todos</option>
+                {cartoes.map(c => (
+                  <option key={c.id} value={c.id}>{c.nome}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* STATUS */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="aberta">Aberta</option>
+                <option value="paga">Paga</option>
+                <option value="">Todas</option>
+              </select>
+            </div>
+
+            {/* CONTA */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Conta bancária
+              </label>
+              <select
+                value={conta_id}
+                onChange={(e) => {
+                  const id = Number(e.target.value);
+                  setContaId(id);
+                  if (id === 0) setDadosConta(null);
+                  else carregarSaldoConta(id);
+                }}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value={0}>Selecione...</option>
+                {contas.map(ct => (
+                  <option key={ct.id} value={ct.id}>{ct.nome}</option>
+                ))}
+              </select>
+            </div>
+
           </div>
-
-          {/* STATUS */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            >
-              <option value="aberta">Aberta</option>
-              <option value="paga">Paga</option>
-              <option value="">Todas</option>
-            </select>
-          </div>
-
-          {/* MÊS 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Mês de referência
-            </label>
-            <input
-              type="month"
-              value={mes}
-              onChange={(e) => setMes(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            />
-          </div> */}
-
-          {/* CONTA */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Conta bancária
-            </label>
-            <select
-              value={conta_id}
-              onChange={(e) => {
-                const id = Number(e.target.value);
-                setContaId(id);
-                if (id === 0) setDadosConta(null);
-                else carregarSaldoConta(id);
-              }}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-            >
-              <option value={0}>Selecione...</option>
-              {contas.map(ct => (
-                <option key={ct.id} value={ct.id}>{ct.nome}</option>
-              ))}
-            </select>
-          </div>
-
-        </div>
-
         {/* AÇÕES */}
         <div className="flex flex-wrap gap-3 pt-2">
           <button
@@ -342,7 +333,16 @@ const btnPadrao =
                 R$ {Number(f.valor_total).toLocaleString("pt-BR")}
               </td>
               <td className="px-3 py-2 text-center">{f.status}</td>
-            </tr>
+             
+                 <td className="px-3 py-2 text-center">
+                  <button
+                    onClick={() => VisualizarFatura(f.id)}
+                    className="text-blue-600 hover:underline font-semibold"
+                  >
+                    Visualizar
+                  </button>
+                </td>
+              </tr>
           ))}
         </tbody>
       </table>
