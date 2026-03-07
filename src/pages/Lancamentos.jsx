@@ -5,6 +5,7 @@ import ModalBase from "../components/ModalBase";
 import FormConta from "../components/forms/FormConta";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import { Link } from "react-router-dom";
+import { fetchSeguro } from "../utils/apiSafe";
 
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
@@ -157,25 +158,48 @@ useEffect(() => {
   }, []);
 
  async function pesquisar(tipo = "") {
-  tipo = tipo || "";
-    if (!dataIni || !dataFim) {
-      alert("Informe o período.");
-      return;
-    }
-    setLista([]);   // LIMPA A TELA
-     await carregar(); // <-- Atualiza SALDO aqui e somente aqui
-    setCarregando(true);
-    try {
-      const url = buildWebhookUrl('listalancamentos', { 
-        empresa_id: empresa_id,
-          conta_id: Number(contaId) || 0,
-        data_ini: dataIni,
-        data_fim: dataFim,
-        categoria_id: Number(categoriaId) || 0,
-        fornecedor_id: Number(fornecedorId) || 0, 
-          tipo_operacao: tipo ?? ""
-      });
 
+  tipo = tipo || "";
+
+  // REGRA PARA VENCIDOS
+  let dataIniLocal = dataIni;
+  let dataFimLocal = dataFim;
+  let contaLocal = Number(contaId) || 0;
+  let categoriaLocal = Number(categoriaId) || 0;
+  let fornecedorLocal = Number(fornecedorId) || 0;
+  let tipoOperacaoLocal = tipo;
+  let vencidoLocal = "";
+
+  if (tipo === "vencidos") {
+    dataIniLocal = "2020-01-01";
+    dataFimLocal = hojeLocal();
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "";
+    vencidoLocal = "sim";
+  }
+
+  if (!dataIniLocal || !dataFimLocal) {
+    alert("Informe o período.");
+    return;
+  }
+
+  setLista([]);
+  await carregar();
+  setCarregando(true);
+
+  try {
+    const url = buildWebhookUrl("listalancamentos", {
+      empresa_id: empresa_id,
+      conta_id: contaLocal,
+      data_ini: dataIniLocal,
+      data_fim: dataFimLocal,
+      categoria_id: categoriaLocal,
+      fornecedor_id: fornecedorLocal,
+      tipo_operacao: tipoOperacaoLocal,
+      vencido: vencidoLocal
+    });
       const resp = await fetch(url);
       
       const dados = await resp.json();
@@ -207,16 +231,16 @@ useEffect(() => {
           }),
           // *** AQUI: sempre a data EXATA do banco ***
           data: formatarDataBR(l.data_movimento),
-          // *** Origem com primeira maiúscula ***
-          origem: l.origem
-            ? l.origem.charAt(0).toUpperCase() + l.origem.slice(1)
-            : "-",
+           
           evento_codigo: l.evento_codigo,
           origem_id:l.origem_id,
           tipo_operacao:l.tipo_operacao,
           vencimento:l.vencimento,
           parcelas:l.parcelas,
-          status:l.status
+          status:l.status,
+          origem:l.origem ,
+          vencido:l.vencido,
+          parcela_total:l.parcela_total
         };
       });
        //  ✔️ EXATAMENTE AQUI  
@@ -352,6 +376,103 @@ async function Estornar(id) {
   }
 }, [refreshKey]);
 
+
+
+
+
+async function processarTitulo(titulo, conta_id) {
+  if (loading) return;
+
+  if (!conta_id || Number(conta_id) === 0) {
+    alert("Selecione a conta bancária.");
+    return;
+  }
+ 
+
+  setLoading(true);
+
+  try {
+    let webhook = "";
+
+    const payload = {
+      empresa_id: Number(empresa_id), 
+      contas: [], // 🔥 ARRAY PURO
+       conta_id: Number(conta_id)
+    };
+
+    if (titulo.tipo_operacao === "conta_pagar") {
+      webhook = "pagar_contas";
+      payload.contas = [ Number(titulo.id) ];
+
+    } else if (titulo.tipo_operacao === "conta_receber") {
+      webhook = "receber_contas";
+      payload.contas = [ Number(titulo.id) ];
+
+    } else if (titulo.tipo_operacao === "fatura_cartao") {
+      webhook = "pagar_faturas";
+      payload.contas = [ Number(titulo.id) ];
+
+    } else {
+      alert("Tipo de título desconhecido.");
+      return;
+    }
+
+    const resp = await fetch(buildWebhookUrl(webhook), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const text = await resp.text();
+    const data = text ? JSON.parse(text) : null;
+
+    if (!resp.ok || data?.erro) {
+      alert(text || data?.erro || "Erro");
+      return;
+    }
+
+    alert("Processado com sucesso!");
+    pesquisar();
+
+  } catch (e) {
+    alert("Erro ao processar título.");
+  } finally {
+    setLoading(false);
+  }
+}
+
+useEffect(() => {
+  if (dataIni && dataFim) {
+    pesquisar();
+  }
+}, [dataIni, dataFim]);
+
+ async function excluir(compra) {
+  if (!window.confirm("Excluir compra do cartão?")) return;
+
+  try {
+
+    const data = await fetchSeguro(
+      buildWebhookUrl("excluircompras"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id: empresa_id,
+          compra_id: compra.id
+        })
+      }
+    );
+
+    alert("Compra excluída com sucesso.");
+    pesquisar(); // recarrega lista
+
+  } catch (e) {
+    alert("Erro ao excluir compra: " + e.message);
+  }
+}
+
+const temTransacao = lista.some(l => l.tipo_operacao === "transacao");
 return (
   <div className="p-4 space-y-4">
 
@@ -488,7 +609,7 @@ return (
           <input
             type="date"
             value={dataFim}
-            max={hojeMaisDias(5)}
+           // max={hojeMaisDias(15)}
             onChange={(e) => setDataFim(e.target.value)}
             className="block border rounded-lg px-3 py-2 text-sm"
           />
@@ -578,7 +699,7 @@ return (
                           }}
                       className="btn-pill btn-blue"
                     >
-                      💳 Cartão
+                      💳 Compras Cartão
                     </button>
           
                     <button
@@ -590,7 +711,17 @@ return (
                     >
                       💳 Fatura Cartão
                     </button>
-  
+                 
+
+                   <button
+                       onClick={() => {
+                            setTipoOperacao("vencidos");
+                            pesquisar("vencidos");
+                          }}
+                      className="btn-pill btn-red"
+                    >
+                      💳 Vencidos
+                    </button>
 
                 </div>
          
@@ -612,12 +743,19 @@ return (
               <th className="px-3 py-2 text-left">Categoria</th>
               <th className="px-3 py-2 text-left">Conta</th>
               <th className="px-3 py-2 text-left">Tipo</th>
+               <th className="px-3 py-2 text-left"> Origem</th>
                <th className="px-3 py-2 text-left">Data Movimento</th>
-                 <th className="px-3 py-2 text-left">Parcela</th>
+                 {!temTransacao && (
+    <>   <th className="px-3 py-2 text-left">Parcela</th>
+                  <th className="px-3 py-2 text-left">Parcela Total</th> 
                 <th className="px-3 py-2 text-left">Vencimento</th>
-                 <th className="px-3 py-2 text-left">Status</th>
+                <th className="px-3 py-2 text-left">Vencido</th>
+                 <th className="px-3 py-2 text-left">Status</th> </>
+  )}
               <th className="px-3 py-2 text-right">Valor</th>
-               <th className="px-3 py-2 text-right"> Id Estorno</th>
+              {temTransacao && (
+    <>  <th className="px-3 py-2 text-right"> Id Estorno</th> </>
+  )}
                 <th className="px-3 py-2 text-left "> Operação</th>
               <th className="px-3 py-2 text-center">Ações</th>
             </tr>
@@ -625,7 +763,10 @@ return (
 
           <tbody>
             {lista.map((l, i) => (
+
+             
               <tr key={l.id} className="border-t">
+                   
                  <td className="px-3 py-2 text-left font-bold">{l.id}</td>
                 <td className="px-3 py-2 font-medium">{l.descricao}</td>
                 <td className="px-3 py-2">{l.categoria_nome}</td>
@@ -633,32 +774,87 @@ return (
                 <td className={`px-3 py-2 font-semibold ${l.tipo === "Entrada" ? "text-green-600" : "text-red-600"}`}>
                   {l.tipo}
                 </td>
-                <td className="px-3 py-2">{l.data}</td>
-                <td className="px-3 py-2">
+               
+               <td className="px-3 py-2 text-left">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          l.origem === "conta_pagar"
+                            ? "bg-red-100 text-red-700"
+                            : l.origem === "conta_receber"
+                            ? "bg-green-100 text-green-700"
+                            : l.origem === "fatura_cartao"
+                            ? "bg-purple-100 text-purple-700"
+                            : l.origem === "estorno"
+                            ? "bg-gray-200 text-gray-700"
+                            : l.origem === "compra_cartao"
+                             ? "bg-blue-100 text-blue-700"
+                            : "bg-yellow-100 text-yellow-700"
+                          
+                        }`}
+                      >
+                        {l.origem === "conta_pagar"
+                          ? "Pagamento Conta"
+                          : l.origem === "conta_receber"
+                          ? "Recebimento Conta"
+                          : l.origem === "fatura_cartao"
+                          ? "Pagamento Fatura "
+                          : l.origem === "estorno"
+                          ? "Estorno operação"
+                           : l.origem === "compra_cartao"
+                           ? "Compra cartão"
+                          : "Operação Financeira"}
+                      </span>
+                    </td>
+                <td className="px-3 py-2 ">{l.data}</td>
+               {!temTransacao && (   
+                <td className="px-3 py-2  text-center">
                     {Number(l.parcelas) > 0 ? l.parcelas : "-"}
-                  </td>
-                 <td className="px-3 py-2">{formatarDataBR(l.vencimento)}</td>
-                 <td className="px-3 py-2">
+                  </td>)}
+
+                  {!temTransacao && (     <td className="px-3 py-2 text-center">
+                    {Number(l.parcela_total) > 0 ? l.parcela_total : "-"}
+                  </td>)}
+                    {!temTransacao && ( <td className="px-3 py-2">{formatarDataBR(l.vencimento)}</td>)}
+                       {!temTransacao && (<td className="px-3 py-2 text-left">
+                             <span
+                                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                    l.vencido === "sim"
+                                      ? "bg-red-100 text-red-700"
+                                      : l.vencido === "nao"
+                                      ? "bg-green-100 text-green-700" 
+                                      : "bg-yellow-100 text-yellow-700"
+                                    
+                                  }`}
+                                >
+                                  {l.vencido === "sim"
+                                    ? "Sim"
+                                    : l.vencido === "nao"
+                                    ? "Não" 
+                                    : ""}
+                                </span> 
+                      </td> )}
+
+                     {!temTransacao && (   <td className="px-3 py-2">
                      <td className="px-3 py-2">
                         <span
                           className={`px-2 py-1 rounded text-xs font-semibold ${
                             l.status === "paga" || l.status === "recebido"
                               ? "bg-green-100 text-green-700"
                               : l.status === "aberta" || l.status === "aberto"
-                              ? "bg-yellow-100 text-yellow-700"
+                              ? "bg-yellow-200 text-yellow-800"
                               : "bg-gray-100 text-gray-600"
                           }`}
                         >
                           {l.status || "-"}
                         </span>
                       </td>
-                  </td>
+                  </td>)}
                 <td className="px-3 py-2 text-right font-semibold">{l.valor}</td>
-                 <td className="px-3 py-2 text-right font-semibold">{l.origem_id}</td>
+                 {temTransacao && ( <td className="px-3 py-2 text-right font-bold">{l.origem_id}</td>)}
                  <td className="px-3 py-2 text-left">
                    
                      <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      className={`px-3 py-1 rounded-full text-xs font-bold  text-center ${
                         l.tipo_operacao === "conta_pagar"
                           ? "bg-red-100 text-red-700"
                           : l.tipo_operacao === "conta_receber"
@@ -667,7 +863,7 @@ return (
                           ? "bg-blue-100 text-blue-700"
                           : l.tipo_operacao === "fatura_cartao"
                           ? "bg-purple-100 text-purple-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          : "bg-yellow-200 text-yellow-800"
                       }`}
                     >
                       {l.tipo_operacao === "conta_pagar"
@@ -704,42 +900,41 @@ return (
                     </button>
                   )}
 
-                  {l.tipo_operacao === "fatura_cartao" && (
-                    <button
-                      onClick={() =>  Estornar(l.id)} 
-                      className="text-blue-600 hover:underline font-semibold"
-                     
-                    >
-                      Pagar Faturas
-                    </button>
-                  )}
-                  {l.tipo_operacao === "conta_receber" && (
-                    <button
-                      onClick={() =>  Estornar(l.id)} 
-                      className="text-green-600 hover:underline font-semibold"
-                     
-                    >
-                      Receber   
-                    </button>
-                  )}
                  
-                    {l.tipo_operacao === "conta_pagar" && (
-                    <button
-                      onClick={() =>  Estornar(l.id)} 
-                      className="text-red-600 hover:underline font-semibold"
-                     
-                    >
-                      Pagar   
-                    </button>
-                  )}
+                    {l.tipo_operacao !== "cartao_compra" && l.tipo_operacao !== "transacao" && (
+                          <button
+                            onClick={() => processarTitulo(l, contaId)}
+                            disabled={l.status !== "aberto" && l.status !== "aberta"}
+                            className={`font-semibold underline ${
+                              l.status !== "aberto" && l.status !== "aberta"
+                                ? "text-gray-400 cursor-not-allowed"
+                                : l.tipo_operacao === "conta_receber"
+                                ? "text-blue-700"
+                                : "text-red-700"
+                            }`}
+                          >
+                            {l.tipo_operacao === "conta_receber"
+                              ? l.status === "aberto" || l.status === "aberta"
+                                ? "Receber"
+                                : "Recebido"
+                              : l.tipo_operacao === "fatura_cartao"
+                              ? l.status === "aberto" || l.status === "aberta"
+                                ? "Pagar fatura"
+                                : "Fatura paga"
+                              : l.status === "aberto" || l.status === "aberta"
+                              ? "Pagar"
+                              : "Pago"}
+                          </button>
+                        )}
+        
 
                     {l.tipo_operacao === "cartao_compra" && (
                     <button
-                      onClick={() =>  Estornar(l.id)} 
+                      onClick={() =>  excluir(l)} 
                       className="text-red-600 hover:underline font-semibold"
                      
                     >
-                      Excluir   
+                      Excluir Compra 
                     </button>
                   )}
 
