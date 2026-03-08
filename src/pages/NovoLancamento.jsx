@@ -582,14 +582,40 @@ const podeCriarModelo =
   (form.tipo === "saida" && !form.forma_pagamento?.trim());
 
 
+  const corTitulo = (() => {
+
+  if (form.tipo === "entrada") {
+    if (["cartao_credito","boleto","aprazo"].includes(form.forma_recebimento))
+      return "#16a34a"; // verde (conta receber)
+
+    return "#eab308"; // amarelo (financeiro)
+  }
+
+  if (form.tipo === "saida") {
+
+    if (form.forma_pagamento === "cartao_credito")
+      return "#2563eb"; // azul (compra cartão)
+
+    if (form.forma_pagamento === "aprazo")
+      return "#dc2626"; // vermelho (conta pagar)
+
+    return "#eab308"; // financeiro
+  }
+
+  return "#ff9f43"; // fallback
+})();
+
   return (
           
 
      
       <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
+       <div
+ className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-slate-900 mt-1 mb-1"
+ style={{ borderTop: `6px solid ${corTitulo}` }}
+>
         {/* TÍTULO IGUAL AO EDITAR */}
-        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center" style={{ color: "#ff9f43" }}>
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center"  style={{ color: corTitulo }}>
             {titulo}
           </h1>
       

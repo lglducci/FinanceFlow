@@ -21,7 +21,8 @@ export default function EditarContaReceber() {
     parcelas: 1,
     parcela_num: 1,
     status: "aberta",
-    doc_ref:""
+    doc_ref:"",
+    modelo_codigo:""
   });
 
   function handleChange(e) {
@@ -133,11 +134,13 @@ async function carregar() {
       
       vencimento: dado.vencimento ? dado.vencimento.substring(0, 10) : "",
       categoria_id: dado.categoria_id || "",
-      fornecedor_id: dado.fornecedor_id || "",
-      parcelas: dado.parcelas,
+      fornecedor_id: dado.fornecedor_id || "", 
       parcela_num: dado.parcela_num,
       status: dado.status,
       doc_ref: dado.doc_ref,
+ 
+      modelo_codigo: dado.modelo_codigo,
+
     });
 
 
@@ -169,10 +172,12 @@ async function carregar() {
           descricao: form.descricao,
           valor: Number(form.valor),
           vencimento: form.vencimento,
+          parcela_num:form.parcela_num,
           categoria_id: Number(form.categoria_id) || null,
           fornecedor_id: Number(form.fornecedor_id) || null,
           status: form.status ,
-           doc_ref: form.doc_ref
+           doc_ref: form.doc_ref,
+          codigo:form.modelo_codigo,
           
         }),
       });
@@ -192,7 +197,7 @@ async function carregar() {
 
       if (sucesso) {
         alert("Conta atualizada com sucesso!");
-        navigate("/contas-receber");
+        navigate(-1);
         return;
       }
 
@@ -247,7 +252,7 @@ async function carregar() {
 
           />
         </div> 
-        
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
         {/* CATEGORIA */}
         <div>
           <div className="w-2/3"> 
@@ -284,14 +289,17 @@ async function carregar() {
           </select>
         </div>
             </div>
+            </div> 
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
          {/* VALOR */}
         <div>
-              <div className="w-1/3"> 
+              <div className="w-2/3"> 
           <label  className="label label-required font-bold text-[#1e40af]" >Valor</label>
           <input
             type="number"
             name="valor" 
+              disabled
             value={form.valor}
             onChange={handleChange}
             className="input-premium"
@@ -302,11 +310,12 @@ async function carregar() {
 
         {/* VENCIMENTO */}
         <div>
-            <div className="w-1/3"> 
+            <div className="w-2/3"> 
           <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
           <input
             type="date"
             name="vencimento"  
+              disabled
             value={form.vencimento}
             onChange={handleChange}
             className="input-premium"
@@ -314,18 +323,33 @@ async function carregar() {
           />
         </div>
             </div>
-
+           </div> 
         {/* STATUS */}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+         <div className="w-1/3"> 
+          <label className="label label-required font-bold text-[#1e40af]">Parcelas</label>
+          <input
+            type="number"
+            name="parcela_num" 
+               disabled
+            value={form.parcela_num}
+            onChange={handleChange}
+            className="input-premium"
+            placeholder="Parcelas"
+          />
+        </div>
         <div>
-            <div className="w-1/3"> 
+            <div className="w-2/3"> 
           <label  className="label label-required font-bold text-[#1e40af]" >Status</label>
           <select
             name="status" 
             value={form.status}
             onChange={handleChange}
+              disabled
             className="input-premium"
             readOnly
-            disabled
+            
             placeholder="status"
           >
             <option value="aberto">Aberto</option>
@@ -333,7 +357,7 @@ async function carregar() {
           </select>
         </div>
         </div>
-
+        </div>
 
         {/* documento */}
         <div>
@@ -349,6 +373,18 @@ async function carregar() {
           />
         </div> 
      
+       <div>
+          <label className="label label-required font-bold text-[#1e40af]">Modelo</label>
+          <input
+            name="modelo_codigo"
+              disabled
+            value={form.modelo_codigo}
+            onChange={handleChange}
+            className="input-premium"
+            placeholder="Modelo"
+
+          />
+        </div>  
 
 
         {/* BOTÕES */}
@@ -362,7 +398,7 @@ async function carregar() {
           </button>
 
           <button
-            onClick={() => navigate("/contas-receber")}
+            onClick={() => navigate(-1)}
             className="flex-1  bg-gray-500 text-white px-4 py-3 rounded font-semibold"
           >
             Cancelar

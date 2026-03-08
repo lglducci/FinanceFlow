@@ -240,7 +240,10 @@ useEffect(() => {
           status:l.status,
           origem:l.origem ,
           vencido:l.vencido,
-          parcela_total:l.parcela_total
+          parcela_total:l.parcela_total,
+          forma:l.forma ,
+          classificacao:l.classificacao
+
         };
       });
        //  ✔️ EXATAMENTE AQUI  
@@ -265,11 +268,42 @@ useEffect(() => {
     navigate("/registrareceitarapida");
   }
 
-  function editarLancamento(id) {
-    navigate("/editar-lancamento", {
-      state: { id_lancamento: id, empresa_id: empresa_id }
-    });
+ // function editarLancamento(id) {
+ //   navigate("/editar-lancamento", {
+  //    state: { id_lancamento: id, empresa_id: empresa_id }
+  //  });
+ // }
+
+ function editarLancamento(l) {
+
+  if (l.tipo_operacao === "conta_pagar") {
+    navigate(`/edit-conta-pagar/${l.id}`);
+    return;
   }
+
+  if (l.tipo_operacao === "conta_receber") {
+    navigate(`/edit-conta-receber/${l.id}`);
+    return;
+  }
+
+  if (l.tipo_operacao === "compra_cartao") {
+    navigate(`/edit-card-transaction/${l.id}`);
+    return;
+  }
+
+  if (l.tipo_operacao === "fatura_cartao") {
+    navigate(`/edit-card-invoice/${l.id}`);
+    return;
+  }
+
+  if (l.tipo_operacao === "transacao") {
+    navigate("/editar-lancamento", {
+      state: { id_lancamento: l.id, empresa_id: empresa_id}
+    });
+    return;
+  }
+
+}
 
   async function carregarFornecedores() {
   try {
@@ -473,6 +507,17 @@ useEffect(() => {
 }
 
 const temTransacao = lista.some(l => l.tipo_operacao === "transacao");
+
+const formaLabel = {
+  avista: "À vista",
+  pix: "Pix",
+  cartao_debito: "Cartão Débito",
+  cartao_credito: "Cartão Crédito",
+  boleto: "Boleto",
+  aprazo: "A prazo"
+};
+
+
 return (
   <div className="p-4 space-y-4">
 
@@ -742,21 +787,25 @@ return (
               <th className="px-3 py-2 text-left">Descrição</th>
               <th className="px-3 py-2 text-left">Categoria</th>
               <th className="px-3 py-2 text-left">Conta</th>
-              <th className="px-3 py-2 text-left">Tipo</th>
-               <th className="px-3 py-2 text-left"> Origem</th>
-               <th className="px-3 py-2 text-left">Data Movimento</th>
+              <th className="px-3 py-2 text-left">Tipo</th> 
+                {temTransacao && (
+                    <th className="px-3 py-2 text-left">Origem</th>
+                  )}
+
+                <th className="px-3 py-2 text-left">Classsificação</th>
+                  <th className="px-3 py-2 text-left">Forma Pagamento</th>
+                <th className="px-3 py-2 text-left">Data Movimento</th>
+              
                  {!temTransacao && (
-    <>   <th className="px-3 py-2 text-left">Parcela</th>
+               <>   <th className="px-3 py-2 text-left">Parcela</th>
                   <th className="px-3 py-2 text-left">Parcela Total</th> 
                 <th className="px-3 py-2 text-left">Vencimento</th>
                 <th className="px-3 py-2 text-left">Vencido</th>
-                 <th className="px-3 py-2 text-left">Status</th> </>
-  )}
+                 <th className="px-3 py-2 text-left">Status</th> </> )}
               <th className="px-3 py-2 text-right">Valor</th>
               {temTransacao && (
-    <>  <th className="px-3 py-2 text-right"> Id Estorno</th> </>
-  )}
-                <th className="px-3 py-2 text-left "> Operação</th>
+                 <>  <th className="px-3 py-2 text-right"> Estorno</th> </> )}
+                <th className="px-3 py-2 text-left "> Tipo Evento</th>
               <th className="px-3 py-2 text-center">Ações</th>
             </tr>
           </thead>  
@@ -774,8 +823,8 @@ return (
                 <td className={`px-3 py-2 font-semibold ${l.tipo === "Entrada" ? "text-green-600" : "text-red-600"}`}>
                   {l.tipo}
                 </td>
-               
-               <td className="px-3 py-2 text-left">
+                    {temTransacao && (
+                <td className="px-3 py-2 text-left">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           l.origem === "conta_pagar"
@@ -790,7 +839,7 @@ return (
                              ? "bg-blue-100 text-blue-700"
                             : "bg-yellow-100 text-yellow-700"
                           
-                        }`}
+                        }`} 
                       >
                         {l.origem === "conta_pagar"
                           ? "Pagamento Conta"
@@ -804,7 +853,12 @@ return (
                            ? "Compra cartão"
                           : "Operação Financeira"}
                       </span>
-                    </td>
+                    </td> )}
+
+                 <td className="px-3 py-2 font-medium">{l.classificacao}</td>
+                   <td className="px-3 py-2 font-medium">
+                        {formaLabel[l.forma] || l.forma}
+                      </td>
                 <td className="px-3 py-2 ">{l.data}</td>
                {!temTransacao && (   
                 <td className="px-3 py-2  text-center">
@@ -874,13 +928,13 @@ return (
                         ? "Compra cartão"
                         : l.tipo_operacao === "fatura_cartao"
                         ? "Fatura cartão"
-                        : "À vista"}
+                        : "Financeiro"}
                     </span>
                     </td>
                   
                 <td className="px-3 py-2 text-center space-x-2">
                   <button
-                    onClick={() => editarLancamento(l.id)}
+                    onClick={() => editarLancamento(l)}
                     className="text-blue-600 hover:underline font-semibold"
                   >
                     Editar

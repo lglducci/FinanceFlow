@@ -1,4 +1,4 @@
-   //import { useState } from "react";
+    //import { useState } from "react";
   import { useState, useEffect } from "react";
 
 import { buildWebhookUrl } from "../config/globals";
@@ -130,53 +130,76 @@ const [loading, setLoading] = useState(false);
   d.setDate(d.getDate() + 1);
   return d.toISOString().substring(0, 10);
 }
-
+ 
 async function gerarStaging() {
   try {
-    setMsg("⏳ Gerando STAGING..."); 
+    setMsg("⏳ Gerando STAGING...");
+    setMostrarContabil(false);
+    setLotes([]);
 
-    const data = await callApi(
+    const data = await fetchSeguro(
       buildWebhookUrl("gerar_staging"),
       {
-        empresa_id,
-        data_ini: dataIni,
-        data_fim: dataFim
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id,
+          data_ini: dataIni,
+          data_fim: dataFim,
+        }),
       }
     );
 
-    setLotes(data); 
-    setMostrarContabil(false ); // mostra a primeira tabepla 
-    const qtdErros = data.filter(l => l.status === "erro").length;
+    const lista = data?.data
+      ? Array.isArray(data.data)
+        ? data.data
+        : [data.data]
+      : [];
+
+    setLotes(lista);
+
+    const qtdErros = lista.filter(l => l.status === "erro").length;
 
     if (qtdErros > 0) {
-      setMsg(`❌ Existem ${qtdErros} linhas com erro. Corrija antes de continuar.`);
+      setMsg(`❌ Existem ${qtdErros} linhas com erro.`);
     } else {
-      setMsg("✅ STAGING gerado com sucesso. 1º Fase concluida com sucesso. Verifique possiveis erros no relório abaixo.");
-      alert("✅ STAGING gerado com sucesso.  1º Fase concluida com sucesso.");
-      alert("✅ Verifique possiveis erros no relório abaixo.");
+      setMsg("✅ STAGING gerado com sucesso.");
+      alert("✅ STAGING gerado com sucesso.");
     }
 
   } catch (e) {
     alert("❌ " + e.message);
   }
 }
-
  
 
-async function consolidarDiario() {
+ async function consolidarDiario() {
   try {
     setMsg("⏳ Consolidando diário...");
-     setLotes([]);
-         setMostrarContabil(false); // mostra segunda tabela
-   const data = await callApi(
+    setLotes([]);
+    setMostrarContabil(false);
+
+    const data = await fetchSeguro(
       buildWebhookUrl("consolidar_diario"),
-      { empresa_id }
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa_id })
+      }
     );
-       
-      setLotes(data); 
-     setMsg("✅ Diário consolidado.2º Fase concluida com sucesso. ✅ Verifique possiveis erros no relório abaixo.");
-     alert("✅ Diário gerado com sucesso.  2º Fase concluida com sucesso.");
-      alert("✅ Verifique possiveis erros no relório abaixo.");
+
+    const lista = data?.data
+      ? Array.isArray(data.data)
+        ? data.data
+        : [data.data]
+      : [];
+
+    setLotes(lista);
+
+    setMsg("✅ Diário consolidado. 2º fase concluída.");
+    alert("✅ Diário gerado com sucesso.");
+    alert("Verifique possíveis erros no relatório.");
+
   } catch (e) {
     alert("❌ " + e.message);
   }
@@ -186,21 +209,30 @@ async function consolidarDiario() {
  async function gerarContabil() {
   try {
     setMsg("⏳ Gerando Contábil...");
-    setMostrarContabil(false); // esconde tabela antiga
+    setMostrarContabil(false);
 
-    await callApi(
+    const data = await fetchSeguro(
       buildWebhookUrl("gerar_contabil"),
       {
-        empresa_id,
-        data_ini: dataIni,
-        data_fim: dataFim
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id,
+          data_ini: dataIni,
+          data_fim: dataFim
+        })
       }
     );
 
-    // 🔥 agora consulta os lançamentos
+    // se quiser validar retorno
+    if (!data?.ok) {
+      throw new Error(data?.message || "Erro ao gerar contábil");
+    }
+
+    // 🔥 depois consulta os lançamentos
     await consultar();
 
-    setMostrarContabil(true); // mostra segunda tabela
+    setMostrarContabil(true);
 
     setMsg("✅ Contábil gerado com sucesso.");
 
@@ -537,3 +569,4 @@ useEffect(() => {
 );
 
 }
+

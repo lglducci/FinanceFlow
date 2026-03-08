@@ -25,7 +25,9 @@ export default function EditarLancamento() {
     data_movimento: "",
     tipo: "",
     origem: "",
-    classificacao:""
+    classificacao:"",
+     modelo_codigo: "" , 
+     forma_pagamento:"aprazo"
   });
 
   /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
@@ -79,7 +81,8 @@ const THEME = {
       data_movimento: dados.data_movimento?.substring(0, 10) || "",
       tipo: dados.tipo || "",
       origem: dados.origem || "",
-     classificacao: dados.classificacao || "",
+      classificacao: dados.classificacao || "",
+      modelo_codigo: dados.evento_codigo || ""
     });
 
     await carregarCategorias();
@@ -227,12 +230,13 @@ const getClassificacoes = () => {
    
 
          <div className="bg-gray-100 flex flex-col  gap-2  space-y-6 px-6">
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
         {/* 1 — Tipo */}
         <div>
           <label   className="label label-required block font-bold text-[#1e40af] mt-4" >Tipo</label>
            <select
               name="tipo"
+              
               value={form.tipo}
               disabled
               className="input-premium"
@@ -245,7 +249,7 @@ const getClassificacoes = () => {
 
         {/* 2 — Categoria */}
         <div>
-          <label className="label label-required block font-bold text-[#1e40af]" >Categoria</label>
+          <label className="label label-required block font-bold text-[#1e40af]  mt-4" >Categoria</label>
           <select
             name="categoria_id"
             value={form.categoria_id}
@@ -258,6 +262,7 @@ const getClassificacoes = () => {
             ))}
           </select>
         </div>
+          </div>
 
         {/* 3 — Conta + Valor */}
         <div className="grid grid-cols-2 gap-4">
@@ -266,6 +271,7 @@ const getClassificacoes = () => {
             <label  className="label label-required block font-bold text-[#1e40af]" >Conta Financeira</label>
             <select
               name="conta_id"
+                disabled
               value={form.conta_id}
               onChange={onChange}
                className="input-premium"
@@ -282,6 +288,7 @@ const getClassificacoes = () => {
             <input
               type="number"
               name="valor"
+                disabled
               value={form.valor}
               onChange={onChange}
               className="input-premium"
@@ -316,9 +323,7 @@ const getClassificacoes = () => {
             />
           </div>
 
-        </div>
-         
-
+        </div> 
           <div> 
           <div>
                 <div className="w-4/5">
@@ -329,6 +334,7 @@ const getClassificacoes = () => {
                   <select
                     name="classificacao"
                     value={form.classificacao}
+                    
                     onChange={onChange}
                     className="input-premium w-64"
                     required
@@ -359,6 +365,19 @@ const getClassificacoes = () => {
           />
         </div>
 
+        <div>
+          <label className="label label-required font-bold text-[#1e40af]">Modelo</label>
+          <input
+             type="text"
+            name="modelo_codigo"
+              disabled
+            value={form.modelo_codigo}
+            onChange={onChange}
+            className="input-premium"
+            placeholder="Modelo"
+
+          />
+        </div>  
         {/* Botões */}
             
           <div className="flex gap-6 pt-8 pb-8 pl-1">

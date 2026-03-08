@@ -131,8 +131,7 @@ async function carregar() {
 
     setForm({
       descricao: dado.descricao,
-      valor: dado.valor,
-      
+      valor: dado.valor, 
       vencimento: dado.vencimento ? dado.vencimento.substring(0, 10) : "",
       categoria_id: dado.categoria_id || "",
       fornecedor_id: dado.fornecedor_id || "",
@@ -141,7 +140,7 @@ async function carregar() {
       status: dado.status,
       doc_ref: dado.doc_ref,
       forma_operacao: dado.forma_operacao,
-        modelo_codigo: dado.modelo_codigo,
+      modelo_codigo: dado.modelo_codigo,
     });
 
 
@@ -198,10 +197,10 @@ async function carregar() {
 
           // vencimento já tratado, mas reforçando
           
-          if (form.vencimento <= hoje) {
-            alert("Vencimento deve ser maior que hoje.");
-            return;
-          }
+         // if (form.vencimento <= hoje) {
+        //    alert("Vencimento deve ser maior que hoje.");
+         //   return;
+         // }
 
       const url = buildWebhookUrl("salvarcontapagar");
 
@@ -216,9 +215,12 @@ async function carregar() {
           vencimento: form.vencimento,
           categoria_id: Number(form.categoria_id) || null,
           fornecedor_id: Number(form.fornecedor_id) || null,
+           forma_pagamento: form.forma_pagamento || null,
           status: form.status ,
-           doc_ref: form.doc_ref
-          
+          doc_ref: form.doc_ref,
+          codigo:form.modelo_codigo,
+           classificacao:form.classificacao 
+  
         }),
       });
 
@@ -237,7 +239,7 @@ async function carregar() {
 
       if (sucesso) {
         alert("Conta atualizada com sucesso!");
-        navigate("/contas-pagar");
+        navigate(-1);
         return;
       }
 
@@ -260,6 +262,8 @@ async function carregar() {
     return <div className="p-6">Carregando...</div>;
   }
 
+
+  
   //------------------------------------------------------------------
   // LAYOUT
   //------------------------------------------------------------------
@@ -293,14 +297,14 @@ async function carregar() {
           />
         </div> 
         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
         {/* CATEGORIA */}
         <div>
-          <div className="w-2/3"> 
+          <div className="w-3/3"> 
           <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
           <select
             name="categoria_id"
-            value={form.categoria_id}
-              disabled
+            value={form.categoria_id} 
             onChange={handleChange}
              className="input-premium"
             placeholder="categoria"
@@ -314,7 +318,7 @@ async function carregar() {
          </div>
         {/* FORNECEDOR */}
         <div>
-            <div className="w-2/3"> 
+            <div className="w-3/3"> 
           <label className="label label-required font-bold text-[#1e40af]">Fornecedor</label>
           <select
             name="fornecedor_id"
@@ -330,14 +334,16 @@ async function carregar() {
           </select>
         </div>
             </div>
-
+            </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
          {/* VALOR */}
         <div>
-              <div className="w-1/3"> 
+              <div className="w-2/3"> 
           <label className="label label-required font-bold text-[#1e40af]">Valor</label>
           <input
             type="number"
             name="valor" 
+               disabled
             value={form.valor}
             onChange={handleChange}
             className="input-premium"
@@ -347,28 +353,44 @@ async function carregar() {
           </div>
 
         {/* VENCIMENTO */}
-        <div>
-            <div className="w-1/3"> 
-          <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
+              <div>
+                  <div className="w-2/3"> 
+                <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
+                <input
+                  type="date"
+                  name="vencimento"   
+                     disabled
+                  min={hojeMaisDias(1)}   // 🔒 trava ontem e hoje 
+                  value={form.vencimento}
+                  onChange={handleChange}
+                  className="input-premium"
+                  placeholder="vencimento"
+                />
+              </div>
+          </div>
+            </div>
+        {/* STATUS */}
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+         <div className="w-1/3"> 
+          <label className="label label-required font-bold text-[#1e40af]">Parcelas</label>
           <input
-            type="date"
-            name="vencimento"   
-             min={hojeMaisDias(1)}   // 🔒 trava ontem e hoje 
-            value={form.vencimento}
+            type="number"
+            name="parcelas" 
+               disabled
+            value={form.parcelas}
             onChange={handleChange}
             className="input-premium"
-            placeholder="vencimento"
+            placeholder="Parcelas"
           />
         </div>
-            </div>
 
-        {/* STATUS */}
         <div>
-            <div className="w-1/3"> 
+            <div className="w-2/3"> 
           <label className="label label-required font-bold text-[#1e40af]">Status</label>
           <select
             name="status" 
             value={form.status}
+               disabled
             onChange={handleChange}
               className="input-premium"
             placeholder="status"
@@ -378,6 +400,7 @@ async function carregar() {
           </select>
         </div>
         </div>
+           </div>
 
         {/* documento */}
         <div>
@@ -401,30 +424,10 @@ async function carregar() {
             value={form.modelo_codigo}
             onChange={handleChange}
             className="input-premium"
-            placeholder="Nro Documento "
+            placeholder="Modelo"
 
           />
-        </div> 
-
-
-         
-              <div className="w-3/4">
-                <label className="font-bold text-[#1e40af] flex items-center gap-2">
-                  Forma Operação  
-                </label>
-                <select
-                  name="forma_operacao"
-                  value={form.forma_operacao}
-                  onChange={handleChange}
-                    disabled
-                  className="input-premium w-24"
-                  placeholder="Forma Operacao"
-                >
-                  <option value="FORNECEDOR">Fornecedor</option>
-                  <option value="FINANCIAMENTO">Financiamento</option>
-                </select>
-              </div>
- 
+        </div>  
 
         {/* BOTÕES */}
         <div className="flex gap-6 pt-8 pb-8 pl-1">
@@ -438,7 +441,7 @@ async function carregar() {
           </button>
 
           <button
-            onClick={() => navigate("/contas-pagar")}
+            onClick={() => navigate(-1)}
             className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-bold"
           >
             Cancelar
