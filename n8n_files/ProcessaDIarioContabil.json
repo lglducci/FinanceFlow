@@ -5,13 +5,13 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -528,
+        -384,
         224
       ],
       "id": "48ef2362-8249-44a4-b6fa-072be651cd8b",
@@ -27,7 +27,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -544,
+        -368,
         48
       ],
       "id": "7db0ed76-de0f-45a2-b981-935c9397e228",
@@ -45,8 +45,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1344,
-        16
+        -1328,
+        -48
       ]
     },
     {
@@ -254,7 +254,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -544,
+        -336,
         400
       ],
       "id": "60e17bad-14e8-43ca-8f2d-d904e05ae888",
@@ -875,6 +875,45 @@
       ],
       "id": "7d183e2a-f5b7-4cca-8cad-b701d945ca6d",
       "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        48
+      ],
+      "id": "16ba723b-530e-4dbc-afd6-c3db2a0b6fee",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -576,
+        224
+      ],
+      "id": "8144871c-e6da-4204-b8c3-2745f3da5ab3",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        400
+      ],
+      "id": "5755b302-4fab-41c6-840d-8bcb9c6899c4",
+      "name": "Code in JavaScript9"
     }
   ],
   "pinData": {
@@ -930,7 +969,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook2",
+            "node": "Code in JavaScript7",
             "type": "main",
             "index": 0
           }
@@ -963,7 +1002,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Code in JavaScript8",
             "type": "main",
             "index": 0
           }
@@ -1007,7 +1046,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook4",
+            "node": "Code in JavaScript9",
             "type": "main",
             "index": 0
           }
@@ -1255,13 +1294,46 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript8": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b75b2ad3-32cd-4ede-b825-c5de44db89e8",
+  "versionId": "a8225708-b63b-441e-a107-4fcce2495600",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
