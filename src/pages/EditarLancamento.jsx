@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
+
 export default function EditarLancamento() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -11,10 +12,10 @@ export default function EditarLancamento() {
 
   const [carregando, setCarregando] = useState(true);
   const [salvando, setSalvando] = useState(false);
-
+ const [modelos, setModelos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [contas, setContas] = useState([]);
-
+  
   const [form, setForm] = useState({
     id: "",
     empresa_id: "",
@@ -85,8 +86,9 @@ const THEME = {
       modelo_codigo: dados.evento_codigo || ""
     });
 
-    await carregarCategorias();
-    await carregarContas();
+     await carregarCategorias();
+      await carregarContas();
+      await carregarModelos();
 
   } catch (e) {
     console.error(e);
@@ -97,9 +99,20 @@ const THEME = {
   setCarregando(false);
 }; 
     carregar();
+
   }, []);
 
-  
+  // 🔵 Carregar contas
+const carregarContas = async () => {
+  try {
+    const url = buildWebhookUrl("listacontas", { empresa_id: id_empresa });
+    const resp = await fetch(url);
+    const data = await resp.json();
+    setContas(data);
+  } catch (e) {
+    console.error("Erro contas", e);
+  }
+};
 
   // 🔵 Carregar categorias
   const carregarCategorias = async () => {
@@ -113,17 +126,7 @@ const THEME = {
     }
   };
 
-  // 🔵 Carregar contas
-  const carregarContas = async () => {
-    try {
-      const url = buildWebhookUrl("listacontas", { empresa_id: id_empresa });
-      const resp = await fetch(url);
-      const data = await resp.json();
-      setContas(data);
-    } catch (e) {
-      console.error("Erro contas", e);
-    }
-  };
+ 
 
 
   useEffect(() => {
@@ -134,11 +137,27 @@ useEffect(() => {
   carregarContas();
 }, []);
 
+ function onChange(e) {
+  const { name, value } = e.target;
 
-  function onChange(e) {
-    const { name, value } = e.target;
-    setForm((ant) => ({ ...ant, [name]: value }));
+  // se mudou a classificação, limpa o modelo
+  if (name === "classificacao") {
+    setForm((ant) => ({
+      ...ant,
+      classificacao: value,
+      modelo_codigo: ""   // limpa modelo antigo
+    }));
+
+    carregarModelos(value);
+    return;
   }
+
+  setForm((ant) => ({
+    ...ant,
+    [name]: value
+  }));
+}
+ 
 
 // 🔵 SALVAR ALTERAÇÕES
 const salvar = async () => {
@@ -214,6 +233,20 @@ const getClassificacoes = () => {
   if (!form.tipo) return [];
   return classificacoesPorNatureza[form.tipo] || [];
 };
+
+ async function carregarModelos(classificacaoParam = form.classificacao) {
+  try {
+    const url = buildWebhookUrl("modelos",  { empresa_id:id_empresa , tipo_evento:'financeiro' ,sistema:false,  
+ classificacao:  classificacaoParam  });
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    setModelos(Array.isArray(data) ? data : []);
+  } catch (e) {
+    console.log("Erro modelos", e);
+  }
+}
 
  
  return (
@@ -365,19 +398,26 @@ const getClassificacoes = () => {
           />
         </div>
 
-        <div>
-          <label className="label label-required font-bold text-[#1e40af]">Modelo</label>
-          <input
-             type="text"
-            name="modelo_codigo"
-              disabled
-            value={form.modelo_codigo}
-            onChange={onChange}
-            className="input-premium"
-            placeholder="Modelo"
+         <div>
+            <label className="label label-required font-bold text-[#1e40af]">
+              Modelo
+            </label>
 
-          />
-        </div>  
+            <input
+              list="modelos"
+              name="modelo_codigo"
+              className="input-premium"
+              value={form.modelo_codigo || ""}
+              onChange={onChange}
+              placeholder="Digite ou selecione o modelo"
+            />
+
+            <datalist id="modelos">
+              {modelos.map((m) => (
+                <option key={m.id} value={m.codigo} />
+              ))}
+            </datalist>
+          </div>
         {/* Botões */}
             
           <div className="flex gap-6 pt-8 pb-8 pl-1">

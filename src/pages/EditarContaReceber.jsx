@@ -138,7 +138,7 @@ async function carregar() {
       parcela_num: dado.parcela_num,
       status: dado.status,
       doc_ref: dado.doc_ref,
- 
+       parcelas: dado.parcelas,
       modelo_codigo: dado.modelo_codigo,
 
     });
@@ -172,6 +172,7 @@ async function carregar() {
           descricao: form.descricao,
           valor: Number(form.valor),
           vencimento: form.vencimento,
+          parcelas:form.parcelas,
           parcela_num:form.parcela_num,
           categoria_id: Number(form.categoria_id) || null,
           fornecedor_id: Number(form.fornecedor_id) || null,
@@ -327,18 +328,34 @@ async function carregar() {
         {/* STATUS */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
-         <div className="w-1/3"> 
+         <div className="w-2/3"> 
           <label className="label label-required font-bold text-[#1e40af]">Parcelas</label>
           <input
             type="number"
             name="parcela_num" 
-               disabled
+                   disabled
             value={form.parcela_num}
             onChange={handleChange}
             className="input-premium"
-            placeholder="Parcelas"
+            placeholder="Nro Parcela"
           />
         </div>
+
+        <div className="w-2/3"> 
+          <label className="label label-required font-bold text-[#1e40af]">Total Parcela</label>
+          <input
+            type="number"
+            name="parcelas" 
+               disabled
+            value={form.parcelas}
+            onChange={handleChange}
+            className="input-premium"
+            placeholder="Nro Parcela"
+          />
+        </div> 
+        </div>
+
+        
         <div>
             <div className="w-2/3"> 
           <label  className="label label-required font-bold text-[#1e40af]" >Status</label>
@@ -357,7 +374,8 @@ async function carregar() {
           </select>
         </div>
         </div>
-        </div>
+
+        
 
         {/* documento */}
         <div>

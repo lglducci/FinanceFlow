@@ -7,6 +7,7 @@ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import { Link } from "react-router-dom";
 import { fetchSeguro } from "../utils/apiSafe";
 
+
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");
@@ -38,6 +39,7 @@ const [categorias, setCategorias] = useState([]);
 const [fornecedores, setFornecedores] = useState([]);
   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 const [tipoOperacao, setTipoOperacao] = useState("");
+const [busca, setBusca] = useState("");
 
  function formatarDataBR(data) {
   if (!data) return "-";
@@ -71,7 +73,7 @@ const [tipoOperacao, setTipoOperacao] = useState("");
     let ini, fim;
 
  
-    setDataIni(   hojeMaisDias(-2) );
+    setDataIni(    hojeLocal() );
     setDataFim(  hojeLocal());
   }
 
@@ -517,6 +519,23 @@ const formaLabel = {
   aprazo: "A prazo"
 };
 
+const listaFiltrada = lista.filter((l) => {
+
+  if (!busca) return true;
+
+  const texto = busca.toLowerCase();
+
+  return (
+    (l.descricao || "").toLowerCase().includes(texto) ||
+    (l.categoria_nome || "").toLowerCase().includes(texto) ||
+    (l.forma || "").toLowerCase().includes(texto) ||
+    (l.tipo || "").toLowerCase().includes(texto) ||
+       (l.tipo_evento || "").toLowerCase().includes(texto) ||
+    (l.origem || "").toLowerCase().includes(texto) ||
+    (l.classificacao || "").toLowerCase().includes(texto) ||
+    (l.valor || "").toString().toLowerCase().includes(texto)
+  );
+});
 
 return (
   <div className="p-4 space-y-4">
@@ -608,8 +627,8 @@ return (
               </p>
             )}
           </div>
-
-
+   
+ 
       {/* CONTA BANCÁRIA */}
       <div className="bg-white rounded-xl p-4 border-l-4 border-green-600 shadow-sm">
         <p className="text-sm text-gray-500">Conta bancária</p>
@@ -686,10 +705,23 @@ return (
 
           <option value="__nova__">➕ Nova Conta Financeira</option>
         </select>
- 
- 
-
+  
         </div>
+        {/* BUSCA */}
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold text-gray-700">
+              Busca
+            </label>
+
+            <input
+              type="text"
+              placeholder="🔎 Buscar transação..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value.toLowerCase())}
+              className="px-3 py-2 border rounded-lg w-64"
+            />
+          </div>
+
        <div className="flex items-center gap-10"> 
 
                   
@@ -775,9 +807,11 @@ return (
       </div>
     </div>
 
+    
+
     {/* TABELA */}
     <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
-      {lista.length === 0 ? (
+      {listaFiltrada.length === 0 ? (
         <p className="p-4 text-sm text-gray-500">Nenhum lançamento encontrado.</p>
       ) : (
         <table className="w-full text-sm">
@@ -811,7 +845,9 @@ return (
           </thead>  
 
           <tbody>
-            {lista.map((l, i) => (
+
+            
+            {listaFiltrada.map((l, i) => (
 
              
               <tr key={l.id} className="border-t">
