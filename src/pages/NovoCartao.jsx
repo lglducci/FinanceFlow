@@ -179,6 +179,8 @@ async function salvar() {
             <input
               type="number"
               name="fechamento_dia"
+              min={(1)}
+              max={(30)}
               value={form.fechamento_dia}
               onChange={handleChange}
                className="input-premium"
@@ -191,6 +193,8 @@ async function salvar() {
             <input
               type="number"
               name="vencimento_dia"
+              min={(1)}
+              max={(30)}
               value={form.vencimento_dia}
               onChange={handleChange}
               className="input-premium"
@@ -223,12 +227,12 @@ async function salvar() {
 
         <div>
           <label  className="label label-required font-bold text-[#1e40af]">Nome no Cartão</label>
-          <input
-            name="NomeCartao"
+           <input
+            name="nomecartao"
             value={form.nomecartao}
             onChange={handleChange}
-             className="input-premium"
-                placeholder="Nome do Cartão"
+            className="input-premium"
+            placeholder="Nome do Cartão"
           />
         </div>
 
