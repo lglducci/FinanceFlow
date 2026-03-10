@@ -6,7 +6,7 @@ import FormConta from "../components/forms/FormConta";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import { Link } from "react-router-dom";
 import { fetchSeguro } from "../utils/apiSafe";
-
+import { useRef } from "react";
 
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
@@ -22,7 +22,7 @@ const [totalSaida, setTotalSaida] = useState(0);
 const [saldoInicial, setSaldoInicial] = useState(0);
 const [saldoFinal, setSaldoFinal] = useState(0);
 const [refreshKey, setRefreshKey] = useState(0);
- 
+const contaRef = useRef(null);
  
 const [contas, setContas] = useState([]);
 const [loading, setLoading] = useState(false);
@@ -421,6 +421,7 @@ async function processarTitulo(titulo, conta_id) {
 
   if (!conta_id || Number(conta_id) === 0) {
     alert("Selecione a conta bancária.");
+    contaRef.current?.focus();
     return;
   }
  
@@ -683,6 +684,7 @@ return (
           <label className="text-sm font-semibold text-gray-700">Conta Bancária</label>
           <select
             value={contaId}
+             ref={contaRef}
             onChange={(e) => {
                 if (e.target.value === "__nova__") {
                   setModalConta(true);
