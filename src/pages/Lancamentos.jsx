@@ -832,9 +832,10 @@ return (
               
                  {!temTransacao && (
                <>   <th className="px-3 py-2 text-left">Parcela</th>
-                  <th className="px-3 py-2 text-left">Parcela Total</th> 
+                  <th className="px-3 py-2 text-left">Parcela Total</th> </> )}
                 <th className="px-3 py-2 text-left">Vencimento</th>
-                <th className="px-3 py-2 text-left">Vencido</th>
+              {!temTransacao && (
+               <>     <th className="px-3 py-2 text-left">Vencido</th>
                  <th className="px-3 py-2 text-left">Status</th> </> )}
               <th className="px-3 py-2 text-right">Valor</th>
               {temTransacao && (
@@ -904,7 +905,7 @@ return (
                   {!temTransacao && (     <td className="px-3 py-2 text-center">
                     {Number(l.parcela_total) > 0 ? l.parcela_total : "-"}
                   </td>)}
-                    {!temTransacao && ( <td className="px-3 py-2">{formatarDataBR(l.vencimento)}</td>)}
+                   <td className="px-3 py-2">{formatarDataBR(l.vencimento)}</td>
                        {!temTransacao && (<td className="px-3 py-2 text-left">
                              <span
                                   className={`px-3 py-1 rounded-full text-xs font-semibold ${
