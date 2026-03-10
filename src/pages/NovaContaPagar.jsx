@@ -191,7 +191,7 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
           status: form.status,
           doc_ref: form.doc_ref,
           contabil_id: form.contabil_id,
-          codigo: modeloCodigo ,
+          modelo_codigo: modeloCodigo ,
           classificacao:form.classificacao 
         })
       });
