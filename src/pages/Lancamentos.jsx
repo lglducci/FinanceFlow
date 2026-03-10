@@ -394,7 +394,7 @@ async function Estornar(id) {
     if (sucesso) {
      //wait carregarSaldoConta(contaId);
         setRefreshKey(prev => prev + 1);
-        alert("Lancamento estornado com sucesso!");
+        alert("Lancamento estornado com sucesso!"); 
         return;
       }
 
@@ -470,7 +470,7 @@ async function processarTitulo(titulo, conta_id) {
 
     alert("Processado com sucesso!");
     pesquisar();
-
+   carregarSaldoConta(conta_id);
   } catch (e) {
     alert("Erro ao processar título.");
   } finally {
