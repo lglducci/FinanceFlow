@@ -41,7 +41,7 @@ const THEME = {
     vencimento_dia: "",
     vencimento: "",   // <-- MM/AA
     numero: "",
-    NomeCartao: "",
+    nomecartao: "",
     status: "ativo"
   });
 
@@ -57,7 +57,7 @@ async function salvar() {
     fechamento_dia,
     vencimento_dia,
     vencimento,
-    status,
+    status 
   } = form;
 
   if (!nome || !nome.trim()) {
