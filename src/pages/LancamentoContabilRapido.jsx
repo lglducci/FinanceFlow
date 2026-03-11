@@ -61,22 +61,26 @@ const [helperMsg, setHelperMsg] = useState(null);
 
  
 
-
-
-async function carregarModelos() {
-  const r = await fetch(
-    buildWebhookUrl("modelos", { empresa_id })
-  );
-  const j = await r.json();
-  setModelos(j || []);
+ 
+  async function carregarModelos() {
+  try {
+    const r = await fetch(
+      buildWebhookUrl("modelos", { empresa_id, tipo_evento:"" ,sistema:false,  
+ classificacao: ""  })
+    );
+    const j = await r.json();
+    setModelos(Array.isArray(j) ? j : []);
+  } catch (e) {
+    console.error("Erro ao carregar modelos", e);
+    setModelos([]);
+  }
 }
 
-useEffect(() => {
-  carregarModelos();
-}, [empresa_id]);
+ 
 
 
 
+ 
  
   /* ================== SELECIONAR MODELO ================== */
   async function selecionarModelo(token) {
