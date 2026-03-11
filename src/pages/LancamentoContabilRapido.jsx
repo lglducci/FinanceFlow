@@ -61,25 +61,39 @@ const [helperMsg, setHelperMsg] = useState(null);
 
  
 
- 
-  async function carregarModelos() {
+ useEffect(() => {
+  if (!empresa_id) return;
+
+  carregarModelos();
+}, [empresa_id]);
+
+async function carregarModelos() {
   try {
-    const r = await fetch(
-      buildWebhookUrl("modelos", { empresa_id, tipo_evento:"" ,sistema:false,  
- classificacao: ""  })
-    );
+    const url = buildWebhookUrl("modelos", {
+      empresa_id,
+      tipo_evento: "",
+      sistema: false,
+      classificacao: ""
+    });
+
+    console.log("URL:", url);
+
+    const r = await fetch(url);
+
+    if (!r.ok) {
+      throw new Error(`HTTP ${r.status}`);
+    }
+
     const j = await r.json();
+
+    console.log("RETORNO:", j);
+
     setModelos(Array.isArray(j) ? j : []);
   } catch (e) {
-    console.error("Erro ao carregar modelos", e);
+    console.error("Erro ao carregar modelos:", e);
     setModelos([]);
   }
 }
-
- 
-
-
-
  
  
   /* ================== SELECIONAR MODELO ================== */
