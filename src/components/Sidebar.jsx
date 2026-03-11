@@ -139,9 +139,9 @@ function podeVer(menuKey) {
             
                 {podeVer("visao_geral")  && ( <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />)}
                
-          <SubItem icon={<IconDoc />} label="Lanctos Ctb - Saldo"
+         {/*} <SubItem icon={<IconDoc />} label="Lanctos Ctb - Saldo"
              onClick={() => navigate("/lancamentos-contabeis")}
-           /> 
+           /> */}
              
             <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
              onClick={() => navigate("/relatorios/diario")}
