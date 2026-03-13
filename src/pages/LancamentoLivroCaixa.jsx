@@ -2,14 +2,13 @@ import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { useRef } from "react";
-
+import { fetchSeguro } from "../utils/apiSafe";
 import ModalBase from "../components/ModalBase";
- 
-import FormConta from "../components/forms/FormConta";
- 
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+import FormContaContabilModal from "../components/forms/FormContaContabilModal";
  
 export default function LancamentoLivroCaixa() {
-
+  const [contasFiltradasContra, setContasFiltradasContra] = useState([]);
   const [conta, setConta] = useState("");
   const [saldo, setSaldo] = useState(8965.32);
    const empresa_id = localStorage.getItem("empresa_id");
@@ -19,15 +18,21 @@ export default function LancamentoLivroCaixa() {
   const [indiceSelecionado, setIndiceSelecionado] = useState(-1);
 const [contaId, setContaId] = useState(null);
 const historicoRef = useRef(null);
-  const [modalConta, setModalConta] = useState(false);
+const [carregandoSaldo, setCarregandoSaldo] = useState(false); 
+const [modalContaAberto, setModalContaAberto] = useState(false);
+  function hojeISO() {
+  return new Date().toISOString().slice(0,10);
+}
 
-  const [nova, setNova] = useState({
-    data: "11/03/2026",
-    historico: "",
-    entrada: "",
-    saida: "",
-    contra: ""
-  });
+ const [nova, setNova] = useState({
+  data:   hojeLocal(),
+  historico: "",
+  entrada: "",
+  saida: "",
+  contra: ""
+});
+
+
 const navigate = useNavigate();
   function adicionarLinha() {
 
@@ -49,18 +54,19 @@ const navigate = useNavigate();
       { ...nova, saldo: novoSaldo }
     ]);
 
-    setNova({
-  data: nova.data,
+     
+
+setNova({
+  data: hojeLocal(),
   historico: "",
   entrada: "",
   saida: "",
   contra: ""
 });
+ 
 historicoRef.current?.focus();
   }
-
-
-
+ 
   async function carregarContas() {
     const r = await fetch(
       buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id })
@@ -94,10 +100,10 @@ historicoRef.current?.focus();
 
   const linhaRemovida = novaLista[index];
  
-
-  let valor = parseFloat(nova.entrada || nova.saida);
+ let valor = parseFloat(linhaRemovida.entrada || linhaRemovida.saida);
 
 if (isNaN(valor)) valor = 0;
+
 
   if (linhaRemovida.entrada) {
     setSaldo(saldo - valor);
@@ -112,15 +118,39 @@ if (isNaN(valor)) valor = 0;
   setLinhas(novaLista);
 
 }
+ 
+// Rotina salvar definitiva assim espero
+ 
+async function salvarLancamentos() {
 
- async function salvarLancamentos() {
+  if (!contaId) {
+    alert("Conta observada não selecionada");
+    return;
+  }
+ 
+  let linhasParaSalvar = [...linhas];
 
-  if (linhas.length === 0) {
+if (nova.historico || nova.entrada || nova.saida) {
+
+  let valor = parseFloat(nova.entrada || nova.saida || 0);
+
+  let novoSaldo = saldo;
+
+  if (nova.entrada) novoSaldo += valor;
+  if (nova.saida) novoSaldo -= valor;
+
+  linhasParaSalvar.push({
+    ...nova,
+    saldo: novoSaldo
+  });
+}
+
+  if (linhasParaSalvar.length === 0) {
     alert("Nenhuma linha para salvar");
     return;
   }
 
-  const lancamentos = linhas.map(l => ({
+  const lancamentos = linhasParaSalvar.map(l => ({
     data: l.data,
     historico: l.historico,
     valor: parseFloat((l.entrada || l.saida || "0").replace(",", ".")),
@@ -131,29 +161,143 @@ if (isNaN(valor)) valor = 0;
   const payload = {
     empresa_id,
     conta_observada: contaId,
-    lancamentos
+    lancamentos: JSON.parse(prepararLancamentosJSONB(lancamentos))
   };
 
-  const r = await fetch(
-    buildWebhookUrl("lote_lancamentos"),
-    {
+  const url = buildWebhookUrl("lote_lancamentos");
+
+  try {
+
+    await fetchSeguro(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
+    });
+
+    alert("Lançamentos salvos!");
+    setLinhas([]);
+
+setConta("");
+setContaId(null);
+setSaldo(0);
+
+setNova({
+  data: hojeLocal(),
+  historico: "",
+  entrada: "",
+  saida: "",
+  contra: ""
+});
+
+historicoRef.current?.focus();
+
+  } catch (err) {
+
+    console.error("ERRO CAPTURADO:", err.message);
+
+    alert(
+      err.message ||
+      "Erro inesperado ao salvar os lançamentos."
+    );
+
+  }
+}
+  
+// fim da rotina salvar  
+
+
+function prepararLancamentosJSONB(lancamentos) {
+  try {
+
+    // se já for array ou objeto
+    if (typeof lancamentos === "object") {
+      return JSON.stringify(lancamentos);
     }
+
+    // se vier string
+    if (typeof lancamentos === "string") {
+
+      let txt = lancamentos.trim();
+
+      // remove aspas externas
+      if (
+        (txt.startsWith("'") && txt.endsWith("'")) ||
+        (txt.startsWith('"') && txt.endsWith('"'))
+      ) {
+        txt = txt.slice(1, -1);
+      }
+
+      // remove escape duplicado
+      txt = txt.replace(/\\"/g, '"');
+
+      // tenta converter
+      const obj = JSON.parse(txt);
+
+      return JSON.stringify(obj);
+    }
+
+    throw new Error("Formato inválido de lancamentos");
+
+  } catch (e) {
+    console.error("Erro preparando JSON:", e);
+    throw new Error("Lancamentos JSON inválido");
+  }
+}
+
+ async function carregarSaldoConta(conta_id) {
+
+  if (!conta_id) return;
+
+  try {
+
+    setCarregandoSaldo(true);
+
+    const data = await fetchSeguro(
+      buildWebhookUrl("saldoconta"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id: empresa_id,
+          conta_id: conta_id
+        })
+      }
+    );
+
+    setSaldo(Number(data.data.ff_saldo_conta || 0));
+
+  } catch (err) {
+
+    console.error("Erro ao buscar saldo:", err.message);
+
+    alert(err.message || "Erro ao carregar saldo da conta");
+
+  } finally {
+
+    setCarregandoSaldo(false);
+
+  }
+}
+
+function filtrarContasContra(texto) {
+
+  const t = texto.toLowerCase();
+
+  const filtradas = contas.filter(c =>
+    c.nome.toLowerCase().includes(t) ||
+    c.codigo.includes(t) ||
+    (c.apelido && c.apelido.includes(t))
   );
 
-  await r.json();
-
-  alert("Lançamentos salvos!");
-  setLinhas([]);
+  setContasFiltradasContra(filtradas.slice(0,10));
 }
-  return (
+
+return (
     <div className="flex justify-center mt-10">
 
-      <div className="bg-blue-900 rounded-xl p-2 w-[1400px]">
+      <div className="bg-gray-200 rounded-xl p-8 w-[1700px]">
 
-        <div className="bg-white rounded-lg p-4">
+        <div className="bg-gray-650 rounded-lg p-8">
 
           <h2 className="text-lg font-bold mb-4">
             ⚡ Lançamento Contábil Inteligente
@@ -188,9 +332,9 @@ if (isNaN(valor)) valor = 0;
 
                             setConta(c.nome);
                             setContaId(c.id);
-
                             setContasFiltradas([]);
 
+                            carregarSaldoConta(c.id);
                             }}
                         >
                             {c.codigo} - {c.nome}
@@ -201,19 +345,36 @@ if (isNaN(valor)) valor = 0;
                     )}
 
                     </div>
-          <div className="text-sm text-gray-600 mb-4">
-            Saldo atual: <b>R$ {saldo.toFixed(2)}</b>
-          </div>
+           Saldo atual: <b>
+            {carregandoSaldo
+              ? "Carregando..."
+              : saldo.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL"
+                })
+            }
+            </b>
 
           {/* TABELA */}
              {/* CABEÇALHO */}
 
-                 <div className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 text-sm font-semibold border-b pb-2 mb-2">
+                 <div  className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
+                                   
                 <div>Data</div>
                 <div>Histórico</div>
-                <div className="text-right">Entrada</div>
-                <div className="text-right">Saída</div>
-                <div className="text-center">Contra Conta</div>
+                
+              <div className="text-right">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                  Entrada
+                </span>
+              </div>
+
+              <div className="text-right">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                  Saída
+                </span>
+              </div>
+                <div className="text-left">Contra Conta</div>
                 <div className="text-right">Saldo</div>
                 <div className="text-center">Ação</div>
                 </div>
@@ -225,10 +386,25 @@ if (isNaN(valor)) valor = 0;
                     key={i}
                      className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 gap-2 text-sm border-b py-1"
                 >
-                    <div>{l.data}</div>
-                    <div>{l.historico}</div>
-                    <div className="text-right">{l.entrada}</div>
-                    <div className="text-right">{l.saida}</div>
+                   <div>{l.data.split("-").reverse().join("/")}</div>
+                   <div className="truncate">{l.historico}</div>
+                     <div className="text-right font-mono text-green-700 font-semibold">
+                          {l.entrada
+                            ? Number(l.entrada).toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL"
+                              })
+                            : ""}
+                        </div>
+
+                        <div className="text-right font-mono text-red-700 font-semibold">
+                          {l.saida
+                            ? Number(l.saida).toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL"
+                              })
+                            : ""}
+                        </div>
                     <div>{l.contra}</div>
                    <div className="text-right">
                     {Number(l.saldo).toLocaleString("pt-BR", {
@@ -253,11 +429,12 @@ if (isNaN(valor)) valor = 0;
 
             <div className="grid grid-cols-[120px_1fr_120px_120px_220px_120px] gap-2 mb-4">
 
-                <input
+               <input
+                type="date"
                 className="border rounded p-2"
                 value={nova.data}
                 onChange={(e)=>setNova({...nova,data:e.target.value})}
-                />
+              />
 
                  <input
                 ref={historicoRef}
@@ -289,15 +466,15 @@ if (isNaN(valor)) valor = 0;
                     onChange={(e)=>{
                         const v = e.target.value;
                         setNova({...nova,contra:v});
-                        filtrarContas(v);
+                         filtrarContasContra(v);
                         setIndiceSelecionado(-1);
                     }}
                     onKeyDown={(e)=>{
 
                         if (e.key === "ArrowDown") {
                         e.preventDefault();
-                        setIndiceSelecionado(i =>
-                            Math.min(i + 1, contasFiltradas.length - 1)
+                        setIndiceSelecionado(i =>   
+                            Math.min(i + 1, contasFiltradasContra.length - 1)
                         );
                         }
 
@@ -309,36 +486,44 @@ if (isNaN(valor)) valor = 0;
                         }
 
                         if (e.key === "Enter" && indiceSelecionado >= 0) {
-                        e.preventDefault();
+                          e.preventDefault();
 
-                        const c = contasFiltradas[indiceSelecionado];
+                          const c = contasFiltradasContra[indiceSelecionado];
 
-                        setNova({
+                          setNova({
                             ...nova,
                             contra: c.nome,
                             conta_id: c.id
-                        });
+                          });
 
-                        setContasFiltradas([]);
-                        setIndiceSelecionado(-1);
+                          setContasFiltradasContra([]);
+                          setIndiceSelecionado(-1);
                         }
-
                     }}
                     />
-                     {contasFiltradas.map((c, i) => (
-                    <div
-                        key={c.id}
-                        className={`p-2 cursor-pointer 
-                        ${i === indiceSelecionado ? "bg-blue-200" : "hover:bg-gray-200"}`}
-                        onClick={()=>{
-                        setNova({...nova,contra:c.nome,conta_id:c.id});
-                        setContasFiltradas([]);
-                        setIndiceSelecionado(-1);
-                        }}
-                    >
-                        {c.codigo} - {c.nome}
-                    </div>
-                    ))}
+                    {contasFiltradasContra.length > 0 && (
+                          <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-48 overflow-y-auto z-50">
+                            
+                            {contasFiltradasContra.map((c, i) => (
+                              <div
+                                key={c.id}
+                                className={`p-2 cursor-pointer ${
+                                  i === indiceSelecionado
+                                    ? "bg-blue-200"
+                                    : "hover:bg-gray-200"
+                                }`}
+                                onClick={() => {
+                                  setNova({ ...nova, contra: c.nome, conta_id: c.id });
+                                  setContasFiltradasContra([]);
+                                  setIndiceSelecionado(-1);
+                                }}
+                              >
+                                {c.codigo} - {c.nome}
+                              </div>
+                            ))}
+
+                          </div>
+                        )}
 
                     </div>
                  <input
@@ -417,7 +602,7 @@ if (isNaN(valor)) valor = 0;
                 
                  
                 <button
-                    onClick={() => setModalConta(true)}
+                    onClick={() => setModalContaAberto(true)}
                      className="
                         px-5 py-2 rounded-full
                         font-bold text-sm tracking-wide
@@ -440,39 +625,22 @@ if (isNaN(valor)) valor = 0;
       
         </div>
       </div>
-
-       <ModalBase
-                  open={modalConta}
-                  onClose={() => setModalConta(false)}
-                  title="Nova Conta Financeira"
-                >
-                  <FormConta
-                    empresa_id={empresa_id}
-                    onSuccess={(novaConta) => {
-                          console.log("RETORNO RAW:", novaConta);
-                          carregarContas()
-                          const conta = Array.isArray(novaConta)
-                            ? novaConta[0]
-                            : novaConta;
-      
-                          console.log("CONTA TRATADA:", conta);
-      
-                          setContas(prev => {
-                            console.log("ANTES:", prev);
-                            return [conta, ...prev];
-                          });
-      
-                          setForm(prev => ({
-                            ...prev,
-                            conta_id: conta.id, // SEM String
-                          }));
-      
-                          setModalConta(false);
-                        }}
-                    onCancel={() => setModalConta(false)}
-                  />
-                </ModalBase>
-      
+ 
+  <ModalBase
+  open={modalContaAberto}
+  onClose={() => setModalContaAberto(false)}
+  title="Nova Conta Contábil"
+>
+    <FormContaContabilModal
+      empresa_id={empresa_id}
+      onSuccess={() => {
+        setModalContaAberto(false);
+        carregarContas();
+      }}
+      onCancel={() => setModalContaAberto(false)}
+    />
+  </ModalBase>
+ 
     </div>
   );
 }

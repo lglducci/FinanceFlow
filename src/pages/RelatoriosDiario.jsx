@@ -8,7 +8,7 @@ export default function RelatoriosDiario() {
   const hoje = new Date().toISOString().slice(0, 10);
 
   const [empresaId, setEmpresaId] = useState(null);
-  const [dataIni, setDataIni] = useState(hojeMaisDias(-1));
+  const [dataIni, setDataIni] = useState( hojeLocal());
   const [dataFim, setDataFim] = useState(hojeLocal());
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -69,6 +69,13 @@ function formatarDataBR(data) {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+  if (!empresaId) return;
+
+  consultar();
+
+}, [empresaId, dataIni, dataFim]);
 
 const filtrados = dados.filter(item => {
   if (!filtro) return true;
@@ -204,7 +211,7 @@ return (
                         transition-all duration-200
                         inline-flex items-center gap-2
                       ">
-          ⚡ Lançamento rápido
+          ⚡ Novo Lançamento
         </button>
 
 
@@ -222,7 +229,7 @@ return (
                         transition-all duration-200
                         inline-flex items-center gap-2
                       ">
-          ⚡ Lançamento Inteligente
+          ⚡ Lançar Livro Caixa
         </button>
 
         <button

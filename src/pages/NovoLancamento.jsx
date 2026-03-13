@@ -397,6 +397,9 @@ const limparFormulario = () => {
 
 
  const helper = explicarLancamento(modo, form.tipo, form.classificacao);
+
+
+ 
  const handleSalvarGeral = async () => {
  
  const erros = validarFormulario();
