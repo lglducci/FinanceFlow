@@ -10,7 +10,7 @@ import FormContaContabilModal from "../components/forms/FormContaContabilModal";
 export default function LancamentoLivroCaixa() {
   const [contasFiltradasContra, setContasFiltradasContra] = useState([]);
   const [conta, setConta] = useState("");
-  const [saldo, setSaldo] = useState(8965.32);
+  const [saldo, setSaldo] = useState(0);
    const empresa_id = localStorage.getItem("empresa_id");
  const [contas, setContas] = useState([]);
  const [contasFiltradas, setContasFiltradas] = useState([]);
@@ -20,6 +20,8 @@ const [contaId, setContaId] = useState(null);
 const historicoRef = useRef(null);
 const [carregandoSaldo, setCarregandoSaldo] = useState(false); 
 const [modalContaAberto, setModalContaAberto] = useState(false);
+
+const [indiceContaObs, setIndiceContaObs] = useState(-1);
   function hojeISO() {
   return new Date().toISOString().slice(0,10);
 }
@@ -39,8 +41,9 @@ const navigate = useNavigate();
      if (!nova.historico && !nova.entrada && !nova.saida) {
   return;
 }
-
-    let valor = parseFloat(nova.entrada || nova.saida || 0);
+   let valor = parseFloat(
+  (nova.entrada || nova.saida || "0").replace(",", ".")
+);
 
     let novoSaldo = saldo;
 
@@ -292,23 +295,39 @@ function filtrarContasContra(texto) {
   setContasFiltradasContra(filtradas.slice(0,10));
 }
 
+const valorAtual = parseFloat((nova.entrada || nova.saida || "0").replace(",", "."));
+
+let saldoLinhaAtual = saldo;
+
+if (!isNaN(valorAtual)) {
+  if (nova.entrada) saldoLinhaAtual = saldo + valorAtual;
+  if (nova.saida) saldoLinhaAtual = saldo - valorAtual;
+}
+
 return (
-    <div className="flex justify-center mt-10">
+      <div className="flex justify-center mt-10 bg-gray-100 min-h-screen py-10">
 
-      <div className="bg-gray-200 rounded-xl p-8 w-[1700px]">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-[1700px]">
+        <div className="bg-gray-650 rounded-lg p-8"> 
+        <div className="bg-gray-600 border-b rounded-t-xl p-6"> 
+       <div className="bg-gray-600 border-b rounded-t-xl p-6">  
+        {/* TÍTULO */}
+        <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
+          ⚡ Lançamento Contábil Inteligente
+        </h2>
 
-        <div className="bg-gray-650 rounded-lg p-8">
-
-          <h2 className="text-lg font-bold mb-4">
-            ⚡ Lançamento Contábil Inteligente
-          </h2>
+        {/* CONTA + SALDO */}
+        <div className="grid grid-cols-[1fr_200px] gap-6 items-end">
 
           {/* CONTA */}
-          <label className="text-sm font-semibold">
-            Conta observada
-          </label>
+          <div className="flex flex-col gap-1">
 
-          <div className="relative mb-4">
+            <label className="text-sm font-semibold text-gray-50">
+              Conta observada
+            </label>
+
+     
+      <div className="relative">
 
                     <input
                     className="w-full border rounded-lg p-2"
@@ -318,16 +337,51 @@ return (
                         const v = e.target.value;
                         setConta(v);
                         filtrarContas(v);
+                        setIndiceContaObs(-1);
                     }}
-                    />
+                  
 
+                    onKeyDown={(e)=>{
+
+                        if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          setIndiceContaObs(i =>
+                            Math.min(i + 1, contasFiltradas.length - 1)
+                          );
+                        }
+
+                        if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          setIndiceContaObs(i =>
+                            Math.max(i - 1, 0)
+                          );
+                        }
+
+                        if (e.key === "Enter" && indiceContaObs >= 0) {
+                          e.preventDefault();
+
+                          const c = contasFiltradas[indiceContaObs];
+
+                          setConta(c.nome);
+                          setContaId(c.id);
+                          setContasFiltradas([]);
+
+                          carregarSaldoConta(c.id);
+                        }
+
+                      }}
+                         />
                     {contasFiltradas.length > 0 && (
                     <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-40 overflow-y-auto z-50">
 
-                        {contasFiltradas.map(c => (
+                       {contasFiltradas.map((c,i) => ( 
                         <div
                             key={c.id}
-                            className="p-2 hover:bg-gray-200 cursor-pointer"
+                            className={`p-2 cursor-pointer ${
+                                i === indiceContaObs
+                                  ? "bg-blue-200"
+                                  : "hover:bg-gray-200"
+                              }`}
                             onClick={()=>{
 
                             setConta(c.nome);
@@ -344,17 +398,39 @@ return (
                     </div>
                     )}
 
-                    </div>
-           Saldo atual: <b>
-            {carregandoSaldo
-              ? "Carregando..."
-              : saldo.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL"
-                })
-            }
-            </b>
+             </div>
 
+    </div>
+
+    {/* SALDO */}
+    <div className="text-right">
+
+      <div className="text-base text-gray-50">
+        Saldo atual
+      </div>
+     <div
+  className={`text-lg font-bold ${
+    saldo > 0
+      ? "text-green-600"
+      : saldo < 0
+      ? "text-red-400"
+      : "text-gray-200"
+  }`}
+>
+  {carregandoSaldo
+    ? "Carregando..."
+    : saldo.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      })
+  }
+</div>
+
+    </div>
+
+  </div>  </div>
+
+</div>
           {/* TABELA */}
              {/* CABEÇALHO */}
 
@@ -381,50 +457,58 @@ return (
 
                 {/* LINHAS */}
 
-                {linhas.map((l, i) => (
-                <div
-                    key={i}
-                     className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 gap-2 text-sm border-b py-1"
-                >
-                   <div>{l.data.split("-").reverse().join("/")}</div>
-                   <div className="truncate">{l.historico}</div>
-                     <div className="text-right font-mono text-green-700 font-semibold">
-                          {l.entrada
-                            ? Number(l.entrada).toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL"
-                              })
-                            : ""}
-                        </div>
-
-                        <div className="text-right font-mono text-red-700 font-semibold">
-                          {l.saida
-                            ? Number(l.saida).toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL"
-                              })
-                            : ""}
-                        </div>
-                    <div>{l.contra}</div>
-                   <div className="text-right">
-                    {Number(l.saldo).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL"
-                    })}
-                    <div className="text-center"> 
-
-                        </div>
- 
-                    </div>
-                    
-                         <button
-                        className="text-red-600 hover:text-red-800"
-                        onClick={() => removerLinha(i)}
+                  {linhas.map((l, i) => (
+                        <div
+                          key={i}
+                          className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 text-sm border-b py-1"
                         >
-                        🗑
-                        </button>
-                </div>
-                ))}
+                          <div>{l.data.split("-").reverse().join("/")}</div>
+
+                          <div className="truncate">{l.historico}</div>
+
+                          <div className="text-right font-mono text-green-700 font-semibold">
+                            {Number((l.entrada || "0").replace(",", ".")) > 0
+                              ? Number((l.entrada || "0").replace(",", ".")).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL"
+                                })
+                              : ""}
+                          </div>
+
+                          <div className="text-right font-mono text-red-700 font-semibold">
+                            {Number((l.saida || "0").replace(",", ".")) > 0
+                              ? Number((l.saida || "0").replace(",", ".")).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL"
+                                })
+                              : ""}
+                          </div>
+
+                          <div>{l.contra}</div>
+
+                          <div
+                            className={`border rounded p-2 text-right font-semibold ${
+                            saldo > 0
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                          >
+                            {Number(l.saldo || 0).toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL"
+                            })}
+                          </div>
+                          <div className="text-center">
+                            <button
+                              className="text-red-600 hover:text-red-800"
+                              onClick={() => removerLinha(i)}
+                            >
+                              🗑
+                            </button>
+                          </div>
+
+                        </div>
+                      ))}
           {/* NOVA LINHA */}
 
             <div className="grid grid-cols-[120px_1fr_120px_120px_220px_120px] gap-2 mb-4">
@@ -527,13 +611,17 @@ return (
 
                     </div>
                  <input
-                    className="border rounded p-2 bg-gray-100 text-right"
-                    value={saldo.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL"
+                  className={`border rounded p-2 text-right font-semibold ${
+                    saldo > 0
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                   value={saldoLinhaAtual.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL"
                     })}
-                    disabled
-                    />
+                  disabled
+                />
                     
 
                 </div>
@@ -597,7 +685,7 @@ return (
                         inline-flex items-center gap-2
                     ">
                         
-                    Voltar
+                    Voltar Consulta
                 </button>
                 
                  
