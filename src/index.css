@@ -178,3 +178,11 @@ body {
 .btn-purple {
    @apply bg-gradient-to-b from-purple-500 via-purple-600 to-purple-800;
 }
+
+.btn-gray {
+   @apply bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800;
+}
+
+.btn-black {
+   @apply bg-gradient-to-b from-purple-500 via-purple-600 to-purple-800;
+}
