@@ -228,7 +228,7 @@ const [filtro, setFiltro] = useState("");
         </h3>
 
         <table className="w-full text-sm border-collapse">
-          <thead className="bg-blue-100 text-gray-700">
+          <thead className="bg-blue-150 text-gray-700">
             <tr>
               <th className="p-2 text-left">Conta</th>
               <th className="p-2 text-left">Código</th>
@@ -260,7 +260,7 @@ const [filtro, setFiltro] = useState("");
     {/* ===== LISTA DE MODELOS ===== */}
     <div className="bg-white rounded-xl shadow-sm p-4">
       <table className="w-full text-sm border-collapse">
-        <thead className="bg-gray-100 text-blue-800">
+        <thead className="bg-blue-200 text-blue-800">
           <tr>
             <th className="p-2 text-left">ID</th>
             <th className="p-2 text-left">Token</th>
@@ -268,8 +268,9 @@ const [filtro, setFiltro] = useState("");
           
              <th className="p-2 text-left">Classificação</th>
              <th className="p-2 text-left">Evento</th>
+               <th className="p-2 text-center">Origem</th>
             <th className="p-2 text-left">Ações</th>
-            <th className="p-2 text-center">Origem</th>
+           
           </tr>
         </thead>
 
@@ -277,7 +278,7 @@ const [filtro, setFiltro] = useState("");
           {filtrados.map((m, i) => (
             <tr
               key={m.id}
-              className={i % 2 === 0 ? "bg-gray-150" : "bg-gray-100"}
+              className={i % 2 === 0 ? "bg-gray-150" : "bg-gray-200"}
             >
               <td className="p-2 font-semibold">{m.id}</td>
               <td className="p-2 font-semibold">{m.codigo}</td>
@@ -285,6 +286,14 @@ const [filtro, setFiltro] = useState("");
                
               <td className="p-2">{m.classificacao}</td>
                <td className="p-2">{m.tipo_evento}</td>
+
+                 <td className="p-2 text-center font-bold">
+                {m.sistema ? (
+                  <span className="text-red-600">Sistema</span>
+                ) : (
+                  <span className="text-blue-700">Usuário</span>
+                )}
+              </td>
               <td className="p-2 flex gap-4">
                 <span
                   onClick={() => visualizar(m.id)}
@@ -322,13 +331,7 @@ const [filtro, setFiltro] = useState("");
                 )}
               </td>
 
-              <td className="p-2 text-center font-bold">
-                {m.sistema ? (
-                  <span className="text-red-600">Sistema</span>
-                ) : (
-                  <span className="text-blue-700">Usuário</span>
-                )}
-              </td>
+             
             </tr>
           ))}
         </tbody>

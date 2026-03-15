@@ -134,7 +134,7 @@ return (
     {/* TABELA */}
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-slate-100 text-blue-800">
+        <thead className="bg-slate-200 text-blue-800">
           <tr>
             <th className="px-3 py-2 text-left">ID</th>
             <th className="px-3 py-2 text-left">Código</th>
@@ -151,7 +151,7 @@ return (
           {filtradas.map((c, i) => (
             <tr
               key={c.id}
-              className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}
+              className={i % 2 === 0 ? "bg-white" : "bg-gray-250"}
             >
               <td className="px-3 py-2 font-semibold">{c.id}</td>
               <td className="px-3 py-2 font-mono">{c.codigo}</td>
