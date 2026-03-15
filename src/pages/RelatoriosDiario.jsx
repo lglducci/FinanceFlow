@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
-
+import ExcelExport from "../utils/ExcelExport";
 
 export default function RelatoriosDiario() {
   const hoje = new Date().toISOString().slice(0, 10);
@@ -135,7 +135,20 @@ async function Estornar(lote_id) {
   }
 }
 
- 
+ function exportarExcel() {
+
+  const dadosExcel = filtrados.map(l => ({
+    Lancamento: l.id,
+    Data: formatarDataBR(l.data),
+    Historico: l.historico,
+    Debito: l.conta_debito,
+    Credito: l.conta_credito,
+    Valor: l.credito,
+    Lote: l.lote_id
+  }));
+
+  ExcelExport.exportar(dadosExcel, "lancamentos_contabeis.xlsx");
+}
 
 return (
   <div className="p-4 bg-gray-100 rounded-xl">
@@ -250,6 +263,24 @@ return (
                       ">
           🖨️ Imprimir
         </button>
+
+        <button
+            onClick={exportarExcel}
+            className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-green-500 via-green-600 to-green-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+          Exportar Excel
+          </button>
+
       </div>
     </div>
 

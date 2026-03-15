@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import ExcelExport from "../utils/ExcelExport";
+
+
 
 export default function RelatoriosDRE() {
   const hoje = new Date().toISOString().slice(0, 10);
@@ -12,6 +15,13 @@ export default function RelatoriosDRE() {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+
+  const receita = dados.find(d => d.grupo === "RECEITA_BRUTA")?.valor_periodo || 0;
+const custos = dados.find(d => d.grupo === "CUSTOS")?.valor_periodo || 0;
+const despesas = dados.find(d => d.grupo === "DESPESAS_OPERACIONAIS")?.valor_periodo || 0;
+
+const lucroBruto = receita - custos;
+const resultado = lucroBruto - despesas;
 
   // formatter BR
   const fmt = new Intl.NumberFormat("pt-BR", {
@@ -61,6 +71,26 @@ export default function RelatoriosDRE() {
     }
   }
 
+
+ function exportarExcel() {
+
+  const receita = Number(dados.find(d => d.grupo === "RECEITA_BRUTA")?.valor_periodo || 0);
+  const custos = Number(dados.find(d => d.grupo === "CUSTOS")?.valor_periodo || 0);
+  const despesas = Number(dados.find(d => d.grupo === "DESPESAS_OPERACIONAIS")?.valor_periodo || 0);
+
+  const lucroBruto = receita - custos;
+  const resultado = lucroBruto - despesas;
+
+  const linhas = [
+    { Grupo: "Receita Bruta", Valor: receita },
+    { Grupo: "(-) Custos", Valor: custos },
+    { Grupo: "Lucro Bruto", Valor: lucroBruto },
+    { Grupo: "Despesas Operacionais", Valor: despesas },
+    { Grupo: "Resultado do Período", Valor: resultado }
+  ];
+
+  ExcelExport.exportar(linhas, "dre.xlsx");
+}
   return (
     <div className="p-6">
          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
@@ -90,22 +120,27 @@ export default function RelatoriosDRE() {
 
         <button
           onClick={consultar}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
+            className="btn-pill btn-blue" 
         >
           Consultar
         </button>
 
         <button
           onClick={() => window.print()}
-          className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
+                 className="btn-pill btn-gray" 
         >
           🖨️ Imprimir
         </button>
-
+         
+          <button
+             onClick={exportarExcel}
+              className="btn-pill btn-green">
+          📊 Exportar Excel
+          </button>
         
          <button
           onClick={() =>   navigate("/reports") }
-          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-bold"
+             className="btn-pill btn-gray" 
         >   
          ← Voltar
         </button>
@@ -122,32 +157,49 @@ export default function RelatoriosDRE() {
               <th className="p-3 text-right">Valor</th>
             </tr>
           </thead>
-          <tbody>
-            {dados.map((l, idx) => (
-              <tr key={idx} className="border-b">
-                <td className="p-3 font-semibold">
-                  {l.grupo.replaceAll("_", " ")}
-                </td>
-                <td
-                  className={`p-3 text-right font-bold ${
-                    Number(l.valor_periodo) < 0
-                      ? "text-red-600"
-                      : "text-green-700"
-                  }`}
-                >
-                  {fmt.format(l.valor_periodo)}
-                </td>
-              </tr>
-            ))}
+           <tbody>
 
-            {!loading && dados.length === 0 && (
-              <tr>
-                <td colSpan={2} className="p-6 text-center text-gray-400">
-                  Nenhum dado para o período selecionado.
+              {/* RECEITA */}
+              <tr className="bg-gray-100 font-bold text-lg">
+                <td className="p-3">Receita Bruta</td>
+                <td className="p-3 text-right text-green-700">
+                  {fmt.format(receita)}
                 </td>
               </tr>
-            )}
-          </tbody>
+
+              {/* CUSTOS */}
+              <tr className="bg-gray-100 font-bold text-lg">
+                <td className="p-3">(-) Custos</td>
+                <td className="p-3 text-right text-red-600">
+                  {fmt.format(custos)}
+                </td>
+              </tr>
+
+              {/* LUCRO BRUTO */}
+              <tr className="border-t-4 border-gray-400 font-bold text-lg">
+                <td className="p-3">Lucro Bruto</td>
+                <td className="p-3 text-right text-green-700">
+                  {fmt.format(lucroBruto)}
+                </td>
+              </tr>
+
+              {/* DESPESAS */}
+              <tr className="bg-gray-100 font-bold text-lg">
+                <td className="p-3">Despesas Operacionais</td>
+                <td className="p-3 text-right text-red-600">
+                  {fmt.format(despesas)}
+                </td>
+              </tr>
+
+              {/* RESULTADO FINAL */}
+              <tr className="border-t-4 border-black text-xl font-bold">
+                <td className="p-3">Resultado do Período</td>
+                <td className="p-3 text-right text-green-700">
+                  {fmt.format(resultado)}
+                </td>
+              </tr>
+
+              </tbody>
         </table>
 
         {loading && (

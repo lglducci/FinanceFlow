@@ -7,8 +7,8 @@ export default function LancamentosContabeis() {
   const navigate = useNavigate();
   const empresa_id = Number(localStorage.getItem("empresa_id") || Number(localStorage.getItem("id_empresa")));
 
-  const [dataIni, setDataIni] = useState("");
-  const [dataFim, setDataFim] = useState("");
+  const [dataIni, setDataIni] = useState(hojeLocal());
+const [dataFim, setDataFim] = useState(hojeLocal());
   const [conta, setConta] = useState("");
   const [busca, setBusca] = useState("");
   const [lista, setLista] = useState([]);
@@ -65,14 +65,11 @@ export default function LancamentosContabeis() {
   }
 }
 
+ 
 
   useEffect(() => {
-    const hoje = hojeLocal();
-    
-    setDataIni(hojeMaisDias(-30));
-    setDataFim(hoje);
-  }, []);
-
+  pesquisar();
+}, [dataIni, dataFim]);
 
   function linhaZerada(l) {
   return (
@@ -160,12 +157,23 @@ export default function LancamentosContabeis() {
           ⚡ Novo Lançamento  
         </button>
 
-      {/*}  <button
-          onClick={() => navigate("/lancamento-contabil-manual")}
-          className="px-6 h-11 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-600"
-        >
-          + Implantar saldo
-        </button>*/}
+        <button 
+            onClick={() => navigate("/livro-caixa")}
+            className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+          ⚡ Lançar Livro Caixa
+        </button>
+
 
         <label className="flex items-center gap-2 ml-4 font-semibold text-gray-700">
           <input
