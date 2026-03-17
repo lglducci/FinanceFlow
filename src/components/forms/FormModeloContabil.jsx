@@ -199,8 +199,7 @@ function descricaoTipo(tipo) {
       return "Conta a Receber (Receita)";
     case "financeiro":
       return "Movimento de Caixa / Transferência";
-    case "financeiro":
-      return "Imobilizado / Ativo Permanente";
+   
     case "receber_cartao":
       return "Receitas no Cartão de Credito";
        case "cartao_compra":
