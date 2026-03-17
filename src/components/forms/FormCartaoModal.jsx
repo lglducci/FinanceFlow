@@ -11,8 +11,7 @@ export default function FormCartaoModal({ empresa_id, onSuccess, onCancel }) {
     fechamento_dia: "",
     vencimento_dia: "",
     vencimento: "",
-    numero: "",
-    nomecartao: "",
+    numero: "", 
     status: "ativo"
   });
 
