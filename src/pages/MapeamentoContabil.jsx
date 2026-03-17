@@ -255,7 +255,7 @@ const [filtro, setFiltro] = useState("");
           </tbody>
         </table>
       </div>
-    )}
+    )}  
 
     {/* ===== LISTA DE MODELOS ===== */}
     <div className="bg-white rounded-xl shadow-sm p-4">

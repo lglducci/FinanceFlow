@@ -20,55 +20,64 @@ const [contaId, setContaId] = useState(null);
 const historicoRef = useRef(null);
 const [carregandoSaldo, setCarregandoSaldo] = useState(false); 
 const [modalContaAberto, setModalContaAberto] = useState(false);
-
+const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
 const [indiceContaObs, setIndiceContaObs] = useState(-1);
   function hojeISO() {
   return new Date().toISOString().slice(0,10);
 }
 
  const [nova, setNova] = useState({
-  data:   hojeLocal(),
+  data: hojeLocal(),
   historico: "",
-  entrada: "",
-  saida: "",
+  tipo: "entrada",
+  valor: "",
   contra: ""
 });
 
 
 const navigate = useNavigate();
-  function adicionarLinha() {
 
-     if (!nova.historico && !nova.entrada && !nova.saida) {
-  return;
-}
-   let valor = parseFloat(
-  (nova.entrada || nova.saida || "0").replace(",", ".")
-);
+ function adicionarLinha() {
 
-    let novoSaldo = saldo;
+  setMostrarNovaLinha(true);
 
-    if (nova.entrada) novoSaldo += valor;
-    if (nova.saida) novoSaldo -= valor;
+  const ultimaLinha = linhas[linhas.length - 1];
 
-    setSaldo(novoSaldo);
-
-    setLinhas([
-      ...linhas,
-      { ...nova, saldo: novoSaldo }
-    ]);
-
-     
-
-setNova({
-  data: hojeLocal(),
-  historico: "",
-  entrada: "",
-  saida: "",
-  contra: ""
-});
- 
-historicoRef.current?.focus();
+  if (ultimaLinha && (!ultimaLinha.historico || !ultimaLinha.valor || !ultimaLinha.conta_id)) {
+    alert("Preencha a linha anterior antes de adicionar outra.");
+    return;
   }
+
+  if (!nova.historico || !nova.valor || !nova.conta_id) {
+    alert("Preencha histórico, valor e conta contra.");
+    return;
+  }
+
+  let valor = parseFloat((nova.valor || "0").replace(",", "."));
+
+  let novoSaldo = saldo;
+
+  if (nova.tipo === "entrada") novoSaldo += valor;
+  if (nova.tipo === "saida") novoSaldo -= valor;
+
+  setSaldo(novoSaldo);
+
+  setLinhas(prev => [
+    ...prev,
+    { ...nova, saldo: novoSaldo }
+  ]);
+
+  setNova({
+    data: hojeLocal(),
+    historico: "",
+    tipo: "entrada",
+    valor: "",
+    contra: "",
+    conta_id: null
+  });
+
+  historicoRef.current?.focus();
+}
  
   async function carregarContas() {
     const r = await fetch(
@@ -97,30 +106,7 @@ historicoRef.current?.focus();
     }
 
 
-    function removerLinha(index) {
-
-  const novaLista = [...linhas];
-
-  const linhaRemovida = novaLista[index];
  
- let valor = parseFloat(linhaRemovida.entrada || linhaRemovida.saida);
-
-if (isNaN(valor)) valor = 0;
-
-
-  if (linhaRemovida.entrada) {
-    setSaldo(saldo - valor);
-  }
-
-  if (linhaRemovida.saida) {
-    setSaldo(saldo + valor);
-  }
-
-  novaLista.splice(index, 1);
-
-  setLinhas(novaLista);
-
-}
  
 // Rotina salvar definitiva assim espero
  
@@ -133,14 +119,14 @@ async function salvarLancamentos() {
  
   let linhasParaSalvar = [...linhas];
 
-if (nova.historico || nova.entrada || nova.saida) {
+ if (nova.historico || nova.valor) {
 
-  let valor = parseFloat(nova.entrada || nova.saida || 0);
+ let valor = parseFloat(nova.valor || 0);
 
   let novoSaldo = saldo;
 
-  if (nova.entrada) novoSaldo += valor;
-  if (nova.saida) novoSaldo -= valor;
+  if (nova.tipo === "entrada") novoSaldo += valor;
+if (nova.tipo === "saida") novoSaldo -= valor;
 
   linhasParaSalvar.push({
     ...nova,
@@ -153,13 +139,13 @@ if (nova.historico || nova.entrada || nova.saida) {
     return;
   }
 
-  const lancamentos = linhasParaSalvar.map(l => ({
-    data: l.data,
-    historico: l.historico,
-    valor: parseFloat((l.entrada || l.saida || "0").replace(",", ".")),
-    tipo: l.entrada ? "entrada" : "saida",
-    conta_contra: Number(l.conta_id)
-  }));
+ const lancamentos = linhasParaSalvar.map(l => ({
+  data: l.data,
+  historico: l.historico,
+  valor: parseFloat((l.valor || "0").replace(",", ".")),
+  tipo: l.tipo,
+  conta_contra: Number(l.conta_id)
+}));
 
   const payload = {
     empresa_id,
@@ -184,11 +170,11 @@ setConta("");
 setContaId(null);
 setSaldo(0);
 
-setNova({
+ setNova({
   data: hojeLocal(),
   historico: "",
-  entrada: "",
-  saida: "",
+  tipo: "entrada",
+  valor: "",
   contra: ""
 });
 
@@ -295,14 +281,52 @@ function filtrarContasContra(texto) {
   setContasFiltradasContra(filtradas.slice(0,10));
 }
 
-const valorAtual = parseFloat((nova.entrada || nova.saida || "0").replace(",", "."));
+ const valorAtual = parseFloat((nova.valor || "0").replace(",", "."));
 
 let saldoLinhaAtual = saldo;
 
 if (!isNaN(valorAtual)) {
-  if (nova.entrada) saldoLinhaAtual = saldo + valorAtual;
-  if (nova.saida) saldoLinhaAtual = saldo - valorAtual;
+  if (nova.tipo === "entrada") saldoLinhaAtual = saldo + valorAtual;
+  if (nova.tipo === "saida") saldoLinhaAtual = saldo - valorAtual;
 }
+
+ function removerLinha(index) {
+
+  // excluir linha que já está na lista
+  if (index < linhas.length) {
+
+    const novaLista = [...linhas];
+
+    const linhaRemovida = novaLista[index];
+
+    let valor = parseFloat(linhaRemovida.valor || 0);
+
+    if (linhaRemovida.tipo === "entrada") {
+      setSaldo(s => s - valor);
+    }
+
+    if (linhaRemovida.tipo === "saida") {
+      setSaldo(s => s + valor);
+    }
+
+    novaLista.splice(index, 1);
+    setLinhas(novaLista);
+
+    return;
+  }
+
+  // excluir linha nova (a de digitação)
+  setNova({
+    data: hojeLocal(),
+    historico: "",
+    tipo: "entrada",
+    valor: "",
+    contra: "",
+    conta_id: null
+  });
+}
+
+
 
 return (
       <div className="flex justify-center mt-10 bg-gray-100 min-h-screen py-10">
@@ -439,18 +463,18 @@ return (
                 <div>Data</div>
                 <div>Histórico</div>
                 
-              <div className="text-right">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                  Entrada
-                </span>
-              </div>
+               <div className="text-center">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                      Tipo
+                    </span>
+                  </div>
 
-              <div className="text-right">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
-                  Saída
-                </span>
-              </div>
-                <div className="text-left">Contra Conta</div>
+                  <div className="text-right">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-700">
+                      Valor
+                    </span>
+                  </div>
+                <div className="text-center">Contra Conta</div>
                 <div className="text-right">Saldo</div>
                 <div className="text-center">Ação</div>
                 </div>
@@ -465,23 +489,28 @@ return (
                           <div>{l.data.split("-").reverse().join("/")}</div>
 
                           <div className="truncate">{l.historico}</div>
-
-                          <div className="text-right font-mono text-green-700 font-semibold">
-                            {Number((l.entrada || "0").replace(",", ".")) > 0
-                              ? Number((l.entrada || "0").replace(",", ".")).toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL"
-                                })
-                              : ""}
-                          </div>
-
-                          <div className="text-right font-mono text-red-700 font-semibold">
-                            {Number((l.saida || "0").replace(",", ".")) > 0
-                              ? Number((l.saida || "0").replace(",", ".")).toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL"
-                                })
-                              : ""}
+                          <div className="text-center">
+                                {l.tipo === "entrada" ? (
+                                  <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
+                                    <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
+                                    Entrada
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-red-100 text-red-800 font-semibold text-xs">
+                                    <span className="w-2 h-2 bg-red-600 rounded-sm"></span>
+                                    Saída
+                                  </span>
+                                )}
+                              </div>
+                           <div
+                            className={`text-right font-mono font-semibold ${
+                              l.tipo === "entrada" ? "text-green-700" : "text-red-700"
+                            }`}
+                          >
+                            {Number((l.valor || "0").replace(",", ".")).toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL"
+                            })}
                           </div>
 
                           <div>{l.contra}</div>
@@ -497,22 +526,23 @@ return (
                               style: "currency",
                               currency: "BRL"
                             })}
-                          </div>
-                          <div className="text-center">
-                            <button
-                              className="text-red-600 hover:text-red-800"
-                              onClick={() => removerLinha(i)}
-                            >
-                              🗑
-                            </button>
-                          </div>
-
+                          </div> 
+                          
+                           <div className="flex items-center justify-center">
+                          <button
+                            className="text-red-600 hover:text-red-800 text-lg"
+                            onClick={() => removerLinha(i)}
+                          >
+                            🗑
+                          </button>
+                        </div>
                         </div>
                       ))}
           {/* NOVA LINHA */}
 
-            <div className="grid grid-cols-[120px_1fr_120px_120px_220px_120px] gap-2 mb-4">
-
+            {mostrarNovaLinha && (
+<div className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 mb-4">
+         
                <input
                 type="date"
                 className="border rounded p-2"
@@ -528,20 +558,25 @@ return (
                 onChange={(e)=>setNova({...nova,historico:e.target.value})}
                 />
 
-                <input
-                className="border rounded p-2 text-right"
-                placeholder="Entrada"
-                value={nova.entrada}
-                onChange={(e)=>setNova({...nova,entrada:e.target.value,saida:""})}
-                />
+                 <select
+                        className="border rounded p-2"
+                        value={nova.tipo}
+                        onChange={(e)=>setNova({...nova,tipo:e.target.value})}
+                      >
+                        <option value="entrada">Entrada</option>
+                        <option value="saida">Saída</option>
+                      </select>
 
-                <input
-                className="border rounded p-2 text-right"
-                placeholder="Saída"
-                value={nova.saida}
-                onChange={(e)=>setNova({...nova,saida:e.target.value,entrada:""})}
-                />
-                <div className="relative">
+                    <input
+                          className="border rounded p-2 text-right"
+                          placeholder="Valor"
+                          value={nova.valor}
+                          onChange={(e) => {
+                            const v = e.target.value.replace(/[^\d.,]/g, "");
+                            setNova({ ...nova, valor: v });
+                          }}
+                        />
+                   <div className="relative">
 
                    <input
                     className="border rounded p-2 w-full"
@@ -622,9 +657,16 @@ return (
                     })}
                   disabled
                 />
-                    
+                 <div className="flex items-center justify-center">
+                  <button
+                        className="text-gray-400 hover:text-red-600 text-lg"
+                        onClick={() => setMostrarNovaLinha(false)}
+                      >
+                        🗑
+                      </button>
+                </div>     
 
-                </div>
+                </div>)}
 
           {/* BOTÕES */}
 
