@@ -4,7 +4,7 @@ import FormContaContabilModal from "./FormContaContabilModal";
 import { determinarTipoOperacao } from "../../utils/determinarTipoOperacao";
 import { explicarLancamento } from "../../helpers/contabilHelper";
 import { useMemo } from "react";
-
+import AutocompleteInput from "../AutocompleteInput";
 
 export default function FormModeloContabil ({
   empresa_id,
@@ -22,7 +22,9 @@ const [contasDebito, setContasDebito] = useState([]);
 const [contasCredito, setContasCredito] = useState([]);
 const tipo = tipo_evento || null;
 const [modalContaAberto, setModalContaAberto] = useState(false);
- 
+ const [debitoTexto, setDebitoTexto] = useState(""); 
+  const [creditoTexto, setCreditoTexto] = useState(""); 
+
  const [tipoInterno, setTipoInterno] = useState(tipo_evento || null);
  
  const helper = useMemo(() => {
@@ -270,19 +272,19 @@ function descricaoTipo(tipo) {
                   Entrada (Débito)  
              </label>
 
-
-          <select
-          value={debitoId}
-          onChange={(e) => setDebitoId(e.target.value)}
-          className="input-premium mb-3"
-        >
-          <option value="">Conta Débito</option>
-          {contasDebito.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.codigo} - {c.nome}
-            </option>
-          ))}
-        </select>
+       <AutocompleteInput
+            value={debitoTexto}
+            options={contasDebito}
+            placeholder="Conta Débito"
+            onChange={(v) => {
+              setDebitoTexto(v);
+              setDebitoId(null); // limpa seleção se digitou
+            }}
+            onSelect={(c) => {
+              setDebitoTexto(c.nome);
+              setDebitoId(c.id);
+            }}
+          />
 
         {/* <button
             type="button"
@@ -295,18 +297,19 @@ function descricaoTipo(tipo) {
           <label className="flex items-center gap-1 text-sm font-bold text-[#061f4aff]   relative">
                     Saida (Crédito)
             </label>
-       <select
-          value={creditoId}
-          onChange={(e) => setCreditoId(e.target.value)}
-          className="input-premium mb-4"
-        >
-          <option value="">Conta Crédito</option>
-          {contasCredito.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.codigo} - {c.nome}
-            </option>
-          ))}
-        </select>
+              <AutocompleteInput
+          value={creditoTexto}
+          options={contasCredito}
+          placeholder="Conta Crédito"
+          onChange={(v) => {
+            setCreditoTexto(v);
+            setCreditoId(null); // limpa seleção ao digitar
+          }}
+          onSelect={(c) => {
+            setCreditoTexto(c.nome);
+            setCreditoId(c.id);
+          }}
+        />
          {/* <button
             type="button"
             onClick={() => setModalContaAberto(true)}
