@@ -119,6 +119,9 @@ import LembretesContabeis from   "./pages/LembretesContabeis"
  import RelatoriosLanctoPartida from "./pages/RelatoriosLanctoPartida";
 import FaturaTransacoes from "./pages/FaturaTransacoes";
 import LancamentoLivroCaixa from "./pages/LancamentoLivroCaixa";
+import ChatIA from "./components/ChatIA";
+
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -365,7 +368,9 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 
 </Routes>
 
-
+ <ChatIA 
+  empresaId={localStorage.getItem("empresa_id")} 
+/>
 
 
             
