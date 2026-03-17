@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
 import { fetchSeguro } from "../utils/apiSafe";
+import AutocompleteInput from "../components/AutocompleteInput";
 export default function NovaModeloContabil() {
   const navigate = useNavigate();
   const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
   const [contas, setContas] = useState([]);
   const [debitoId, setDebitoId] = useState("");
   const [creditoId, setCreditoId] = useState("");
+ const [debitoTexto, setDebitoTexto] = useState(""); 
+  const [creditoTexto, setCreditoTexto] = useState(""); 
 
  
 
@@ -190,18 +193,19 @@ export default function NovaModeloContabil() {
                     <label className="label label-required font-bold text-[#1e40af]">
                       Conta Contábil – Débito (Saida)
                     </label>
-                    <select
-                      value={debitoId}
-                      onChange={(e) => setDebitoId(e.target.value)}
-                      className="input-premium"
-                    >
-                      <option value="">Selecione</option>
-                      {contas.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.codigo} - {c.nome}
-                        </option>
-                      ))}
-                    </select>
+                     <AutocompleteInput
+                        value={debitoTexto}
+                        options={contas}
+                        placeholder="Selecione"
+                        onChange={(v) => {
+                          setDebitoTexto(v);
+                          setDebitoId(null);
+                        }}
+                        onSelect={(c) => {
+                          setDebitoTexto(`${c.codigo} - ${c.nome}`);
+                          setDebitoId(c.id);
+                        }}
+                      />
                   </div>
 
                   {/* CRÉDITO */}
@@ -209,18 +213,19 @@ export default function NovaModeloContabil() {
                     <label className="label label-required font-bold text-[#1e40af]">
                       Conta Contábil – Crédito (Entrada)
                     </label>
-                    <select
-                      value={creditoId}
-                      onChange={(e) => setCreditoId(e.target.value)}
-                      className="input-premium"
-                    >
-                      <option value="">Selecione</option>
-                      {contas.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.codigo} - {c.nome}
-                        </option>
-                      ))}
-                    </select>
+                    <AutocompleteInput
+                    value={creditoTexto}
+                    options={contas}
+                    placeholder="Selecione"
+                    onChange={(v) => {
+                      setCreditoTexto(v);
+                      setCreditoId(null);
+                    }}
+                    onSelect={(c) => {
+                      setCreditoTexto(`${c.codigo} - ${c.nome}`);
+                      setCreditoId(c.id);
+                    }}
+                  />
                   </div>
             </div>
  
