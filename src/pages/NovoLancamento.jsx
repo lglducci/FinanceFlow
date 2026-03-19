@@ -617,6 +617,9 @@ const podeCriarModelo =
  className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-slate-900 mt-1 mb-1"
  style={{ borderTop: `6px solid ${corTitulo}` }}
 >
+  
+ 
+ 
         {/* TÍTULO IGUAL AO EDITAR */}
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center"  style={{ color: corTitulo }}>
             {titulo}
