@@ -1,4 +1,4 @@
-export function explicarLancamento(tipo_evento, tipo_es, classificacao) {
+ export function explicarLancamento(tipo_evento, tipo_es, classificacao) {
 
   if (!tipo_evento) {
     return null;
