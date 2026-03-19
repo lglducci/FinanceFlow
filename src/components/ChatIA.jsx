@@ -158,11 +158,13 @@ function enviarRapido(texto) {
                 >
                     ✕
                 </button>
+               
+                
                 </div>
           {/* MENSAGENS */}
          <div className="flex-1 overflow-auto p-3 space-y-2">
-
-                {/* 👇 BOTÕES INICIAIS */}
+                  
+                {/* 👇 BOTÕES INICIAIS  
                 {mensagens.length === 1 && (
                     <div className="flex flex-wrap gap-2 mb-2">
 
@@ -188,7 +190,21 @@ function enviarRapido(texto) {
 
 
                     </div>
-                )}
+                )} */}
+
+               <div className="text-sm">
+                  👋 Precisa de ajuda completa?<br /><br />
+
+                  <a
+                    href="/ajuda"
+                    className="text-blue-600 underline font-medium"
+                  >
+                    🔗 Abrir ajuda completa
+                  </a>
+
+                  <br /><br />
+                  Ou me pergunte algo específico 👍
+                </div>
 
                 {/* 👇 MENSAGENS */}
                 {mensagens.map((m, i) => (
