@@ -120,8 +120,16 @@ import LembretesContabeis from   "./pages/LembretesContabeis"
 import FaturaTransacoes from "./pages/FaturaTransacoes";
 import LancamentoLivroCaixa from "./pages/LancamentoLivroCaixa";
 import ChatIA from "./components/ChatIA";
+import Ajuda from "./pages/Ajuda";
+import Financeiro from "./pages/ajuda/Financeiro"; 
+import Contas  from "./pages/ajuda/Contas";
+import AjudaCartoes  from "./pages/ajuda/Cartoes";
+import AjudaContabil  from "./pages/ajuda/Contabil";
+import OrigemContabil  from "./pages/ajuda/Origem";
+ import PlanoContas from "./pages/ajuda/PlanoContas";
+ import PlanoContasAccordion from "./pages/ajuda/PlanoContasAccordion";
 
-
+ import  PartidaDobrada  from "./pages/ajuda/PartidaDobrada";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -365,14 +373,29 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
  
  <Route path="/fatura-transacoes" element={<FaturaTransacoes />} />
  <Route path="/livro-caixa" element={<LancamentoLivroCaixa />} />
+  <Route path="/ajuda" element={<Ajuda />} />
+<Route path="/ajuda/financeiro" element={<Financeiro />} />
+
+ <Route path="/ajuda/contas" element={<Contas />} />
+ <Route path="/ajuda/cartoes" element={<AjudaCartoes />} />
+ <Route path="/ajuda/contabil" element={<AjudaContabil />} />
+  <Route path="/ajuda/origem" element={<OrigemContabil />} />
+  
+<Route path="/ajuda/contabil-plano" element={<PlanoContas />} />
+
+<Route path="/ajuda/planocontasaccordion" element={<PlanoContasAccordion />} />
+ 
+ 
+<Route path="/ajuda/partida-dobrada" element={<PartidaDobrada/>} />
 
 </Routes>
 
+ 
+
+ 
  <ChatIA 
   empresaId={localStorage.getItem("empresa_id")} 
 />
-
-
             
           </main>
         </div>
