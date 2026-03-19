@@ -132,7 +132,7 @@ return (
     </div>
 
     {/* TABELA */}
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+   <div id="print-area" className="bg-white rounded-xl shadow-sm overflow-hidden">
       <table className="w-full text-sm">
         <thead className="bg-slate-200 text-blue-800">
           <tr>
