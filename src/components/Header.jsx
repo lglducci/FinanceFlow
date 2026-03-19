@@ -47,6 +47,14 @@ export default function Header() {
         {new Date().toLocaleDateString("pt-BR")}
       </div>
 
+          <a
+                href="/ajuda"
+                className="text-white underline font-medium"
+              >
+                🔗 Abrir ajuda 
+              </a>
+
+
     </header>
   );
 }
