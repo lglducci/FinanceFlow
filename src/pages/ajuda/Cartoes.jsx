@@ -5,24 +5,20 @@ export default function AjudaCartoes() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+ <div className="bg-[#0b1f3a] text-white py-4 px-6 relative text-center">
 
-      {/* VOLTAR */}
-      <div className="p-4">
-        <button
-          onClick={() => navigate("/ajuda")}
-          className="bg-white text-[#0b1f3a] px-3 py-1 rounded font-bold"
-        >
-          ← Voltar
-        </button>
-      </div>
+  <h1 className="text-2xl font-bold">
+    💳 Cartões
+  </h1>
 
-      {/* HEADER */}
-      <div className="bg-[#0b1f3a] text-white py-8 text-center">
-        <h1 className="text-2xl font-bold">
-          💳 Cartões
-        </h1>
-      </div>
+  <button
+    onClick={() => navigate("/ajuda")}
+    className="absolute right-6 top-1/2 -translate-y-1/2 bg-[#0b1f3a] text-white px-3 py-1 rounded font-bold"
+  >
+    ← Voltar
+  </button>
 
+</div>
       {/* CONTEÚDO */}
       <div className="max-w-3xl mx-auto p-6 bg-white mt-6 rounded-xl shadow text-sm text-gray-700 space-y-5">
 

@@ -7,14 +7,15 @@ export default function AjudaOrigemContabil() {
     <div className="min-h-screen bg-gray-100">
 
       {/* VOLTAR */}
-      <div className="p-4">
-        <button
-          onClick={() => navigate("/ajuda/contabil")}
-          className="bg-white text-[#0b1f3a] px-3 py-1 rounded font-bold"
-        >
-          ← Voltar
-        </button>
-      </div>
+       <div className="bg-[#0b1f3a] text-white py-8 px-6 relative">
+
+      <button
+        onClick={() => navigate("/ajuda")}
+        className="absolute right-6 top-4  bg-[#0b1f3a]  text-white px-3 py-1 rounded font-bold"
+      >
+        ← Voltar
+      </button>
+      </div> 
 
       {/* HEADER */}
       <div className="bg-[#0b1f3a] text-white py-8 text-center">

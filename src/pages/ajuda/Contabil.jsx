@@ -13,27 +13,26 @@ export default function AjudaContabil() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100"> 
+    
+      <div className="bg-[#0b1f3a] text-white py-8 px-6 relative">
 
-      {/* VOLTAR */}
-      <div className="p-4">
-        <button
-          onClick={() => navigate("/ajuda")}
-          className="bg-white text-[#0b1f3a] px-3 py-1 rounded font-bold"
-        >
-          ← Voltar
-        </button>
-      </div>
+      <button
+        onClick={() => navigate("/ajuda")}
+        className="absolute right-6 top-4  bg-[#0b1f3a]  text-white px-3 py-1 rounded font-bold"
+      >
+        ← Voltar
+      </button>
 
-      {/* HEADER */}
-      <div className="bg-[#0b1f3a] text-white py-8 text-center">
-        <h1 className="text-2xl font-bold">
-          📘 Contabilidade
-        </h1>
-      </div>
+  <h1 className="text-2xl font-bold text-center">
+    📘 Contabilidade
+  </h1>
 
+</div>
+       
       {/* CONTEÚDO */}
-      <div className="max-w-3xl mx-auto p-6 bg-white mt-6 rounded-xl shadow text-sm text-gray-700 space-y-6">
+      <div className="max-w-3xl mx-auto p-6 bg-white mt-1 rounded-xl shadow text-sm text-gray-700 space-y-6">
+      
 
         {/* DEFINIÇÃO */}
         <div className="bg-blue-50 border border-blue-200 text-blue-900 p-4 rounded">
@@ -96,7 +95,7 @@ export default function AjudaContabil() {
           <div className="space-y-2">
             <LinkItem titulo="Plano de contas detalhado" link="/ajuda/contabil-plano" />
             <LinkItem titulo="Partida dobrada (como funciona)" link="/ajuda/partida-dobrada" />
-            <LinkItem titulo="Relatórios contábeis" link="/ajuda/contabil/relatorios" />
+            <LinkItem titulo="Relatórios contábeis" link="/ajuda/relatorios" />
           </div>
         </div>
 
