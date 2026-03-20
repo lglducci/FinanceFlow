@@ -182,7 +182,7 @@ function podeVer(menuKey) {
                  {podeVer("visao_geral") &&   (<SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
                  {podeVer("visao_geral")  &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)}
               <SubItem icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
-              <SubItem icon={<IconMap />} label="Modelo Contabil" onClick={() => navigate("/mapeamento-contabil")} />
+              <SubItem icon={<IconMap />} label="Modelos Prontos" onClick={() => navigate("/mapeamento-contabil")} />
          </MenuGroup>
  
          {podeVer("diario_contabil") && ( <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
