@@ -147,6 +147,15 @@ export default function Reports() {
       path: "/rel-lancto_partida",
       icon: <IconReport />,
     },
+   
+     
+       {
+      title: "Relatório Balanço por Nível",
+      desc: "Valores Contábeis por Nivel de Conta",
+      path: "/relatorionivel",
+      icon: <IconReport />,
+    },
+    
   ];
 
   return (

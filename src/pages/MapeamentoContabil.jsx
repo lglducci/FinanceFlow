@@ -143,7 +143,7 @@ const [filtro, setFiltro] = useState("");
     <div className="bg-white rounded-xl border-l-4  shadow-sm p-4 mb-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-blue-800">
-          Modelo Contábil
+          Modelo de Lançamentos Prontos.
         </h2>
 
         <div className="flex gap-4">
@@ -255,7 +255,7 @@ const [filtro, setFiltro] = useState("");
           </tbody>
         </table>
       </div>
-    )}  
+    )}  A
 
     {/* ===== LISTA DE MODELOS ===== */}
     <div className="bg-white rounded-xl shadow-sm p-4">
