@@ -285,7 +285,8 @@ return (
     </div>
 
     {/* ===== TABELA ===== */}
-    <div className="bg-white rounded-xl shadow p-4 border border-gray-400">
+     <div id="print-area" className="bg-white rounded-xl shadow p-4 border border-gray-400">
+      
       <table className="w-full text-sm border-collapse">
         <thead className="bg-gray-100 text-blue-800">
           <tr>

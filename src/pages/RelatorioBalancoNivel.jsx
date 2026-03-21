@@ -193,7 +193,7 @@ dados.forEach(l => {
                 {/* TOTAL DO GRUPO */}
                 <tr className="border-t-2 border-gray-400 bg-gray-100">
                     <td colSpan={3} className="p-2 text-right font-bold text-gray-700">
-                    Total {raiz}
+                    Total do conta - {raiz}
                     </td>
                     <td className="p-2 text-right font-bold text-black">
                     {fmt.format(grupo.total)}

@@ -34,6 +34,12 @@ const [indiceContaObs, setIndiceContaObs] = useState(-1);
   contra: ""
 });
 
+const dataRef = useRef(null);
+ 
+const tipoRef = useRef(null);
+const valorRef = useRef(null);
+const contraRef = useRef(null);
+
 
 const navigate = useNavigate();
 
@@ -327,11 +333,19 @@ if (!isNaN(valorAtual)) {
 }
 
 
+ function handleEnter(nextRef) {
+  return (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      nextRef?.current?.focus();
+    }
+  };
+}
 
 return (
       <div className="flex justify-center mt-10 bg-gray-100 min-h-screen py-10">
 
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-[1700px]">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-[1300px]">
         <div className="bg-gray-650 rounded-lg p-8"> 
         <div className="bg-gray-600 border-b rounded-t-xl p-6"> 
        <div className="bg-gray-600 border-b rounded-t-xl p-6">  
@@ -362,38 +376,45 @@ return (
                         setConta(v);
                         filtrarContas(v);
                         setIndiceContaObs(-1);
+                        
                     }}
-                  
+                   
+                  onKeyDown={(e)=>{
 
-                    onKeyDown={(e)=>{
+                          if (e.key === "ArrowDown") {
+                            e.preventDefault();
+                            setIndiceContaObs(i =>
+                              Math.min(i + 1, contasFiltradas.length - 1)
+                            );
+                          }
 
-                        if (e.key === "ArrowDown") {
-                          e.preventDefault();
-                          setIndiceContaObs(i =>
-                            Math.min(i + 1, contasFiltradas.length - 1)
-                          );
-                        }
+                          if (e.key === "ArrowUp") {
+                            e.preventDefault();
+                            setIndiceContaObs(i =>
+                              Math.max(i - 1, 0)
+                            );
+                          }
 
-                        if (e.key === "ArrowUp") {
-                          e.preventDefault();
-                          setIndiceContaObs(i =>
-                            Math.max(i - 1, 0)
-                          );
-                        }
+                          if (e.key === "Enter") {
+                            e.preventDefault();
 
-                        if (e.key === "Enter" && indiceContaObs >= 0) {
-                          e.preventDefault();
+                            // 👉 se está navegando na lista
+                            if (indiceContaObs >= 0) {
+                              const c = contasFiltradas[indiceContaObs];
 
-                          const c = contasFiltradas[indiceContaObs];
+                              setConta(c.nome);
+                              setContaId(c.id);
+                              setContasFiltradas([]);
 
-                          setConta(c.nome);
-                          setContaId(c.id);
-                          setContasFiltradas([]);
+                              carregarSaldoConta(c.id);
+                            }
 
-                          carregarSaldoConta(c.id);
-                        }
-
-                      }}
+                            // 👉 independente de ter selecionado ou não → vai pro DATA
+                            setTimeout(() => {
+                              dataRef.current?.focus();
+                            }, 0);
+                          }
+                        }}
                          />
                     {contasFiltradas.length > 0 && (
                     <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-40 overflow-y-auto z-50">
@@ -458,7 +479,7 @@ return (
           {/* TABELA */}
              {/* CABEÇALHO */}
 
-                 <div  className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
+                 <div  className="grid  grid-cols-[120px_400px_120px_120px_220px_120px_60px]  gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
                                    
                 <div>Data</div>
                 <div>Histórico</div>
@@ -484,7 +505,7 @@ return (
                   {linhas.map((l, i) => (
                         <div
                           key={i}
-                          className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 text-sm border-b py-1"
+                          className="grid grid-cols-[120px_400px_120px_120px_220px_120px_60px] gap-2 text-sm border-b py-1"
                         >
                           <div>{l.data.split("-").reverse().join("/")}</div>
 
@@ -541,33 +562,41 @@ return (
           {/* NOVA LINHA */}
 
             {mostrarNovaLinha && (
-<div className="grid grid-cols-[120px_1fr_120px_120px_220px_120px_60px] gap-2 mb-4">
+            <div className="grid grid-cols-[120px_400px_120px_120px_220px_120px_60px] gap-2 mb-4">
          
                <input
+                 ref={dataRef}
                 type="date"
                 className="border rounded p-2"
                 value={nova.data}
                 onChange={(e)=>setNova({...nova,data:e.target.value})}
+                onKeyDown={handleEnter(historicoRef)}
               />
 
-                 <input
-                ref={historicoRef}
-                className="border rounded p-2"
-                placeholder="Histórico"
-                value={nova.historico}
-                onChange={(e)=>setNova({...nova,historico:e.target.value})}
-                />
+               
+                   <input
+                    ref={historicoRef}
+                    className="border rounded p-2"
+                    placeholder="Histórico"
+                    value={nova.historico}
+                    onChange={(e)=>setNova({...nova,historico:e.target.value})}
+                   onKeyDown={handleEnter(tipoRef)} 
+
+                  /> 
 
                  <select
+                         ref={tipoRef}
                         className="border rounded p-2"
                         value={nova.tipo}
                         onChange={(e)=>setNova({...nova,tipo:e.target.value})}
+                         onKeyDown={handleEnter(valorRef)}
                       >
                         <option value="entrada">Entrada</option>
                         <option value="saida">Saída</option>
                       </select>
 
                     <input
+                             ref={valorRef}
                           className="border rounded p-2 text-right"
                           placeholder="Valor"
                           value={nova.valor}
@@ -575,10 +604,12 @@ return (
                             const v = e.target.value.replace(/[^\d.,]/g, "");
                             setNova({ ...nova, valor: v });
                           }}
+                           onKeyDown={handleEnter(contraRef)}
                         />
                    <div className="relative">
 
                    <input
+                     ref={contraRef}
                     className="border rounded p-2 w-full"
                     placeholder="Contra conta"
                     value={nova.contra}
@@ -588,37 +619,51 @@ return (
                          filtrarContasContra(v);
                         setIndiceSelecionado(-1);
                     }}
-                    onKeyDown={(e)=>{
+                    onKeyDown={(e) => {
 
-                        if (e.key === "ArrowDown") {
-                        e.preventDefault();
-                        setIndiceSelecionado(i =>   
-                            Math.min(i + 1, contasFiltradasContra.length - 1)
-                        );
-                        }
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setIndiceSelecionado(i =>
+                      Math.min(i + 1, contasFiltradasContra.length - 1)
+                    );
+                  }
 
-                        if (e.key === "ArrowUp") {
-                        e.preventDefault();
-                        setIndiceSelecionado(i =>
-                            Math.max(i - 1, 0)
-                        );
-                        }
+                  if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    setIndiceSelecionado(i =>
+                      Math.max(i - 1, 0)
+                    );
+                  }
 
-                        if (e.key === "Enter" && indiceSelecionado >= 0) {
-                          e.preventDefault();
+                  if (e.key === "Enter") {
+                    e.preventDefault();
 
-                          const c = contasFiltradasContra[indiceSelecionado];
+                    // 👉 seleciona item do dropdown
+                    if (indiceSelecionado >= 0) {
+                      const c = contasFiltradasContra[indiceSelecionado];
 
-                          setNova({
-                            ...nova,
-                            contra: c.nome,
-                            conta_id: c.id
-                          });
+                      setNova({
+                        ...nova,
+                        contra: c.nome,
+                        conta_id: c.id
+                      });
 
-                          setContasFiltradasContra([]);
-                          setIndiceSelecionado(-1);
-                        }
-                    }}
+                      setContasFiltradasContra([]);
+                      setIndiceSelecionado(-1);
+
+                      return;
+                    }
+
+                    // 👉 AQUI É O QUE VOCÊ QUER
+                    adicionarLinha();
+
+                    // 👉 foco volta pro início (data ou histórico)
+                    setTimeout(() => {
+                      dataRef.current?.focus(); 
+                      // ou historicoRef.current?.focus(); (se preferir)
+                    }, 0);
+                  }
+                }}
                     />
                     {contasFiltradasContra.length > 0 && (
                           <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-48 overflow-y-auto z-50">
