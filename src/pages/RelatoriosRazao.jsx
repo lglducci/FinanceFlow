@@ -27,19 +27,21 @@ export default function RelatoriosRazao() {
   const [contas, setContas] = useState([]);
   const location = useLocation();
  const navigate = useNavigate();
-
+ 
   // formatter BR
   const fmt = new Intl.NumberFormat("pt-BR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-
+ 
   function formatarData(data) {
   if (!data) return "";
-  return new Date(data).toLocaleDateString("pt-BR");
+
+  const d = data.split("T")[0]; // pega só a data
+  const [ano, mes, dia] = d.split("-");
+
+  return `${dia}/${mes}/${ano}`;
 }
-
-
 useEffect(() => {
     async function carregarContas() {
       const r = await fetch(
