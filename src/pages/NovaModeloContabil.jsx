@@ -191,7 +191,7 @@ export default function NovaModeloContabil() {
                     
                         <div className="mb-4">
                     <label className="label label-required font-bold text-[#1e40af]">
-                      Conta Contábil – Débito (Saida)
+                      Conta Contábil – Débito (Entrada)
                     </label>
                      <AutocompleteInput
                         value={debitoTexto}
@@ -211,7 +211,7 @@ export default function NovaModeloContabil() {
                   {/* CRÉDITO */}
                   <div className="mb-4">
                     <label className="label label-required font-bold text-[#1e40af]">
-                      Conta Contábil – Crédito (Entrada)
+                      Conta Contábil – Crédito (Saída)
                     </label>
                     <AutocompleteInput
                     value={creditoTexto}
