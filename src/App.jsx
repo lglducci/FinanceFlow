@@ -117,6 +117,7 @@ import LembretesContabeis from   "./pages/LembretesContabeis"
 
  import MinhasAssinaturas from "./pages/MinhasAssinaturas";
  import RelatoriosLanctoPartida from "./pages/RelatoriosLanctoPartida";
+ import RelatorioBalancoNivel from "./pages/RelatorioBalancoNivel";
 import FaturaTransacoes from "./pages/FaturaTransacoes";
 import LancamentoLivroCaixa from "./pages/LancamentoLivroCaixa";
 import ChatIA from "./components/ChatIA";
@@ -130,6 +131,10 @@ import OrigemContabil  from "./pages/ajuda/Origem";
  import PlanoContasAccordion from "./pages/ajuda/PlanoContasAccordion";
 
  import  PartidaDobrada  from "./pages/ajuda/PartidaDobrada";
+ import  Inicio  from "./pages/ajuda/Inicio";
+import AjudaRelatorios from "./pages/ajuda/Relatorios";
+  import AjudaLancamentos from "./pages/ajuda/lancamentos";
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -387,6 +392,13 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
  
  
 <Route path="/ajuda/partida-dobrada" element={<PartidaDobrada/>} />
+<Route path="/ajuda/inicio" element={<Inicio />} />
+<Route path="/ajuda/relatorios" element={<AjudaRelatorios />} />
+
+<Route path="/relatorionivel" element={<RelatorioBalancoNivel />} />
+
+<Route path="/pages/ajuda/lancamentos" element={<AjudaLancamentos />} />
+ 
 
 </Routes>
 
