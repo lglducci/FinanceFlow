@@ -9,11 +9,10 @@ export default function ChatIA({ empresaId }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
  const [maximizado, setMaximizado] = useState(false);
-
+ 
   const location = useLocation();
 const telaAtual = location.pathname;
  
-
 async function enviar() {
   if (!input.trim()) return;
 
@@ -140,6 +139,30 @@ function enviarRapido(texto) {
 }
 
 
+ function renderTextoSeguro(texto, navigate) {
+  if (!texto) return null;
+
+  const partes = texto.split(" ");
+
+  return partes.map((p, i) => {
+    if (p.startsWith("/")) {
+      return (
+        <span
+          key={i}
+          onClick={() => navigate(p)}
+          style={{ color: "#2563eb", cursor: "pointer", textDecoration: "underline" }}
+        >
+          {p + " "}
+        </span>
+      );
+    }
+
+    return <span key={i}>{p + " "}</span>;
+  });
+}
+ 
+ 
+
 
   return (
     <>
@@ -152,6 +175,9 @@ function enviarRapido(texto) {
           💬
         </button>
       </div>
+
+
+      
 
       {/* POPUP */}
       {aberto && (
@@ -176,11 +202,12 @@ function enviarRapido(texto) {
                     className="btn-pill btn-dark-blue"
                 >
                     ✕
-                </button>
-               
-                
+                </button> 
                 </div>
-          {/* MENSAGENS */}
+
+   
+              
+         {/* MENSAGENS */}
          <div className="flex-1 overflow-auto p-3 space-y-2">
                   
                 {/* 👇 BOTÕES INICIAIS  
@@ -235,7 +262,15 @@ function enviarRapido(texto) {
                         : "bg-gray-100"
                     }`}
                     >
-                    {m.texto}
+                  <div
+  dangerouslySetInnerHTML={{
+    __html: String(m.texto || "").replace(
+      /\/[a-zA-Z0-9\-\/]+/g,
+      (match) =>
+        `<span style="color:#2563eb;cursor:pointer;text-decoration:underline" onclick="window.location.href='${match}'">${match}</span>`
+    )
+  }}
+/>
                     </div>
                 ))}
                 </div>
