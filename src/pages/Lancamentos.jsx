@@ -543,8 +543,18 @@ return (
 
     {/* HEADER */}
    <div className="flex justify-between items-start">
-  <div>
+  
     <h1 className="text-xl font-bold text-blue-800">Transações Financeiras</h1>
+  <div>
+
+  {/* BOTÃO HELP */}
+  <span
+    onClick={() => navigate("/pages/ajuda/lancamentos")}
+    className="cursor-pointer bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-blue-700"
+    title="Abrir ajuda"
+  >
+    ?
+  </span> 
     <p className="text-sm text-gray-500">
       Consulte entradas e saídas financeiras com poucos cliques.
     </p>
@@ -552,8 +562,8 @@ return (
 
   <div className="flex gap-4 text-sm font-semibold">
          <p className="text-sm text-gray-500 mt-30">
-      ℹ️ Transações já estornadas ou estornos não podem ser estornados novamente.
-    </p>
+          ℹ️ Transações já estornadas ou estornos não podem ser estornados novamente.
+        </p>
 
    
      <button

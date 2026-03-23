@@ -133,7 +133,7 @@ const [loading, setLoading] = useState(false);
  
 async function gerarStaging() {
   try {
-    setMsg("⏳ Gerando STAGING...");
+    setMsg("⏳ STAGING (Checando)...");
     setMostrarContabil(false);
     setLotes([]);
 
@@ -386,7 +386,7 @@ useEffect(() => {
                         transition-all duration-200
                         inline-flex items-center gap-2
                       ">
-            STAGING (Fase 1)
+            Checagem (Fase 1)
           </button>
 
           <button
