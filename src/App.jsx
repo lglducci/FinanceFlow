@@ -104,6 +104,7 @@ import ConfiguracaoMeuNegocio from "./pages/ConfiguracaoMeuNegocio";
 import CriarModeloMeuNegocio from "./pages/CriarModeloMeuNegocio";
 import  RegistroReceitaRapida  from "./pages/RegistroReceitaRapida";                       
 import LancamentoContabilRapido  from "./pages/LancamentoContabilRapido"
+import LancamentoContabilEditar from "./pages/LancamentoContabilEditar";
 import DashboardContabil from "./pages/DashboardContabil"
 import ApuracaoResultado from "./pages/ApuracaoResultado"
 import LembretesContabeis from   "./pages/LembretesContabeis" 
@@ -340,6 +341,13 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   path="/lancamentocontabilrapido"
   element={<LancamentoContabilRapido />}
 /> 
+
+ 
+ <Route
+  path="/lanctoctbrapeditar"
+  element={<LancamentoContabilEditar />}
+/>
+
 <Route
   path="/dashboardcontabil"
   element={<DashboardContabil />}
