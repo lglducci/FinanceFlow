@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import ExcelExport from "../utils/ExcelExport";
-
+ 
 export default function RelatoriosDiario() {
   const hoje = new Date().toISOString().slice(0, 10);
-
+    
+  const location = useLocation();
   const [empresaId, setEmpresaId] = useState(null);
   const [dataIni, setDataIni] = useState( hojeLocal());
   const [dataFim, setDataFim] = useState(hojeLocal());
@@ -290,7 +291,7 @@ return (
       <table className="w-full text-sm border-collapse">
         <thead className="bg-gray-100 text-blue-800">
           <tr>
-            <th className="p-2 text-left">Lançamento</th>
+            <th className="p-2 text-left">Lancto id</th>
             <th className="p-2 text-left">Data</th>
             <th className="p-2 text-left">Histórico</th>
             <th className="p-2 text-left">Débito</th>
@@ -309,7 +310,9 @@ return (
             >
               <td className="p-2 font-bold">{l.id}</td>
               <td className="p-2 font-bold">{formatarDataBR(l.data)}</td>
-              <td className="p-2 font-bold">{l.historico}</td>
+              <td className="p-2 font-bold max-w-[400px] truncate">
+                  {l.historico}
+                </td>
               <td className="p-2 font-bold">{l.conta_debito}</td>
               <td className="p-2 font-bold">{l.conta_credito}</td>
               <td className="p-2 text-right font-bold">
@@ -317,12 +320,28 @@ return (
               </td>
               <td className="p-2 text-center font-bold">{l.lote_id}</td>
               <td className="p-2 text-center">
-                <button
-                  onClick={() => Estornar(l.lote_id)}
-                  className="text-blue-700 underline font-bold"
-                >
-                  Excluir lote
-                </button>
+              <div className="flex gap-3 justify-center">
+  
+                  <button
+                    onClick={() => Estornar(l.lote_id)}
+                    className="text-red-600 underline font-bold"
+                  >
+                    Excluir
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/lanctoctbrapeditar", {
+                        state: { id: l.lote_id }
+                      });
+                    }}
+                    className="text-blue-700 underline font-bold"
+                  >
+                    Editar
+                  </button>
+
+                </div>
               </td>
             </tr>
           ))}

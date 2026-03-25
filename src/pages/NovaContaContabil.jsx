@@ -74,11 +74,48 @@ async function salvar() {
       nivel: form.nivel,
       conta_pai_id: contaPaiId ?? null
     });
+ try {
+  const resp = await fetch(url, { method: "POST" });
 
-    await fetch(url, { method: "POST" });
+  const text = await resp.text(); // 🔥 pega qualquer resposta
+  console.log("RAW RESPONSE:", text);
 
-    alert("Conta cadastrada com sucesso!");
-    navigate(-1);
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    alert("Erro bruto do servidor:\n" + text);
+    return;
+  }
+
+  const item = Array.isArray(data) ? data[0] : data;
+
+  const msg = item.message || "";
+const details = item.details || "";
+
+// 🔥 erro específico de duplicidade
+if (msg.includes("duplicate key") || details.includes("already exists")) {
+  alert("⚠️ Esta conta já existe.");
+  return;
+}
+
+// outros erros
+if (!item.ok) {
+  alert(`Erro: ${msg}`);
+  return;
+}
+
+  if (!item.ok) {
+    alert(`Erro: ${item.message}\n${item.details || ""}`);
+    return;
+  }
+
+  alert("Conta cadastrada com sucesso!");
+
+} catch (e) {
+  console.log("ERRO FETCH:", e);
+  alert("Erro real:\n" + e.message);
+}
 
   } catch (e) {
     console.log("ERRO SALVAR:", e);

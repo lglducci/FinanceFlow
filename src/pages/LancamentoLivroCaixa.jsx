@@ -117,6 +117,8 @@ const navigate = useNavigate();
 // Rotina salvar definitiva assim espero
  
 async function salvarLancamentos() {
+ 
+  
 
   if (!contaId) {
     alert("Conta observada não selecionada");
@@ -152,6 +154,22 @@ if (nova.tipo === "saida") novoSaldo -= valor;
   tipo: l.tipo,
   conta_contra: Number(l.conta_id)
 }));
+
+
+ console.log("LANCAMENTOS:", lancamentos);
+  const index = lancamentos.findIndex(l =>
+  !l.data ||
+  !l.historico ||
+  !l.valor ||
+  l.valor <= 0 ||
+  !l.tipo ||
+  !l.conta_contra || l.conta_contra <= 0
+);
+
+if (index !== -1) {
+  alert(`⚠️ Linha ${index + 1} inválida.`);
+  return;
+}
 
   const payload = {
     empresa_id,
