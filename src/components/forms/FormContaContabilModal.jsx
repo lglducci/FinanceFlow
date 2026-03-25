@@ -119,10 +119,23 @@ export default function FormContaContabilModal({
       });
 
       const resp = await fetch(url, { method: "POST" });
+       const data = await resp.json();
+const item = Array.isArray(data) ? data[0] : data;
 
-      if (!resp.ok) {
-        throw new Error("Erro HTTP");
-      }
+// 🔥 TRATAR DUPLICIDADE
+if (
+  item.message?.includes("duplicate key") ||
+  item.details?.includes("already exists")
+) {
+  alert("⚠️ Esta conta já existe.");
+  return;
+}
+
+// 🔥 OUTROS ERROS
+if (!resp.ok || item.ok === false) {
+  alert(item.message || "Erro ao salvar conta");
+  return;
+}
 
       // Fecha modal sem depender de JSON
       onSuccess?.({
