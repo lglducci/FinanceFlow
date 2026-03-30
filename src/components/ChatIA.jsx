@@ -126,11 +126,11 @@ function getMensagemInicial(tela) {
   }
 }
 
-useEffect(() => {
+{/*useEffect(() => {
   setMensagens([
     { tipo: "ia", texto: getMensagemInicial(telaAtual) }
   ]);
-}, [telaAtual]);
+}, [telaAtual]);*/}
 
 
 function enviarRapido(texto) {
@@ -245,53 +245,86 @@ function enviarRapido(texto) {
                     href="/ajuda"
                     className="text-blue-600 underline font-medium"
                   >
-                    🔗 Abrir ajuda completa
+                    🔗 Abrir ajuda
                   </a>
 
                   <br /><br />
                   Ou me pergunte algo específico 👍
                 </div>
 
-                {/* 👇 MENSAGENS */}
                 {mensagens.map((m, i) => (
-                    <div
-                    key={i}
-                    className={`p-2 rounded-lg max-w-[80%] ${
-                        m.tipo === "user"
-                        ? "bg-blue-100 self-end ml-auto"
-                        : "bg-gray-100"
-                    }`}
-                    >
-                  <div
-  dangerouslySetInnerHTML={{
-    __html: String(m.texto || "").replace(
-      /\/[a-zA-Z0-9\-\/]+/g,
-      (match) =>
-        `<span style="color:#2563eb;cursor:pointer;text-decoration:underline" onclick="window.location.href='${match}'">${match}</span>`
-    )
-  }}
-/>
-                    </div>
-                ))}
+                        <div
+                          key={i}
+                          className={`flex gap-2 ${
+                            m.tipo === "user" ? "justify-end" : "justify-start"
+                          }`}
+                        >
+                          {/* ROBÔ */}
+                          {m.tipo === "ia" && (
+                            <img
+                              src="/robo.png"
+                              className="w-10 h-10 rounded-full mt-1"
+                              alt="IA"
+                            />
+                          )}
+
+                          {/* BOLHA */}
+                          <div
+                            className={`p-2 rounded-lg max-w-[80%] ${
+                              m.tipo === "user"
+                                ? "bg-blue-100"
+                                : "bg-gray-100"
+                            }`}
+                          >
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: String(m.texto || "").replace(
+                                  /\/[a-zA-Z0-9\-\/]+/g,
+                                  (match) =>
+                                    `<span style="color:#2563eb;cursor:pointer;text-decoration:underline" onclick="window.location.href='${match}'">${match}</span>`
+                                )
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+
+                 {loading && (
+                  <div className="flex gap-1 p-2">
+                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-150"></div>
+                    <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-300"></div>
+                  </div>
+                )} 
                 </div>
 
           {/* INPUT */}
           <div className="p-2 border-t flex gap-2">
-            <input
-              className="flex-1 border rounded p-2 text-sm"
+            <textarea
+              className="flex-1 border rounded p-2 text-sm resize-none"
               placeholder="Digite sua dúvida..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && enviar()}
+              rows={2}
+              maxLength={300}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  enviar();
+                }
+              }}
             />
+
+            <div className="text-xs text-gray-400 text-right pr-1">
+                {input.length}/300
+              </div>
             <button
-              onClick={enviar}
-              disabled={loading}
-             // className="bg-blue-600 text-white px-3 rounded"
-              className="btn-pill btn-dark-blue"
-            >
-              {loading ? "..." : "Enviar"}
-            </button>
+            onClick={enviar}
+            disabled={loading}
+            className="btn-pill btn-dark-blue"
+          >
+            {loading ? "..." : "Enviar"}
+          </button>
           </div>
         </div>
       )}
