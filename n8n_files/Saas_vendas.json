@@ -652,8 +652,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        816
+        -16,
+        832
       ],
       "id": "9820e89c-3874-43a5-abdc-b788316e1fa3",
       "name": "Sticky Note1"
@@ -1001,6 +1001,552 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "##Administracao SAAS_VENDAS\n** DashBoard\n",
+        "height": 672,
+        "width": 3152,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        2064
+      ],
+      "id": "e3363e84-f518-47e2-835d-a5516d9463cd",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatia",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        2256
+      ],
+      "id": "3801099c-6731-498a-93fa-a23167806cfc",
+      "name": "ChatIa",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d936f0d4-cfa3-4894-94ae-e8f6e03acffe",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "065c2941-a830-4f57-936a-6e1f1df76c2d",
+              "name": "conversa",
+              "value": "={{ $json.body.mensagem}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -48,
+        2240
+      ],
+      "id": "9a067302-e47a-4c91-a6c3-9e77b98e6fda",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2160,
+        2352
+      ],
+      "id": "924d446d-c53e-4124-863f-831388efd8af",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": "=200"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1888,
+        2352
+      ],
+      "id": "ca47ed63-49c8-47d6-8cb1-c6f3ec84a572",
+      "name": "Respond to Webhook29"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3040,
+        2368
+      ],
+      "id": "93639db6-ef15-4d56-a4ac-d95ab386f9f5",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: $('Http four-o').first().json.choices[0].message.content,\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3552,
+        2128
+      ],
+      "id": "d5363ab8-7dd8-4e00-85f7-58d4382a57ea",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer  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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "= {\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0,\n  \"response_format\": { \"type\": \"json_object\" },\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Você é um classificador de intenção. Responda apenas JSON válido.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{$json.prompt.replace(/\\n/g, '\\\\n').replace(/\\\"/g, '\\\\\\\"')}}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        576,
+        2256
+      ],
+      "id": "2a03acff-a522-4d63-bd26-293623031f52",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": " const resposta = $('HTTP Request1').first().json.choices[0].message.content;\n\n// parse da resposta da IA\nlet tipo = \"erro\";\nlet assunto = \"geral\";\n\ntry {\n  const parsed = JSON.parse(resposta.trim());\n\n  tipo = parsed.tipo || \"geral\";\n  assunto = parsed.assunto || \"geral\";\n\n} catch (e) {\n  tipo = \"erro\";\n  assunto = \"geral\";\n}\n\n// dados do node anterior\nconst mensagem = $('Edit Fields').first().json.conversa;\nconst empresa_id = $('Edit Fields').first().json.empresa_id;\n\nreturn [{\n  json: {\n    tipo,\n    assunto,\n    mensagem,\n    empresa_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        2272
+      ],
+      "id": "20a3eeb8-2931-440c-b8e0-68e2d10ce4e0",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": " const perguntaOriginal = $('Edit Fields').first().json.conversa;\n\nconst tipo = $json.tipo;\n\n// 🔥 SE NÃO FOR NAVEGAÇÃO → IA\nif (tipo !== \"navegacao\") {\n  return [{\n    json: {\n      usar_ia: true,\n      mensagem: perguntaOriginal\n    }\n  }];\n}\n\n// 🔥 PEGA DADOS DO BANCO\nconst row = items[0]?.json || {};\n\n// 🔥 TRATA NULL\nconst rota = row.rota || \"\";\nconst rota_help = row.rota_help || \"\";\nconst titulo = row.titulo || \"\";\n\n// 🔥 MONTA RESPOSTA\nlet mensagem = `Vá em ${titulo} ${rota ? `(${rota})` : \"\"}`;\n\n// 🔥 SE TIVER HELP\nif (rota_help) {\n  mensagem += `\\nVeja como fazer: ${rota_help}`;\n}\n\nreturn [{\n  json: {\n    usar_ia: false,\n    ok: true,\n    message: mensagem,\n    responseCode: 200\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        2272
+      ],
+      "id": "f11549e5-78f8-420a-bb12-53f5da255c27",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\nlet mensagem = `Vá em ${item.titulo} (${item.rota})`;\n\nif (item.rota_help) {\n  mensagem += `\\nVeja como fazer: ${item.rota_help}`;\n}\n\nreturn [{\n  json: {\n    ok: true,\n    message: mensagem,\n    responseCode: 200,\n    data: { success: true }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1968,
+        2080
+      ],
+      "id": "b0b144f3-b32e-44da-aae1-bf8056a25217",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "043c14b2-1000-4ca9-a8b8-002113328c96",
+              "leftValue": "={{ $json.usar_ia }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1616,
+        2272
+      ],
+      "id": "218047e0-dda0-488d-beb4-b475d4ad2af7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 pega a mensagem já pronta\nconst mensagem = item.mensagem;\n\n// 🔥 retorna no formato que você quer\nreturn [\n  {\n    json: {\n      ok: true,\n      message: $input.first().json.message,\n      responseCode: 200,\n      data: {\n        success: true\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        2368
+      ],
+      "id": "6a65c081-67e7-4ad4-9e0b-faba53057057",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.conversa }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": " Você é um classificador de intenção de um sistema contábil.\n\nSua tarefa:\n- identificar o assunto mais próximo da pergunta\n- classificar como:\n  processo ou navegacao\n\n---\n\nLISTA DE ASSUNTOS:\n{{lista_assuntos}}\n\n---\n\nREGRAS IMPORTANTES:\n\n- O usuário quase sempre quer saber ONDE fazer algo\n- Foque no SIGNIFICADO da frase, não nas palavras exatas\n- Ignore palavras genéricas como:\n  \"relatorio\", \"tela\", \"sistema\", \"ver\", \"abrir\", \"consultar\"\n- Considere sinônimos:\n  cadastrar = criar = incluir\n  lançar = registrar\n  ver = acessar = abrir\n\n---\n\nCOMO IDENTIFICAR O ASSUNTO:\n\n- Extraia o núcleo da frase (ex: \"fluxo de caixa\", \"dre\", \"fornecedor\")\n- Compare com a lista e escolha o mais próximo\n- Mesmo que a frase tenha palavras extras, ignore o excesso\n\nExemplo:\n\"relatorio de fluxo de caixa\" → fluxo_caixa  \n\"ver relatorio dre\" → dre  \n\"abrir tela de fornecedor\" → fornecedor_cliente  \n\n---\n\nCLASSIFICAÇÃO:\n\n✔ processo:\nQuando o usuário quer saber COMO FAZER (passo a passo)\n\nEx:\n- como cadastrar fornecedor\n- como fazer lançamento\n- como registrar pagamento\n\n✔ navegacao:\nQuando o usuário quer acessar uma funcionalidade\n\nEx:\n- quero cadastrar fornecedor\n- abrir dre\n- ver lançamentos\n- fluxo de caixa\n\n---\n\nREGRA DE OURO:\n\nSe houver dúvida → SEMPRE retornar \"navegacao\"\n\n---\n\nEXEMPLOS:\n\nPergunta: \"quero cadastrar conta financeira\"\nResposta:\n{\n  \"tipo\": \"navegacao\",\n  \"assunto\": \"contas_financeiras\"\n}\n\nPergunta: \"como cadastrar conta financeira\"\nResposta:\n{\n  \"tipo\": \"processo\",\n  \"assunto\": \"contas_financeiras\"\n}\n\nPergunta: \"relatorio de fluxo de caixa\"\nResposta:\n{\n  \"tipo\": \"navegacao\",\n  \"assunto\": \"fluxo_caixa\"\n}\n\nPergunta: \"ver dre\"\nResposta:\n{\n  \"tipo\": \"navegacao\",\n  \"assunto\": \"dre\"\n}\n\n---\n\nIMPORTANTE:\n\n- NUNCA inventar assunto fora da lista\n- SEMPRE escolher o mais próximo\n- NUNCA retornar vazio\n- SEMPRE retornar apenas UM assunto\n\n---\n\nResponda SOMENTE JSON:\n\n{\n  \"tipo\": \"processo\" | \"navegacao\",\n  \"assunto\": \"valor_exato_da_lista\"\n}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -448,
+        1456
+      ],
+      "id": "8df138a5-b408-4bbf-9fd8-0c30b52bc446",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -464,
+        1504
+      ],
+      "id": "9784ba40-50fb-4587-89d0-0f1c20fb2ed4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "7HMHsFQ9dFoGlMtU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT *\nFROM ia_conhecimento\nWHERE \n  assunto = '{{ $json.assunto }}'\n  OR assunto ILIKE '%' || '{{ $json.assunto }}' || '%'\nORDER BY \n  CASE \n    WHEN assunto = '{{ $json.assunto }}' THEN 1\n    WHEN assunto ILIKE '%{{ $json.assunto }}%' THEN 2\n    WHEN tipo = '{{ $json.tipo }}' THEN 3\n    ELSE 4\n  END\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1248,
+        2272
+      ],
+      "id": "7fab8e3d-9847-4c07-ab63-9e157489e082",
+      "name": "Execute a SQL query1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " insert into ia_consumo (\n  empresa_id,\n  pergunta,\n  resposta,\n  tokens_input,\n  tokens_output,\n  tokens_total,\n  custo_estimado,\n  modelo\n)\nvalues (\n {{ $('GeraPrompt').item.json.empresa_id }}  ,\n '{{ $('GeraPrompt').item.json.conversa }}' ,\n  '{{ $json.choices[0].message.content }}',\n  {{ $json.usage.prompt_tokens }},\n  {{ $json.usage.completion_tokens }},\n   {{ $json.usage.total_tokens }},\n  ff_calcula_custo_consumo_ia({{ $json.usage.prompt_tokens }}, {{ $json.usage.completion_tokens }} ),\n  '{{ $json.model }}'\n);\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3104,
+        2128
+      ],
+      "id": "94e1c30a-d943-413d-b3d1-64df937cb806",
+      "name": "Calcula custo gtp 4o",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " insert into ia_consumo (\n  empresa_id,\n  pergunta,\n  resposta,\n  tokens_input,\n  tokens_output,\n  tokens_total,\n  custo_estimado,\n  modelo\n)\nvalues (\n    {{ $('Lista Assuntos Titulos').item.json.empresa_id }},\n '{{ $('Lista Assuntos Titulos').item.json.conversa }}',\n  '{{ $json.choices[0].message.content }}',\n  {{ $json.usage.prompt_tokens }},\n  {{ $json.usage.completion_tokens }},\n   {{ $json.usage.total_tokens }},\n  ff_calcula_custo_consumo_ia({{ $json.usage.prompt_tokens }}, {{ $json.usage.completion_tokens }} ),\n  'gpt-4o-mini'\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        784,
+        2272
+      ],
+      "id": "b02434f2-11fc-4d40-9ab7-21acf853f5ad",
+      "name": "Calcula custo gtp 4 - mini",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const resposta = $input.first().json.text;\n\n// parse da resposta da IA\nlet tipo = \"erro\";\nlet assunto = \"geral\";\n\ntry {\n  const parsed = JSON.parse(resposta.trim());\n\n  tipo = parsed.tipo || \"geral\";\n  assunto = parsed.assunto || \"geral\";\n\n} catch (e) {\n  tipo = \"erro\";\n  assunto = \"geral\";\n}\n\n// dados do node anterior\nconst mensagem = $('Edit Fields').first().json.conversa;\nconst empresa_id = $('Edit Fields').first().json.empresa_id;\n\nreturn [{\n  json: {\n    tipo,\n    assunto,\n    mensagem,\n    empresa_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        1696
+      ],
+      "id": "afe7c2f2-652b-4bdd-8187-54b5bec4a898",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "jsCode": " const listaFormatada = items\n  .map(i => `- ${i.json.item}`)\n  .join(\"\\n\");\n\nconst empresa_id = $('Edit Fields').first().json.empresa_id;\nconst pergunta =  $('Edit Fields').first().json.conversa;\n\nconst prompt = `\nVocê é um classificador.\n\nLISTA:\n${listaFormatada}\n\nPERGUNTA:\n${pergunta}\n\n \nCLASSIFICAÇÃO:\n\nprocesso:\nQuando o usuário quer executar ou aprender como fazer algo\n\nEx:\n- como fazer lançamento\n- quero fazer lançamento\n- preciso registrar pagamento\n- lançar aporte de capital\n- fazer lançamento contábil\n\nnavegacao:\nQuando o usuário quer acessar uma tela ou ver algo\n\nEx:\n- abrir lançamentos\n- ver fluxo de caixa\n- acessar DRE\n- ir para contas a pagar\n\nREGRA DE OURO (OBRIGATÓRIA):\n\nSe houver QUALQUER indicação de ação (fazer, lançar, registrar, cadastrar, criar, gerar) → processo\n\nSÓ usar navegacao quando for claramente visualização (ver, abrir, acessar)\n\nNunca tratar ação como navegacao\nResposta JSON:\n{\"tipo\":\"\",\"assunto\":\"\"}\n`;\n\nreturn [{\n  prompt,\n  empresa_id,\n  conversa: pergunta\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        2272
+      ],
+      "id": "a3938fa0-d7aa-4ddb-a6a5-e09e5eba2d87",
+      "name": "Lista Assuntos Titulos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select assunto || ' (' || titulo || ')' as item\nfrom ia_conhecimento\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        176,
+        2256
+      ],
+      "id": "dcf32053-f03d-4477-8996-1b81f91f50b5",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from ia_grava_historico( {{ $('GeraPrompt').item.json.empresa_id }} , '{{ $('GeraPrompt').item.json.conversa }}','{{ $('Http four-o').item.json.choices[0].message.content }}' )",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3296,
+        2128
+      ],
+      "id": "27b46f52-d452-4468-9d96-d4b80d5de2b2",
+      "name": "Calcula custo gtp 4o1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer  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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "= {\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Você decide se uma pergunta é continuação ou novo assunto. Responda apenas: continuar ou novo.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"HISTORICO: {{ $json.historico }} PERGUNTA: {{ $json.mensagem }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2160,
+        2128
+      ],
+      "id": "b2b83d71-2b85-41ee-9e69-42e1237d9e0b",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer  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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.openai }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2848,
+        2128
+      ],
+      "id": "d527c0d8-d1f3-4b2d-88bf-2c2e42fb880f",
+      "name": "Http four-o"
+    },
+    {
+      "parameters": {
+        "jsCode": " const historicoTexto = items\n  .map(i => {\n    const msg = (i.json.mensagem || \"\")\n      .replace(/\\n/g, \" \")\n      .replace(/\"/g, \"'\")\n      .replace(/\\s+/g, \" \")\n      .trim();\n\n    return `${i.json.role || \"user\"}: ${msg}`;\n  })\n  .join(\" | \");\n\nreturn [{\n  json: {\n    historico: historicoTexto,\n    mensagem: $('Edit Fields').first().json.conversa,\n    empresa_id: $input.first().json.empresa_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        2128
+      ],
+      "id": "6d94aa36-79ed-4eca-89a0-bce4d430b00d",
+      "name": "HistoricoDecisao"
+    },
+    {
+      "parameters": {
+        "jsCode": " const contexto = $input.first().json.choices[0].message.content ;\n\nconst historicoTexto = $('HistoricoDecisao').first().json.historico || \"\";\nconst pergunta = $('HistoricoDecisao').first().json.mensagem;\n\n// 🔵 CONTINUAR → transformar texto em array + juntar\nif (contexto === \"continuar\") {\n\n  const partes = historicoTexto.split(\"|\");\n\n  const messages = partes.map(p => {\n    const [role, ...rest] = p.split(\":\");\n    return {\n      role: role.trim(),\n      content: rest.join(\":\").trim()\n    };\n  });\n\n  // adiciona nova pergunta\n  messages.push({\n    role: \"user\",\n    content: pergunta\n  });\n\n  return [{ json: { messages } }];\n}\n\n\n\n// 🟢 NOVO → só pergunta\nreturn [{\n  json: {\n    messages: [\n      {\n        role: \"user\",\n        content: pergunta\n      }\n    ]\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        2128
+      ],
+      "id": "aaeb868b-bf5d-4015-9e43-85b3a8426635",
+      "name": "ValidaHistorico"
+    },
+    {
+      "parameters": {
+        "jsCode": " const system = {\n  role: \"system\",\n  content: `Você é um contador experiente, prático e direto.\n\nOBJETIVO:\nResponder com precisão contábil, sem enrolação.\n\n---\n\nIDENTIFICAÇÃO:\n\nConsidere como pergunta CONTÁBIL quando envolver:\n- débito, crédito\n- lançamento contábil\n- pagamento, recebimento\n- compra, venda\n- fornecedor, cliente\n- cartão, fatura\n- impostos, despesas, receitas\n\n---\n\nRESPOSTA CONTÁBIL (OBRIGATÓRIO):\n\nSempre responder no formato:\n\n👉 Débito: conta\n👉 Crédito: conta\n\nRegras:\n- Nunca explicar teoria\n- Nunca escrever texto longo\n- Nunca dar mais de uma interpretação\n- Sempre usar contas coerentes\n\n---\n\nREGRAS CONTÁBEIS:\n\n- Receita NUNCA pode ser débito\n- Recebimento de cliente baixa Clientes, não Receita\n- Pagamento baixa obrigação, não despesa novamente\n- Compra a prazo gera obrigação (passivo)\n- Cartão gera obrigação até pagamento da fatura\n\n---\n\nSE NÃO FOR CONTÁBIL:\nResponder curto e direto.\n\nPROIBIDO:\n- Explicar teoria\n- Respostas longas`\n};\n\n// 🔥 junta system + histórico\nconst messages = [\n  system,\n  ...$json.messages\n];\n\nreturn [{\n  json: {\n    openai: {\n      model: \"gpt-4o\",\n      temperature: 0,\n      max_tokens: 120,\n      top_p: 1,\n      frequency_penalty: 0,\n      presence_penalty: 0,\n      messages: messages\n    },\n\n    // 🔥 CONTINUA FORA DO GPT\n    empresa_id: $('Lista Assuntos Titulos').first().json.empresa_id,\n    conversa: $('Lista Assuntos Titulos').first().json.conversa\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2624,
+        2128
+      ],
+      "id": "a053c4fb-4abd-426c-a0b5-ac27f2891547",
+      "name": "GeraPrompt"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from ia_historico",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1792,
+        2128
+      ],
+      "id": "2baba121-bd06-4ffb-a63e-bd8e29102aa6",
+      "name": "ia_historico",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -1040,6 +1586,14 @@
           "meio_pagamento": "",
           "data_pagamento": "20260202",
           "status": ""
+        }
+      }
+    ],
+    "Edit Fields": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conversa": "Como eu faço um lancamento contabil de aporte de capital na empresa e banco 1.1.1.23"
         }
       }
     ]
@@ -1407,13 +1961,278 @@
           }
         ]
       ]
+    },
+    "ChatIa": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook29",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Calcula custo gtp 4 - mini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "ia_historico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcula custo gtp 4o": {
+      "main": [
+        [
+          {
+            "node": "Calcula custo gtp 4o1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcula custo gtp 4 - mini": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        []
+      ]
+    },
+    "Lista Assuntos Titulos": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Lista Assuntos Titulos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "ValidaHistorico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcula custo gtp 4o1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Http four-o": {
+      "main": [
+        [
+          {
+            "node": "Calcula custo gtp 4o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HistoricoDecisao": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ValidaHistorico": {
+      "main": [
+        [
+          {
+            "node": "GeraPrompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GeraPrompt": {
+      "main": [
+        [
+          {
+            "node": "Http four-o",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ia_historico": {
+      "main": [
+        [
+          {
+            "node": "HistoricoDecisao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "984bee58-57b2-49e7-8dff-1945717f0078",
+  "versionId": "4fa2b4cf-c9ee-4ea2-90fd-63f94bb54d77",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
