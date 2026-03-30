@@ -20,7 +20,7 @@
     {
       "parameters": {
         "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
-        "height": 1820,
+        "height": 2140,
         "width": 1328,
         "color": 4
       },
@@ -1623,6 +1623,103 @@
       ],
       "id": "cb816323-463e-4c34-b3ea-6fa51c72a12e",
       "name": "Edit_RazãoPorCont"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2384,
+        1888
+      ],
+      "id": "394345de-8b11-4faa-b7be-0c67a969707c",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "1604e86a-56f9-4afa-8125-8e35d289822b",
+              "name": "nivel",
+              "value": "={{ $json.body.nivel}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2000,
+        1888
+      ],
+      "id": "96c99fd3-80ec-48d2-b930-6f71b27be2f5",
+      "name": "Edit_RazãoPorCont1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "balanco_nivel",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1792,
+        1888
+      ],
+      "id": "07ffdf10-07e9-445b-bf75-2f9ab0df5dd1",
+      "name": "BalancoPorNivel",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * \nFROM contab.ff_balanco_por_nivel(\n  {{ $json.empresa_id }}, \n  '{{ $json.data_ini }}',\n   '{{ $json.data_fim }}',\n   {{ $json.nivel }}\n \n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2192,
+        1888
+      ],
+      "id": "24d3547a-c924-4e21-a44c-f44ec783d10a",
+      "name": "ff_balanco_por_nivel",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -1684,6 +1781,16 @@
           "data_ini": "20260101",
           "data_fim": "20260321",
           "conta_id": null
+        }
+      }
+    ],
+    "Edit_RazãoPorCont1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260101",
+          "data_fim": "20260601",
+          "nivel": 1
         }
       }
     ]
@@ -2249,13 +2356,46 @@
           }
         ]
       ]
+    },
+    "Edit_RazãoPorCont1": {
+      "main": [
+        [
+          {
+            "node": "ff_balanco_por_nivel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_balanco_por_nivel": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BalancoPorNivel": {
+      "main": [
+        [
+          {
+            "node": "Edit_RazãoPorCont1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a63e4ca9-4c33-4bb5-8e15-086b37ab7863",
+  "versionId": "6c750105-0495-497b-9590-61080e40c455",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

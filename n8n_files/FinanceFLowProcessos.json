@@ -704,6 +704,248 @@
       ],
       "id": "28e44533-a5a9-4643-ad26-15a9cc05ce86",
       "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1056,
+        1536
+      ],
+      "id": "ab4cea32-85bf-4de6-a9c2-540fcc32f5cb",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "c41666a4-f294-4f09-9bff-30c3673a3f29",
+              "name": "conta_observada",
+              "value": "={{ $json.body.conta_observada}}",
+              "type": "string"
+            },
+            {
+              "id": "dfacf8d5-4306-40b2-8e79-2867acad663d",
+              "name": "lancamentos",
+              "value": "={{ $json.body.lancamentos}}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        1536
+      ],
+      "id": "0a5360ff-557a-41f9-b8b6-4b1f75981f03",
+      "name": "EditPartidaDobrada1"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        1536
+      ],
+      "id": "7ede3e2e-2d65-448a-a41f-826e700ff8ab",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT contab.ff_lote_lancamentos(\n  {{ $json.empresa_id }},\n  {{ $json.conta_observada }},\n    '{{ JSON.stringify($json.lancamentos) }}'::jsonb\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        624,
+        1536
+      ],
+      "id": "7bb23628-3956-4859-ba42-0146fc349b93",
+      "name": "ff_lancamento_partida_dobrada1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lote_lancamentos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        1536
+      ],
+      "id": "7366045d-9c78-4411-ba18-3d095d45313a",
+      "name": "PartidaLote",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1024,
+        1776
+      ],
+      "id": "eb179afb-23db-4928-bb8f-8be41d5c0990",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "c41666a4-f294-4f09-9bff-30c3673a3f29",
+              "name": "debito_id",
+              "value": "={{ $json.body.debito_id}}",
+              "type": "string"
+            },
+            {
+              "id": "e32d3677-2d6e-4c94-9ad2-489605ba8e2b",
+              "name": "credito_id",
+              "value": "={{ $json.body.credito_id}}",
+              "type": "string"
+            },
+            {
+              "id": "ba2d4fbe-252d-4841-a1e3-b8ee7ea4764e",
+              "name": "valor",
+              "value": "={{ $json.body.valor}}",
+              "type": "string"
+            },
+            {
+              "id": "b9fc7bbf-f777-4d8d-a46c-c756bf9274ca",
+              "name": "historico",
+              "value": "={{ $json.body.historico}}",
+              "type": "string"
+            },
+            {
+              "id": "a2282206-098b-4d5a-8195-35ed8041d618",
+              "name": "data_lancto",
+              "value": "={{ $json.body.data_lancto}}",
+              "type": "string"
+            },
+            {
+              "id": "0e882608-d714-4526-aa9b-46d21039fd15",
+              "name": "lembrar",
+              "value": "={{ $json.body.lembrar}}",
+              "type": "string"
+            },
+            {
+              "id": "a886b95c-a43e-498b-acad-e16ed7cc541a",
+              "name": "vencimento",
+              "value": "={{ $json.body.vencimento}}",
+              "type": "string"
+            },
+            {
+              "id": "e51013a7-32ef-49f8-b249-2694b48db6eb",
+              "name": "lote_id",
+              "value": "={{ $json.body.lote_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        1776
+      ],
+      "id": "fd1b10ea-c147-4c5c-8645-85312dcb8e83",
+      "name": "EditPartidaDobrada2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        1776
+      ],
+      "id": "53d467d5-13aa-48c8-aca7-51c6b22e89f8",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "edita_lancto_partida",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        1776
+      ],
+      "id": "82612d3e-ffc6-48e2-b4b6-b22f221b0d9b",
+      "name": "EditaPartidaDobrada",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  contab.ff_atualiza_lancto_partida ({{ $json.lote_id }},\n    {{ $json.empresa_id }} , {{ $json.debito_id }},  {{ $json.credito_id }} , {{ $json.valor}} , '{{ $json.historico }}' , '{{ $json.data_lancto}}' ,  {{ $json.lembrar }} ,'{{ $json.vencimento }}' )",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        592,
+        1776
+      ],
+      "id": "dfec937d-eb58-41e6-ab27-0a3675413ae9",
+      "name": "contab.ff_atualiza_lancto_partida",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -1013,13 +1255,101 @@
           }
         ]
       ]
+    },
+    "EditPartidaDobrada1": {
+      "main": [
+        [
+          {
+            "node": "ff_lancamento_partida_dobrada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_lancamento_partida_dobrada1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PartidaLote": {
+      "main": [
+        [
+          {
+            "node": "EditPartidaDobrada1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditPartidaDobrada2": {
+      "main": [
+        [
+          {
+            "node": "contab.ff_atualiza_lancto_partida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaPartidaDobrada": {
+      "main": [
+        [
+          {
+            "node": "EditPartidaDobrada2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contab.ff_atualiza_lancto_partida": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "322e6b36-c268-4ddf-a69e-ebeff19a5b06",
+  "versionId": "94be9890-41c3-484e-b8c0-e8455c1aed37",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

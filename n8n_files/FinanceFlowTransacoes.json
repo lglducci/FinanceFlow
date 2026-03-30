@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        128
+        752,
+        -624
       ],
-      "id": "57c080b9-1eb4-448a-b273-5855dc5e98e4",
+      "id": "769bf03b-1294-4f6c-a5ab-cf0e5199dc11",
       "name": "Respond to Webhook1"
     },
     {
@@ -26,10 +26,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        144,
-        128
+        16,
+        -624
       ],
-      "id": "a043b781-b724-4d01-b73e-4ed814c486e6",
+      "id": "a9e16089-013b-4132-8755-5f4d3b10fbb5",
       "name": "Lancamento",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -56,12 +56,6 @@
               "type": "string"
             },
             {
-              "id": "dc56d54c-e41f-44da-a328-7e9abb3df615",
-              "name": "conta_id",
-              "value": "={{ $json.query.conta_id}}",
-              "type": "string"
-            },
-            {
               "id": "1f9606bd-e55e-475e-acf0-4a7c0ce08a21",
               "name": "fornecedor_id",
               "value": "={{ $json.query.fornecedor_id}}",
@@ -72,6 +66,18 @@
               "name": "categoria_id",
               "value": "={{ $json.query.categoria_id}}",
               "type": "string"
+            },
+            {
+              "id": "964d6437-945c-47d7-8e5f-0fe7e3f88832",
+              "name": "tipo_operacao",
+              "value": "={{ $json.query.tipo_operacao}}",
+              "type": "string"
+            },
+            {
+              "id": "ab8b4dc4-f272-4067-90a9-0820150a6f2e",
+              "name": "vencidos",
+              "value": "={{ $json.query.vencido}}",
+              "type": "string"
             }
           ]
         },
@@ -80,25 +86,25 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        416,
-        128
+        288,
+        -624
       ],
-      "id": "d9550c25-6d73-4763-86f2-1e1b306fb06c",
+      "id": "63dcbe06-14a2-4c46-8833-ab2944e43c1b",
       "name": "TransacaoEdit"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n  t.id,\n  t.descricao,\n  c.nome AS categoria_nome,\n  f.nome AS conta_nome,\n  t.tipo,\n  t.data_movimento,\n  t.origem,\n  t.valor,\n   t.origem_id,\n   t.evento_codigo, \n   t.conta_id, t.classificacao\nFROM transacoes t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.data_movimento >= '{{ $json.data_ini }}'\n  AND t.data_movimento <= '{{ $json.data_fim }}' \n  and ( t.conta_id = {{ $json.conta_id }} or {{ $json.conta_id }} = 0)    \n   and  ( categoria_id =  {{ $json.categoria_id }}  or  {{ $json.categoria_id }}  =0 )  \nORDER BY t.data_movimento asc, t.id asc;\n",
+        "query": " SELECT \n   t.id,\n  t.descricao,\n  c.nome AS categoria_nome,\n  f.nome AS conta_nome,\n  t.tipo,\n  t.data_movimento,\n    t.vencimento,\n   t.vencido,\n   t.parcelas, \n   t.parcela_total,\n   t.origem,\n   t.forma, \n  t.valor,\n    0 origem_id,\n   t.evento_codigo, \n   t.conta_id, t.classificacao,\n   t.tipo_operacao as tipo_operacao ,\n   t.origem_id, t.status\nFROM vw_eventos_financeiros t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\n WHERE t.empresa_id = {{ $json.id_empresa }}\n  AND (\n        t.data_movimento::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n     OR t.vencimento BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  )\n   and  ( categoria_id =  {{ $json.categoria_id }}  or  {{ $json.categoria_id }}  =0 )    \n    AND (\n  COALESCE('{{ $json.tipo_operacao }}','') = ''\n  OR t.tipo_operacao = '{{ $json.tipo_operacao }}'\n) AND (\n  COALESCE('{{ $json.vencidos }}','') = ''\n  OR   ( t.vencido = '{{ $json.vencidos }}' )  AND COALESCE(t.status,'') NOT IN ('paga','recebido','pago')  )\nORDER BY t.data_movimento asc, t.id asc;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        640,
-        128
+        512,
+        -624
       ],
-      "id": "2b0b8c12-e69d-414a-9ee3-e2049a7ef267",
+      "id": "206d83e6-268d-4245-9cf8-94de76573b8d",
       "name": "Lancamentos",
       "alwaysOutputData": true,
       "credentials": {
@@ -118,10 +124,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        896,
-        1008
+        768,
+        256
       ],
-      "id": "5af704d1-0f65-4c96-827a-99e5bdbb43c5",
+      "id": "de56e978-b7f0-45f1-9f81-40c7c6af0fc2",
       "name": "Respond to Webhook5"
     },
     {
@@ -133,10 +139,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        176,
-        1008
+        48,
+        256
       ],
-      "id": "ebd7c42d-c26f-4962-9990-4ddf9750793f",
+      "id": "3b7df847-8f7f-472f-969b-36695de3fbff",
       "name": "consultaSaldo",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -175,10 +181,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        432,
-        1008
+        304,
+        256
       ],
-      "id": "a73492a8-d68a-4b85-a6fd-01d6efc1c906",
+      "id": "c0a23839-5131-4943-96d6-6e3819de60c6",
       "name": "SaldoEdit"
     },
     {
@@ -191,10 +197,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        896,
-        848
+        768,
+        96
       ],
-      "id": "a5d31e00-5275-4e0b-818f-123b78606f82",
+      "id": "933dd19d-3027-45c2-81b2-f33d442471c9",
       "name": "Respond to Webhook11"
     },
     {
@@ -220,10 +226,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        432,
-        848
+        304,
+        96
       ],
-      "id": "f707d49f-4275-4e76-b969-9953388670ab",
+      "id": "ea513466-bafb-477b-a7d0-f4405db4e02d",
       "name": "SaldoEdit3"
     },
     {
@@ -235,10 +241,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        848
+        528,
+        96
       ],
-      "id": "f72e7cb2-fb40-4101-81b6-c73871283655",
+      "id": "f8abba3d-5ba2-4c8a-b6c3-91d333665f6f",
       "name": "ContasFinanceiras",
       "credentials": {
         "postgres": {
@@ -256,10 +262,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        1008
+        528,
+        256
       ],
-      "id": "ee38b2e0-2469-419c-bffc-263e5b21e0fa",
+      "id": "868b2963-b299-42d1-b804-bad356ed476e",
       "name": "consultar_saldo_periodo",
       "alwaysOutputData": true,
       "credentials": {
@@ -278,10 +284,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        176,
-        848
+        48,
+        96
       ],
-      "id": "7c19a388-a806-48f6-8f8d-456df3a19dd2",
+      "id": "f400bf45-a168-4ee7-8968-3db8cab9e923",
       "name": "RetrieveContaFInanc",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -295,25 +301,25 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
-        672
+        752,
+        -80
       ],
-      "id": "2efc3b5b-7413-48c0-97cb-0da0e4ed3d2e",
+      "id": "ad03b7e1-3a62-4566-a549-fad908ddd771",
       "name": "Respond to Webhook"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n  t.id,\n  t.conta_id, \n  t.categoria_id,\n   t.descricao, \n  t.tipo,\n  t.data_movimento,\n  t.origem,\n  t.valor, t.conta_id, t.classificacao \nFROM transacoes t\n \nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.id = {{ $json.id }} \n",
+        "query": " SELECT \n  t.id,\n  t.conta_id, \n  t.categoria_id,\n   t.descricao, \n  t.tipo,\n  t.data_movimento,\n  t.origem,\n  t.valor, t.conta_id, t.classificacao ,\n   t.evento_codigo\nFROM transacoes t\n \nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.id = {{ $json.id }} \n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        672
+        528,
+        -80
       ],
-      "id": "9a3f56a9-4d1c-414e-8a7c-763dddc2ecb2",
+      "id": "834468e4-ac3c-41ac-84c5-72b684fb4749",
       "name": "Lancamentos1",
       "alwaysOutputData": true,
       "credentials": {
@@ -332,10 +338,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        192,
-        672
+        64,
+        -80
       ],
-      "id": "cdc4a335-6106-442d-8650-dc01ffe0eef8",
+      "id": "97b8e4fe-53d0-43a8-9c56-799e0ac81575",
       "name": "EditarLancto",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -362,10 +368,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        416,
-        672
+        288,
+        -80
       ],
-      "id": "4334b610-17bb-40e3-8a08-311c37f2c657",
+      "id": "614fe4b2-486c-4fec-970d-07e12c3b8ecf",
       "name": "EditLancto"
     },
     {
@@ -378,10 +384,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        496
+        736,
+        -256
       ],
-      "id": "98099fbf-40c3-4160-99bb-eaa7fecfb8c9",
+      "id": "a9670c39-554c-43f9-ad2c-64d3d747e62d",
       "name": "Respond to Webhook14"
     },
     {
@@ -393,10 +399,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        176,
-        496
+        48,
+        -256
       ],
-      "id": "767d7007-f749-43e0-9234-99d80e1c1197",
+      "id": "88a44b81-f5c7-4f12-977e-083cfa26233f",
       "name": "DeliteLancto",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -423,10 +429,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        400,
-        496
+        272,
+        -256
       ],
-      "id": "f132a3f9-c947-415e-a13f-fde4f2c46cf3",
+      "id": "482a7ad6-eae2-41f0-ad85-2d72d74940a5",
       "name": "Deletelancto"
     },
     {
@@ -439,10 +445,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        336
+        736,
+        -416
       ],
-      "id": "d2f78386-266b-49ec-bfdb-d48f05bdb9ec",
+      "id": "afb50a39-d061-4697-81e2-1b51a361ec57",
       "name": "Respond to Webhook15"
     },
     {
@@ -455,10 +461,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        176,
-        336
+        48,
+        -416
       ],
-      "id": "c690de59-da80-42a5-9d05-f31af86bc19a",
+      "id": "efd95e48-7d22-4172-988f-efdcd8115e82",
       "name": "UpdateLancto",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -517,10 +523,10 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        640,
-        336
+        512,
+        -416
       ],
-      "id": "2b84949b-e729-4d1a-bbaa-36ebbdc11fcb",
+      "id": "c4a5686f-1e36-4e59-b847-bbbaaebd27d5",
       "name": "UpdateLancto1",
       "alwaysOutputData": true,
       "credentials": {
@@ -595,10 +601,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        384,
-        336
+        256,
+        -416
       ],
-      "id": "c6edda76-0428-44f5-b8e8-48a7cb480629",
+      "id": "593e43aa-7234-49be-b9db-18d163177fdb",
       "name": "Editlanct"
     },
     {
@@ -608,13 +614,13 @@
         "width": 1312,
         "color": 3
       },
-      "id": "d71be9af-fd65-46a8-8d5a-bf97bf79cd71",
+      "id": "767ed993-d9f3-4310-8586-ca4fdeaf298a",
       "name": "Sticky Note5",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -128,
+        -752
       ]
     },
     {
@@ -626,10 +632,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        640,
-        496
+        512,
+        -256
       ],
-      "id": "c8cb3518-ff26-4bf2-b40a-2228b4da81ac",
+      "id": "0be0b6b9-be02-4712-b200-c54cb6f55e93",
       "name": "DeleteLancto",
       "alwaysOutputData": true,
       "credentials": {
@@ -640,7 +646,21 @@
       }
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "TransacaoEdit": [
+      {
+        "json": {
+          "id_empresa": 1,
+          "data_ini": "20200101",
+          "data_fim": "20260306",
+          "fornecedor_id": 0,
+          "categoria_id": 0,
+          "tipo_operacao": "",
+          "vencidos": "sim"
+        }
+      }
+    ]
+  },
   "connections": {
     "Lancamento": {
       "main": [
@@ -845,7 +865,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b3d758ba-d3ea-4420-b3a2-bb0768c4ba80",
+  "versionId": "3a317d01-5e1f-41e9-949c-0417620d91c0",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

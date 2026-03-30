@@ -889,7 +889,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n    c.*,\n    ca.nome     AS cartao_nome,\n    ca.numero   AS cartao_numero,\n    ca.bandeira AS cartao_bandeira  \nFROM cartoes_compras c\nJOIN cartoes ca\n  ON ca.id = c.cartao_id  \nWHERE c.empresa_id =   {{ $json.id_empresa }}\n  AND ca.empresa_id =  {{ $json.id_empresa }}\n  and c.data_compra between  '{{ $json.data_ini }}' and '{{ $json.data_fim }}' ;",
+        "query": " SELECT \n    c.*,  valor_total/parcelas as valor_pacela, \n    ca.nome     AS cartao_nome,\n    ca.numero   AS cartao_numero,\n    ca.bandeira AS cartao_bandeira  \nFROM cartoes_compras c\nJOIN cartoes ca\n  ON ca.id = c.cartao_id  \nWHERE c.empresa_id =   {{ $json.id_empresa }}\n  AND ca.empresa_id =  {{ $json.id_empresa }}\n  and c.data_compra between  '{{ $json.data_ini }}' and '{{ $json.data_fim }}' ;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -948,13 +948,13 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1616,
+        -1520,
         1024
       ],
       "id": "28582a32-48bd-4ff9-b576-b135cec77f5a",
@@ -1000,7 +1000,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2096,
+        -2112,
         1024
       ],
       "id": "7b740c18-6a0e-43d3-9220-a776401302bc",
@@ -1015,7 +1015,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -1872,
+        -1904,
         1024
       ],
       "id": "acc646dc-438e-419b-9831-6243b237a1ba",
@@ -1028,6 +1028,19 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1712,
+        1024
+      ],
+      "id": "9c3cae2b-1528-4f92-81b3-81d7dd7a83ee",
+      "name": "Code in JavaScript4"
     }
   ],
   "pinData": {
@@ -1361,6 +1374,17 @@
       "main": [
         [
           {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
             "node": "Respond to Webhook24",
             "type": "main",
             "index": 0
@@ -1373,7 +1397,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "5e70120a-7140-4968-b468-108c2f0724ef",
+  "versionId": "abe672b5-a5ea-4261-823c-9bccd1e1e931",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

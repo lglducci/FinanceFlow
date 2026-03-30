@@ -149,7 +149,7 @@
             {
               "id": "431290aa-6b84-492b-b3e3-ff5b8908822d",
               "name": "codigo",
-              "value": "={{ $json.body.codigo}}",
+              "value": "={{ $json.body._modelo_codigo}}",
               "type": "string"
             },
             {
@@ -1095,7 +1095,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2b5e3861-9a91-4913-85e4-42c5f0e3fcfc",
+  "versionId": "97a68bf8-1a02-4bf3-ac1b-74ce2de401dd",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

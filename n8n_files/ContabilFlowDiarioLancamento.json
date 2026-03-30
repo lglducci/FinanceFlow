@@ -1443,15 +1443,15 @@
         "content": "## Lançamentos Contabeis.  \nConsultas de lancamentos, Altera Saldo e inclui um lançamento especifico",
         "height": 876,
         "width": 1280,
-        "color": 3
+        "color": 5
       },
       "id": "28a1d391-42c8-410a-960c-0cb61d513259",
       "name": "Sticky Note1",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        304,
-        1152
+        240,
+        1216
       ]
     },
     {
@@ -1933,6 +1933,240 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Lançamentos Contabeis.  \nConsultas de lancamentos, Altera Saldo e inclui um lançamento especifico",
+        "height": 876,
+        "width": 1280,
+        "color": 4
+      },
+      "id": "5d3b7e71-3ac7-49a1-8bae-4aaba4178b41",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        1232
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2880,
+        1424
+      ],
+      "id": "14b60912-7028-4821-88f1-62734154050d",
+      "name": "Respond to Webhook11"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "saldoconta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2080,
+        1424
+      ],
+      "id": "8b588424-6ad7-46a3-aa44-9436d8abe6e1",
+      "name": "Lancaveis1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "96a412bb-53b4-424f-a0c4-6e709c014306",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2304,
+        1424
+      ],
+      "id": "af8fb201-6f2f-42f4-a6ff-ef1126c00d0b",
+      "name": "Editcontas_contabeis_lancaveis3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  SELECT contab.ff_saldo_conta({{ $json.empresa_id }},{{ $json.conta_id }} );",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2496,
+        1424
+      ],
+      "id": "c2ceb176-b2f8-4c19-829f-2a86c573b93a",
+      "name": "Contas Contabeis2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2704,
+        1424
+      ],
+      "id": "7c8006f8-cde3-4786-acb0-69e7aadcc42f",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2896,
+        1728
+      ],
+      "id": "38f821e5-e615-4c31-ba24-fd18055f956a",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "96a412bb-53b4-424f-a0c4-6e709c014306",
+              "name": "lote_id",
+              "value": "={{ $json.query.lote_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2320,
+        1728
+      ],
+      "id": "e68648b0-ba31-4721-8b28-8cdc9c5f2f69",
+      "name": "Editcontas_contabeis_lancaveis4"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        1728
+      ],
+      "id": "510551c0-a96a-4560-b036-b500bb2ba135",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n  l.lote_id,\n  l.empresa_id,\n  MAX(l.data_mov) as data_mov,\n  MAX(l.historico) as historico,\n  MAX(CASE WHEN l.debito > 0 THEN l.debito ELSE l.credito END) as valor,\n\n  -- 🔵 DÉBITO\n  MAX(CASE WHEN l.debito > 0 THEN l.conta_id END) as debito_id,\n  MAX(CASE WHEN l.debito > 0 THEN c.codigo END) as debito_codigo,\n  MAX(CASE WHEN l.debito > 0 THEN c.nome END) as debito_nome,\n\n  -- 🔴 CRÉDITO\n  MAX(CASE WHEN l.credito > 0 THEN l.conta_id END) as credito_id,\n  MAX(CASE WHEN l.credito > 0 THEN c.codigo END) as credito_codigo,\n  MAX(CASE WHEN l.credito > 0 THEN c.nome END) as credito_nome\n\nFROM contab.lancamentos l\nJOIN contab.contas c ON c.id = l.conta_id\n\nWHERE l.lote_id = {{ $json.lote_id }}\nAND l.empresa_id = {{ $json.empresa_id }}\n\nGROUP BY l.lote_id, l.empresa_id;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2512,
+        1728
+      ],
+      "id": "97845eac-c6cb-4b89-be17-352f52939f1b",
+      "name": "LancamentoEdicao",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  SELECT * from contab.lancamentos where lote_id = 8 and empresa_id =  1 ;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2592,
+        1856
+      ],
+      "id": "d455ff4a-3711-46ee-89d2-17cfd71ef734",
+      "name": "LancamentoEdicao1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "path": "buscar_lote",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2096,
+        1728
+      ],
+      "id": "6b503be0-3c0a-4760-a555-5b765e0d7994",
+      "name": "BuscaLote",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {
@@ -1949,6 +2183,22 @@
       {
         "json": {
           "empresa_id": 1
+        }
+      }
+    ],
+    "Editcontas_contabeis_lancaveis3": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conta_id": 147
+        }
+      }
+    ],
+    "Editcontas_contabeis_lancaveis4": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "lote_id": 8
         }
       }
     ]
@@ -2376,13 +2626,101 @@
           }
         ]
       ]
+    },
+    "Lancaveis1": {
+      "main": [
+        [
+          {
+            "node": "Editcontas_contabeis_lancaveis3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editcontas_contabeis_lancaveis3": {
+      "main": [
+        [
+          {
+            "node": "Contas Contabeis2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contas Contabeis2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editcontas_contabeis_lancaveis4": {
+      "main": [
+        [
+          {
+            "node": "LancamentoEdicao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LancamentoEdicao": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaLote": {
+      "main": [
+        [
+          {
+            "node": "Editcontas_contabeis_lancaveis4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8d0a30ba-728d-42ec-b7ee-d56aaf12fc4a",
+  "versionId": "a2baa320-4b11-4098-9d43-ca4c5c67313b",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

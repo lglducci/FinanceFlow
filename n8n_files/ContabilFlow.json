@@ -455,13 +455,13 @@
       "parameters": {
         "respondWith": "allIncomingItems",
         "options": {
-          "responseCode": 200
+          "responseCode": "={{ $json.responseCode }}"
         }
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2368,
+        2416,
         112
       ],
       "id": "0f8e3113-7f22-408f-a5f4-68c70005bfe1",
@@ -477,7 +477,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
+        1632,
         112
       ],
       "id": "d955edd1-a4f9-4548-99ae-e1b5e271afc0",
@@ -617,7 +617,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2144,
+        2048,
         112
       ],
       "id": "7d362143-ea9e-42f7-9efd-f309c450f189",
@@ -627,7 +627,8 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -682,7 +683,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
+        1840,
         112
       ],
       "id": "57959a70-f244-4584-b3f0-0c41a5ae975b",
@@ -1815,6 +1816,19 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2224,
+        112
+      ],
+      "id": "674c50e1-9479-4263-8dfd-2ec7e0faa676",
+      "name": "Code in JavaScript4"
     }
   ],
   "pinData": {
@@ -1823,6 +1837,19 @@
         "json": {
           "empresa_id": 1,
           "codigo": "5.1.1"
+        }
+      }
+    ],
+    "Editnovaconta": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "codigo": "1.1.23",
+          "nome": "teste",
+          "natureza": "D",
+          "nivel": 4,
+          "tipo": "ATIVO",
+          "conta_pai": null
         }
       }
     ]
@@ -2008,7 +2035,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook4",
+            "node": "Code in JavaScript4",
             "type": "main",
             "index": 0
           }
@@ -2410,13 +2437,24 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7159bc02-ba41-4945-af07-fb00078d19c2",
+  "versionId": "29463f90-0e97-45e1-9416-febaf27a218d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

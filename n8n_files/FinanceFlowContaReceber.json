@@ -509,6 +509,18 @@
               "name": "doc_ref",
               "value": "={{ $json.body.doc_ref}}",
               "type": "string"
+            },
+            {
+              "id": "ac9d76d7-f260-441a-b7f3-1a29044c3870",
+              "name": "codigo",
+              "value": "={{ $json.body.codigo}}",
+              "type": "string"
+            },
+            {
+              "id": "cabf68cb-1a4e-45e2-a5bc-8a7bc4bce0fa",
+              "name": "parcela_num",
+              "value": "={{ $json.body.parcela_num}}",
+              "type": "string"
             }
           ]
         },
@@ -570,12 +582,20 @@
               "fieldValue": "={{ $json.fornecedor_id }}"
             },
             {
-              "fieldId": "parcelas",
-              "fieldValue": "={{ $json.parcelas }}"
+              "fieldId": "parcela_num",
+              "fieldValue": "={{ $json.parcela_num }}"
             },
             {
               "fieldId": "doc_ref",
               "fieldValue": "={{ $json.doc_ref }}"
+            },
+            {
+              "fieldId": "modelo_codigo",
+              "fieldValue": "={{ $json.codigo }}"
+            },
+            {
+              "fieldId": "parcelas",
+              "fieldValue": "={{ $json.parcelas }}"
             }
           ]
         }
@@ -1104,7 +1124,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e07214b3-e2c3-47bf-b880-ee15e75bb495",
+  "versionId": "b3d2101a-745c-486c-a4bb-6c572b610fba",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
