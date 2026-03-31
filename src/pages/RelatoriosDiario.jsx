@@ -59,6 +59,7 @@ function formatarDataBR(data) {
           empresa_id: empresaId,
           data_ini: dataIni,
           data_fim: dataFim,
+          todos:'T'
         }),
       });
 

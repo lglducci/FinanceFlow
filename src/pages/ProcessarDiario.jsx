@@ -303,6 +303,7 @@ useEffect(() => {
           empresa_id: empresa_id,
           data_ini: dataIni,
           data_fim: dataFim,
+          todos:"P"
         }),
       });
 
