@@ -74,7 +74,8 @@
             credito: "Fornecedores (2.1.1)",
             texto: "Ex: equipamentos, máquinas."
           },
- 
+         
+          
 
         ]
       };

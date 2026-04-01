@@ -5,7 +5,7 @@
   }
 
   classificacao = classificacao?.trim().toLowerCase();
-
+ 
   // =============================
   // RECEBER
   // =============================
@@ -27,38 +27,48 @@
       texto: "Venda no cartão. A operadora passa a dever para a empresa."
     };
   }
-
+ 
   // =============================
   // CONTA A PAGAR
   // =============================
- if (tipo_es === "saida") {
 
-  if (classificacao === "despesa") {
-    return {
-      debito: "Despesa (6.x)",
-      credito: "Banco/Caixa (1.1)",
-      texto: "Pagamento de despesa."
-    };
-  }
+  if (tipo_evento === "pagar") {
+      if (tipo_es === "saida") {
 
-  if (classificacao === "custo") {
-    return {
-      debito: "Custo (5.x)",
-      credito: "Banco/Caixa (1.1)",
-      texto: "Pagamento de custo."
-    };
-  }
+        if (classificacao === "despesa") {
+          return {
+            debito: "Despesa (6.x)",
+            credito: "Banco/Caixa (1.1.x)",
+            texto: "Fornecedores a Pagar."
+          };
+        }
 
-  if (classificacao === "imobilizado") {
-    return {
-      debito: "Imobilizado (1.2)",
-      credito: "Banco/Caixa (1.1)",
-      texto: "Aquisição de ativo pago à vista."
-    };
-  }
+        if (classificacao === "custo") {
+          return {
+            debito: "Custo (5.x)",
+            credito: "Banco/Caixa (2.1)",
+            texto: "Pagamento de custo."
+          };
+        }
 
-}
+        if (classificacao === "imobilizado") {
+          return {
+            debito: "Imobilizado (1.2)",
+            credito: "Banco/Caixa (1.1)",
+            texto: "Aquisição de ativo pago à vista."
+          };
+        }
 
+        if (classificacao === "passivo") {
+          return { 
+            debito: "Passivo (2.2.x)",
+            credito: "Banco/Caixa (1.1.x)",
+            texto: "Pagamento de passivo."
+          };
+        }
+
+      }
+    }
   // =============================
   // CARTÃO
   // =============================
@@ -68,7 +78,7 @@
       return {
         debito: "Despesa (6.x)",
         credito: "Cartão a pagar (2.1.3)",
-        texto: "Compra no cartão gera dívida com operadora."
+       texto: "Compra no cartão (gera obrigação com a operadora)."
       };
     }
 
@@ -132,6 +142,14 @@
           texto: "Aquisição de ativo pago à vista."
         };
       }
+
+        if (classificacao === "custo") {
+          return {
+            debito: "Custo (5.x)",
+            credito: "Banco/Caixa (1.1)",
+            texto: "Pagamento de custo."
+          };
+        }
 
     }
 
