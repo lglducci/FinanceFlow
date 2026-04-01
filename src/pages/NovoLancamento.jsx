@@ -23,7 +23,20 @@ export default function NovoLancamento() {
   const [linhas, setLinhas] = useState([]);
  
   const [modalFornecedor, setModalFornecedor] = useState(false);
+  const [modoContabil, setModoContabil] = useState("token"); 
+// "token" | "manual"
 
+const [debitoTexto, setDebitoTexto] = useState("");
+const [creditoTexto, setCreditoTexto] = useState("");
+
+const [debitoId, setDebitoId] = useState(null);
+const [creditoId, setCreditoId] = useState(null);
+
+const [debitoConta, setDebitoConta] = useState(null);
+const [creditoConta, setCreditoConta] = useState(null);
+
+const [contasDebito, setContasDebito] = useState([]);
+const [contasCredito, setContasCredito] = useState([]);
 
   const [form, setForm] = useState({
     id: "",
@@ -77,6 +90,7 @@ export default function NovoLancamento() {
       }
     }
   
+   
  
   async function carregarDadosLinhas(modeloId) {
   try {
@@ -193,6 +207,66 @@ export default function NovoLancamento() {
       setCategorias(data);
     } catch (error) {}
   }
+ 
+ async function carregarContasContabeis() {
+
+  if (!form.tipo) {
+
+    const url = buildWebhookUrl("contas_contabeis_lancaveis", {
+      empresa_id,
+      tipo: null,
+      lado: null,
+      tipo_es: modo,
+      classificacao: form.classificacao
+    });
+
+    const r = await fetch(url);
+    const j = await r.json();
+
+    setContasDebito(Array.isArray(j) ? j : []);
+    setContasCredito(Array.isArray(j) ? j : []);
+    return;
+  }
+
+  // DÉBITO
+  const rD = await fetch(buildWebhookUrl("contas_contabeis_lancaveis", {
+    empresa_id,
+    tipo: modo,
+    lado: 'D',
+    tipo_es: form.tipo,
+    classificacao: form.classificacao
+  }));
+
+  const jD = await rD.json();
+  setContasDebito(Array.isArray(jD) ? jD : []);
+
+  // CRÉDITO
+  const rC = await fetch(buildWebhookUrl("contas_contabeis_lancaveis", {
+    empresa_id,
+    tipo:modo,
+    lado: 'C',
+    tipo_es: form.tipo,
+    classificacao: form.classificacao
+  }));
+
+  const jC = await rC.json();
+  setContasCredito(Array.isArray(jC) ? jC : []);
+}
+
+  useEffect(() => {
+  if (empresa_id && form.classificacao) {
+    carregarContasContabeis();
+  }
+}, [empresa_id, form.tipo, form.forma_pagamento, form.forma_recebimento, form.classificacao]);
+ 
+ 
+function montarHistoricoPorNomes(nomeDeb, nomeCred) {
+  if (!nomeDeb && !nomeCred) return "";
+  if (nomeDeb && !nomeCred) return `Movimento em ${nomeDeb}`;
+  if (!nomeDeb && nomeCred) return `Movimento – origem ${nomeCred}`;
+
+  return `Movimento em ${nomeDeb} – origem ${nomeCred}`;
+}
 
   async function carregarContas() {
     try {
@@ -390,11 +464,26 @@ const limparFormulario = () => {
 
   // 🔵 limpa cartão
   setCartaoSelecionado("");
+   // 🔵 CONTÁBIL (ADICIONA ISSO)
+  setDebitoTexto("");
+  setCreditoTexto("");
+  setDebitoId(null);
+  setCreditoId(null);
+  setDebitoConta(null);
+  setCreditoConta(null);
+
 
   // 🔵 volta para aba principal
   setAba("principal");
 };
 
+
+useEffect(() => {
+  setDebitoTexto("");
+  setCreditoTexto("");
+  setDebitoId(null);
+  setCreditoId(null);
+}, [form.classificacao]);
 
  const helper = explicarLancamento(modo, form.tipo, form.classificacao);
 
@@ -488,6 +577,8 @@ const limparFormulario = () => {
 
 };
 
+
+
  
  async function carregarModelos() {
   try {
@@ -577,12 +668,17 @@ const podeCriarModelo =
   );
 
    
-
-  const faltamCamposContabeis =
+ const faltamCamposContabeis =
   !form.tipo ||
   !form.classificacao?.trim() ||
-  (form.tipo === "entrada" && !form.forma_recebimento?.trim()) ||
-  (form.tipo === "saida" && !form.forma_pagamento?.trim());
+
+  (form.tipo === "entrada" &&
+   ["cartao_credito","boleto","aprazo"].includes(form.forma_recebimento) &&
+   !form.forma_recebimento) ||
+
+  (form.tipo === "saida" &&
+   ["cartao_credito","aprazo"].includes(form.forma_pagamento) &&
+   !form.forma_pagamento);
 
 
   const corTitulo = (() => {
@@ -648,6 +744,19 @@ const podeCriarModelo =
           >
             Customização Contábil
           </button> 
+
+          
+          <button
+            onClick={() => setAba("avançado")}
+            className={`px-4 py-2 font-semibold ${
+              aba === "avançado"
+                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
+                : "text-gray-500"
+            }`}
+          >
+           Contábil - Avançado
+          </button> 
+
        </div>
         <div className="bg-gray-100 p-5 rounded-xl shadow">
 
@@ -798,7 +907,8 @@ const podeCriarModelo =
           {/* GRID IGUAL AO EDITAR */}
           <div className="grid grid-cols-1 gap-4">
 
-           {mostrarContaFinanceira && ( <div>
+           {mostrarContaFinanceira && ( 
+            <div>
               <label  className="label label-required block font-bold text-[#1e40af]">Conta Financeira</label>
                 <select
                     name="conta_id"
@@ -991,9 +1101,15 @@ const podeCriarModelo =
                             </div>  )}
                             </div>
                        )}
-               {aba === "contabil" && (
-                          <div>
 
+
+                      {aba === "contabil" && (
+                  <>
+                    {/* MANUAL */}
+                  
+
+                    <div className="mb-4">  
+                         
                            {faltamCamposContabeis && (
                                 <div className="bg-yellow-100 text-yellow-800 p-3 rounded mb-3 text-sm">
                                   ⚠️ Preencha os campos abaixo para configurar o modelo contábil:
@@ -1015,10 +1131,118 @@ const podeCriarModelo =
 
                                   </ul>
                                 </div>
-                              )}
+                              )} 
+
+                      
+                      {helper && (
+                          <div className="mt-2 mb-4 text-sm bg-yellow-50 border border-yellow-400 rounded-lg p-2 text-slate-800 font-semibold">
+                            
+                          <hr className="my-1"/>
+                            <div><b>-----------------------------------</b></div>
+                          <div><b>Evento:</b> {modo}</div>
+                          <div><b>Tipo:</b> {form.tipo}</div>
+                          <div><b>Classificação:</b> {form.classificacao}</div>
+                          <div><b>-----------------------------------</b></div>
+                            <div>
+                            <b>Débito:</b> {helper?.debito}
+                          </div>
+
+                          <div>
+                            <b>Crédito:</b> {helper?.credito}
+                          </div>
+                          <div className="mt-1 text-slate-600">
+                          {helper.texto}
+                          </div>
+
+                          </div>
+                          )}
+                      <label className="text-sm font-bold">Entrada (Débito)</label>
+
+                      <input
+                        list="contasDebito"
+                        className="input-premium"
+                        value={debitoTexto}
+                        onChange={(e) => {
+                          const texto = e.target.value;
+                          setDebitoTexto(texto);
+                         
+
+                          const conta = contasDebito.find(c =>
+                        `${c.conta_codigo || ""} - ${c.conta_nome || ""}`.trim() === texto
+                      );
+                                                
+                          if (conta) {
+                            setDebitoId(conta.id);
+                            setDebitoConta(conta);
+                          }
+                        }}
+                      />
+                         <datalist id="contasDebito">
+                                {contasDebito.map((c) => (
+                                  <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
+                                ))}
+                              </datalist>
+                    </div>
+
+                    <div className="mb-4">
+                      <label className="text-sm font-bold">Saída (Crédito)</label>
+
+                      <input
+                        list="contasCredito"
+                        className="input-premium"
+                        value={creditoTexto}
+                        onChange={(e) => {
+                          const texto = e.target.value;
+                          setCreditoTexto(texto);
+
+                           const conta = contasCredito.find(
+                            c => `${c.codigo} - ${c.nome}` === texto || c.codigo === texto
+                          );
+
+                          if (conta) {
+                            setCreditoId(conta.id);
+                            setCreditoConta(conta);
+                          }
+                        }}
+                      />
+
+                    <datalist id="contasCredito">
+                          {contasCredito.map((c) => (
+                            <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
+                          ))}
+                        </datalist>
+                    </div>
+
+                  </>
+                )}
 
 
+               {aba === "avançado" && (
+                          <div>
+                            
                           
+                           {faltamCamposContabeis && (
+                                <div className="bg-yellow-100 text-yellow-800 p-3 rounded mb-3 text-sm">
+                                  ⚠️ Preencha os campos abaixo para configurar o modelo contábil:
+                                  <ul className="list-disc ml-5 mt-1">
+
+                                    {!form.tipo && <li>Tipo</li>}
+
+                                    {!form.classificacao?.trim() && (
+                                      <li>Classificação</li>
+                                    )}
+
+                                    {form.tipo === "entrada" && !form.forma_recebimento?.trim() && (
+                                      <li>Forma de Recebimento</li>
+                                    )}
+
+                                    {form.tipo === "saida" && !form.forma_pagamento?.trim() && (
+                                      <li>Forma de Pagamento</li>
+                                    )}
+
+                                  </ul>
+                                </div>
+                              )} 
 
                       {helper && (
                           <div className="mt-2 mb-4 text-sm bg-yellow-50 border border-yellow-400 rounded-lg p-2 text-slate-800 font-semibold">
@@ -1037,7 +1261,8 @@ const podeCriarModelo =
 
                           </div>
                           )}
-
+                   
+                      <div> 
                     <label className="font-bold text-[#1e40af] flex items-center gap-4">
                         Modelo Contábil  
                         <span className="relative group cursor-pointer">
@@ -1058,7 +1283,10 @@ const podeCriarModelo =
                             </div>
 
                         </span>
-                      </label> 
+                      </label>  
+
+                     
+                         
                         <div className="flex items-center gap-2"> 
                               <input
                                 list="tokens"
@@ -1107,9 +1335,10 @@ const podeCriarModelo =
                                 >
                                   ➕  
                                 </button>  
+                                
                           </div>  
-
-                 
+                          
+                               
                         {/* ===== TABELA ===== */}
                     <div className="bg-white rounded-xl shadow-sm p-4">
                       <table className="w-full text-sm border-collapse">
@@ -1138,14 +1367,16 @@ const podeCriarModelo =
                             </tr>
                           ))}
                         </tbody>
-                      </table>
+                        </table>
                     </div> 
+                    
                           <div className="text-xs bg-blue-50 p-2 rounded mb-3 text-gray-700">
                               💡 {getHelperTexto(modo)}
                             </div>  
                     </div>
-                    )} 
-
+                  
+                  </div> )} 
+               
           <div className="flex gap-6 pt-8 pb-8 pl-1">  
             <button
               type="button"
