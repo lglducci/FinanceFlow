@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
 
  
+import AlertRotativo from "./components/AlertRotativo";
+
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Login from "./pages/Login";
@@ -209,10 +211,12 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 
     
     
-      <div className="min-h-screen flex bg-bgSoft">
+    
+    <div className="h-screen flex bg-bgSoft">
         <Sidebar />
 
         <div className="flex-1 flex flex-col">
+          <AlertRotativo />
           <Header />
 
           <main className="p-6">
