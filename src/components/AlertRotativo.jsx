@@ -155,7 +155,7 @@ export default function AlertRotativo() {
       )
     },
     {
-      somenteTotal: true,
+      somenteTotal: false,
       texto: (
         <>
           ⚙️ A qualquer momento utilize uma opção de Menu desejado.
@@ -163,7 +163,7 @@ export default function AlertRotativo() {
       )
     },
     {
-      somenteTotal: false,
+      somenteTotal: true,
       texto: (
         <>
            ⚙️ Registre suas movimentações financeiras: contas a pagar, receber, cartão, PIX e pagamentos.
@@ -175,7 +175,7 @@ export default function AlertRotativo() {
     }
     ,
     {
-      somenteTotal: false,
+      somenteTotal: true,
       texto: (
         <>
            ⚠️ Após finalizar todos lançamentos do dia, não esqueça de realizar o processamento contábil —{" "}
@@ -187,7 +187,7 @@ export default function AlertRotativo() {
     }
  ,
     {
-      somenteTotal: false,
+      somenteTotal: true,
       texto: (
         <>
            Para registrar uma compra no cartão —{" "}
