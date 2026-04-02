@@ -49,7 +49,22 @@ const [busca, setBusca] = useState("");
 
   return `${dia}/${mes}/${ano}`;
 }
+ 
 
+const [mostrarAlerta, setMostrarAlerta] = useState(false);
+
+useEffect(() => {
+  const flag = sessionStorage.getItem("mostrar_alerta_lancamento");
+
+  if (flag === "1") {
+    setMostrarAlerta(true);
+    sessionStorage.removeItem("mostrar_alerta_lancamento");
+
+    setTimeout(() => {
+      setMostrarAlerta(false);
+    }, 10000); // 20 segundos
+  }
+}, []);
 
   // ------------------- CARREGAR SALDO DA CONTA -------------------
   async function carregarSaldoConta(id_conta) {
@@ -540,6 +555,15 @@ const listaFiltrada = lista.filter((l) => {
 
 return (
   <div className="p-4 space-y-4">
+
+    {mostrarAlerta && (
+  <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-yellow-100 text-red px-6 py-3 rounded shadow-lg animate-bounce z-50">
+    ⚠️ Após finalizar todos lançamentos do dia, não esqueça de realizar o processamento contábil —{" "}
+    <a href="/processar-diario" className="underline font-bold">
+      Acesse aqui
+    </a>
+  </div>
+)}
 
     {/* HEADER */}
    <div className="flex justify-between items-start">

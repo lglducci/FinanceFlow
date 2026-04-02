@@ -328,15 +328,13 @@ const classificacoesPorNatureza = {
 
   if (modo === "receber") {
     return [
-      { value: "receita", label: "Receita" },
-        { value: "ativo", label: "Ativo" }
+      { value: "receita", label: "Receita" } 
     ];
   }
 
    if (modo === "receber_cartao") {
     return [
-      { value: "receita", label: "Receita" },
-        { value: "ativo", label: "Ativo" }
+      { value: "receita", label: "Receita" } 
     ];
   }
 
@@ -746,16 +744,7 @@ const podeCriarModelo =
           </button> 
 
           
-          <button
-            onClick={() => setAba("avançado")}
-            className={`px-4 py-2 font-semibold ${
-              aba === "avançado"
-                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
-                : "text-gray-500"
-            }`}
-          >
-           Contábil - Avançado
-          </button> 
+           
 
        </div>
         <div className="bg-gray-100 p-5 rounded-xl shadow">
@@ -1102,122 +1091,8 @@ const podeCriarModelo =
                             </div>
                        )}
 
-
-                      {aba === "contabil" && (
-                  <>
-                    {/* MANUAL */}
-                  
-
-                    <div className="mb-4">  
-                         
-                           {faltamCamposContabeis && (
-                                <div className="bg-yellow-100 text-yellow-800 p-3 rounded mb-3 text-sm">
-                                  ⚠️ Preencha os campos abaixo para configurar o modelo contábil:
-                                  <ul className="list-disc ml-5 mt-1">
-
-                                    {!form.tipo && <li>Tipo</li>}
-
-                                    {!form.classificacao?.trim() && (
-                                      <li>Classificação</li>
-                                    )}
-
-                                    {form.tipo === "entrada" && !form.forma_recebimento?.trim() && (
-                                      <li>Forma de Recebimento</li>
-                                    )}
-
-                                    {form.tipo === "saida" && !form.forma_pagamento?.trim() && (
-                                      <li>Forma de Pagamento</li>
-                                    )}
-
-                                  </ul>
-                                </div>
-                              )} 
-
-                      
-                      {helper && (
-                          <div className="mt-2 mb-4 text-sm bg-yellow-50 border border-yellow-400 rounded-lg p-2 text-slate-800 font-semibold">
-                            
-                          <hr className="my-1"/>
-                            <div><b>-----------------------------------</b></div>
-                          <div><b>Evento:</b> {modo}</div>
-                          <div><b>Tipo:</b> {form.tipo}</div>
-                          <div><b>Classificação:</b> {form.classificacao}</div>
-                          <div><b>-----------------------------------</b></div>
-                            <div>
-                            <b>Débito:</b> {helper?.debito}
-                          </div>
-
-                          <div>
-                            <b>Crédito:</b> {helper?.credito}
-                          </div>
-                          <div className="mt-1 text-slate-600">
-                          {helper.texto}
-                          </div>
-
-                          </div>
-                          )}
-                      <label className="text-sm font-bold">Entrada (Débito)</label>
-
-                      <input
-                        list="contasDebito"
-                        className="input-premium"
-                        value={debitoTexto}
-                        onChange={(e) => {
-                          const texto = e.target.value;
-                          setDebitoTexto(texto);
-                         
-
-                          const conta = contasDebito.find(c =>
-                        `${c.conta_codigo || ""} - ${c.conta_nome || ""}`.trim() === texto
-                      );
-                                                
-                          if (conta) {
-                            setDebitoId(conta.id);
-                            setDebitoConta(conta);
-                          }
-                        }}
-                      />
-                         <datalist id="contasDebito">
-                                {contasDebito.map((c) => (
-                                  <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
-                                ))}
-                              </datalist>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="text-sm font-bold">Saída (Crédito)</label>
-
-                      <input
-                        list="contasCredito"
-                        className="input-premium"
-                        value={creditoTexto}
-                        onChange={(e) => {
-                          const texto = e.target.value;
-                          setCreditoTexto(texto);
-
-                           const conta = contasCredito.find(
-                            c => `${c.codigo} - ${c.nome}` === texto || c.codigo === texto
-                          );
-
-                          if (conta) {
-                            setCreditoId(conta.id);
-                            setCreditoConta(conta);
-                          }
-                        }}
-                      />
-
-                    <datalist id="contasCredito">
-                          {contasCredito.map((c) => (
-                            <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
-                          ))}
-                        </datalist>
-                    </div>
-
-                  </>
-                )}
-
-
-               {aba === "avançado" && (
+ 
+               {aba === "contabil" && (
                           <div>
                             
                           
@@ -1386,7 +1261,11 @@ const podeCriarModelo =
               Salvar
             </button>  
             <button
-              onClick={() => navigate(-1)}
+            
+              onClick={() => {
+                  sessionStorage.setItem("mostrar_alerta_lancamento", "1");
+                  navigate(-1);
+                }}
               className="flex-1 bg-gray-500 text-white px-4 py-3  rounded-lg font-semibold"
             >
               Voltar

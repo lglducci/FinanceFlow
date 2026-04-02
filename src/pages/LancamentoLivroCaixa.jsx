@@ -775,7 +775,7 @@ return (
                 </button>
 
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate("/relatorios/diario")}
                     
                  className="
                         px-5 py-2 rounded-full
