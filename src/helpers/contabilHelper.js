@@ -38,7 +38,7 @@
         if (classificacao === "despesa") {
           return {
             debito: "Despesa (6.x)",
-            credito: "Banco/Caixa (1.1.x)",
+            credito: "Banco/Caixa (2.1.x)",
             texto: "Fornecedores a Pagar."
           };
         }
@@ -54,8 +54,8 @@
         if (classificacao === "imobilizado") {
           return {
             debito: "Imobilizado (1.2)",
-            credito: "Banco/Caixa (1.1)",
-            texto: "Aquisição de ativo pago à vista."
+            credito:  " Fornecedores / Financiamento (2.1 ou 2.2)",
+            texto: "Aquisição de ativo pago à prazo."
           };
         }
 
@@ -63,7 +63,7 @@
           return { 
             debito: "Passivo (2.2.x)",
             credito: "Banco/Caixa (1.1.x)",
-            texto: "Pagamento de passivo."
+            texto: "Pagamento de empréstimo ✔."
           };
         }
 
