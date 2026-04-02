@@ -31,7 +31,7 @@
   });
 
   const json = await resp.json();
- 
+  localStorage.setItem("perfil", json.codigo);
  
   setPerfil(json.codigo || "TOTAL");
 }
@@ -65,9 +65,9 @@ function podeVer(menuKey) {
 
  
    return (
-     <aside className="w-60 bg-[#ffffffff]  text-blue-500 text-base font-medium  flex flex-col h-screen  8px border  border-blue-800/100">
+     <aside className="w-60 bg-white text-blue-500 flex flex-col h-full border border-blue-800/100">
                                                                {/* #0D94E8*/} 
-       <div className="px-6 py-6 border-b border-blue-800/100 bg-[#061f4aff] text-white font-bold text-base">
+       <div className="px-6 py-7 border-b border-blue-800/100 bg-[#061f4aff] text-white font-bold text-base">
         
   
          <h2 className="text-xl font-bold">Contábil-Flow</h2>

@@ -1,11 +1,11 @@
  import { useApp } from "../context/AppContext";
 
 export default function Header() {
-  const { empresa, usuario, documento, tipo, email, loading } = useApp();
-  if (loading) return null;
+  const { empresa, usuario, documento, tipo, email, loading ,perfil} = useApp();
+  if (loading) return null;   
 
   return (
-    <header className="h-24 border-b bg-[#061f4a] px-5 flex items-center justify-between">
+    <header className="h-22 border-b bg-[#061f4a] px-5 flex items-center justify-between">
 
       {/* BLOCO ESQUERDO – EMPRESA + USUÁRIO */}
       <div className="flex gap-8">
@@ -16,14 +16,17 @@ export default function Header() {
             Empresa
           </div>
 
-          <div className="text-white font-bold text-lg leading-tight">
+          <div className="text-white font-bold text-sm leading-tight">
             {empresa}
           </div>
-           <div className="text-sm text-gray-200 leading-tight">
+           <div className="text-xs text-gray-200 leading-tight">
                 {tipo}{" \u00A0"}·{" \u00A0"}CNPJ:{" \u00A0"}{documento}
               </div>
 
-
+           
+          <div className="text-white font-bold text-sm leading-tight">
+              Perfil:{" \u00A0"}  {perfil}
+          </div>
         </div>
 
         {/* USUÁRIO */}

@@ -239,7 +239,7 @@ function enviarRapido(texto) {
                 )} */}
 
                <div className="text-sm">
-                  👋 Precisa de ajuda completa?<br /><br />
+                  👋 Precisa de ajuda?<br /><br />
 
                   <a
                     href="/ajuda"
