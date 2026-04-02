@@ -8,12 +8,14 @@ export function AppProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [documento, setDocumento] = useState(null);
   const [tipo, setTipo] = useState(null);
-
+  const [email, setMail] = useState(null);
+    const [perfil, setPerfil] = useState(localStorage.getItem("perfil"));
   const [loading, setLoading] = useState(true);
-
+ 
   const empresa_id =
     localStorage.getItem("empresa_id") ||
     localStorage.getItem("id_empresa");
+   
 
   useEffect(() => {
     async function carregarDados() {
@@ -38,7 +40,7 @@ export function AppProvider({ children }) {
         setUsuario(json.nome); // { id, nome }
         setDocumento(json.documento); // { id, nome }
         setTipo(json.tipo);
- 
+        setMail(json.email);
        
       } catch (e) {
         console.error("Erro ao carregar sessão", e);
@@ -57,7 +59,9 @@ export function AppProvider({ children }) {
         usuario,
         documento,
         tipo,
-        loading
+        email,
+        loading,
+        perfil 
       }}
     >
       {children}
