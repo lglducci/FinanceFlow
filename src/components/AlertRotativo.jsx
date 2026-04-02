@@ -225,7 +225,7 @@ export default function AlertRotativo() {
   }, [mensagensFiltradas.length]);
 
   return (
-    <div className="w-full bg-[#061f4a] text-yellow-100 text-sm text-center py-2 font-medium border-b border-yellow-300">
+    <div className="w-full bg-[#061f4a] text-yellow-600 text-sm text-center py-2 font-medium border-b border-yellow-300">
       {mensagensFiltradas.length > 0 &&
         mensagensFiltradas[index].texto}
     </div>
