@@ -915,16 +915,16 @@ return (
                         }`} 
                       >
                         {l.origem === "conta_pagar"
-                          ? "Pagamento Conta"
+                          ? "Pagar"
                           : l.origem === "conta_receber"
-                          ? "Recebimento Conta"
+                          ? "Receber"
                           : l.origem === "fatura_cartao"
-                          ? "Pagamento Fatura "
+                          ? "Pagar Fatura "
                           : l.origem === "estorno"
                           ? "Estorno operação"
                            : l.origem === "compra_cartao"
-                           ? "Compra cartão"
-                          : "Operação Financeira"}
+                           ? "Cartão"
+                          : "Financeiro"}
                       </span>
                     </td> )}
 
@@ -1034,22 +1034,22 @@ return (
                             disabled={l.status !== "aberto" && l.status !== "aberta"}
                             className={`font-semibold underline ${
                               l.status !== "aberto" && l.status !== "aberta"
-                                ? "text-gray-400 cursor-not-allowed"
+                                ? "text-gray-600 cursor-not-allowed"
                                 : l.tipo_operacao === "conta_receber"
-                                ? "text-blue-700"
-                                : "text-red-700"
+                                ?  "bg-blue-100 text-blue-700"
+                                :  "bg-red-100 text-red-700"
                             }`}
-                          >
+                          >    
                             {l.tipo_operacao === "conta_receber"
                               ? l.status === "aberto" || l.status === "aberta"
-                                ? "Receber"
-                                : "Recebido"
+                                ? "Aberto"
+                                : " Recebido"
                               : l.tipo_operacao === "fatura_cartao"
                               ? l.status === "aberto" || l.status === "aberta"
-                                ? "Pagar fatura"
+                                ? "Aberto"
                                 : "Fatura paga"
                               : l.status === "aberto" || l.status === "aberta"
-                              ? "Pagar"
+                              ? "Aberto"
                               : "Pago"}
                           </button>
                         )}

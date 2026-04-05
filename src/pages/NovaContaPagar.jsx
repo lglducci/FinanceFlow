@@ -316,6 +316,10 @@ useEffect(() => {
           ✏️ Nova Conta a Pagar
         </h1>
 
+        <p className="text-sm text-gray-500 text-center">
+          Registre uma despesa futura da empresa
+        </p>
+
         <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
 
             <div className="flex border-b mb-4"> 

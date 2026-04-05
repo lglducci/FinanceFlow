@@ -702,6 +702,24 @@ const podeCriarModelo =
   return "#ff9f43"; // fallback
 })();
 
+const descricao = (() => {
+  if (form.tipo === "entrada") {
+    if (["cartao_credito","boleto","aprazo"].includes(form.forma_recebimento))
+      return "Registre um valor a receber no futuro";
+    return "Registre uma entrada financeira imediata";
+  }
+
+  if (form.tipo === "saida") {
+    if (form.forma_pagamento === "cartao_credito")
+      return "Registre uma compra realizada no cartão";
+    if (form.forma_pagamento === "aprazo")
+      return "Registre uma despesa futura da empresa";
+    return "Registre uma saída financeira imediata";
+  }
+
+  return "";
+})();
+
   return (
           
 
@@ -717,6 +735,9 @@ const podeCriarModelo =
         {/* TÍTULO IGUAL AO EDITAR */}
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center"  style={{ color: corTitulo }}>
             {titulo}
+            <p className="text-sm text-gray-300 text-center">
+             {descricao}
+          </p>
           </h1>
       
  
