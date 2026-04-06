@@ -137,7 +137,7 @@ import OrigemContabil  from "./pages/ajuda/Origem";
  import  Inicio  from "./pages/ajuda/Inicio";
 import AjudaRelatorios from "./pages/ajuda/Relatorios";
   import AjudaLancamentos from "./pages/ajuda/lancamentos";
-
+  import SaldosIniciais from "./pages/SaldosIniciais";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -411,6 +411,10 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 
 <Route path="/pages/ajuda/lancamentos" element={<AjudaLancamentos />} />
  
+<Route path="/saldosiniciais" element={<SaldosIniciais />} />
+ 
+
+
 
 </Routes>
 
