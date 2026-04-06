@@ -146,6 +146,10 @@ function podeVer(menuKey) {
             <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
              onClick={() => navigate("/relatorios/diario")}
            /> 
+
+            <SubItem icon={<IconDoc />} label="Saldos Iniciais"
+             onClick={() => navigate("/saldosiniciais")}
+           /> 
             
            {podeVer("visao_geral")  && (   <SubItem icon={<IconDoc />} label="Apura Resultado"
              onClick={() => navigate("/apuracaoresultado")}
