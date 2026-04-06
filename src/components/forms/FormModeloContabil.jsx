@@ -134,6 +134,15 @@ useEffect(() => {
   async function salvar() {
     try {
       const url = buildWebhookUrl("inseremodelo");
+       if (!form.codigo || !form.codigo.trim()) {
+        alert("Informe o código do modelo.");
+        return;
+      }
+
+      if (!form.nome || !form.nome.trim()) {
+        alert("Informe o nome do modelo.");
+        return;
+      }
 
       const resp = await fetch(url, {
         method: "POST",
