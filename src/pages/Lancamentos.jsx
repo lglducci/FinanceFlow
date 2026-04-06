@@ -248,7 +248,9 @@ useEffect(() => {
           }),
           // *** AQUI: sempre a data EXATA do banco ***
           data: formatarDataBR(l.data_movimento),
-           
+            // 👇 ADICIONA AQUI
+          nome: l.nome || "",
+          numero: l.numero || "",
           evento_codigo: l.evento_codigo,
           origem_id:l.origem_id,
           tipo_operacao:l.tipo_operacao,
@@ -855,8 +857,20 @@ return (
             <tr>
                <th className="px-3 py-2 text-left">id</th>
               <th className="px-3 py-2 text-left">Descrição</th>
-              <th className="px-3 py-2 text-left">Categoria</th>
-              <th className="px-3 py-2 text-left">Conta</th>
+            
+
+
+              {lista.some(l => l.tipo_operacao === "fatura_cartao") ? (
+                <>
+                  <th className="px-3 py-2 text-left">Nome</th>
+                  <th className="px-3 py-2 text-left">Número</th>
+                </>
+              ) : (
+                <>
+                  <th className="px-3 py-2 text-left">Categoria</th>
+                  <th className="px-3 py-2 text-left">Conta</th>
+                </>
+              )}
               <th className="px-3 py-2 text-left">Tipo</th> 
                 {temTransacao && (
                     <th className="px-3 py-2 text-left">Origem</th>
@@ -891,8 +905,18 @@ return (
                    
                  <td className="px-3 py-2 text-left font-bold">{l.id}</td>
                 <td className="px-3 py-2 font-medium">{l.descricao}</td>
-                <td className="px-3 py-2">{l.categoria_nome}</td>
-                <td className="px-3 py-2">{l.conta_nome}</td>
+                
+                 {l.origem === "fatura_cartao" ? (
+                      <>
+                        <td className="px-3 py-2">{l.nome || "-"}</td>
+                        <td className="px-3 py-2">{l.numero || "-"}</td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="px-3 py-2">{l.categoria_nome}</td>
+                        <td className="px-3 py-2">{l.conta_nome}</td>
+                      </>
+                    )}
                 <td className={`px-3 py-2 font-semibold ${l.tipo === "Entrada" ? "text-green-600" : "text-red-600"}`}>
                   {l.tipo}
                 </td>
