@@ -193,10 +193,11 @@ const dadosAgrupados = gruposAnalitico
   <table className="w-full text-sm">
     <thead className="bg-blue-900 text-white">
       <tr>
-        <th className="p-3 text-left">Grupo</th>
+        
         <th className="p-3 text-left">Código</th>
         <th className="p-3 text-left">Conta</th>
         <th className="p-3 text-right">Valor</th>
+       
       </tr>
     </thead>
     <tbody>
@@ -204,7 +205,7 @@ const dadosAgrupados = gruposAnalitico
           <React.Fragment key={g.grupo}>
             {/* título do grupo */}
             <tr className="bg-blue-100">
-              <td colSpan={4} className="p-3 font-bold text-blue-900 text-lg">
+              <td colSpan={4} className="p-1 font-bold text-blue-900 text-base">
                 {g.grupo}
               </td>
             </tr>
@@ -212,7 +213,7 @@ const dadosAgrupados = gruposAnalitico
             {/* linhas do grupo */}
             {g.itens.map((l, idx) => (
               <tr key={`${g.grupo}-${idx}`} className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-                <td className="p-2 font-bold">{l.grupo}</td>
+               
                 <td className="p-2 font-bold">{l.conta_codigo}</td>
                 <td className="p-2">{l.conta_nome}</td>
                 <td
@@ -227,11 +228,11 @@ const dadosAgrupados = gruposAnalitico
 
             {/* subtotal */}
             <tr className="border-t-2 border-gray-500 bg-gray-100">
-              <td colSpan={3} className="p-3 text-right font-bold">
+              <td colSpan={2} className="p-1 text-right font-bold">
                Subtotal {nomeGrupo[g.grupo]}
               </td>
               <td
-                className={`p-3 text-right font-bold ${
+                className={`p-1 text-right font-bold ${
                   g.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
                 }`}
               >
