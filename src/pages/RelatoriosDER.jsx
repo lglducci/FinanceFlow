@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 import { hojeLocal, dataLocal } from "../utils/dataLocal";
 import ExcelExport from "../utils/ExcelExport";
-
+ 
 
 
 export default function RelatoriosDRE() {
@@ -93,6 +93,31 @@ const resultado = lucroBruto - despesas;
 
   ExcelExport.exportar(linhas, "dre.xlsx");
 }
+
+const gruposAnalitico = ["RECEITA", "CUSTO", "DESPESA"];
+
+const dadosAgrupados = gruposAnalitico
+  .map((grupo) => {
+    const itens = dados.filter((d) => d.grupo === grupo);
+    const subtotal = itens.reduce(
+      (acc, item) => acc + Number(item.valor || 0),
+      0
+    );
+
+    return {
+      grupo,
+      itens,
+      subtotal,
+    };
+  })
+  .filter((g) => g.itens.length > 0);
+
+  const nomeGrupo = {
+  RECEITA: "Receita",
+  CUSTO: "Custo",
+  DESPESA: "Despesa",
+};
+
   return (
     <div className="p-6">
          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
@@ -175,19 +200,47 @@ const resultado = lucroBruto - despesas;
       </tr>
     </thead>
     <tbody>
-      {dados.map((l, idx) => (
-        <tr key={idx} className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-          <td className="p-2 font-bold">{l.grupo}</td>
-          <td className="p-2 font-bold">{l.conta_codigo}</td>
-          <td className="p-2">{l.conta_nome}</td>
-          <td className={`p-2 text-right font-bold ${
-            l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
-          }`}>
-            {fmt.format(Number(l.valor || 0))}
-          </td>
-        </tr>
-      ))}
-    </tbody>
+        {dadosAgrupados.map((g) => (
+          <React.Fragment key={g.grupo}>
+            {/* título do grupo */}
+            <tr className="bg-blue-100">
+              <td colSpan={4} className="p-3 font-bold text-blue-900 text-lg">
+                {g.grupo}
+              </td>
+            </tr>
+
+            {/* linhas do grupo */}
+            {g.itens.map((l, idx) => (
+              <tr key={`${g.grupo}-${idx}`} className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
+                <td className="p-2 font-bold">{l.grupo}</td>
+                <td className="p-2 font-bold">{l.conta_codigo}</td>
+                <td className="p-2">{l.conta_nome}</td>
+                <td
+                  className={`p-2 text-right font-bold ${
+                    l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
+                  }`}
+                >
+                  {fmt.format(Number(l.valor || 0))}
+                </td>
+              </tr>
+            ))}
+
+            {/* subtotal */}
+            <tr className="border-t-2 border-gray-500 bg-gray-100">
+              <td colSpan={3} className="p-3 text-right font-bold">
+               Subtotal {nomeGrupo[g.grupo]}
+              </td>
+              <td
+                className={`p-3 text-right font-bold ${
+                  g.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
+                }`}
+              >
+                {fmt.format(g.subtotal)}
+              </td>
+            </tr>
+          </React.Fragment>
+        ))}
+      </tbody>
   </table>
 ) : (
   // tabela sintética atual
