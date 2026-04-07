@@ -15,7 +15,7 @@ export default function RelatoriosDRE() {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
-
+  const [analitico, setAnalitico] = useState(false);
   const receita = dados.find(d => d.grupo === "RECEITA_BRUTA")?.valor_periodo || 0;
 const custos = dados.find(d => d.grupo === "CUSTOS")?.valor_periodo || 0;
 const despesas = dados.find(d => d.grupo === "DESPESAS_OPERACIONAIS")?.valor_periodo || 0;
@@ -40,6 +40,8 @@ const resultado = lucroBruto - despesas;
   }, []);
 
   async function consultar() {
+
+    const webhook = analitico ? "dre_analitico" : "der";
     if (!empresaId) {
       alert("Empresa não carregada");
       return;
@@ -52,7 +54,7 @@ const resultado = lucroBruto - despesas;
     try {
 
       
-      const resp = await fetch(buildWebhookUrl("der"), {
+      const resp = await fetch(buildWebhookUrl(webhook), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,7 +96,9 @@ const resultado = lucroBruto - despesas;
   return (
     <div className="p-6">
          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
-      <h1 className="text-2xl font-bold mb-6">📊 DRE – Demonstrativo de Resultado</h1>
+      <h1 className="text-2xl font-bold mb-6">
+  📊 DRE – Demonstrativo de Resultado{analitico ? " Analítico" : ""}
+</h1>
 
       {/* FILTROS */}
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
@@ -117,6 +121,15 @@ const resultado = lucroBruto - despesas;
             className="block border rounded-lg px-3 py-2 border-yellow-500"
           />
         </div>
+
+        <label className="flex items-center gap-2 font-bold text-[#1e40af]">
+        <input
+          type="checkbox"
+          checked={analitico}
+          onChange={(e) => setAnalitico(e.target.checked)}
+        />
+        Analítico
+      </label>
 
         <button
           onClick={consultar}
@@ -147,9 +160,40 @@ const resultado = lucroBruto - despesas;
       </div>
       </div>
 
-      {/* TABELA */}
+ {/* TABELA */}
       <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto">
          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
+
+      {analitico ? (
+  <table className="w-full text-sm">
+    <thead className="bg-blue-900 text-white">
+      <tr>
+        <th className="p-3 text-left">Grupo</th>
+        <th className="p-3 text-left">Código</th>
+        <th className="p-3 text-left">Conta</th>
+        <th className="p-3 text-right">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      {dados.map((l, idx) => (
+        <tr key={idx} className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
+          <td className="p-2 font-bold">{l.grupo}</td>
+          <td className="p-2 font-bold">{l.conta_codigo}</td>
+          <td className="p-2">{l.conta_nome}</td>
+          <td className={`p-2 text-right font-bold ${
+            l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
+          }`}>
+            {fmt.format(Number(l.valor || 0))}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+) : (
+  // tabela sintética atual
+ 
+
+      
         <table className="w-full text-sm">
           <thead className="bg-blue-900 text-white">
             <tr>
@@ -201,7 +245,7 @@ const resultado = lucroBruto - despesas;
 
               </tbody>
         </table>
-
+ )}
         {loading && (
           <div className="p-6 text-center text-blue-600 font-semibold">
             Carregando...
