@@ -118,6 +118,13 @@ const dadosAgrupados = gruposAnalitico
   DESPESA: "Despesa",
 };
 
+const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
+  const subtotal = Number(g.subtotal || 0);
+
+  if (g.grupo === "RECEITA") return acc + subtotal;
+  return acc - subtotal; // CUSTO e DESPESA
+}, 0);
+
   return (
     <div className="p-6">
          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
@@ -189,59 +196,69 @@ const dadosAgrupados = gruposAnalitico
       <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto">
          <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
 
-      {analitico ? (
+ {analitico ? (
   <table className="w-full text-sm">
     <thead className="bg-blue-900 text-white">
       <tr>
-        
         <th className="p-3 text-left">Código</th>
         <th className="p-3 text-left">Conta</th>
         <th className="p-3 text-right">Valor</th>
-       
       </tr>
     </thead>
     <tbody>
-        {dadosAgrupados.map((g) => (
-          <React.Fragment key={g.grupo}>
-            {/* título do grupo */}
-            <tr className="bg-blue-100">
-              <td colSpan={4} className="p-1 font-bold text-blue-900 text-base">
-                {g.grupo}
-              </td>
-            </tr>
+      {dadosAgrupados.map((g) => (
+        <React.Fragment key={g.grupo}>
+          <tr className="bg-blue-100">
+            <td colSpan={3} className="p-1 font-bold text-blue-900 text-base">
+              {g.grupo}
+            </td>
+          </tr>
 
-            {/* linhas do grupo */}
-            {g.itens.map((l, idx) => (
-              <tr key={`${g.grupo}-${idx}`} className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-               
-                <td className="p-2 font-bold">{l.conta_codigo}</td>
-                <td className="p-2">{l.conta_nome}</td>
-                <td
-                  className={`p-2 text-right font-bold ${
-                    l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
-                  }`}
-                >
-                  {fmt.format(Number(l.valor || 0))}
-                </td>
-              </tr>
-            ))}
-
-            {/* subtotal */}
-            <tr className="border-t-2 border-gray-500 bg-gray-100">
-              <td colSpan={2} className="p-1 text-right font-bold">
-               Subtotal {nomeGrupo[g.grupo]}
-              </td>
+          {g.itens.map((l, idx) => (
+            <tr
+              key={`${g.grupo}-${idx}`}
+              className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
+            >
+              <td className="p-2 font-bold">{l.conta_codigo}</td>
+              <td className="p-2">{l.conta_nome}</td>
               <td
-                className={`p-1 text-right font-bold ${
-                  g.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
+                className={`p-2 text-right font-bold ${
+                  l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
                 }`}
               >
-                {fmt.format(g.subtotal)}
+                {fmt.format(Number(l.valor || 0))}
               </td>
             </tr>
-          </React.Fragment>
-        ))}
-      </tbody>
+          ))}
+
+          <tr className="border-t-2 border-gray-500 bg-gray-100">
+            <td colSpan={2} className="p-1 text-right font-bold">
+              Subtotal {nomeGrupo[g.grupo]}
+            </td>
+            <td
+              className={`p-1 text-right font-bold ${
+                g.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
+              }`}
+            >
+              {fmt.format(g.subtotal)}
+            </td>
+          </tr>
+        </React.Fragment>
+      ))}
+
+      <tr className="border-t-4 border-black bg-yellow-100">
+        <td colSpan={2} className="p-2 text-right font-bold text-lg">
+          Resultado do Período
+        </td>
+        <td
+          className={`p-2 text-right font-bold text-lg ${
+            totalFinalAnalitico >= 0 ? "text-green-700" : "text-red-600"
+          }`}
+        >
+          {fmt.format(totalFinalAnalitico)}
+        </td>
+      </tr>
+    </tbody>
   </table>
 ) : (
   // tabela sintética atual
