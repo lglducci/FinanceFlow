@@ -19,7 +19,18 @@ export default function RelatoriosBalanco() {
   localStorage.getItem("empresa_id") ||
   localStorage.getItem("id_empresa") ||
   "0";
+const [tipoRelatorio, setTipoRelatorio] = useState("analitico"); 
+ 
+const [dataIni, setDataIni] = useState(hojeLocal());
+const [dataFim, setDataFim] = useState(hojeLocal());
 
+const [linhas, setLinhas] = useState([]);
+const [carregando, setCarregando] = useState(false);
+const [erro, setErro] = useState("");
+
+const ehComparativo = tipoRelatorio === "comparativo";
+const ehPatrimonial = tipoRelatorio === "patrimonial";
+const ehAnalitico = tipoRelatorio === "analitico";
 
 function primeiroDiaMes(data) {
   const d = new Date(data);
@@ -45,7 +56,7 @@ const navigate = useNavigate();
     }
   }, []);
 
-  async function consultar() {
+  /*async function consultar() {
     if (!empresaId) {
       alert("Empresa não carregada");
       return;
@@ -55,23 +66,102 @@ const navigate = useNavigate();
     setDados([]);
 
     try {
-      const resp = await fetch(buildWebhookUrl("balanco"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresa_id: empresaId,
-          data_corte: dataCorte,
-        }),
-      });
+       
+  }*/
+ 
 
-      const json = await resp.json();
-      setDados(Array.isArray(json) ? json : []);
-    } catch (e) {
-      alert("Erro ao carregar o balanco");
-    } finally {
-      setLoading(false);
+    async function consultar() {
+  try {
+    const idEmpresa =
+      Number(localStorage.getItem("id_empresa")) ||
+      Number(localStorage.getItem("empresa_id")) ||
+      0;
+
+    if (!idEmpresa) {
+      alert("Empresa não carregada");
+      return;
     }
+
+    setCarregando(true);
+    setLoading(true);
+    setErro("");
+    setLinhas([]);
+
+    let webhook = "balanco";
+    let payload = {};
+
+    if (tipoRelatorio === "analitico") {
+      webhook = "balanco";
+      payload = {
+        empresa_id: idEmpresa,
+        data_corte: dataCorte,
+      };
+    } else if (tipoRelatorio === "patrimonial") {
+      webhook = "balanco_patrimonial";
+      payload = {
+        empresa_id: idEmpresa,
+        data_corte: dataCorte,
+      };
+    } else if (tipoRelatorio === "comparativo") {
+      webhook = "balanco_comparativo";
+      payload = {
+        empresa_id: idEmpresa,
+        data_ini: dataIni,
+        data_fim: dataFim,
+      };
+    }
+
+    const resp = await fetch(buildWebhookUrl(webhook), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await resp.json();
+
+    const lista = Array.isArray(json) ? json : [];
+    setLinhas(lista);
+  } catch (e) {
+    console.error(e);
+    setErro("Erro ao carregar o balanço");
+    setLinhas([]);
+  } finally {
+    setCarregando(false);
+    setLoading(false);
   }
+}
+
+ 
+
+function marcarTipo(tipo) {
+  setTipoRelatorio(tipo);
+}
+
+function moeda(v) {
+  const n = Number(v || 0);
+  return n.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
+
+ useEffect(() => {
+  const id = localStorage.getItem("id_empresa") || localStorage.getItem("empresa_id");
+  if (id) {
+    setEmpresaId(Number(id));
+  }
+}, []);
+
+useEffect(() => {
+  if (empresaId) {
+    consultar();
+  }
+}, [empresaId]);
+ 
+useEffect(() => {
+  setLinhas([]);
+}, [tipoRelatorio]);
 
   return (
     <div className="p-6">
@@ -80,24 +170,87 @@ const navigate = useNavigate();
 
       {/* FILTROS */}
       <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
-        <div>
-          <label className=" block font-bold text-[#1e40af]">  Data de Corte  </label>
-          <input
-            type="date"
-            value={dataCorte}
-            onChange={(e) => setDataCorte(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
+       <div className="bg-white rounded-xl shadow p-4 mb-4">
+  <div className="flex flex-wrap gap-6 items-center mb-4">
 
-        <button
-          onClick={consultar}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
-        >
-          Consultar
-        </button>
+    <label className="flex items-center gap-2 font-medium">
+      <input
+        type="checkbox"
+        checked={tipoRelatorio === "analitico"}
+        onChange={() => marcarTipo("analitico")}
+      />
+      Balanço Analítico
+    </label>
 
-        <button
+    <label className="flex items-center gap-2 font-medium">
+      <input
+        type="checkbox"
+        checked={tipoRelatorio === "patrimonial"}
+        onChange={() => marcarTipo("patrimonial")}
+      />
+      Balanço Patrimonial
+    </label>
+
+    <label className="flex items-center gap-2 font-medium">
+      <input
+        type="checkbox"
+        checked={tipoRelatorio === "comparativo"}
+        onChange={() => marcarTipo("comparativo")}
+      />
+      Balanço Comparativo
+    </label>
+
+  </div>
+
+  {!ehComparativo ? (
+    <div className="flex flex-wrap gap-4 items-end">
+      <div>
+        <label className="block text-sm font-medium mb-1">Data de corte</label>
+        <input
+          type="date"
+          value={dataCorte}
+          onChange={(e) => setDataCorte(e.target.value)}
+          className="border rounded px-3 py-2"
+        />
+      </div>
+
+      <button
+        onClick={consultar}
+        className="px-4 py-2 rounded bg-blue-700 text-white font-semibold"
+      >
+        Pesquisar
+      </button>
+    </div>
+  ) : (
+    <div className="flex flex-wrap gap-4 items-end">
+      <div>
+        <label className="block text-sm font-medium mb-1">Data inicial</label>
+        <input
+          type="date"
+          value={dataIni}
+          onChange={(e) => setDataIni(e.target.value)}
+          className="border rounded px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Data final</label>
+        <input
+          type="date"
+          value={dataFim}
+          onChange={(e) => setDataFim(e.target.value)}
+          className="border rounded px-3 py-2"
+        />
+      </div>
+
+      <button
+        onClick={consultar}
+        className="px-4 py-2 rounded bg-blue-700 text-white font-semibold"
+      >
+        Pesquisar
+      </button>
+
+       <button
           onClick={() => window.print()}
           className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
         >
@@ -111,50 +264,88 @@ const navigate = useNavigate();
         >
          Voltar 
         </button>
+    </div>
+  )}
+
+  {erro && (
+    <div className="mt-3 text-red-600 font-medium">
+      {erro}
+    </div>
+  )}
+</div>
+
+       
+
+        
         </div>
       </div>
 
       {/* TABELA */}
         <div id="print-area">  
         <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-blue-900 text-white">
-            <tr>
-              <th className="p-3 text-left">Grupo</th>
-              <th className="p-3 text-left">Conta</th>
-              <th className="p-3 text-right">Saldo</th>
-            </tr>
-          </thead>
-        <tbody>
-                {dados.map((l, idx) => (
-                    <tr key={idx}  className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-                    <td className="p-3">{l.grupo}</td>
+       <div className="bg-white rounded-xl shadow overflow-x-auto">
+  <table className="min-w-full text-sm">
+    <thead className="bg-slate-100">
+      <tr>
+        <th className="px-3 py-2 text-left">Grupo</th>
+        <th className="px-3 py-2 text-left">Subgrupo</th>
+        <th className="px-3 py-2 text-left">Tipo</th>
+        <th className="px-3 py-2 text-left">Código</th>
+        <th className="px-3 py-2 text-left">Conta</th>
 
-                    <td className="p-3">
-                    <Link
-                        to="/relatorios/razao"
-                        state={{
-                        conta: l.conta_codigo,
-                        dataIni:   primeiroDiaMes(dataCorte), // você decide (exercício / mês)
-                        dataFim: dataCorte       // data de corte do balanço
-                        }}
-                        className="text-blue-600 underline cursor-pointer"
-                    >
-                        {l.conta_codigo} – {l.conta_nome}
-                    </Link>
-                    </td>
+        {ehComparativo ? (
+          <>
+            <th className="px-3 py-2 text-right">Saldo anterior</th>
+            <th className="px-3 py-2 text-right">Saldo atual</th>
+            <th className="px-3 py-2 text-right">Variação</th>
+          </>
+        ) : (
+          <th className="px-3 py-2 text-right">Saldo</th>
+        )}
+      </tr>
+    </thead>
 
+    <tbody>
+      {linhas.map((l, i) => {
+        const destaqueResumo = l.grupo === "RESUMO" || l.tipo_linha?.includes("TOTAL") || l.tipo_linha === "FECHAMENTO";
 
-                    <td className="p-3 text-right">
-                        {fmt.format(l.saldo)}
-                    </td>
-                    </tr>
-                ))}
-                </tbody>
+        return (
+          <tr
+            key={i}
+            className={destaqueResumo ? "bg-slate-50 font-bold border-t" : "border-t"}
+          >
+            <td className="px-3 py-2">{l.grupo || ""}</td>
+            <td className="px-3 py-2">{l.subgrupo || ""}</td>
+            <td className="px-3 py-2">{l.tipo_linha || ""}</td>
+            <td className="px-3 py-2">{l.conta_codigo || ""}</td>
+            <td className="px-3 py-2">{l.conta_nome || ""}</td>
 
-        </table>
+            {ehComparativo ? (
+              <>
+                <td className="px-3 py-2 text-right">{moeda(l.saldo_anterior)}</td>
+                <td className="px-3 py-2 text-right">{moeda(l.saldo_atual)}</td>
+                <td className="px-3 py-2 text-right">{moeda(l.variacao)}</td>
+              </>
+            ) : (
+              <td className="px-3 py-2 text-right">{moeda(l.saldo)}</td>
+            )}
+          </tr>
+        );
+      })}
 
+      {!carregando && linhas.length === 0 && (
+        <tr>
+          <td
+            colSpan={ehComparativo ? 8 : 6}
+            className="px-3 py-6 text-center text-slate-500"
+          >
+            Nenhum dado encontrado.
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+ 
         {loading && (
           <div className="p-6 text-center text-blue-600 font-semibold">
             Carregando...
