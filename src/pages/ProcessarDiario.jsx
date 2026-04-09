@@ -130,7 +130,7 @@ const [loading, setLoading] = useState(false);
   d.setDate(d.getDate() + 1);
   return d.toISOString().substring(0, 10);
 }
- 
+ /*
 async function gerarStaging() {
   try {
     setMsg("⏳ STAGING (Checando)...");
@@ -204,15 +204,16 @@ async function gerarStaging() {
     alert("❌ " + e.message);
   }
 }
-
+*/
  
  async function gerarContabil() {
+  
   try {
     setMsg("⏳ Gerando Contábil...");
     setMostrarContabil(false);
-
+   
     const data = await fetchSeguro(
-      buildWebhookUrl("gerar_contabil"),
+      buildWebhookUrl("processa_tudo"),
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -340,7 +341,7 @@ useEffect(() => {
       <div className="flex flex-col gap-4">
 
         {ultimoFechamento && (
-          <div className="bg-gray-100 text-gray-700 text-sm p-3 rounded-lg">
+          <div className="bg-blue-100 text-blue-800 text-base font-semibold p-3 rounded-lg">
             Último fechamento contábil: <b>{ultimoFechamento}</b>
           </div>
         )}
@@ -370,10 +371,10 @@ useEffect(() => {
               onChange={e => setDataFim(e.target.value)}
             />
           </div>
-        </div>
+         
 
         <div className="flex flex-wrap gap-3 pt-2">
-          <button
+        { /* <button
             onClick={gerarStaging}
              className="
                         px-5 py-2 rounded-full
@@ -388,7 +389,7 @@ useEffect(() => {
                         inline-flex items-center gap-2
                       ">
             Checagem (Fase 1)
-          </button>
+          </button> 
 
           <button
             onClick={consolidarDiario}
@@ -405,7 +406,7 @@ useEffect(() => {
                           inline-flex items-center gap-2
                         ">
             Diário (Fase 2)
-          </button>
+          </button> */}
 
           <button
             onClick={gerarContabil}
@@ -415,15 +416,15 @@ useEffect(() => {
                         px-5 py-2 rounded-full
                         font-bold text-sm tracking-wide
                         text-white
-                        bg-gradient-to-b from-indigo-500 via-indigo-600 to-indigo-800
+                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
                         border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        shadow-[0_4px_10px_rgba(0,0,0,0.4)]
                         hover:brightness-110 hover:scale-105
                         active:scale-95
                         transition-all duration-200
                         inline-flex items-center gap-2
                       ">
-            Contábil (Fase Final)
+           Gerar Contábil 
           </button>
 
           <button
@@ -434,7 +435,7 @@ useEffect(() => {
                         text-white
                         bg-gradient-to-b from-red-500 via-red-600 to-red-800
                         border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        shadow-[0_4px_10px_rgba(0,0,0,0.4)]
                         hover:brightness-110 hover:scale-105
                         active:scale-95
                         transition-all duration-200
@@ -443,6 +444,7 @@ useEffect(() => {
                       >
             Voltar Data
           </button>
+          </div>
         </div>
       </div>
     </div>
