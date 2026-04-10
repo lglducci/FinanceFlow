@@ -197,10 +197,8 @@ export default function AlertRotativo() {
         </>
       )
     }
+
      
-
- 
-
 
   ];
 
@@ -219,7 +217,7 @@ export default function AlertRotativo() {
 
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % mensagensFiltradas.length);
-    }, 10000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [mensagensFiltradas.length]);
