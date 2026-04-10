@@ -7,14 +7,14 @@ export default function Header() {
   const { empresa, usuario, documento, tipo, email, loading, perfil } = useApp();
   const [alertaContabil, setAlertaContabil] = useState(null);
   const navigate = useNavigate();
-
+   
   const carregarStatus = useCallback(async () => {
     try {
       const empresa_id =
         localStorage.getItem("empresa_id") ||
         localStorage.getItem("id_empresa") ||
         "0";
-
+       
       const resp = await fetch(
         buildWebhookUrl("ultimo_processamento", { empresa_id })
       );
@@ -24,22 +24,27 @@ export default function Header() {
 
       const hoje = new Date().toISOString().slice(0, 10);
       const ultimoProcessado = item?.ultimo_dia_processado
-        ? item.ultimo_dia_processado.slice(0, 10)
-        : null;
+      ? item.ultimo_dia_processado.slice(0, 10)
+      : null;
 
-      if (
-        item?.data_reprocessar_de ||
-        (ultimoProcessado && ultimoProcessado < hoje)
-      ) {
-        setAlertaContabil(item);
-      } else {
-        setAlertaContabil(null);
-      }
-    } catch (err) {
-      console.error("Erro ao carregar status contábil:", err);
+    if (perfil === "CONTABIL") {
+      setAlertaContabil(null);
+      return;
+    }
+
+    if (
+      item?.data_reprocessar_de ||
+      (ultimoProcessado && ultimoProcessado < hoje)
+    ) {
+      setAlertaContabil(item);
+    } else {
       setAlertaContabil(null);
     }
-  }, []);
+  } catch (err) {
+    console.error("Erro ao carregar status contábil:", err);
+    setAlertaContabil(null);
+  }
+}, [perfil]);
 
   useEffect(() => {
     carregarStatus();
