@@ -207,11 +207,10 @@ async function gerarStaging() {
 */
  
  async function gerarContabil() {
-  
   try {
     setMsg("⏳ Gerando Contábil...");
     setMostrarContabil(false);
-   
+
     const data = await fetchSeguro(
       buildWebhookUrl("processa_tudo"),
       {
@@ -225,18 +224,16 @@ async function gerarStaging() {
       }
     );
 
-    // se quiser validar retorno
     if (!data?.ok) {
       throw new Error(data?.message || "Erro ao gerar contábil");
     }
 
-    // 🔥 depois consulta os lançamentos
     await consultar();
 
+    window.dispatchEvent(new Event("contabil-atualizado"));
+
     setMostrarContabil(true);
-
     setMsg("✅ Contábil gerado com sucesso.");
-
   } catch (e) {
     alert("❌ " + e.message);
   }

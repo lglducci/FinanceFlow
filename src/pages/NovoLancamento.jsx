@@ -558,8 +558,10 @@ useEffect(() => {
   });
 
   alert("Salvo com sucesso!");
+ 
+   window.dispatchEvent(new Event("contabil-atualizado"));
+   
   limparFormulario();
-
 } catch (err) {
   console.error("ERRO CAPTURADO:", err.message);
 
