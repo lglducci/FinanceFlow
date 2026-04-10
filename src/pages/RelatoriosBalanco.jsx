@@ -118,9 +118,20 @@ const navigate = useNavigate();
     });
 
     const json = await resp.json();
+const lista = Array.isArray(json) ? json : [];
 
-    const lista = Array.isArray(json) ? json : [];
-    setLinhas(lista);
+const listaFiltrada = lista.filter((l) => {
+  const nome = (l.conta_nome || "").toUpperCase().trim();
+
+  if (nome === "TOTAL ATIVO CIRCULANTE") return false;
+  if (nome === "TOTAL PASSIVO CIRCULANTE") return false;
+  if (nome === "TOTAL PATRIMONIO LIQUIDO") return false;
+
+  return true;
+});
+
+setLinhas(listaFiltrada);
+     
   } catch (e) {
     console.error(e);
     setErro("Erro ao carregar o balanço");
@@ -288,8 +299,8 @@ useEffect(() => {
     <thead className="bg-slate-100">
       <tr>
         <th className="px-3 py-2 text-left">Grupo</th>
-        <th className="px-3 py-2 text-left">Subgrupo</th>
-        <th className="px-3 py-2 text-left">Tipo</th>
+        {/* <th className="px-3 py-2 text-left">Subgrupo</th> 
+        <th className="px-3 py-2 text-left">Tipo</th>*/}
         <th className="px-3 py-2 text-left">Código</th>
         <th className="px-3 py-2 text-left">Conta</th>
 
@@ -315,8 +326,8 @@ useEffect(() => {
             className={destaqueResumo ? "bg-slate-50 font-bold border-t" : "border-t"}
           >
             <td className="px-3 py-2">{l.grupo || ""}</td>
-            <td className="px-3 py-2">{l.subgrupo || ""}</td>
-            <td className="px-3 py-2">{l.tipo_linha || ""}</td>
+           {/*} <td className="px-3 py-2">{l.subgrupo || ""}</td> 
+            <td className="px-3 py-2">{l.tipo_linha || ""}</td>*/}
             <td className="px-3 py-2">{l.conta_codigo || ""}</td>
             <td className="px-3 py-2">{l.conta_nome || ""}</td>
 
