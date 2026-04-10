@@ -132,7 +132,8 @@ const listaFiltrada = lista.filter((l) => {
   return true;
 });
 
-setLinhas(listaFiltrada);
+ const listaComTotais = inserirTotaisPorGrupo(listaFiltrada, ehComparativo);
+setLinhas(listaComTotais);
      
   } catch (e) {
     console.error(e);
@@ -175,6 +176,68 @@ useEffect(() => {
 useEffect(() => {
   setLinhas([]);
 }, [tipoRelatorio]);
+
+function inserirTotaisPorGrupo(lista, ehComparativo = false) {
+  if (!Array.isArray(lista) || lista.length === 0) return [];
+
+  const detalhes = [];
+  const finais = [];
+
+  let grupoAtual = null;
+  let totalAnterior = 0;
+  let totalAtual = 0;
+  let totalVariacao = 0;
+
+  function empurrarTotalDoGrupo() {
+    if (!grupoAtual) return;
+
+    detalhes.push({
+      grupo: grupoAtual,
+      subgrupo: null,
+      tipo_linha: "TOTAL_GRUPO_FRONT",
+      conta_codigo: "",
+      conta_nome: `TOTAL ${grupoAtual}`,
+      saldo: totalAtual,
+      saldo_anterior: totalAnterior,
+      saldo_atual: totalAtual,
+      variacao: totalVariacao,
+    });
+  }
+
+  for (const l of lista) {
+    const isResumoFinal =
+      l.grupo === "RESUMO" ||
+      l.tipo_linha === "FECHAMENTO" ||
+      l.tipo_linha?.includes("TOTAL");
+
+    if (isResumoFinal) {
+      finais.push(l);
+      continue;
+    }
+
+    if (grupoAtual && l.grupo !== grupoAtual) {
+      empurrarTotalDoGrupo();
+      totalAnterior = 0;
+      totalAtual = 0;
+      totalVariacao = 0;
+    }
+
+    grupoAtual = l.grupo;
+    detalhes.push(l);
+
+    if (ehComparativo) {
+      totalAnterior += Number(l.saldo_anterior || 0);
+      totalAtual += Number(l.saldo_atual || 0);
+      totalVariacao += Number(l.variacao || 0);
+    } else {
+      totalAtual += Number(l.saldo || 0);
+    }
+  }
+
+  empurrarTotalDoGrupo();
+
+  return [...detalhes, ...finais];
+}
 
   return (
     <div className="p-6">
@@ -300,8 +363,8 @@ useEffect(() => {
   <table className="min-w-full text-sm">
     <thead className="bg-slate-100">
       <tr>
-        <th className="px-3 py-2 text-left">Grupo</th>
-        {/* <th className="px-3 py-2 text-left">Subgrupo</th> 
+        {/*<th className="px-3 py-2 text-left">Grupo</th>
+         <th className="px-3 py-2 text-left">Subgrupo</th> 
         <th className="px-3 py-2 text-left">Tipo</th>*/}
         <th className="px-3 py-2 text-left">Código</th>
         <th className="px-3 py-2 text-left">Conta</th>
@@ -320,14 +383,17 @@ useEffect(() => {
 
     <tbody>
       {linhas.map((l, i) => {
-        const destaqueResumo = l.grupo === "RESUMO" || l.tipo_linha?.includes("TOTAL") || l.tipo_linha === "FECHAMENTO";
-
+        const destaqueResumo =
+  l.grupo === "RESUMO" ||
+  l.tipo_linha?.includes("TOTAL") ||
+  l.tipo_linha === "FECHAMENTO" ||
+  l.tipo_linha === "TOTAL_GRUPO_FRONT";
         return (
           <tr
             key={i}
             className={destaqueResumo ? "bg-slate-50 font-bold border-t" : "border-t"}
           >
-            <td className="px-3 py-2">{l.grupo || ""}</td>
+           {/*} <td className="px-3 py-2">{l.grupo || ""}</td>
            {/*} <td className="px-3 py-2">{l.subgrupo || ""}</td> 
             <td className="px-3 py-2">{l.tipo_linha || ""}</td>*/}
             <td className="px-3 py-2">{l.conta_codigo || ""}</td>
