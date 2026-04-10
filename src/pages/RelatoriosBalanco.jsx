@@ -126,6 +126,7 @@ const listaFiltrada = lista.filter((l) => {
   if (nome === "TOTAL ATIVO CIRCULANTE") return false;
   if (nome === "TOTAL PASSIVO CIRCULANTE") return false;
   if (nome === "TOTAL PATRIMONIO LIQUIDO") return false;
+  if (nome === "TOTAL PASSIVO NAO CIRCULANTE") return false;
 
   return true;
 });
