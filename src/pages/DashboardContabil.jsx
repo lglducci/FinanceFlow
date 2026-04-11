@@ -1,712 +1,292 @@
- import { useEffect, useState } from "react";
+ import { useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
- 
- import {PieChart, BarChart,  Pie, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell , LineChart, Line   } from "recharts";
- import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
-
- 
-
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line } from "recharts";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 export default function DashboardContabil() {
   const empresa_id =
     localStorage.getItem("empresa_id") ||
-    localStorage.getItem("id_empresa");
-   const [balanco, setBalanco] = useState([]);
-  
+    localStorage.getItem("id_empresa") ||
+    "0";
 
   const [dataIni, setDataIni] = useState(hojeMaisDias(-30));
   const [dataFim, setDataFim] = useState(hojeLocal());
 
-  const [kpis, setKpis] = useState({});
+  const [balanco, setBalanco] = useState([]);
   const [dre, setDre] = useState([]);
-
-  const [ativoPizza, setAtivoPizza] = useState([]);
-  const [passivoPizza, setPassivoPizza] = useState([]);
-  const [resultadoMensal, setResultadoMensal] = useState([]);
-  const [balancete, setBalancete] = useState([]);
   const [historico, setHistorico] = useState([]);
-  const [mostrarZeradas, setMostrarZeradas] = useState(false);
 
-
-  const totalAtivo =  (somarGrupo(balanco, "ATIVO"));
-const totalPassivo =  (somarGrupo(balanco, "PASSIVO"));
-const patrimonioLiquido =   (  totalAtivo - totalPassivo );
-
-  
-  const coresBalanco = {
-  ATIVO: "#061f4aff",            // azul
-  PASSIVO: "#b91c1c",            // vermelho
-  PATRIMONIO_LIQUIDO: "#15803d", // verde
-};
-
-
-const CORES_ATIVO = [
-  "#061f4aff",
-  "#0f2f6d",
-  "#1e40af",
-  "#facc15",
-  "#9ca3af"
-];
-
-  const historicoFormatado = historico.map(h => ({
-  ...h,
-  mes_ano: `${String(h.mes).padStart(2, "0")}/${h.ano}`
-}));
-
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
 
   function formatarMoeda(valor) {
-  return Number(valor).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-  });
-}
- 
-
-    async function carregar() {
-     
-      const r = await fetch(buildWebhookUrl("der"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresa_id: empresa_id,
-          data_ini: dataIni,
-          data_fim: dataFim,
-        }),
-      });
-
-    const j = await r.json();
-    setDre(j);
-
- // ===== BALANÇO (UMA ÚNICA VEZ) =====
-const respBalanco = await fetch(buildWebhookUrl("balanco"), {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    empresa_id,
-    data_corte: dataFim
-  }),
-});
-
-const jsonBalanco = await respBalanco.json();
-const balancoSeguro = Array.isArray(jsonBalanco) ? jsonBalanco : [];
-
- setBalanco(balancoSeguro);
-setAtivoPizza(agruparAtivoParaPizza(balancoSeguro));
-setPassivoPizza(agruparPassivoParaPizza(balancoSeguro));
-
- 
-  // RESULTADO MENSAL (12 MESES)
-const rMensal = await fetch(buildWebhookUrl("historico_apuracao"), {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ empresa_id: empresa_id })
-});
-
- const jzon = await rMensal.json();
-    setHistorico(Array.isArray(jzon) ? jzon : []);
-  
-  
-
- 
-   const rBal = await fetch(buildWebhookUrl("balancete"), {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({  empresa_id: empresa_id,
-          data_ini:dataIni,
-          data_fim: dataFim, filtro:"" })
-});
-    const jBal = await rBal.json();
-    setBalancete(Array.isArray(jBal) ? jBal : []);
-
-
-    // Balancete
-    fetch(buildWebhookUrl("balancete", { empresa_id, dataIni, dataFim }))
-        .then(r => r.json())
-        .then(setBalancete);
-
-}
-
-
-   
-
-function agruparBalancoPorGrupo(balanco) {
-  const mapa = {};
-
-  for (const l of balanco) {
-    const grupo = l.grupo;
-    const valor = Number(l.saldo || 0);
-
-    if (!mapa[grupo]) {
-      mapa[grupo] = 0;
-    }
-    mapa[grupo] += valor;
+    return Number(valor || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   }
 
-  return Object.entries(mapa).map(([grupo, valor]) => ({
-    grupo,
-    valor,
-  }));
-}
-
-
-const dadosBalanco = agruparBalancoPorGrupo(balanco);
-
-function agruparAtivoParaPizza(balanco) {
-  const mapa = {};
-
-  for (const l of balanco) {
-    if (l.grupo !== "ATIVO") continue;
-
-    const nome = l.conta_nome;
-    const valor = Math.abs(Number(l.saldo || 0));
-    
-    if (valor === 0) continue;
-
-    if (!mapa[nome]) mapa[nome] = 0;
-    mapa[nome] += valor;
+  function somarGrupo(lista, grupo) {
+    return lista
+      .filter((l) => l.grupo === grupo)
+      .reduce((s, l) => s + Number(l.saldo || 0), 0);
   }
 
-  return Object.entries(mapa).map(([label, valor]) => ({
-    label,
-    valor 
-  }));
-}
-
-
-
-function agruparPassivoParaPizza(balanco) {
-  const mapa = {};
-
-  for (const l of balanco) {
-    if (l.grupo !== "PASSIVO") continue; 
-    const nome = l.conta_nome;
-    const valor = Math.abs(Number(l.saldo || 0)); 
-    if (valor === 0) continue; 
-    if (!mapa[nome]) mapa[nome] = 0;
-    mapa[nome] += valor;
+  function diferencaDias(dataIni, dataFim) {
+    if (!dataIni || !dataFim) return 0;
+    const inicio = new Date(dataIni);
+    const fim = new Date(dataFim);
+    const diffMs = fim - inicio;
+    return Math.max(Math.ceil(diffMs / (1000 * 60 * 60 * 24)), 0);
   }
 
-  return Object.entries(mapa).map(([label, valor]) => ({
-    label,
-    valor
-  }));
-}
+  const diasPeriodo = diferencaDias(dataIni, dataFim);
 
- 
-
-const resultadoDre =  (
-  dre.find(l => l.grupo === "RESULTADO_LIQUIDO")?.valor_periodo || 0) ;
-
-function somarGrupo(balanco, grupo) {
-  return balanco
-    .filter(l => l.grupo === grupo)
-    .reduce((s, l) => s + Number(l.saldo || 0), 0);
-}
-
-
-   function diferencaDias(dataIni, dataFim) {
-  if (!dataIni || !dataFim) return 0;
-
-  const inicio = new Date(dataIni);
-  const fim = new Date(dataFim);
-
-  const diffMs = fim - inicio;
-  return Math.max(Math.ceil(diffMs / (1000 * 60 * 60 * 24)), 0);
-}
-
-const diasPeriodo = diferencaDias(dataIni, dataFim);
+  const totalAtivo = somarGrupo(balanco, "ATIVO");
+  const totalPassivo = somarGrupo(balanco, "PASSIVO");
+  const totalPL = somarGrupo(balanco, "PATRIMONIO LIQUIDO");
+  const resultadoLiquido =
+    dre.find((l) => l.grupo === "RESULTADO_LIQUIDO")?.valor_periodo || 0;
 
   const ativosNegativos = balanco.filter(
-  l => l.grupo === "ATIVO" && Number(l.saldo) < 0
-);
-
-const totalAtivoNegativo = ativosNegativos.reduce(
-  (s, l) => s + Number(l.saldo),
-  0
-);
-
-const passivosDevedores = balanco.filter(
-  l => l.grupo === "PASSIVO" && Number(l.saldo) > 0
-);
-
-const totalPassivoInvertido = passivosDevedores.reduce(
-  (s, l) => s + Number(l.saldo || 0),
-  0
-);
-
-function linhaZerada(l) {
-  return (
-    Number(l.saldo_inicial || 0) === 0 &&
-    Number(l.total_debito || 0) === 0 &&
-    Number(l.total_credito || 0) === 0 &&
-    Number(l.saldo || 0) === 0  
+    (l) => l.grupo === "ATIVO" && Number(l.saldo) < 0
   );
-}
 
+  const passivosInvertidos = balanco.filter(
+    (l) => l.grupo === "PASSIVO" && Number(l.saldo) > 0
+  );
 
+  const historicoFormatado = historico.map((h) => ({
+    ...h,
+    mes_ano: `${String(h.mes).padStart(2, "0")}/${h.ano}`,
+  }));
+
+  async function carregar() {
+    try {
+      setLoading(true);
+      setErro("");
+
+      const [respDre, respBalanco, respHistorico] = await Promise.all([
+        fetch(buildWebhookUrl("der"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            empresa_id,
+            data_ini: dataIni,
+            data_fim: dataFim,
+          }),
+        }),
+        fetch(buildWebhookUrl("balanco"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            empresa_id,
+            data_corte: dataFim,
+          }),
+        }),
+        fetch(buildWebhookUrl("historico_apuracao"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            empresa_id,
+          }),
+        }),
+      ]);
+
+      const jsonDre = await respDre.json();
+      const jsonBalanco = await respBalanco.json();
+      const jsonHistorico = await respHistorico.json();
+
+      setDre(Array.isArray(jsonDre) ? jsonDre : []);
+      setBalanco(Array.isArray(jsonBalanco) ? jsonBalanco : []);
+      setHistorico(Array.isArray(jsonHistorico) ? jsonHistorico : []);
+    } catch (e) {
+      console.error(e);
+      setErro("Erro ao carregar dashboard.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="p-6 bg-blue-100 min-h-screen">
-
-      {/* HEADER */}
-      <div className="bg-[#ffffffff] text-blue-900 rounded-xl p-6 mb-6">
+      <div className="bg-white text-blue-900 rounded-xl p-6 mb-6 shadow">
         <h1 className="text-2xl font-bold">📊 Dashboard Contábil</h1>
 
-        
-          <div className="text-blue-900 font-bold text-base px-3 py-2 bg-blue/15 rounded-lg">
-            Período: {diasPeriodo} dias
-          </div>
- 
-        <div className="flex gap-4 mt-4">
-          <input type="date" className="input-premium"
-            value={dataIni} onChange={e => setDataIni(e.target.value)} />
-          <input type="date" className="input-premium"
-            value={dataFim} onChange={e => setDataFim(e.target.value)} />  
-
-           <button
-            onClick={carregar}
-           
-            className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                    ">
-            Atualizar
-            </button>  
-        </div> 
-      </div>
-
-      {/* KPIs */}
-         <div className="grid grid-cols-4 gap-6 mb-8 bg-white">
-          <div className="border-l-8 border-blue-300 rounded-xl shadow bg-blue-100 p-4">
-            <Kpi titulo="Ativo" valor={formatarMoeda(totalAtivo)} />
-          </div> 
-          <div className="border-l-8 border-red-600 rounded-xl shadow bg-red-100 p-4">
-            <Kpi titulo="Passivo" valor={formatarMoeda(totalPassivo)} />
-          </div> 
-          <div className="border-l-8 border-purple-600 rounded-xl shadow bg-purple-200 p-4">
-            <Kpi titulo="Patrimônio Líquido" valor={formatarMoeda(patrimonioLiquido)} />
-          </div> 
-          <div className="border-l-8 border-green-600 rounded-xl shadow bg-green-100 p-4">
-            <Kpi titulo="Resultado" valor={formatarMoeda(resultadoDre)} />
-          </div>
+        <div className="text-blue-900 font-bold text-base px-3 py-2 rounded-lg mt-2">
+          Período: {diasPeriodo} dias
         </div>
 
-      
+        <div className="flex gap-4 mt-4 flex-wrap">
+          <input
+            type="date"
+            className="input-premium"
+            value={dataIni}
+            onChange={(e) => setDataIni(e.target.value)}
+          />
+          <input
+            type="date"
+            className="input-premium"
+            value={dataFim}
+            onChange={(e) => setDataFim(e.target.value)}
+          />
+          <button
+            onClick={carregar}
+            className="px-5 py-2 rounded-full font-bold text-sm tracking-wide text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800 border-2 border-black shadow-[0_4px_12px_rgba(0,0,0,0.4)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all duration-200 inline-flex items-center gap-2"
+          >
+            Atualizar
+          </button>
+        </div>
 
-      {/* PIZZAS */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <Card titulo="Composição do Ativo">
-          {/* COMPOSIÇÃO DO ATIVO */}
-            <div className="bg-[#9acbdc] rounded-xl shadow p-6 border border-gray-100 mt-6"> 
-              <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
-                Composição do Ativo
-              </h2> 
-            {ativoPizza.length === 0 ? (
-              <p className="text-gray-500 text-sm">Sem dados de ativo.</p>
-            ) : (
-              <div style={{ width: "100%", height: 160 , background: "#cde5ed",}}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={ativoPizza}
-                      dataKey="valor"
-                      nameKey="label"
-                      innerRadius={50}
-                      outerRadius={70}
-                      paddingAngle={3}
-                    >
-                      {ativoPizza.map((_, index) => (
-                        <Cell
-                          key={index}
-                          fill={[
-                            "#061f4aff",
-                            "#1e40af",
-                            "#facc15",
-                            "#64748b",
-                            "#0f172a"
-                          ][index % 5]}
-                        />
-                      ))}
-                    </Pie>
+        {erro && (
+          <div className="mt-4 text-red-700 font-semibold">{erro}</div>
+        )}
+      </div>
 
-                    <Tooltip
-                      formatter={(v) =>
-                        Number(v).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL"
-                        })
-                      }
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+        <Kpi titulo="Ativo" valor={formatarMoeda(totalAtivo)} cor="blue" />
+        <Kpi titulo="Passivo" valor={formatarMoeda(totalPassivo)} cor="red" />
+        <Kpi titulo="Patrimônio Líquido" valor={formatarMoeda(totalPL)} cor="green" />
+        <Kpi titulo="Resultado Líquido" valor={formatarMoeda(resultadoLiquido)} cor="purple" />
+      </div>
 
-                {ativosNegativos.length > 0 && (
-                    <div className="bg-yellow-100 mt-12 bg-red-50 border-l-4 border-red-600 p-3 rounded">
-                      <div className="font-bold text-red-700">
-                        ⚠ Ativos com saldo negativo
-                      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <AlertaCard
+          titulo="Ativos negativos"
+          valor={ativosNegativos.length}
+          detalhe={ativosNegativos.length > 0 ? "Verificar saldos invertidos" : "Nenhum problema"}
+          cor={ativosNegativos.length > 0 ? "red" : "green"}
+        />
+        <AlertaCard
+          titulo="Passivos invertidos"
+          valor={passivosInvertidos.length}
+          detalhe={passivosInvertidos.length > 0 ? "Verificar passivos devedores" : "Nenhum problema"}
+          cor={passivosInvertidos.length > 0 ? "red" : "green"}
+        />
+        <AlertaCard
+          titulo="Diferença Ativo - Passivo - PL"
+          valor={formatarMoeda(totalAtivo - totalPassivo - totalPL)}
+          detalhe="Idealmente deve ser zero"
+          cor={Number(totalAtivo - totalPassivo - totalPL) === 0 ? "green" : "yellow"}
+        />
+      </div>
 
-                      <div className="text-sm text-red-700">
-                        Total comprometido:{" "}
-                        {Number(totalAtivoNegativo).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL"
-                        })}
-                      </div>
-
-                      <div className="text-xs text-gray-600 mt-1">
-                        ({ativosNegativos.length} contas)
-                      </div>
-                    </div>
-                  )}
-
-              </div>
-            )}
-          </div>
-
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+        <Card titulo="Demonstração do Resultado (DRE)">
+          {dre.length === 0 ? (
+            <p className="text-gray-500">Sem dados.</p>
+          ) : (
+            <div style={{ width: "100%", height: 280 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dre}>
+                  <XAxis dataKey="grupo" />
+                  <YAxis tickFormatter={(v) => Number(v).toLocaleString("pt-BR")} />
+                  <Tooltip
+                    formatter={(v) =>
+                      Number(v).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    }
+                  />
+                  <Bar dataKey="valor_periodo" radius={[4, 4, 0, 0]}>
+                    {dre.map((entry, index) => {
+                      let cor = "#061f4aff";
+                      if (entry.grupo?.includes("RECEITA")) cor = "#16a34a";
+                      if (entry.grupo?.includes("CUSTO")) cor = "#dc2626";
+                      if (entry.grupo?.includes("DESPESA")) cor = "#f59e0b";
+                      if (entry.grupo?.includes("RESULTADO_BRUTO")) cor = "#2563eb";
+                      if (entry.grupo?.includes("RESULTADO_OPERACIONAL")) cor = "#0ea5e9";
+                      if (entry.grupo?.includes("RESULTADO_LIQUIDO")) cor = "#7c3aed";
+                      return <Cell key={index} fill={cor} />;
+                    })}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </Card>
- 
 
-        <Card titulo="Composição do Passivo">
-        
-         {/* COMPOSIÇÃO DO ATIVO */}
-            {/* COMPOSIÇÃO DO PASSIVO */}
-              <div className="bg-[#f32929] rounded-xl shadow p-6 border border-gray-200 mt-6">
-
-                <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
-                  Composição do Passivo
-                </h2>
-
-                {passivoPizza.length === 0 ? (
-                  <p className="text-gray-500 text-sm">Sem dados de passivo.</p>
-                ) : (
-                  <div style={{ width: "100%", height: 160 ,background: "#e3a5a5"}}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={passivoPizza}
-                          dataKey="valor"
-                          nameKey="label"
-                          innerRadius={50}
-                          outerRadius={70}
-                          paddingAngle={3}
-                        >
-                          {passivoPizza.map((_, index) => (
-                            <Cell
-                              key={index}
-                              fill={[
-                                "#7f1d1d",   // vermelho escuro
-                                "#dc2626",   // vermelho
-                                "#f59e0b",   // amarelo
-                                "#9a3412",   // marrom
-                                "#334155"    // cinza
-                              ][index % 5]}
-                            />
-                          ))}
-                        </Pie>
-
-                        <Tooltip
-                          formatter={(v) =>
-                            Number(v).toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL"
-                            })
-                          }
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    {passivosDevedores.length > 0 && (
-                      <div className="bg-yellow-100 border-l-4 border-yellow-600 text-yellow-900 p-4 rounded-lg mt-14">
-                        <strong>⚠ Passivos com saldo devedor</strong>
-
-                        <div className="mt-1 text-sm">
-                          Total invertido:{" "}
-                          <b>
-                            {Number(totalPassivoInvertido).toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL",
-                            })}
-                          </b>
-                        </div>
-                      </div>
-                    )}
-
-                  </div>
-                )}
-              </div>
-
-
+        <Card titulo="Evolução do Resultado">
+          {historicoFormatado.length === 0 ? (
+            <p className="text-gray-500">Sem dados.</p>
+          ) : (
+            <div style={{ width: "100%", height: 280 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={historicoFormatado}>
+                  <XAxis dataKey="mes_ano" />
+                  <YAxis
+                    tickFormatter={(v) =>
+                      Number(v).toLocaleString("pt-BR", {
+                        maximumFractionDigits: 0,
+                      })
+                    }
+                  />
+                  <Tooltip
+                    formatter={(v) =>
+                      Number(v).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    }
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="resultado"
+                    stroke="#061f4aff"
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </Card>
       </div>
 
-      {/* DRE  
-      <Card titulo="Receitas x Custos x Despesas">
-       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CardDRE dre={dre} />
-            </div> 
-      </Card>*/}
-
-      <div className="my-10 border-t border-blue-200"></div>
-
-      {/* RESULTADO MENSAL */}
-      <Card titulo="Resultado Mensal" className="mt-16">
-       <div className="bg-white rounded-xl shadow p-6 border border-gray-200 mt-6">
-            <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
-              Resultado Mensal (12 meses)
-            </h2>
-
-            {resultadoMensal.length === 0 ? (
-              <p className="text-gray-500">Sem dados.</p>
-            ) : (
-              <div style={{ width: "100%", height: 240 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={resultadoMensal}>
-                    <XAxis dataKey="mes" />
-                    <YAxis
-                      tickFormatter={(v) =>
-                        Number(v).toLocaleString("pt-BR")
-                      }
-                    />
-                    <Tooltip
-                      formatter={(v) =>
-                        Number(v).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })
-                      }
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="resultado"
-                      stroke="#061f4aff"
-                      strokeWidth={3}
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </div>
-
-      </Card>
-
-      {/* BALANCETE */}
-      <Card titulo="Balancete Resumido">
-       {/* BALANCETE */}
-            <div className="bg-white rounded-xl shadow p-6 border-[4px] border-gray-300 mt-6">
-              <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
-                Balancete
-              </h2>
-
-              {balancete.length === 0 ? (
-                <p className="text-gray-500 text-sm">
-                  Nenhum dado para o período.
-                </p>
-              ) : (
-                <table className="w-full text-sm">
-                  <thead className="bg-blue-500">
-                    <tr>
-                      <th className="p-2 text-left">Conta</th>
-                      <th className="text-right">Débito</th>
-                      <th className="text-right">Crédito</th>
-                      <th className="text-right">Saldo</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    
-                        { balancete.filter((l) => mostrarZeradas || !linhaZerada(l)).map((l, i) => (
-                      <tr
-                          key={i}
-                          style={{
-                            backgroundColor: i % 2 === 0 ? "#f2f2f2" : "rgb(184, 189, 191)",       
-                          }}
-                        >
-
-                        <td className="p-2 font-semibold">
-                          {l.codigo} – {l.conta_nome}
-                        </td>
-                        <td className="text-right font-semibold">
-                          {Number(l.total_debito).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                        </td>
-                        <td className="text-right">
-                          {Number(l.total_credito).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                        </td>
-                        <td className={`text-right font-bold ${
-                          Number(l.saldo) < 0 ? "text-red-600" : "text-green-700"
-                        }`}>
-                          {Number(l.saldo).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-      </Card>
-           
-     
-        <Card titulo="Balanço Patrimonial">
-
-                  {dadosBalanco.length === 0 ? (
-                    <p className="text-gray-500">Nenhum dado para o período.</p>
-                  ) : (
-                    <div style={{ width: "100%", height: 180 }}>
-                     <ResponsiveContainer width="60%" height={180}>
-                      <BarChart data={dadosBalanco}>
-                        <XAxis dataKey="grupo" tick={{ fontSize: 11 }} />
-                        <YAxis tick={{ fontSize: 11 }} width={60} />
-                        <Tooltip
-                          formatter={(v) =>
-                            Number(v).toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                            })
-                          }
-                        />
-
-                        <Bar dataKey="valor" barSize={86} radius={[6, 6, 0, 0]}>
-                          {dadosBalanco.map((entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={coresBalanco[entry.grupo] || "#64748b"}
-                            />
-                          ))}
-                        </Bar>
-
-                      </BarChart>
-                    </ResponsiveContainer>
-
-                    </div>
-                  )}
-
-                </Card>
-
-            
-      
-          <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
-
-                <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">
-                    Demonstração do Resultado (DRE)
-                </h2>
-
-                {dre.length === 0 ? (
-                    <p className="text-gray-500">Nenhum dado para o período.</p>
-                ) : (
-                     <ResponsiveContainer width="50%" height={180}>
-
-                    <BarChart data={dre}>
-                        <XAxis dataKey="grupo" />
-                         <YAxis tickFormatter={(v) => Number(v).toLocaleString("pt-BR")} />
-                          <Tooltip
-                            formatter={(v) =>
-                              Number(v).toLocaleString("pt-BR", {
-                                minimumFractionDigits: 2,
-                              })
-                            }
-                            contentStyle={{
-                              fontSize: 12,
-                              borderRadius: 6,
-                            }}
-                          />
-
-
-                       <Bar  barSize={66}
-                       dataKey="valor_periodo" radius={[4, 4, 0, 0]}>
-                    {dre.map((entry, index) => {
-                        let cor = "#061f4aff";
-
-                        if (entry.grupo?.includes("RECEITA")) cor = "#16a34a";      // verde
-                        if (entry.grupo?.includes("CUSTO")) cor = "#dc2626";        // vermelho
-                        if (entry.grupo?.includes("DESPESA")) cor = "#f59e0b";     // amarelo
-                        if (entry.grupo?.includes("RESULTADO_BRUTO")) cor = "#2563eb";   // azul
-                        if (entry.grupo?.includes("RESULTADO_OPERACIONAL")) cor = "#0eb63e";   // azul
-                          if (entry.grupo?.includes("RESULTADO_LIQUIDO")) cor = "#dc11c4";   // azul
-
-
-                        return <Cell key={`cell-${index}`} fill={cor} />;
-                      })}
-                    </Bar>
-
-
-                    </BarChart>
-                    </ResponsiveContainer>
-                )}
-
-            </div>
-
-
-      {/* HISTÓRICO */}
-<div className="bg-white rounded-xl shadow p-6">
-  <h2 className="font-bold text-lg mb-4">
-    Evolução do Resultado
-  </h2>
-
-  <ResponsiveContainer width="60%" height={220}>
-    <BarChart data={historicoFormatado}>
-      
-      {/* 📅 MÊS/ANO */}
-      <XAxis 
-        dataKey="mes_ano"
-        tick={{ fontSize: 12 }}
-      />
-
-      {/* 💰 VALORES */}
-      <YAxis
-        tickFormatter={(v) =>
-          Number(v).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-            maximumFractionDigits: 0
-          })
-        }
-      />
-
-      {/* 🧠 TOOLTIP */}
-      <Tooltip
-        formatter={(value) =>
-          Number(value).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-          })
-        }
-        labelFormatter={(label) => `Competência: ${label}`}
-      />
-
-      <Bar
-        dataKey="resultado"
-        fill="#061f4aff"
-        radius={[6, 6, 0, 0]}
-      />
-    </BarChart>
-  </ResponsiveContainer>
-</div>
-
+      {loading && (
+        <div className="text-center text-blue-700 font-bold">Carregando...</div>
+      )}
     </div>
   );
 }
 
-/* COMPONENTES AUX */
-function Kpi({ titulo, valor }) {
+function Kpi({ titulo, valor, cor }) {
+  const cores = {
+    blue: "border-l-8 border-blue-400 bg-blue-50",
+    red: "border-l-8 border-red-500 bg-red-50",
+    green: "border-l-8 border-green-500 bg-green-50",
+    purple: "border-l-8 border-purple-500 bg-purple-50",
+  };
+
   return (
-    <div className="border rounded-xl p-4 shadow">
-      <p className="text-sm text-gray-500">{titulo}</p>
-      <p className="text-xl font-bold">{valor ?? "0,00"}</p>
+    <div className={`rounded-xl shadow p-4 ${cores[cor] || "bg-white"}`}>
+      <p className="text-sm text-gray-600">{titulo}</p>
+      <p className="text-2xl font-bold">{valor ?? "0,00"}</p>
+    </div>
+  );
+}
+
+function AlertaCard({ titulo, valor, detalhe, cor }) {
+  const cores = {
+    red: "border-l-8 border-red-500 bg-red-50 text-red-900",
+    green: "border-l-8 border-green-500 bg-green-50 text-green-900",
+    yellow: "border-l-8 border-yellow-500 bg-yellow-50 text-yellow-900",
+  };
+
+  return (
+    <div className={`rounded-xl shadow p-4 ${cores[cor] || "bg-white"}`}>
+      <p className="text-sm font-semibold">{titulo}</p>
+      <p className="text-2xl font-bold mt-1">{valor}</p>
+      <p className="text-sm mt-2">{detalhe}</p>
     </div>
   );
 }
 
 function Card({ titulo, children }) {
   return (
-    <div className="border rounded-xl p-5 shadow">
-      <h2 className="font-bold mb-4">{titulo}</h2>
+    <div className="bg-white rounded-xl shadow p-6 border border-gray-200">
+      <h2 className="text-xl font-bold mb-4 text-[#061f4aff]">{titulo}</h2>
       {children}
     </div>
   );
