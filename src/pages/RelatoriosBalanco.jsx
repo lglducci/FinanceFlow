@@ -19,7 +19,7 @@ export default function RelatoriosBalanco() {
   localStorage.getItem("empresa_id") ||
   localStorage.getItem("id_empresa") ||
   "0";
-const [tipoRelatorio, setTipoRelatorio] = useState("analitico"); 
+const [tipoRelatorio, setTipoRelatorio] = useState("patrimonial"); 
  
 const [dataIni, setDataIni] = useState(hojeLocal());
 const [dataFim, setDataFim] = useState(hojeLocal());
@@ -129,11 +129,25 @@ const listaFiltrada = lista.filter((l) => {
   if (nome === "TOTAL PASSIVO NAO CIRCULANTE") return false;
    if (nome === "TOTAL PASSIVO NAO CLASSIFICADO") return false;
     if (nome === "TOTAL ATIVO NAO CIRCULANTE") return false;
+    if ( nome === "TOTAL DO PATRIMONIO LIQUIDO") return false;
   return true;
 });
 
- const listaComTotais = inserirTotaisPorGrupo(listaFiltrada, ehComparativo);
-setLinhas(listaComTotais);
+  let listaFinal = listaFiltrada;
+
+if (ehPatrimonial) {
+  listaFinal = listaFiltrada.filter((l) => {
+    const nome = (l.conta_nome || "").toUpperCase().trim();
+
+    if (nome === "TOTAL DO ATIVO") return false;
+    if (nome === "TOTAL DO PASSIVO + PL") return false;
+    
+
+    return true;
+  });
+}
+
+setLinhas(listaFinal);
      
   } catch (e) {
     console.error(e);
@@ -210,10 +224,20 @@ function inserirTotaisPorGrupo(lista, ehComparativo = false) {
       l.tipo_linha === "FECHAMENTO" ||
       l.tipo_linha?.includes("TOTAL");
 
-    if (isResumoFinal) {
-      finais.push(l);
-      continue;
-    }
+  if (isResumoFinal) {
+  const nome = (l.conta_nome || "").toUpperCase().trim();
+
+  const ocultarResumoFinal =
+    nome === "TOTAL DO ATIVO" ||
+    nome === "TOTAL DO PASSIVO" ||
+    nome === "TOTAL DO PATRIMONIO LIQUIDO";
+
+  if (!ocultarResumoFinal) {
+    finais.push(l);
+  }
+
+  continue;
+}
 
     if (grupoAtual && l.grupo !== grupoAtual) {
       empurrarTotalDoGrupo();
@@ -249,14 +273,14 @@ function inserirTotaisPorGrupo(lista, ehComparativo = false) {
        <div className="bg-white rounded-xl shadow p-4 mb-4">
   <div className="flex flex-wrap gap-6 items-center mb-4">
 
-    <label className="flex items-center gap-2 font-medium">
+    {/*<label className="flex items-center gap-2 font-medium">
       <input
         type="checkbox"
         checked={tipoRelatorio === "analitico"}
         onChange={() => marcarTipo("analitico")}
       />
       Balanço Analítico
-    </label>
+    </label> */}
 
     <label className="flex items-center gap-2 font-medium">
       <input
@@ -384,10 +408,10 @@ function inserirTotaisPorGrupo(lista, ehComparativo = false) {
     <tbody>
       {linhas.map((l, i) => {
         const destaqueResumo =
-  l.grupo === "RESUMO" ||
-  l.tipo_linha?.includes("TOTAL") ||
-  l.tipo_linha === "FECHAMENTO" ||
-  l.tipo_linha === "TOTAL_GRUPO_FRONT";
+            l.grupo === "RESUMO" ||
+            l.tipo_linha?.includes("TOTAL") ||
+            l.tipo_linha === "FECHAMENTO" ||
+            l.tipo_linha === "TOTAL_GRUPO_FRONT";
         return (
           <tr
             key={i}
