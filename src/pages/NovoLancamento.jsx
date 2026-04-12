@@ -10,11 +10,11 @@ import FormCartaoModal from "../components/forms/FormCartaoModal";
 import FormModeloContabil from "../components/forms/FormModeloContabil";
 import { fetchSeguro } from "../utils/apiSafe";
 import { explicarLancamento } from "../helpers/contabilHelper";
-
+import { useRef } from "react";
 
 export default function NovoLancamento() {
   const navigate = useNavigate();   
-
+  const tipoRef = useRef(null);
   const empresa_id = localStorage.getItem("empresa_id") || "1";
   const [modalCategoria, setModalCategoria] = useState(false);
   const [modalConta, setModalConta] = useState(false);
@@ -562,6 +562,10 @@ useEffect(() => {
    window.dispatchEvent(new Event("contabil-atualizado"));
    
   limparFormulario();
+  
+  setTimeout(() => {
+  tipoRef.current?.focus();
+}, 100);
 } catch (err) {
   console.error("ERRO CAPTURADO:", err.message);
 
@@ -821,6 +825,7 @@ const descricao = (() => {
                     </label>
 
                     <select
+                        ref={tipoRef}
                       name="tipo"
                       value={form.tipo}
                       onChange={handleChange}
