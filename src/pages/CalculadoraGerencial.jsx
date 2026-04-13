@@ -25,6 +25,16 @@ export default function CalculadoraGerencial() {
     mesesAntecipados: 6,
   });
 
+  const [taxas, setTaxas] = useState({
+    taxaBase: 2,
+    periodoOrigem: 1,
+    periodoDestino: 12,
+    taxaNominal: 24,
+    capital: 10000,
+    descontoTaxa: 2.5,
+    descontoPeriodos: 6,
+  });
+
   const [margem, setMargem] = useState({
     receita: 100000,
     custosVariaveis: 40000,
@@ -106,6 +116,31 @@ export default function CalculadoraGerencial() {
     return { desconto, valorLiquido };
   }, [antecipacao]);
 
+  const taxasResultado = useMemo(() => {
+    const taxaBase = toNumber(taxas.taxaBase) / 100;
+    const periodoOrigem = toNumber(taxas.periodoOrigem);
+    const periodoDestino = toNumber(taxas.periodoDestino);
+    const taxaEquivalente = periodoOrigem > 0
+      ? (Math.pow(1 + taxaBase, periodoDestino / periodoOrigem) - 1)
+      : 0;
+
+    const taxaNominal = toNumber(taxas.taxaNominal) / 100;
+    const taxaEfetivaAnual = Math.pow(1 + taxaNominal / 12, 12) - 1;
+
+    const capital = toNumber(taxas.capital);
+    const descontoTaxa = toNumber(taxas.descontoTaxa) / 100;
+    const descontoPeriodos = toNumber(taxas.descontoPeriodos);
+    const valorPresente = capital / Math.pow(1 + descontoTaxa, descontoPeriodos);
+    const descontoRacional = capital - valorPresente;
+
+    return {
+      taxaEquivalente,
+      taxaEfetivaAnual,
+      valorPresente,
+      descontoRacional,
+    };
+  }, [taxas]);
+
   const margemResultado = useMemo(() => {
     const receita = toNumber(margem.receita);
     const custosVariaveis = toNumber(margem.custosVariaveis);
@@ -140,6 +175,7 @@ export default function CalculadoraGerencial() {
 
         <div className="flex flex-wrap gap-3">
           <AbaBotao ativo={aba === "financeira"} onClick={() => setAba("financeira")}>Financeira</AbaBotao>
+          <AbaBotao ativo={aba === "taxas"} onClick={() => setAba("taxas")}>Taxas</AbaBotao>
           <AbaBotao ativo={aba === "gerencial"} onClick={() => setAba("gerencial")}>Gerencial</AbaBotao>
           <AbaBotao ativo={aba === "contabil"} onClick={() => setAba("contabil")}>Contábil</AbaBotao>
         </div>
@@ -206,6 +242,54 @@ export default function CalculadoraGerencial() {
                 ) : (
                   <p className="mt-2 text-3xl font-bold text-slate-900">{formatarPercentual((tirResultado.taxa || 0) * 100)}</p>
                 )}
+              </div>
+            </Painel>
+          </div>
+        )}
+
+        {aba === "taxas" && (
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <Painel titulo="Conversão de taxas" descricao="Converta uma taxa de um período para outro pela equivalência composta.">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <CampoNumero label="Taxa base %" value={taxas.taxaBase} onChange={(v) => setTaxas({ ...taxas, taxaBase: v })} />
+                <CampoNumero label="Período de origem" value={taxas.periodoOrigem} onChange={(v) => setTaxas({ ...taxas, periodoOrigem: v })} />
+                <CampoNumero label="Período de destino" value={taxas.periodoDestino} onChange={(v) => setTaxas({ ...taxas, periodoDestino: v })} />
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <KpiBox titulo="Taxa equivalente" valor={formatarPercentual((taxasResultado.taxaEquivalente || 0) * 100)} />
+                <Mensagem texto="Exemplo clássico: 2% ao mês equivalente a aproximadamente 26,82% ao ano." />
+              </div>
+            </Painel>
+
+            <Painel titulo="Taxa nominal x efetiva" descricao="Transforma uma taxa nominal anual com capitalização mensal em taxa efetiva anual.">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CampoNumero label="Taxa nominal anual %" value={taxas.taxaNominal} onChange={(v) => setTaxas({ ...taxas, taxaNominal: v })} />
+                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5">
+                  <p className="text-sm text-slate-500">Taxa efetiva anual</p>
+                  <p className="mt-2 text-3xl font-bold text-slate-900">{formatarPercentual((taxasResultado.taxaEfetivaAnual || 0) * 100)}</p>
+                </div>
+              </div>
+            </Painel>
+
+            <Painel titulo="Valor presente e desconto" descricao="Cálculo de desconto racional composto para antecipação de valor futuro.">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <CampoNumero label="Valor futuro / nominal" value={taxas.capital} onChange={(v) => setTaxas({ ...taxas, capital: v })} />
+                <CampoNumero label="Taxa % por período" value={taxas.descontoTaxa} onChange={(v) => setTaxas({ ...taxas, descontoTaxa: v })} />
+                <CampoNumero label="Quantidade de períodos" value={taxas.descontoPeriodos} onChange={(v) => setTaxas({ ...taxas, descontoPeriodos: v })} />
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <KpiBox titulo="Valor presente" valor={formatarMoeda(taxasResultado.valorPresente)} />
+                <KpiBox titulo="Desconto racional" valor={formatarMoeda(taxasResultado.descontoRacional)} />
+              </div>
+            </Painel>
+
+            <Painel titulo="Leitura prática" descricao="Resumo rápido para quem não quer ficar preso à fórmula.">
+              <div className="space-y-4">
+                <Mensagem texto={`A taxa equivalente calculada para o novo prazo é ${formatarPercentual((taxasResultado.taxaEquivalente || 0) * 100)}.`} />
+                <Mensagem texto={`Uma taxa nominal de ${formatarPercentual(taxas.taxaNominal)} ao ano gera aproximadamente ${formatarPercentual((taxasResultado.taxaEfetivaAnual || 0) * 100)} de taxa efetiva anual, com capitalização mensal.`} />
+                <Mensagem texto={`Ao antecipar ${formatarMoeda(taxas.capital)}, o valor presente estimado é ${formatarMoeda(taxasResultado.valorPresente)}.`} />
               </div>
             </Painel>
           </div>
