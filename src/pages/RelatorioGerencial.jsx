@@ -127,8 +127,7 @@ export default function RelatorioGerencial() {
   );
 }
 
-
-function Card({ titulo, valor, moeda }) {
+ function Card({ titulo, valor, moeda, percentual }) {
   return (
     <div className="p-4 rounded-xl border bg-gray-200 shadow">
       <div className="text-sm text-gray-500">{titulo}</div>
@@ -138,9 +137,10 @@ function Card({ titulo, valor, moeda }) {
               style: "currency",
               currency: "BRL",
             })
+          : percentual
+          ? `${(Number(valor || 0) * 100).toFixed(2)}%`
           : Number(valor || 0).toFixed(2)}
       </div>
     </div>
   );
 }
- 
