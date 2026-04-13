@@ -139,6 +139,8 @@ import AjudaRelatorios from "./pages/ajuda/Relatorios";
   import AjudaLancamentos from "./pages/ajuda/lancamentos";
   import SaldosIniciais from "./pages/SaldosIniciais";
 
+ import CalculadoraGerencial from "./pages/CalculadoraGerencial";
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -413,7 +415,8 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
  
 <Route path="/saldosiniciais" element={<SaldosIniciais />} />
  
-
+<Route path="/calculadora" element={<CalculadoraGerencial />} />
+ 
 
 
 </Routes>
