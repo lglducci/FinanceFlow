@@ -117,11 +117,11 @@ export default function RelatorioGerencial() {
           <Card titulo="Margem Contribuição" valor={dados.margem_contribuicao} moeda />
           <Card titulo="Despesa Fixa" valor={dados.despesa_fixa} moeda />
           <Card titulo="Resultado Líquido" valor={dados.resultado_liquido} moeda />
-          <Card titulo="EBITDA" valor={dados.ebitda} moeda />
-          <Card titulo="Margem EBITDA" valor={dados.margem_ebitda} percentual />
+          {/*<Card titulo="EBITDA" valor={dados.ebitda} moeda />
+          <Card titulo="Margem EBITDA" valor={dados.margem_ebitda} percentual />*/}
           <Card titulo="Liquidez" valor={dados.liquidez_aprox} />
           <Card titulo="Endividamento" valor={dados.endividamento_aprox} />
-          <Card
+         {/*} <Card
               titulo="EBITDA"
               valor={dados.ebitda}
               moeda
@@ -133,7 +133,7 @@ export default function RelatorioGerencial() {
               valor={dados.margem_ebitda}
               percentual
               detalhe="EBITDA ÷ Receita Líquida"
-            />
+            />*/}
         </div>
       )}
     </div>
