@@ -121,16 +121,30 @@ export default function RelatorioGerencial() {
           <Card titulo="Margem EBITDA" valor={dados.margem_ebitda} percentual />
           <Card titulo="Liquidez" valor={dados.liquidez_aprox} />
           <Card titulo="Endividamento" valor={dados.endividamento_aprox} />
+          <Card
+              titulo="EBITDA"
+              valor={dados.ebitda}
+              moeda
+              detalhe="Resultado Líquido + Financeiro + Impostos + Deprec./Amort."
+            />
+
+            <Card
+              titulo="Margem EBITDA"
+              valor={dados.margem_ebitda}
+              percentual
+              detalhe="EBITDA ÷ Receita Líquida"
+            />
         </div>
       )}
     </div>
   );
 }
 
- function Card({ titulo, valor, moeda, percentual }) {
+  function Card({ titulo, valor, moeda, percentual, detalhe }) {
   return (
     <div className="p-4 rounded-xl border bg-gray-200 shadow">
       <div className="text-sm text-gray-500">{titulo}</div>
+
       <div className="text-xl font-bold text-blue-900">
         {moeda
           ? Number(valor || 0).toLocaleString("pt-BR", {
@@ -141,6 +155,10 @@ export default function RelatorioGerencial() {
           ? `${(Number(valor || 0) * 100).toFixed(2)}%`
           : Number(valor || 0).toFixed(2)}
       </div>
+
+      {detalhe && (
+        <div className="text-xs text-gray-500 mt-1">{detalhe}</div>
+      )}
     </div>
   );
 }
