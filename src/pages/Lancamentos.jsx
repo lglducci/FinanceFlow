@@ -412,6 +412,7 @@ async function Estornar(id) {
      //wait carregarSaldoConta(contaId);
         setRefreshKey(prev => prev + 1);
         alert("Lancamento estornado com sucesso!"); 
+           window.dispatchEvent(new Event("contabil-atualizado"));
         return;
       }
 
@@ -857,7 +858,7 @@ return (
             <tr>
                <th className="px-3 py-2 text-left">id</th>
               <th className="px-3 py-2 text-left">Descrição</th>
-            
+               <th className="px-3 py-2 text-center  font-bold ">Data Movimento</th>
 
 
               {lista.some(l => l.tipo_operacao === "fatura_cartao") ? (
@@ -878,7 +879,7 @@ return (
 
                 <th className="px-3 py-2 text-left">Classsificação</th>
                   <th className="px-3 py-2 text-left">Forma Pagamento</th>
-                <th className="px-3 py-2 text-left">Data Movimento</th>
+                
               
                  {!temTransacao && (
                <>   <th className="px-3 py-2 text-left">Parcela</th>
@@ -905,7 +906,7 @@ return (
                    
                  <td className="px-3 py-2 text-left font-bold">{l.id}</td>
                 <td className="px-3 py-2 font-medium">{l.descricao}</td>
-                
+                  <td className="px-3 py-2 font-bold text-center ">{l.data}</td>
                  {l.origem === "fatura_cartao" ? (
                       <>
                         <td className="px-3 py-2">{l.nome || "-"}</td>
@@ -952,11 +953,11 @@ return (
                       </span>
                     </td> )}
 
-                 <td className="px-3 py-2 font-medium">{l.classificacao}</td>
-                   <td className="px-3 py-2 font-medium">
+                 <td className="px-3 py-2 font-medium text-center ">{l.classificacao}</td>
+                   <td className="px-3 py-2 font-medium text-center">
                         {formaLabel[l.forma] || l.forma}
                       </td>
-                <td className="px-3 py-2 ">{l.data}</td>
+               
                {!temTransacao && (   
                 <td className="px-3 py-2  text-center">
                     {Number(l.parcelas) > 0 ? l.parcelas : "-"}
@@ -965,7 +966,7 @@ return (
                   {!temTransacao && (     <td className="px-3 py-2 text-center">
                     {Number(l.parcela_total) > 0 ? l.parcela_total : "-"}
                   </td>)}
-                   <td className="px-3 py-2">{formatarDataBR(l.vencimento)}</td>
+                   <td className="px-3 py-2 text-center">{formatarDataBR(l.vencimento)}</td>
                        {!temTransacao && (<td className="px-3 py-2 text-left">
                              <span
                                   className={`px-3 py-1 rounded-full text-xs font-semibold ${
