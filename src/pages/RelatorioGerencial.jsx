@@ -111,12 +111,14 @@ export default function RelatorioGerencial() {
       {erro && <div className="text-red-600 font-bold">Erro ao carregar relatório</div>}
 
       {dados && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 cursor-pointer rounded-xl border-[4px] border-gray-500 bg-gray-100 p-5 shadow hover:shadow-lg transition">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 cursor-pointer rounded-xl border-[4px] border-gray-500 bg-gray-100 p-5 shadow hover:shadow-lg transition">
           <Card titulo="Receita Líquida" valor={dados.receita_liquida} moeda />
           <Card titulo="CMV / CSP" valor={dados.cmv_csp} moeda />
           <Card titulo="Margem Contribuição" valor={dados.margem_contribuicao} moeda />
           <Card titulo="Despesa Fixa" valor={dados.despesa_fixa} moeda />
           <Card titulo="Resultado Líquido" valor={dados.resultado_liquido} moeda />
+          <Card titulo="EBITDA" valor={dados.ebitda} moeda />
+          <Card titulo="Margem EBITDA" valor={dados.margem_ebitda} percentual />
           <Card titulo="Liquidez" valor={dados.liquidez_aprox} />
           <Card titulo="Endividamento" valor={dados.endividamento_aprox} />
         </div>
@@ -124,6 +126,7 @@ export default function RelatorioGerencial() {
     </div>
   );
 }
+
 
 function Card({ titulo, valor, moeda }) {
   return (
@@ -140,3 +143,4 @@ function Card({ titulo, valor, moeda }) {
     </div>
   );
 }
+ 
