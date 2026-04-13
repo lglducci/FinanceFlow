@@ -498,7 +498,7 @@ async function processarTitulo(titulo, conta_id) {
 
 useEffect(() => {
   if (dataIni && dataFim) {
-    pesquisar();
+    pesquisar(tipoOperacao || "");
   }
 }, [dataIni, dataFim]);
 
@@ -905,7 +905,7 @@ return (
               <tr key={l.id} className="border-t">
                    
                  <td className="px-3 py-2 text-left font-bold">{l.id}</td>
-                <td className="px-3 py-2 font-medium">{l.descricao}</td>
+                  <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]"> {l.descricao}</td>
                   <td className="px-3 py-2 font-bold text-center ">{l.data}</td>
                  {l.origem === "fatura_cartao" ? (
                       <>
@@ -914,8 +914,10 @@ return (
                       </>
                     ) : (
                       <>
-                        <td className="px-3 py-2">{l.categoria_nome}</td>
-                        <td className="px-3 py-2">{l.conta_nome}</td>
+                        <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
+                          {l.categoria_nome}
+                        </td>
+                          <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]"> {l.conta_nome}</td>
                       </>
                     )}
                 <td className={`px-3 py-2 font-semibold ${l.tipo === "Entrada" ? "text-green-600" : "text-red-600"}`}>
