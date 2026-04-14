@@ -29,7 +29,7 @@ const [loading, setLoading] = useState(false);
 
   const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
   const navigate = useNavigate();
-
+const tipoOperacaoOldRef = useRef("");
   const [contaId, setContaId] = useState("");
   const [dadosConta, setDadosConta] = useState(null);
   const [categoriaId, setCategoriaId] = useState("");
@@ -178,6 +178,8 @@ useEffect(() => {
 
   tipo = tipo || "";
 
+  
+
   // REGRA PARA VENCIDOS
   let dataIniLocal = dataIni;
   let dataFimLocal = dataFim;
@@ -186,6 +188,9 @@ useEffect(() => {
   let fornecedorLocal = Number(fornecedorId) || 0;
   let tipoOperacaoLocal = tipo;
   let vencidoLocal = "";
+  let vence_hoje = "";
+  let vence_sete_dias = "";
+  let origem = "";
 
   if (tipo === "vencidos") {
     dataIniLocal = "2020-01-01";
@@ -195,6 +200,44 @@ useEffect(() => {
     fornecedorLocal = 0;
     tipoOperacaoLocal = "";
     vencidoLocal = "sim";
+    origem ="";
+  }
+
+   if (tipo === "vence_hoje") {
+    dataIniLocal =  hojeLocal();
+    dataFimLocal = hojeLocal();
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "";
+    vencidoLocal = "";
+     vence_hoje = "sim";
+     vence_sete_dias = "";
+     origem ="";
+  }
+  if (tipo === "vence_sete_dias") { 
+     dataIniLocal = hojeMaisDias(1);
+    dataFimLocal = hojeMaisDias(7);
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "";
+    vencidoLocal = "";
+     vence_hoje = "";
+       vence_sete_dias = "sim";
+     origem ="";
+  }
+
+   if (tipo === "estorno") { 
+    
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "";
+    vencidoLocal = "";
+     vence_hoje = "";
+     vence_sete_dias = "";
+     origem ="estorno";
   }
 
   if (!dataIniLocal || !dataFimLocal) {
@@ -202,10 +245,14 @@ useEffect(() => {
     return;
   }
 
-  setLista([]);
-  await carregar();
-  setCarregando(true);
+   if (tipo !== tipoOperacaoOldRef.current) {
+    setLista([]);
+  }
+    tipoOperacaoOldRef.current = tipo;
+setCarregando(true);
 
+  await carregar(); 
+  
   try {
     const url = buildWebhookUrl("listalancamentos", {
       empresa_id: empresa_id,
@@ -215,7 +262,11 @@ useEffect(() => {
       categoria_id: categoriaLocal,
       fornecedor_id: fornecedorLocal,
       tipo_operacao: tipoOperacaoLocal,
-      vencido: vencidoLocal
+      vencido: vencidoLocal,
+      vence_hoje:vence_hoje,
+        vence_sete_dias : vence_sete_dias,
+        origem:origem 
+
     });
       const resp = await fetch(url);
       
@@ -487,7 +538,8 @@ async function processarTitulo(titulo, conta_id) {
     }
 
     alert("Processado com sucesso!");
-    pesquisar();
+       window.dispatchEvent(new Event("contabil-atualizado"));
+    pesquisar(tipoOperacao || "");
    carregarSaldoConta(conta_id);
   } catch (e) {
     alert("Erro ao processar título.");
@@ -520,7 +572,8 @@ useEffect(() => {
     );
 
     alert("Compra excluída com sucesso.");
-    pesquisar(); // recarrega lista
+       window.dispatchEvent(new Event("contabil-atualizado"));
+    pesquisar(tipoOperacao || ""); // recarrega lista
 
   } catch (e) {
     alert("Erro ao excluir compra: " + e.message);
@@ -839,6 +892,37 @@ return (
                       💳 Vencidos
                     </button>
 
+                     <button
+                       onClick={() => {
+                            setTipoOperacao("vence_hoje");
+                            pesquisar("vence_hoje");
+                          }}
+                      className="btn-pill btn-blue"
+                    >
+                      ⏰ Vence Hoje
+                    </button>
+
+                    
+                     <button
+                       onClick={() => {
+                            setTipoOperacao("vence_sete_dias");
+                            pesquisar("vence_sete_dias");
+                          }}
+                      className="btn-pill btn-gray"
+                    >
+                      📅 Vence Sete Dias
+                    </button>
+
+                         <button
+                       onClick={() => {
+                            setTipoOperacao("estorno");
+                            pesquisar("estorno");
+                          }}
+                      className="btn-pill btn-red"
+                    >
+                      🔁 Estorno
+                    </button>
+
                 </div>
          
         </div>
@@ -1069,14 +1153,14 @@ return (
                           >    
                             {l.tipo_operacao === "conta_receber"
                               ? l.status === "aberto" || l.status === "aberta"
-                                ? "Aberto"
+                                ? "Receber"
                                 : " Recebido"
                               : l.tipo_operacao === "fatura_cartao"
                               ? l.status === "aberto" || l.status === "aberta"
                                 ? "Aberto"
                                 : "Fatura paga"
                               : l.status === "aberto" || l.status === "aberta"
-                              ? "Aberto"
+                              ? "Pagar"
                               : "Pago"}
                           </button>
                         )}
