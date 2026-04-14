@@ -882,16 +882,7 @@ return (
                     </button>
                  
 
-                   <button
-                       onClick={() => {
-                            setTipoOperacao("vencidos");
-                            pesquisar("vencidos");
-                          }}
-                      className="btn-pill btn-red"
-                    >
-                      💳 Vencidos
-                    </button>
-
+                    
                      <button
                        onClick={() => {
                             setTipoOperacao("vence_hoje");
@@ -900,6 +891,16 @@ return (
                       className="btn-pill btn-blue"
                     >
                       ⏰ Vence Hoje
+                    </button>
+                       
+                       <button
+                       onClick={() => {
+                            setTipoOperacao("vencidos");
+                            pesquisar("vencidos");
+                          }}
+                      className="btn-pill btn-red"
+                    >
+                      💳 Vencidos
                     </button>
 
                     
