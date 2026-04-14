@@ -149,6 +149,7 @@ export default function TitulosVencidos() {
     }
 
     alert("Processado com sucesso!");
+     window.dispatchEvent(new Event("contabil-atualizado"));
     pesquisar();
 
   } catch (e) {

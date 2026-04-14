@@ -272,7 +272,7 @@ export default function CalculadoraGerencial() {
               </div>
             </Painel>
 
-            <Painel titulo="Valor presente e desconto" descricao="Cálculo de desconto racional composto para antecipação de valor futuro.">
+            <Painel titulo="Valor presente (Empréstimos) e desconto" descricao="Cálculo de desconto racional composto para antecipação de valor futuro.">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <CampoNumero label="Valor futuro / nominal" value={taxas.capital} onChange={(v) => setTaxas({ ...taxas, capital: v })} />
                 <CampoNumero label="Taxa % por período" value={taxas.descontoTaxa} onChange={(v) => setTaxas({ ...taxas, descontoTaxa: v })} />
