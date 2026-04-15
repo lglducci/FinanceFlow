@@ -5,17 +5,19 @@ import { buildWebhookUrl } from "../config/globals";
 export default function EditarContaContabil() {
   const navigate = useNavigate();
   const { state } = useLocation();
-
+ 
   const id = state?.id;
   const empresa_id = state?.empresa_id;
 
-  const [form, setForm] = useState({
-    codigo: "",
-    nome: "",
-    tipo: "",
-    natureza: "",
-    nivel: "",
-  });
+   const [form, setForm] = useState({
+  codigo: "",
+  nome: "",
+  tipo: "",
+  natureza: "",
+  nivel: "",
+  classificacao: "",
+});
+ const classeConta = Number(String(form.codigo || "").trim().split(".")[0]);
 
   async function carregar() {
     try {
@@ -30,13 +32,14 @@ export default function EditarContaContabil() {
 
       if (dados.length > 0) {
         const c = dados[0];
-        setForm({
-          codigo: c.codigo,
-          nome: c.nome,
-          tipo: c.tipo,
-          natureza: c.natureza,
-          nivel: c.nivel,
-        });
+       setForm({
+        codigo: c.codigo,
+        nome: c.nome,
+        tipo: c.tipo,
+        natureza: c.natureza,
+        nivel: c.nivel,
+        classificacao: c.classificacao_gerencial || "",
+      });
       }
     } catch (e) {
       console.log("ERRO AO CARREGAR", e);
@@ -62,6 +65,8 @@ export default function EditarContaContabil() {
       alert("Erro ao salvar!");
     }
   }
+
+   
 
   return (
        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
@@ -96,22 +101,8 @@ export default function EditarContaContabil() {
              className="input-premium"
             onChange={(e) => setForm({ ...form, nome: e.target.value })}
           />
-
-          <label className="label label-required font-bold text-[#1e40af]">Tipo</label>
-          <select
-            style={input}
-            value={form.tipo}
-             disabled
-             className="input-premium"
-            onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-          >
-            <option value="">Selecione...</option>
-            <option value="ATIVO">ATIVO</option>
-            <option value="PASSIVO">PASSIVO</option>
-            <option value="RECEITA">RECEITA</option>
-            <option value="DESPESA">DESPESA</option>
-            <option value="PL">PL</option>
-          </select>
+         
+           
 
           <label className="label label-required font-bold text-[#1e40af]">Natureza</label>
           <select
@@ -134,6 +125,42 @@ export default function EditarContaContabil() {
              className="input-premium"
             onChange={(e) => setForm({ ...form, nivel: e.target.value })}
           />
+         
+           {[4, 5, 6].includes(classeConta) && (
+            <>
+              <label className="label label-required font-bold text-[#1e40af]">
+                Classificação Gerencial
+              </label>
+
+              <select
+                style={input}
+                value={form.classificacao || ""}
+                className="input-premium"
+                onChange={(e) => setForm({ ...form, classificacao: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+
+                {classeConta === 4 && (
+                  <option value="receita">Receita</option>
+                )}
+
+                {classeConta === 5 && (
+                  <>
+                    <option value="custo_variavel">Custo Variável</option>
+                    <option value="custo_fixo">Custo Fixo</option>
+                  </>
+                )}
+
+                {classeConta === 6 && (
+                  <>
+                    <option value="despesa_variavel">Despesa Variável</option>
+                    <option value="despesa_fixa">Despesa Fixa</option>
+                    <option value="nao_operacional">Não Operacional</option>
+                  </>
+                )}
+              </select>
+            </>
+          )}
 
           {/* BOTÕES */}
           <div

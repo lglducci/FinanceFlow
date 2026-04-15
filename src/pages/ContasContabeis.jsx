@@ -142,6 +142,7 @@ return (
             <th className="px-3 py-2 text-left">Tipo</th>
             <th className="px-3 py-2 text-left">Natureza</th>
             <th className="px-3 py-2 text-left">Nível</th>
+              <th className="px-3 py-2 text-left">Classificação</th>
             <th className="px-3 py-2 text-left">Origem</th>
             <th className="px-3 py-2 text-center">Ações</th>
           </tr>
@@ -157,7 +158,11 @@ return (
               <td className="px-3 py-2 font-mono">{c.codigo}</td>
               <td className="px-3 py-2">{c.nome}</td>
               <td className="px-3 py-2">{c.tipo}</td>
-              <td className="px-3 py-2">{c.natureza}</td>
+                  <td className="px-3 py-2">{c.natureza}</td>
+               <td className="px-3 py-2">{c.nivel}</td>
+               <td className="px-3 py-2">
+  {(c.classificacao_gerencial || "-").replaceAll("_", " ")}
+</td>
               <td className="px-3 py-2">{c.nivel}</td>
               <td className="px-3 py-2">
                 {c.sistema ? (

@@ -33,9 +33,10 @@ const [nome, setNome] = useState(""); // 👈 sempre vazio
   tipo: contexto?.tipo ?? "",
   natureza: contexto?.natureza ?? "",
   nivel: contexto?.nivel ?? "",
-  conta_pai: contexto?.conta_pai_codigo ?? ""
+  conta_pai: contexto?.conta_pai_codigo ?? "",
+  classificacao: "",
 });
-
+ const classeConta = Number(String(form.codigo || "").trim().split(".")[0]);
 
 
 async function salvar() {
@@ -72,7 +73,8 @@ async function salvar() {
       tipo: form.tipo,
       natureza: form.natureza,
       nivel: form.nivel,
-      conta_pai_id: contaPaiId ?? null
+      conta_pai_id: contaPaiId ?? null,
+      classificacao: form.classificacao || "",
     });
  try {
   const resp = await fetch(url, { method: "POST" });
@@ -341,11 +343,52 @@ function calcularPaiCodigo(codigo) {
             borderRadius: 6,
           }}
         />
+         {[4, 5, 6].includes(classeConta) && (
+              <>
+                <label className="label label-required font-bold text-[#1e40af]">
+                  Classificação Gerencial
+                </label>
 
+                <select
+                  value={form.classificacao || ""}
+                  className="input-premium"
+                  onChange={(e) => setForm({ ...form, classificacao: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: 8,
+                    marginBottom: 12,
+                    border: "1px solid #ccc",
+                    borderRadius: 6,
+                  }}
+                >
+                  <option value="">Selecione...</option>
+
+                  {classeConta === 4 && (
+                    <option value="receita">Receita</option>
+                  )}
+
+                  {classeConta === 5 && (
+                    <>
+                      <option value="custo_variavel">Custo Variável</option>
+                      <option value="custo_fixo">Custo Fixo</option>
+                    </>
+                  )}
+
+                  {classeConta === 6 && (
+                    <>
+                      <option value="despesa_variavel">Despesa Variável</option>
+                      <option value="despesa_fixa">Despesa Fixa</option>
+                      <option value="nao_operacional">Não Operacional</option>
+                    </>
+                  )}
+                </select>
+              </>
+            )}
         {/* BOTÕES */}
            {/* BOTÕES */}
              <div className="flex gap-6 pt-8 pb-8 pl-1">
-
+      
+     
               
         <button
           onClick={salvar}
