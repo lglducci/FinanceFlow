@@ -76,6 +76,8 @@ useEffect(() => {
     );
 
     alert("Compra excluída com sucesso.");
+     window.dispatchEvent(new Event("contabil-atualizado"));
+    setSelecionadas([]);
     pesquisar(); // recarrega lista
 
   } catch (e) {

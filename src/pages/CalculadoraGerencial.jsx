@@ -36,9 +36,10 @@ export default function CalculadoraGerencial() {
   });
 
   const [margem, setMargem] = useState({
-    receita: 100000,
-    custosVariaveis: 40000,
-    despesasFixas: 30000,
+    vendas: 100000,
+    custoVariavel: 40000,
+    custoFixo: 30000,
+    precoVendaUnitario: 100,
   });
 
   const [dre, setDre] = useState({
@@ -142,14 +143,26 @@ export default function CalculadoraGerencial() {
   }, [taxas]);
 
   const margemResultado = useMemo(() => {
-    const receita = toNumber(margem.receita);
-    const custosVariaveis = toNumber(margem.custosVariaveis);
-    const despesasFixas = toNumber(margem.despesasFixas);
-    const margemContribuicao = receita - custosVariaveis;
-    const margemPercentual = receita > 0 ? (margemContribuicao / receita) * 100 : 0;
-    const pontoEquilibrio = margemPercentual > 0 ? despesasFixas / (margemPercentual / 100) : 0;
-    const lucro = margemContribuicao - despesasFixas;
-    return { margemContribuicao, margemPercentual, pontoEquilibrio, lucro };
+    const vendas = toNumber(margem.vendas);
+    const custoVariavel = toNumber(margem.custoVariavel);
+    const custoFixo = toNumber(margem.custoFixo);
+    const precoVendaUnitario = toNumber(margem.precoVendaUnitario);
+
+    const margemContribuicao = vendas - custoVariavel;
+    const margemPercentual = vendas > 0 ? (margemContribuicao / vendas) * 100 : 0;
+    const pontoEquilibrio = margemPercentual > 0 ? custoFixo / (margemPercentual / 100) : 0;
+    const quantidadePontoEquilibrio = precoVendaUnitario > 0 ? pontoEquilibrio / precoVendaUnitario : 0;
+    const lucro = margemContribuicao - custoFixo;
+    const indiceSeguranca = vendas > 0 ? ((vendas - pontoEquilibrio) / vendas) * 100 : 0;
+
+    return {
+      margemContribuicao,
+      margemPercentual,
+      pontoEquilibrio,
+      quantidadePontoEquilibrio,
+      lucro,
+      indiceSeguranca,
+    };
   }, [margem]);
 
   const dreResultado = useMemo(() => {
@@ -272,7 +285,7 @@ export default function CalculadoraGerencial() {
               </div>
             </Painel>
 
-            <Painel titulo="Valor presente (Empréstimos) e desconto" descricao="Cálculo de desconto racional composto para antecipação de valor futuro.">
+            <Painel titulo="Valor presente e desconto" descricao="Cálculo de desconto racional composto para antecipação de valor futuro.">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <CampoNumero label="Valor futuro / nominal" value={taxas.capital} onChange={(v) => setTaxas({ ...taxas, capital: v })} />
                 <CampoNumero label="Taxa % por período" value={taxas.descontoTaxa} onChange={(v) => setTaxas({ ...taxas, descontoTaxa: v })} />
@@ -297,26 +310,37 @@ export default function CalculadoraGerencial() {
 
         {aba === "gerencial" && (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <Painel titulo="Margem de contribuição" descricao="Cálculo gerencial para avaliar resultado e ponto de equilíbrio.">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <CampoNumero label="Receita" value={margem.receita} onChange={(v) => setMargem({ ...margem, receita: v })} />
-                <CampoNumero label="Custos variáveis" value={margem.custosVariaveis} onChange={(v) => setMargem({ ...margem, custosVariaveis: v })} />
-                <CampoNumero label="Despesas fixas" value={margem.despesasFixas} onChange={(v) => setMargem({ ...margem, despesasFixas: v })} />
+            <Painel titulo="Margem de contribuição e ponto de equilíbrio" descricao="Cálculo prático no modelo gerencial: vendas - custo variável = margem de contribuição.">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <CampoNumero label="Vendas" value={margem.vendas} onChange={(v) => setMargem({ ...margem, vendas: v })} />
+                <CampoNumero label="Custo variável" value={margem.custoVariavel} onChange={(v) => setMargem({ ...margem, custoVariavel: v })} />
+                <CampoNumero label="Custo fixo" value={margem.custoFixo} onChange={(v) => setMargem({ ...margem, custoFixo: v })} />
+                <CampoNumero label="Preço de venda unitário" value={margem.precoVendaUnitario} onChange={(v) => setMargem({ ...margem, precoVendaUnitario: v })} />
               </div>
 
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <KpiBox titulo="Margem de contribuição" valor={formatarMoeda(margemResultado.margemContribuicao)} />
-                <KpiBox titulo="Margem %" valor={formatarPercentual(margemResultado.margemPercentual)} />
+                <KpiBox titulo="% MC" valor={formatarPercentual(margemResultado.margemPercentual)} />
                 <KpiBox titulo="Ponto de equilíbrio" valor={formatarMoeda(margemResultado.pontoEquilibrio)} />
+                <KpiBox titulo="PE em quantidade" valor={formatarNumero(margemResultado.quantidadePontoEquilibrio)} />
                 <KpiBox titulo="Lucro estimado" valor={formatarMoeda(margemResultado.lucro)} />
+                <KpiBox titulo="Margem de segurança" valor={formatarPercentual(margemResultado.indiceSeguranca)} />
+              </div>
+
+              <div className="mt-6 space-y-3">
+                <LinhaFormula titulo="1. Margem de contribuição" formula={`Vendas (${formatarMoeda(margem.vendas)}) - Custo variável (${formatarMoeda(margem.custoVariavel)})`} resultado={formatarMoeda(margemResultado.margemContribuicao)} />
+                <LinhaFormula titulo="2. Percentual da margem de contribuição" formula={`Margem de contribuição (${formatarMoeda(margemResultado.margemContribuicao)}) ÷ Vendas (${formatarMoeda(margem.vendas)})`} resultado={formatarPercentual(margemResultado.margemPercentual)} />
+                <LinhaFormula titulo="3. Ponto de equilíbrio" formula={`Custo fixo (${formatarMoeda(margem.custoFixo)}) ÷ % MC (${formatarPercentual(margemResultado.margemPercentual)})`} resultado={formatarMoeda(margemResultado.pontoEquilibrio)} />
+                <LinhaFormula titulo="4. PE em quantidade" formula={`Ponto de equilíbrio (${formatarMoeda(margemResultado.pontoEquilibrio)}) ÷ Preço de venda unitário (${formatarMoeda(margem.precoVendaUnitario)})`} resultado={formatarNumero(margemResultado.quantidadePontoEquilibrio)} />
               </div>
             </Painel>
 
             <Painel titulo="Leitura rápida" descricao="Resumo simples para o empresário.">
               <div className="space-y-4">
-                <Mensagem texto={`De cada ${formatarMoeda(100)} vendidos, sobram aproximadamente ${formatarMoeda((margemResultado.margemPercentual / 100) * 100)} para pagar despesas fixas e gerar lucro.`} />
+                <Mensagem texto={`De cada ${formatarMoeda(100)} vendidos, sobram aproximadamente ${formatarMoeda((margemResultado.margemPercentual / 100) * 100)} para pagar custo fixo e gerar lucro.`} />
                 <Mensagem texto={`A empresa precisa faturar cerca de ${formatarMoeda(margemResultado.pontoEquilibrio)} para empatar.`} />
-                <Mensagem texto={`No cenário informado, o lucro estimado é de ${formatarMoeda(margemResultado.lucro)}.`} />
+                <Mensagem texto={`No preço unitário informado, o ponto de equilíbrio é de aproximadamente ${formatarNumero(margemResultado.quantidadePontoEquilibrio)} unidades.`} />
+                <Mensagem texto={`No cenário informado, o lucro estimado é de ${formatarMoeda(margemResultado.lucro)} e a margem de segurança é de ${formatarPercentual(margemResultado.indiceSeguranca)}.`} />
               </div>
             </Painel>
           </div>
@@ -422,6 +446,16 @@ function ResultadoCard({ titulo, linhas }) {
   );
 }
 
+function LinhaFormula({ titulo, formula, resultado }) {
+  return (
+    <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
+      <p className="text-sm font-semibold text-slate-900">{titulo}</p>
+      <p className="mt-2 text-slate-600">{formula}</p>
+      <p className="mt-2 text-lg font-bold text-slate-900">{resultado}</p>
+    </div>
+  );
+}
+
 function LinhaDre({ label, valor, destaque = false, forte = false, negativo = false }) {
   return (
     <div className={`flex items-center justify-between rounded-2xl px-4 py-3 ${destaque ? "bg-slate-50" : "bg-white"}`}>
@@ -442,7 +476,7 @@ function toNumber(value) {
   return Number.isFinite(n) ? n : 0;
 }
 
-function formatarMoeda(valor) {
+ function formatarMoeda(valor) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -451,6 +485,13 @@ function formatarMoeda(valor) {
 
 function formatarPercentual(valor) {
   return `${toNumber(valor).toFixed(2)}%`;
+}
+
+function formatarNumero(valor) {
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(toNumber(valor));
 }
 
 function calcularTIR(fluxos, guess = 0.1) {
@@ -469,9 +510,15 @@ function calcularTIR(fluxos, guess = 0.1) {
     if (Math.abs(derivada) < 0.000001) return null;
 
     const novaTaxa = taxa - npv / derivada;
-    if (!Number.isFinite(novaTaxa) || novaTaxa <= -0.999999) return null;
 
-    if (Math.abs(novaTaxa - taxa) < 0.000001) return novaTaxa;
+    if (!Number.isFinite(novaTaxa) || novaTaxa <= -0.999999) {
+      return null;
+    }
+
+    if (Math.abs(novaTaxa - taxa) < 0.000001) {
+      return novaTaxa;
+    }
+
     taxa = novaTaxa;
   }
 

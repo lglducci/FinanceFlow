@@ -131,9 +131,9 @@ export default function ExcluirParcelamentoPagar() {
     // AQUI VAI ENTRAR AGORA DE VERDADE
     // ===============================
     if (json.success === true) {
-
+        
       alert("Parcelamento excluído com sucesso!");
-
+        window.dispatchEvent(new Event("contabil-atualizado"));
       // LIMPA TUDO DE VERDADE
       setParcelamentos([]);
       setCategoriaId(0);

@@ -88,7 +88,9 @@ const filtrados = dados.filter(item => {
     (item.conta_credito || "").toLowerCase().includes(f) ||
     (item.conta_debito || "").toLowerCase().includes(f) ||
     (item.historico || "").toLowerCase().includes(f) ||
-    (item.modelo_codigo || "").toLowerCase().includes(f)
+    (item.modelo_codigo || "").toLowerCase().includes(f)||
+    (item.lote_id || "").toLowerCase().includes(f) ||
+    (item.id || "").toLowerCase().includes(f) 
   );
 });
 async function Estornar(lote_id) {

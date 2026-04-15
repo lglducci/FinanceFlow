@@ -158,6 +158,7 @@ async function pagarSelecionadas() {
     }
 
     alert("Contas pagas com sucesso!");
+     window.dispatchEvent(new Event("contabil-atualizado"));
     setSelecionadas([]);
     pesquisar();
 

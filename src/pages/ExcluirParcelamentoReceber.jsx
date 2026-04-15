@@ -133,6 +133,7 @@ export default function ExcluirParcelamentoReceber() {
     if (json.success === true) {
 
       alert("Parcelamento excluído com sucesso!");
+       window.dispatchEvent(new Event("contabil-atualizado"));
 
       // LIMPA TUDO DE VERDADE
       setParcelamentos([]);
