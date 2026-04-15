@@ -155,8 +155,17 @@ export default function Reports() {
       path: "/relatorionivel",
       icon: <IconReport />,
     },
+
+     {
+      title: "Relatório Dre Gerencial",
+      desc: "Calcula DRE PE e Margem",
+      path: "/reldregerencial",
+      icon: <IconReport />,
+    },
     
   ];
+
+ 
 
   return (
     <div>
