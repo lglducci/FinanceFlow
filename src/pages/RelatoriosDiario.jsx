@@ -186,7 +186,7 @@ return (
         </div>
 
         <div className="flex flex-col flex-1 min-w-[260px]">
-          <label className="font-bold text-blue-800 mb-1">Conta / Histórico</label>
+          <label className="font-bold text-blue-800 mb-1">Conta / Histórico/ Lancto id/ Lote</label>
           <input
             type="text"
             placeholder="Conta, histórico ou modelo"
