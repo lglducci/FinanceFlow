@@ -22,6 +22,36 @@ const [carregandoSaldo, setCarregandoSaldo] = useState(false);
 const [modalContaAberto, setModalContaAberto] = useState(false);
 const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
 const [indiceContaObs, setIndiceContaObs] = useState(-1);
+
+const [saldoBase, setSaldoBase] = useState(0); 
+const [editandoId, setEditandoId] = useState(null);
+ 
+
+function normalizarValor(valor) {
+  return parseFloat(String(valor || "0").replace(",", ".")) || 0;
+}
+
+function recalcularLinhas(lista, base = saldoBase) {
+  let acumulado = Number(base || 0);
+
+  const listaComSaldo = lista.map((l) => {
+    const valor = normalizarValor(l.valor);
+
+    if (l.tipo === "entrada") acumulado += valor;
+    if (l.tipo === "saida") acumulado -= valor;
+
+    return {
+      ...l,
+      saldo: acumulado
+    };
+  });
+
+  setLinhas(listaComSaldo);
+  setSaldo(acumulado);
+
+  return listaComSaldo;
+}
+
   function hojeISO() {
   return new Date().toISOString().slice(0,10);
 }
@@ -44,47 +74,48 @@ const contraRef = useRef(null);
 const navigate = useNavigate();
 
  function adicionarLinha() {
+  // se a linha nova estiver fechada, apenas abre
+  if (!mostrarNovaLinha) {
+    limparNova();
+    setMostrarNovaLinha(true);
+    setEditandoId(null);  
+    setTimeout(() => {
+      dataRef.current?.focus();
+    }, 0);
 
-  setMostrarNovaLinha(true);
-
-  const ultimaLinha = linhas[linhas.length - 1];
-
-  if (ultimaLinha && (!ultimaLinha.historico || !ultimaLinha.valor || !ultimaLinha.conta_id)) {
-    alert("Preencha a linha anterior antes de adicionar outra.");
     return;
   }
 
+  // daqui pra baixo = realmente adicionar/salvar a linha digitada
   if (!nova.historico || !nova.valor || !nova.conta_id) {
     alert("Preencha histórico, valor e conta contra.");
     return;
   }
 
-  let valor = parseFloat((nova.valor || "0").replace(",", "."));
+  const linha = {
+    ...nova,
+    _id: nova._id || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    valor: String(nova.valor).replace(",", "."),
+    conta_id: Number(nova.conta_id)
+  };
 
-  let novoSaldo = saldo;
+  let lista;
 
-  if (nova.tipo === "entrada") novoSaldo += valor;
-  if (nova.tipo === "saida") novoSaldo -= valor;
+  if (editandoId) {
+    lista = linhas.map((l) => (l._id === editandoId ? linha : l));
+  } else {
+    lista = [...linhas, linha];
+  }
 
-  setSaldo(novoSaldo);
+  recalcularLinhas(lista);
 
-  setLinhas(prev => [
-    ...prev,
-    { ...nova, saldo: novoSaldo }
-  ]);
+  limparNova();
+  setEditandoId(null);
 
-  setNova({
-    data: hojeLocal(),
-    historico: "",
-    tipo: "entrada",
-    valor: "",
-    contra: "",
-    conta_id: null
-  });
-
-  historicoRef.current?.focus();
+  setTimeout(() => {
+    historicoRef.current?.focus();
+  }, 0);
 }
- 
   async function carregarContas() {
     const r = await fetch(
       buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id })
@@ -111,14 +142,37 @@ const navigate = useNavigate();
     setContasFiltradas(filtradas.slice(0,10));
     }
 
+ 
+    function editarLinha(id) {
+  const linha = linhas.find((l) => l._id === id);
+  if (!linha) return;
 
+  setNova({
+    data: linha.data || hojeLocal(),
+    historico: linha.historico || "",
+    tipo: linha.tipo || "entrada",
+    valor: String(linha.valor || "").replace(".", ","),
+    contra: linha.contra || "",
+    conta_id: linha.conta_id || null,
+    _id: linha._id
+  });
+
+  setEditandoId(id);
+
+  setTimeout(() => {
+    historicoRef.current?.focus();
+  }, 0);
+}
  
  
 // Rotina salvar definitiva assim espero
  
 async function salvarLancamentos() {
  
-  
+  if (editandoId !== null && nova._id === editandoId) {
+  alert("Confirme a edição da linha antes de salvar.");
+  return;
+}
 
   if (!contaId) {
     alert("Conta observada não selecionada");
@@ -218,6 +272,9 @@ historicoRef.current?.focus();
   
 // fim da rotina salvar  
 
+function gerarLinhaId() {
+  return `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
 
 function prepararLancamentosJSONB(lancamentos) {
   try {
@@ -277,7 +334,12 @@ function prepararLancamentosJSONB(lancamentos) {
       }
     );
 
-    setSaldo(Number(data.data.ff_saldo_conta || 0));
+ const saldoConta = Number(data.data.ff_saldo_conta || 0);
+setSaldoBase(saldoConta);
+setSaldo(saldoConta);
+setLinhas([]);
+ 
+limparNova();
 
   } catch (err) {
 
@@ -314,42 +376,24 @@ if (!isNaN(valorAtual)) {
   if (nova.tipo === "saida") saldoLinhaAtual = saldo - valorAtual;
 }
 
- function removerLinha(index) {
+ function removerLinha(id) {
+  const novaLista = linhas.filter((l) => l._id !== id);
 
-  // excluir linha que já está na lista
-  if (index < linhas.length) {
-
-    const novaLista = [...linhas];
-
-    const linhaRemovida = novaLista[index];
-
-    let valor = parseFloat(linhaRemovida.valor || 0);
-
-    if (linhaRemovida.tipo === "entrada") {
-      setSaldo(s => s - valor);
-    }
-
-    if (linhaRemovida.tipo === "saida") {
-      setSaldo(s => s + valor);
-    }
-
-    novaLista.splice(index, 1);
-    setLinhas(novaLista);
-
-    return;
+  if (editandoId === id) {
+    setEditandoId(null);
+    setNova({
+      data: hojeLocal(),
+      historico: "",
+      tipo: "entrada",
+      valor: "",
+      contra: "",
+      conta_id: null,
+      _id: null
+    });
   }
 
-  // excluir linha nova (a de digitação)
-  setNova({
-    data: hojeLocal(),
-    historico: "",
-    tipo: "entrada",
-    valor: "",
-    contra: "",
-    conta_id: null
-  });
+  recalcularLinhas(novaLista);
 }
-
 
  function handleEnter(nextRef) {
   return (e) => {
@@ -359,6 +403,28 @@ if (!isNaN(valorAtual)) {
     }
   };
 }
+
+
+ function limparNova() {
+  setNova({
+    data: hojeLocal(),
+    historico: "",
+    tipo: "entrada",
+    valor: "",
+    contra: "",
+    conta_id: null,
+    _id: null
+  });
+}
+
+function cancelarNovaLinha() {
+  limparNova();
+  setMostrarNovaLinha(false);
+  setEditandoId(null);  
+  setContasFiltradasContra([]);
+  setIndiceSelecionado(-1);
+}
+
 
 return (
       <div className="flex justify-center mt-10 bg-gray-100 min-h-screen py-10">
@@ -520,63 +586,76 @@ return (
 
                 {/* LINHAS */}
 
-                  {linhas.map((l, i) => (
-                        <div
-                          key={i}
-                          className="grid grid-cols-[120px_400px_120px_120px_220px_120px_60px] gap-2 text-sm border-b py-1"
-                        >
-                          <div>{l.data.split("-").reverse().join("/")}</div>
+                  {linhas.map((l) => (
+                  <div
+                    key={l._id}
+                    className="grid grid-cols-[120px_400px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
+                  >
+                    <div>{l.data.split("-").reverse().join("/")}</div>
 
-                          <div className="truncate">{l.historico}</div>
-                          <div className="text-center">
-                                {l.tipo === "entrada" ? (
-                                  <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
-                                    <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
-                                    Entrada
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-red-100 text-red-800 font-semibold text-xs">
-                                    <span className="w-2 h-2 bg-red-600 rounded-sm"></span>
-                                    Saída
-                                  </span>
-                                )}
-                              </div>
-                           <div
-                            className={`text-right font-mono font-semibold ${
-                              l.tipo === "entrada" ? "text-green-700" : "text-red-700"
-                            }`}
-                          >
-                            {Number((l.valor || "0").replace(",", ".")).toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL"
-                            })}
-                          </div>
+                    <div className="truncate">{l.historico}</div>
 
-                          <div>{l.contra}</div>
+                    <div className="text-center">
+                      {l.tipo === "entrada" ? (
+                        <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
+                          <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
+                          Entrada
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-red-100 text-red-800 font-semibold text-xs">
+                          <span className="w-2 h-2 bg-red-600 rounded-sm"></span>
+                          Saída
+                        </span>
+                      )}
+                    </div>
 
-                          <div
-                            className={`border rounded p-2 text-right font-semibold ${
-                            saldo > 0
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                          >
-                            {Number(l.saldo || 0).toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL"
-                            })}
-                          </div> 
-                          
-                           <div className="flex items-center justify-center">
-                          <button
-                            className="text-red-600 hover:text-red-800 text-lg"
-                            onClick={() => removerLinha(i)}
-                          >
-                            🗑
-                          </button>
-                        </div>
-                        </div>
-                      ))}
+                    <div
+                      className={`text-right font-mono font-semibold ${
+                        l.tipo === "entrada" ? "text-green-700" : "text-red-700"
+                      }`}
+                    >
+                      {Number((l.valor || "0").replace(",", ".")).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL"
+                      })}
+                    </div>
+
+                    <div>{l.contra}</div>
+
+                    <div
+                      className={`border rounded p-2 text-right font-semibold ${
+                        Number(l.saldo || 0) >= 0
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {Number(l.saldo || 0).toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL"
+                      })}
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        className="text-blue-600 hover:text-blue-800 text-lg"
+                        onClick={() => editarLinha(l._id)}
+                        title="Editar linha"
+                      >
+                        ✏️
+                      </button>
+
+                      <button
+                        type="button"
+                        className="text-red-600 hover:text-red-800 text-lg"
+                        onClick={() => removerLinha(l._id)}
+                        title="Excluir linha"
+                      >
+                        🗑
+                      </button>
+                    </div>
+                  </div>
+                ))}
           {/* NOVA LINHA */}
 
             {mostrarNovaLinha && (
@@ -587,7 +666,7 @@ return (
                 type="date"
                 className="border rounded p-2"
                 value={nova.data}
-                onChange={(e)=>setNova({...nova,data:e.target.value})}
+                onChange={(e)=> setNova(prev => ({ ...prev, data: e.target.value }))}
                 onKeyDown={handleEnter(historicoRef)}
               />
 
@@ -597,7 +676,7 @@ return (
                     className="border rounded p-2"
                     placeholder="Histórico"
                     value={nova.historico}
-                    onChange={(e)=>setNova({...nova,historico:e.target.value})}
+                    onChange={(e)=> setNova(prev => ({ ...prev, historico: e.target.value }))}
                    onKeyDown={handleEnter(tipoRef)} 
 
                   /> 
@@ -606,7 +685,7 @@ return (
                          ref={tipoRef}
                         className="border rounded p-2"
                         value={nova.tipo}
-                        onChange={(e)=>setNova({...nova,tipo:e.target.value})}
+                        onChange={(e)=> setNova(prev => ({ ...prev, tipo: e.target.value }))}
                          onKeyDown={handleEnter(valorRef)}
                       >
                         <option value="entrada">Entrada</option>
@@ -620,7 +699,7 @@ return (
                           value={nova.valor}
                           onChange={(e) => {
                             const v = e.target.value.replace(/[^\d.,]/g, "");
-                            setNova({ ...nova, valor: v });
+                             setNova(prev => ({ ...prev, valor: v }));
                           }}
                            onKeyDown={handleEnter(contraRef)}
                         />
@@ -633,7 +712,7 @@ return (
                     value={nova.contra}
                     onChange={(e)=>{
                         const v = e.target.value;
-                        setNova({...nova,contra:v});
+                         setNova(prev => ({ ...prev, contra: v }));
                          filtrarContasContra(v);
                         setIndiceSelecionado(-1);
                     }}
@@ -695,7 +774,7 @@ return (
                                     : "hover:bg-gray-200"
                                 }`}
                                 onClick={() => {
-                                  setNova({ ...nova, contra: c.nome, conta_id: c.id });
+                                   setNova(prev => ({ ...prev, contra: c.nome, conta_id: c.id }));
                                   setContasFiltradasContra([]);
                                   setIndiceSelecionado(-1);
                                 }}
@@ -723,7 +802,7 @@ return (
                  <div className="flex items-center justify-center">
                   <button
                         className="text-gray-400 hover:text-red-600 text-lg"
-                        onClick={() => setMostrarNovaLinha(false)}
+                        onClick={cancelarNovaLinha}
                       >
                         🗑
                       </button>

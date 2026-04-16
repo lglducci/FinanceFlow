@@ -99,8 +99,8 @@ export default function RelatorioDreGerencial() {
 
               <button
           onClick={() => window.print()}
-                 className="btn-pill btn-gray" 
-        >
+             className="h-11 rounded-2xl bg-slate-500 text-white font-semibold hover:opacity-90 disabled:opacity-60"
+            >
           🖨️ Imprimir
         </button>
           </div>
@@ -166,7 +166,7 @@ export default function RelatorioDreGerencial() {
                 </div>
               </div>
 
-              <div className="mt-6 overflow-x-auto">
+                <div className="mt-6 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 text-left text-slate-500">
@@ -185,11 +185,11 @@ export default function RelatorioDreGerencial() {
                         <td className="px-3 py-2">{item.conta_codigo}</td>
                         <td className="px-3 py-2">{item.conta_nome}</td>
                         <td className="px-3 py-2 text-right font-semibold">{formatarMoeda(item.valor)}</td>
-                      </tr>
+                      </tr> 
                     ))}
-                  </tbody>
+                  </tbody> 
                 </table>
-              </div>
+              </div> 
             </div>
           </>
         )}
