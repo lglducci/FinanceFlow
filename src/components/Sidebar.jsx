@@ -78,8 +78,13 @@ function podeVer(menuKey) {
  
         {podeVer("visao_geral") && (
            <MenuItem icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboard")} />
+           
         )}
          
+
+         
+        {podeVer("visao_geral") && ( <MenuItem icon={<IconHome />} label="DashBoard Financeiro 2" onClick={() => navigate("/dashboardfinanceiro")} />
+          )}
           <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
           
           {podeVer("visao_geral") && (
