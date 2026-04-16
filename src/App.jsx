@@ -14,6 +14,10 @@ import RedefinirSenha from "./pages/RedefinirSenha";
 
 
 import Dashboard from "./pages/Dashboard";
+
+
+import DashboardFinanceiro from "./pages/DashboardFinanceiro";
+
 import Lancamentos from "./pages/Lancamentos";
 import NovoLancamento from "./pages/NovoLancamento";
 import Categories from "./pages/Categories";
@@ -418,6 +422,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
  
 <Route path="/calculadora" element={<CalculadoraGerencial />} />
 <Route path="/reldregerencial" element={<RelatorioDreGerencial />} />
+  <Route path="/dashboardfinanceiro" element={<DashboardFinanceiro />} />
 
  
 
