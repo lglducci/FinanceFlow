@@ -203,6 +203,9 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
         <th className="p-3 text-left">Código</th>
         <th className="p-3 text-left">Conta</th>
          <th className="p-3 text-left">Classificação Gerencia</th>
+         <th className="p-3 text-right">% Despesa Total</th>
+          <th className="p-3 text-right">% Despesa Classificação</th>
+           <th className="p-3 text-right">% Receita Total</th>
         <th className="p-3 text-right">Valor</th>
       </tr>
     </thead>
@@ -210,7 +213,7 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
       {dadosAgrupados.map((g) => (
         <React.Fragment key={g.grupo}>
           <tr className="bg-blue-100">
-            <td colSpan={3} className="p-1 font-bold text-blue-900 text-base">
+            <td colSpan={6} className="p-1 font-bold text-blue-900 text-base">
               {g.grupo}
             </td>
           </tr>
@@ -227,6 +230,16 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
                   l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
                 }`}
               >{(l.classificacao_gerencial || "-").replaceAll("_", " ")}</td>
+              <td className="text-right font-semibold tabular-nums pr-2">
+                  {l.perc_total_despesa != null ? `${Number(l.perc_total_despesa).toFixed(2)}%` : ""}
+                </td>
+                <td className="text-right font-semibold tabular-nums pr-2">
+                  {l.perc_classificacao_despesa != null ? `${Number(l.perc_classificacao_despesa).toFixed(2)}%` : ""}
+                </td>
+                <td className="text-right font-semibold tabular-nums pr-2">
+                  {l.perc_total_receita != null ? `${Number(l.perc_total_receita).toFixed(2)}%` : ""}
+                </td>
+              
               <td
                 className={`p-2 text-right font-bold ${
                   l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
@@ -238,7 +251,7 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
           ))}
 
           <tr className="border-t-2 border-gray-500 bg-gray-100">
-            <td colSpan={3} className="p-1 text-right font-bold">
+            <td colSpan={6} className="p-1 text-right font-bold">
               Subtotal {nomeGrupo[g.grupo]}
             </td>
             <td
@@ -253,7 +266,7 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
       ))}
 
       <tr className="border-t-4 border-black bg-yellow-100">
-        <td colSpan={3} className="p-2 text-right font-bold text-lg">
+        <td colSpan={6} className="p-2 text-right font-bold text-lg">
           Resultado do Período
         </td>
         <td
