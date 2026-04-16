@@ -301,44 +301,50 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
               {/* RECEITA */}
               <tr className="bg-gray-100 font-bold text-lg">
                 <td className="p-3">Receita Bruta</td>
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(receita)}
-                </td>
+                
                 <td className="p-3 text-right text-green-700">
                   {fmt.format(receita)}
+                </td>
+
+                 <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(receita)}
                 </td>
               </tr>
 
               {/* CUSTOS */}
               <tr className="bg-gray-100 font-bold text-lg">
                 <td className="p-3">(-) Custos</td>
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(custos)}
-                </td>
+                
                 <td className="p-3 text-right text-red-600">
                   {fmt.format(custos)}
+                </td>
+                 <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(custos)}
                 </td>
               </tr>
 
               {/* LUCRO BRUTO */}
               <tr className="border-t-4 border-gray-400 font-bold text-lg">
                 <td className="p-3">Lucro Bruto</td>
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(lucroBruto)}
-                </td>
+                 
                 <td className="p-3 text-right text-green-700">
                   {fmt.format(lucroBruto)}
+                </td>
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(lucroBruto)}
                 </td>
               </tr>
 
               {/* DESPESAS */}
               <tr className="bg-gray-100 font-bold text-lg">
                 <td className="p-3">Despesas Operacionais</td>
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(despesas)}
-                </td>
+                 
                 <td className="p-3 text-right text-red-600">
                   {fmt.format(despesas)}
+                </td>
+
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(despesas)}
                 </td>
               </tr>
 
