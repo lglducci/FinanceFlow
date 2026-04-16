@@ -20,8 +20,19 @@ export default function RelatoriosDRE() {
 const custos = dados.find(d => d.grupo === "CUSTOS")?.valor_periodo || 0;
 const despesas = dados.find(d => d.grupo === "DESPESAS_OPERACIONAIS")?.valor_periodo || 0;
 
+ 
+ 
+ 
+
+
 const lucroBruto = receita - custos;
 const resultado = lucroBruto - despesas;
+
+
+function percReceitaTotal(valor) {
+  if (!receita) return "0,00%";
+  return `${((Number(valor || 0) / receita) * 100).toFixed(2)}%`;
+}
 
   // formatter BR
   const fmt = new Intl.NumberFormat("pt-BR", {
@@ -282,14 +293,17 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
           <thead className="bg-blue-900 text-white">
             <tr>
               <th className="p-3 text-left">Grupo</th>
+              <th className="text-right">% Receita Total</th>
               <th className="p-3 text-right">Valor</th>
             </tr>
           </thead>
-           <tbody>
-
+          <tbody>
               {/* RECEITA */}
               <tr className="bg-gray-100 font-bold text-lg">
                 <td className="p-3">Receita Bruta</td>
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(receita)}
+                </td>
                 <td className="p-3 text-right text-green-700">
                   {fmt.format(receita)}
                 </td>
@@ -298,6 +312,9 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
               {/* CUSTOS */}
               <tr className="bg-gray-100 font-bold text-lg">
                 <td className="p-3">(-) Custos</td>
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(custos)}
+                </td>
                 <td className="p-3 text-right text-red-600">
                   {fmt.format(custos)}
                 </td>
@@ -306,6 +323,9 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
               {/* LUCRO BRUTO */}
               <tr className="border-t-4 border-gray-400 font-bold text-lg">
                 <td className="p-3">Lucro Bruto</td>
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(lucroBruto)}
+                </td>
                 <td className="p-3 text-right text-green-700">
                   {fmt.format(lucroBruto)}
                 </td>
@@ -314,6 +334,9 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
               {/* DESPESAS */}
               <tr className="bg-gray-100 font-bold text-lg">
                 <td className="p-3">Despesas Operacionais</td>
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(despesas)}
+                </td>
                 <td className="p-3 text-right text-red-600">
                   {fmt.format(despesas)}
                 </td>
@@ -322,12 +345,14 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
               {/* RESULTADO FINAL */}
               <tr className="border-t-4 border-black text-xl font-bold">
                 <td className="p-3">Resultado do Período</td>
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(resultado)}
+                </td>
                 <td className="p-3 text-right text-green-700">
                   {fmt.format(resultado)}
                 </td>
               </tr>
-
-              </tbody>
+            </tbody>
         </table>
  )}
         {loading && (
