@@ -18,23 +18,21 @@ export default class ExcelExport {
     const wsContas = XLSX.utils.json_to_sheet(dadosContas);
 
     // ABA 2 - LAYOUT  data historico conta valor saldo nomeconta
-     const layout = [];
+ const layout = [];
 for (let i = 0; i < 200; i++) {
   layout.push({
     Data: "",
     Historico: "",
     Conta: "",
     Valor: "",
-    Saldo: "",
     NomeConta: ""
   });
 }
 
     const wsLayout = XLSX.utils.json_to_sheet(layout);
 
-    // fórmula na coluna F (NomeConta), buscando código digitado na coluna E
    for (let row = 2; row <= 201; row++) {
-  wsLayout[`F${row}`] = {
+  wsLayout[`E${row}`] = {
     t: "s",
     f: `IFERROR(VLOOKUP(C${row},Contas!B:C,2,FALSE),"")`
   };
