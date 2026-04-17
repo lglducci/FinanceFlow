@@ -2,6 +2,7 @@
  
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
+import ExcelExport from "../utils/ExcelExport";
 
 export default function ContasContabeis() {
   const navigate = useNavigate();
@@ -62,6 +63,19 @@ export default function ContasContabeis() {
   }
 }
 
+function exportarTemplateContas() {
+  const dados = filtradas.map((c) => ({
+    id: c.id,
+    codigo: String(c.codigo ?? ""),
+    nome: c.nome ?? "",
+    ativo: c.ativo ?? 1
+  }));
+
+  ExcelExport.exportarTemplateContas(
+    dados,
+    "template_contas_contabeis.xlsx"
+  );
+}
 return (
   <div className="p-4 space-y-6">
 
@@ -83,7 +97,7 @@ return (
                         px-5 py-2 rounded-full
                         font-bold text-sm tracking-wide
                         text-white
-                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
                         border-2 border-black
                         shadow-[0_4px_12px_rgba(0,0,0,0.4)]
                         hover:brightness-110 hover:scale-105
@@ -93,6 +107,24 @@ return (
                       ">
           + Nova conta 
         </button>
+
+        <button
+            onClick={() => exportarTemplateContas(filtradas)} // ou contas
+            
+                      className="
+                                  px-5 py-2 rounded-full
+                                  font-bold text-sm tracking-wide
+                                  text-white
+                                    bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                                  border-2 border-black
+                                  shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                                  hover:brightness-110 hover:scale-105
+                                  active:scale-95
+                                  transition-all duration-200
+                                  inline-flex items-center gap-2
+                                ">
+            Baixar Excel (Contas + Layout)
+          </button>
 
         <button
           onClick={() => window.print()}

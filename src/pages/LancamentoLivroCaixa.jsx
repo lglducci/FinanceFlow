@@ -22,10 +22,10 @@ const [carregandoSaldo, setCarregandoSaldo] = useState(false);
 const [modalContaAberto, setModalContaAberto] = useState(false);
 const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
 const [indiceContaObs, setIndiceContaObs] = useState(-1);
-
+const [importacao, setImportacao] = useState(0);
 const [saldoBase, setSaldoBase] = useState(0); 
 const [editandoId, setEditandoId] = useState(null);
- 
+ const dataMin = hojeMaisDias(-7);
 
 function normalizarValor(valor) {
   return parseFloat(String(valor || "0").replace(",", ".")) || 0;
@@ -228,6 +228,7 @@ if (index !== -1) {
   const payload = {
     empresa_id,
     conta_observada: contaId,
+     importacao,
     lancamentos: JSON.parse(prepararLancamentosJSONB(lancamentos))
   };
 
@@ -424,6 +425,188 @@ function cancelarNovaLinha() {
   setContasFiltradasContra([]);
   setIndiceSelecionado(-1);
 }
+ 
+ function dataBRparaISO(data) {
+  const txt = String(data || "").trim();
+  const m = txt.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+  return txt;
+}
+
+function normalizarCodigoConta(txt) {
+  return String(txt || "").trim().replace(/\s+/g, "");
+}
+
+ function extrairColunasLinha(linha) {
+  const txt = String(linha || "").trim();
+
+  // Excel / Google Sheets
+  if (txt.includes("\t")) {
+    return txt.split("\t").map(v => v.trim());
+  }
+
+  // CSV com ;
+  if (txt.includes(";")) {
+    return txt.split(";").map(v => v.trim());
+  }
+
+  // fallback: data + historico + codigo conta + valor
+  const m = txt.match(
+    /^(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+(\d+(?:\.\d+)+)\s+(-?[\d.,]+)$/
+  );
+
+  if (m) {
+    return [m[1], m[2], m[3], m[4]];
+  }
+
+  return [];
+}
+
+ function parseTextoParaLinhas(texto) {
+  const linhasTexto = String(texto || "")
+    .replace(/\r/g, "")
+    .split("\n")
+    .map(l => l.trim())
+    .filter(Boolean);
+
+  if (!linhasTexto.length) return [];
+
+  const primeira = linhasTexto[0].toLowerCase();
+  const temCabecalho =
+    primeira.includes("data") &&
+    primeira.includes("hist") &&
+    primeira.includes("conta");
+
+  const origem = temCabecalho ? linhasTexto.slice(1) : linhasTexto;
+
+  const resultado = [];
+
+  for (let i = 0; i < origem.length; i++) {
+    const colunas = extrairColunasLinha(origem[i]);
+
+    // agora o layout certo é: data, historico, conta, valor
+    if (colunas.length < 4) continue;
+
+    // se vier lixo extra, ignora depois da 4a coluna
+    const [data, historico, codigoConta, valorTexto] = colunas.slice(0, 4);
+
+    const valorNumero = parseNumeroBR(valorTexto);
+
+    if (!data || !historico || !codigoConta || !valorTexto) continue;
+
+    const contaEncontrada = resolverContaPorCodigo(codigoConta);
+
+    resultado.push({
+      _id: gerarLinhaId(),
+      data: dataBRparaISO(data),
+      historico: String(historico).trim(),
+      tipo: valorNumero >= 0 ? "entrada" : "saida",
+      valor: Math.abs(valorNumero).toFixed(2).replace(".", ","),
+      contra: contaEncontrada
+        ? `${contaEncontrada.codigo} - ${contaEncontrada.nome}`
+        : String(codigoConta).trim(),
+      conta_id: contaEncontrada ? Number(contaEncontrada.id) : null
+    });
+  }
+
+  return resultado;
+}
+
+function codigoContaChave(txt) {
+  return String(txt || "")
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/[^\d.]/g, "");
+}
+
+function resolverContaPorCodigo(codigoImportado) {
+  const alvo = codigoContaChave(codigoImportado);
+  if (!alvo) return null;
+
+  // 1) tenta exata
+  const exata = contas.find(
+    (c) => codigoContaChave(c.codigo) === alvo
+  );
+  if (exata) return exata;
+
+  // 2) tenta por prefixo
+  const candidatas = contas.filter((c) =>
+    codigoContaChave(c.codigo).startsWith(alvo)
+  );
+
+  if (candidatas.length === 1) return candidatas[0];
+
+  // 3) se tiver várias, tenta a menor/mais próxima
+  if (candidatas.length > 1) {
+    candidatas.sort(
+      (a, b) =>
+        codigoContaChave(a.codigo).length - codigoContaChave(b.codigo).length
+    );
+    return candidatas[0];
+  }
+
+  return null;
+}
+
+function parseNumeroBR(valor) {
+  if (valor == null) return 0;
+
+  return Number(
+    String(valor)
+      .trim()
+      .replace(/\./g, "")   // remove milhar
+      .replace(",", ".")    // troca decimal
+  ) || 0;
+}
+  
+
+async function colarLancamentos() {
+  try {
+    const texto = await navigator.clipboard.readText();
+
+    if (!texto || !texto.trim()) {
+      alert("A área de transferência está vazia.");
+      return;
+    }
+
+    const novasLinhas = parseTextoParaLinhas(texto);
+
+    if (!novasLinhas.length) {
+      console.log("TEXTO COLADO:", texto);
+      alert("Nenhuma linha válida encontrada. Veja o console.");
+      return;
+    }
+
+    recalcularLinhas([...linhas, ...novasLinhas]);
+      setImportacao(1);
+    const semConta = novasLinhas.filter(l => !l.conta_id).length;
+    if (semConta > 0) {
+      alert(
+        `Importadas ${novasLinhas.length} linhas. ${semConta} ficaram sem conta contra encontrada e precisam de ajuste antes de salvar.`
+      );
+    }
+  } catch (erro) {
+    console.error("Erro ao colar:", erro);
+    alert("Não foi possível ler a área de transferência.");
+  }
+}
+
+function limparEdicao() {
+  setLinhas([]);
+  setSaldo(saldoBase);
+   setImportacao(0);
+  setEditandoId(null);
+  setMostrarNovaLinha(true);
+
+  setContasFiltradasContra([]);
+  setIndiceSelecionado(-1);
+
+  limparNova();
+
+  setTimeout(() => {
+    dataRef.current?.focus();
+  }, 0);
+}
 
 
 return (
@@ -591,7 +774,11 @@ return (
                     key={l._id}
                     className="grid grid-cols-[120px_400px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
                   >
-                    <div>{l.data.split("-").reverse().join("/")}</div>
+                    <div>
+                      {String(l.data || "").includes("-")
+                        ? l.data.split("-").reverse().join("/")
+                        : l.data}
+                    </div>
 
                     <div className="truncate">{l.historico}</div>
 
@@ -614,10 +801,10 @@ return (
                         l.tipo === "entrada" ? "text-green-700" : "text-red-700"
                       }`}
                     >
-                      {Number((l.valor || "0").replace(",", ".")).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL"
-                      })}
+                       {normalizarValor(l.valor).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL"
+                        })}
                     </div>
 
                     <div>{l.contra}</div>
@@ -661,14 +848,34 @@ return (
             {mostrarNovaLinha && (
             <div className="grid grid-cols-[120px_400px_120px_120px_220px_120px_60px] gap-2 mb-4">
          
-               <input
-                 ref={dataRef}
-                type="date"
-                className="border rounded p-2"
-                value={nova.data}
-                onChange={(e)=> setNova(prev => ({ ...prev, data: e.target.value }))}
-                onKeyDown={handleEnter(historicoRef)}
-              />
+                 <input
+                        ref={dataRef}
+                        type="date"
+                        min={dataMin}
+                        className="border rounded p-2"
+                        value={nova.data || ""}
+                        onChange={(e) => {
+                          const valor = e.target.value;
+
+                          if (!valor) {
+                            setNova(prev => ({ ...prev, data: "" }));
+                            return;
+                          }
+
+                          setNova(prev => ({ ...prev, data: valor }));
+                        }}
+                         onBlur={(e) => {
+                            const valor = e.target.value;
+
+                            if (valor && valor < dataMin) {
+                              alert(`Não pode ser menor que ${dataMin}`);
+                              setNova(prev => ({ ...prev, data: dataMin }));
+                            }
+                          }}
+                        onKeyDown={handleEnter(historicoRef)}
+                      />
+
+
 
                
                    <input
@@ -818,7 +1025,7 @@ return (
 
                 <button
                     onClick={adicionarLinha}
-                  className="
+                   className="
                         px-5 py-2 rounded-full
                         font-bold text-sm tracking-wide
                         text-white
@@ -829,7 +1036,7 @@ return (
                         active:scale-95
                         transition-all duration-200
                         inline-flex items-center gap-2
-                    ">
+                    "> 
                         
                     + Linha
                 </button>
@@ -841,7 +1048,7 @@ return (
                         px-5 py-2 rounded-full
                         font-bold text-sm tracking-wide
                         text-white
-                        bg-gradient-to-b from-green-500 via-green-600 to-green-800
+                        bg-gradient-to-b from-blue-600 via-blue-700 to-blue-900
                         border-2 border-black
                         shadow-[0_4px_12px_rgba(0,0,0,0.4)]
                         hover:brightness-110 hover:scale-105
@@ -852,26 +1059,7 @@ return (
                         
                     💾 Salvar
                 </button>
-
-                <button
-                    onClick={() => navigate("/relatorios/diario")}
-                    
-                 className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                    ">
-                        
-                    Voltar Consulta
-                </button>
-                
+ 
                  
                 <button
                     onClick={() => setModalContaAberto(true)}
@@ -879,7 +1067,7 @@ return (
                         px-5 py-2 rounded-full
                         font-bold text-sm tracking-wide
                         text-white
-                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
+                        bg-gradient-to-b from-green-500 via-green-600 to-green-800
                         border-2 border-black
                         shadow-[0_4px_12px_rgba(0,0,0,0.4)]
                         hover:brightness-110 hover:scale-105
@@ -890,8 +1078,62 @@ return (
                     + Nova Conta
                 </button>
 
+               <button
+                  onClick={colarLancamentos}
+                  className="
+                    px-5 py-2 rounded-full
+                    font-bold text-sm tracking-wide
+                    text-black
+                    bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-700
+                    border-2 border-black
+                    shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                    hover:brightness-110 hover:scale-105
+                    active:scale-95
+                    transition-all duration-200
+                    inline-flex items-center gap-2
+                  "
+                >
+                  Colar lançamentos
+                </button>
+
+                <button
+                  onClick={limparEdicao}
+                  className="
+                    px-5 py-2 rounded-full
+                    font-bold text-sm tracking-wide
+                    text-white
+                    bg-gradient-to-b from-red-500 via-red-600 to-red-800
+                    border-2 border-black
+                    shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                    hover:brightness-110 hover:scale-105
+                    active:scale-95
+                    transition-all duration-200
+                    inline-flex items-center gap-2
+                  "
+                >
+                  Limpar edição
+                </button>
+               
 
 
+                <button
+                    onClick={() => navigate("/relatorios/diario")}
+                    
+                    className="
+                            px-5 py-2 rounded-full
+                            font-bold text-sm tracking-wide
+                            text-white
+                            bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
+                            border-2 border-black
+                            shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                            hover:brightness-110 hover:scale-105
+                            active:scale-95
+                            transition-all duration-200
+                            inline-flex items-center gap-2
+                        ">
+                        
+                    Sair
+                </button>
 
                 </div>
       

@@ -78,6 +78,8 @@ function CardResumo({ titulo, valor }) {
 function ListaTitulos({ titulo, itens = [], tipo = "receber" }) {
   const corTitulo = tipo === "receber" ? "text-sky-700" : "text-blue-900";
 
+  
+
   return (
     <div className="bg-white border border-sky-100 rounded-2xl shadow-sm p-5">
       <h3 className={`text-lg font-bold mb-4 ${corTitulo}`}>{titulo}</h3>
@@ -142,21 +144,27 @@ export default function DashboardFinanceiro() {
     carregar();
   }, []);
 
+  
+
   const receberAberto = numero(data?.receber_aberto);
-  const pagarAberto = numero(data?.pagar_aberto);
+  const pagarAberto = numero(data?.pagar_aberto) ;
   const receberVencido = numero(data?.receber_vencido?.valor_total);
   const pagarVencido = numero(data?.pagar_vencido?.valor_total);
+
+  const faturasAberto = numero(data?.faturas_aberto);
+const passivoAberto = pagarAberto + faturasAberto;
+
   const saldoProjetado = numero(data?.saldo_projetado);
   const saldoProjetado30 = numero(data?.saldo_projetado_30_dias);
   const saldoAtual = numero(data?.saldo_atual);
 
-  const totalAberto = useMemo(() => {
-    return receberAberto + pagarAberto;
-  }, [receberAberto, pagarAberto]);
+   const totalAberto = useMemo(() => {
+  return receberAberto + passivoAberto;
+}, [receberAberto, passivoAberto]);
 
   const percReceber =
     totalAberto > 0 ? (receberAberto / totalAberto) * 100 : 0;
-  const percPagar = totalAberto > 0 ? (pagarAberto / totalAberto) * 100 : 0;
+   const percPagar = totalAberto > 0 ? (passivoAberto / totalAberto) * 100 : 0;
 
   const serieReceber = Array.isArray(data?.receita_12m_serie)
     ? data.receita_12m_serie
@@ -197,7 +205,7 @@ export default function DashboardFinanceiro() {
       </div>
 
       {/* TOPO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
         <CardTopo
           titulo="Contas a receber em aberto"
           valor={receberAberto}
@@ -212,6 +220,8 @@ export default function DashboardFinanceiro() {
           destaque="escuro"
         />
 
+        
+
         <CardTopo
           titulo="Contas a receber em atraso"
           valor={receberVencido}
@@ -225,7 +235,22 @@ export default function DashboardFinanceiro() {
           subtitulo="Compromissos vencidos e ainda abertos"
           destaque="escuro"
         />
+        <CardTopo
+          titulo="Faturas em aberto"
+          valor={data?.faturas_aberto || 0}
+          subtitulo="Cartões ainda em aberto"
+          destaque="claro"
+        />
+
+        <CardTopo
+          titulo="Faturas vencidas"
+          valor={data?.faturas_vencida || 0}
+          subtitulo="Cartões vencidos"
+          destaque="escuro"
+        />
       </div>
+
+
 
       {/* SITUAÇÃO */}
       <div className="grid grid-cols-1 xl:grid-cols-[1.35fr_1fr] gap-6">
@@ -241,13 +266,12 @@ export default function DashboardFinanceiro() {
               percentual={percReceber}
               cor="bg-cyan-400"
             />
-
-            <BarraSituacao
-              titulo="Passivo em aberto"
-              valor={pagarAberto}
-              percentual={percPagar}
-              cor="bg-blue-900"
-            />
+          <BarraSituacao
+            titulo="Passivo em aberto (Pagar + Cartões)"
+            valor={passivoAberto}
+            percentual={percPagar}
+            cor="bg-blue-900"
+          />
           </div>
 
           <div className="mt-8 border-t pt-5">

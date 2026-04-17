@@ -94,8 +94,7 @@ const filtrados = dados.filter(item => {
   );
 });
 async function Estornar(lote_id) {
-  if (!confirm("Tem certeza que deseja estornar este lote de lançamento?")) return;
-
+  if (!confirm("Confirma o estorno deste lote? Ele pode conter uma única partida dobrada ou vários lançamentos importados. Todo o lote será processado de uma só vez.")) return;
   try {
     const url = buildWebhookUrl("excluilanctolote");
 
