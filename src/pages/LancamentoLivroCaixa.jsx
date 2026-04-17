@@ -27,6 +27,17 @@ const [saldoBase, setSaldoBase] = useState(0);
 const [editandoId, setEditandoId] = useState(null);
  const dataMin = hojeMaisDias(-7);
 
+ const botaoBase = `
+  px-5 py-2 rounded-full
+  font-bold text-sm tracking-wide
+  border-2 border-black
+  shadow-[0_4px_12px_rgba(0,0,0,0.35)]
+  hover:brightness-110 hover:scale-105
+  active:scale-95
+  transition-all duration-200
+  inline-flex items-center gap-2
+`;
+
 function normalizarValor(valor) {
   return parseFloat(String(valor || "0").replace(",", ".")) || 0;
 }
@@ -1022,117 +1033,48 @@ return (
            <div className="flex justify-end gap-3 mt-4">
 
          
-
-                <button
-                    onClick={adicionarLinha}
-                   className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                    "> 
-                        
-                    + Linha
+                 <button
+                  onClick={adicionarLinha}
+                  className={`${botaoBase} text-white bg-gradient-to-b from-slate-500 via-slate-600 to-slate-800`}
+                >
+                  ➕ Linha
                 </button>
 
-                <button
-                    onClick={salvarLancamentos}
-                
-                 className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-blue-600 via-blue-700 to-blue-900
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                    ">
-                        
-                    💾 Salvar
-                </button>
+                  <button
+                      onClick={salvarLancamentos}
+                      className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800`}
+                    >
+                      💾 Salvar
+                    </button>
  
-                 
-                <button
-                    onClick={() => setModalContaAberto(true)}
-                     className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-green-500 via-green-600 to-green-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                    "> 
-                    + Nova Conta
-                </button>
-
-               <button
-                  onClick={colarLancamentos}
-                  className="
-                    px-5 py-2 rounded-full
-                    font-bold text-sm tracking-wide
-                    text-black
-                    bg-gradient-to-b from-yellow-300 via-yellow-500 to-yellow-700
-                    border-2 border-black
-                    shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                    hover:brightness-110 hover:scale-105
-                    active:scale-95
-                    transition-all duration-200
-                    inline-flex items-center gap-2
-                  "
-                >
-                  Colar lançamentos
-                </button>
+                 <button
+                onClick={() => setModalContaAberto(true)}
+                className={`${botaoBase} text-white bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800`}
+              >
+                ➕ Nova Conta
+              </button>
 
                 <button
-                  onClick={limparEdicao}
-                  className="
-                    px-5 py-2 rounded-full
-                    font-bold text-sm tracking-wide
-                    text-white
-                    bg-gradient-to-b from-red-500 via-red-600 to-red-800
-                    border-2 border-black
-                    shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                    hover:brightness-110 hover:scale-105
-                    active:scale-95
-                    transition-all duration-200
-                    inline-flex items-center gap-2
-                  "
-                >
-                  Limpar edição
-                </button>
+                onClick={colarLancamentos}
+                className={`${botaoBase} text-white bg-gradient-to-b from-cyan-500 via-teal-600 to-teal-800`}
+              >
+                📋 Colar
+              </button>
+
+              <button
+                    onClick={limparEdicao}
+                    className={`${botaoBase} text-white bg-gradient-to-b from-red-500 via-red-600 to-red-800`}
+                  >
+                    🗑 Limpar
+                  </button>
                
 
 
-                <button
-                    onClick={() => navigate("/relatorios/diario")}
-                    
-                    className="
-                            px-5 py-2 rounded-full
-                            font-bold text-sm tracking-wide
-                            text-white
-                            bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
-                            border-2 border-black
-                            shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                            hover:brightness-110 hover:scale-105
-                            active:scale-95
-                            transition-all duration-200
-                            inline-flex items-center gap-2
-                        ">
-                        
-                    Sair
+                 <button
+                  onClick={() => navigate("/relatorios/diario")}
+                  className={`${botaoBase} text-white bg-gradient-to-b from-zinc-500 via-zinc-600 to-zinc-800`}
+                >
+                  ↩ Sair
                 </button>
 
                 </div>
