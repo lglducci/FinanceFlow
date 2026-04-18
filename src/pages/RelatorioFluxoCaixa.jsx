@@ -195,7 +195,7 @@ const dadosRender = dados.map((l) => {
                 <td className="text-left text-green-600 font-bold text-sm">{l.mes}</td>
                 <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.entrada)}</td>
                 <td className="text-right text-green-600 font-bold text-sm">{fmt.format(l.saida)}</td>
-                <td className="text-right text-red-600 font-bold text-sm">{fmt.format(l.saida)}</td>
+                <td className="text-right text-red-600 font-bold text-sm">{fmt.format(l.saldo)}</td>
              
               </tr>
             ))}
