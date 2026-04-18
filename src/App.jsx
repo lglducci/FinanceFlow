@@ -94,6 +94,8 @@ import MapContabilImpacto from "./pages/MapContabilImpacto";
 
 import RelatorioFluxoCaixa from "./pages/RelatorioFluxoCaixa";
 
+import RelatorioFluxoCaixaGrafico  from   "./pages/RelatorioFluxoCaixaGrafico";
+
 import CompraCartao from "./pages/CompraCartao";
 import LancamentosContabeis from "./pages/LancamentosContabeis";
 //import LancamentoContabilManual from "./pages/LancamentoContabilManual";
@@ -299,6 +301,9 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
     <Route path="/mapeamento-contabil/impacto" element={<MapContabilImpacto />}/>
     
       <Route path="/relatorios/fluxo-caixa" element={<RelatorioFluxoCaixa />}/>
+       <Route path="/fluxo-caixa-grafico" element={<RelatorioFluxoCaixaGrafico />}/>
+
+       
    
   <Route path="/compras-cartao" element={<CompraCartao />} />
   <Route path="/lancamentos-contabeis" element={<LancamentosContabeis />} />
