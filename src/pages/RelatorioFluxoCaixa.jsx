@@ -84,7 +84,7 @@ function trocarModo(novoModo) {
   return (
     <div className="p-6 bg-white rounded-xl shadow">
       <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2">
-        <h1 className="text-2xl font-bold mb-4">💰 Fluxo de Caixa</h1>
+        <h1 className="text-2xl font-bold mb-4">💰 Fluxo de Caixa Realizado</h1>
 
         {/* FILTROS */}
         <div className="flex gap-4 items-end mb-4">
