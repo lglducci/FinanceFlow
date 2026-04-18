@@ -22,8 +22,12 @@ export default function RelatorioFluxoCaixa() {
     maximumFractionDigits: 2,
   });
 
-  const fmtData = (d) =>
-    d ? new Date(d).toLocaleDateString("pt-BR") : "";
+ const fmtData = (d) => {
+  if (!d) return "";
+  const txt = String(d).slice(0, 10);
+  const [ano, mes, dia] = txt.split("-");
+  return `${dia}/${mes}/${ano}`;
+};
 
   function webhookPorModo() {
     if (modo === "DETALHADO") return "gera_fluxo_caixa_detalhado";
@@ -148,7 +152,7 @@ const dadosRender = dados.map((l) => {
               <th  className="text-left font-bold">Histórico</th>
               <th   className="text-right font-bold">Entrada</th>
               <th  className="text-right font-bold">Saída</th>
-              <th  className="text-right font-bold">Saldo</th>
+              <th  className="text-right font-bold">Saldo Acum</th>
             </tr>
           </thead>
           <tbody>
