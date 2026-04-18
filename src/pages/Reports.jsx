@@ -162,7 +162,16 @@ export default function Reports() {
       path: "/reldregerencial",
       icon: <IconReport />,
     },
+
+    {
+      title: "Relatório Fluxo Caixa Gráfico",
+      desc: "Fluxo de Caixa Realizado Gráfico",
+      path: "/fluxo-caixa-grafico",
+      icon: <IconReport />,
+    },
     
+
+      
   ];
 
  
