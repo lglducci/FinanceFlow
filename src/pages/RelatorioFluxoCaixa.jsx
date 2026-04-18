@@ -74,6 +74,12 @@ const dadosRender = dados.map((l) => {
   };
 });
 
+function trocarModo(novoModo) {
+  setModo(novoModo);
+  setDados([]);
+  setLoading(false);
+}
+
 
   return (
     <div className="p-6 bg-white rounded-xl shadow">
@@ -131,7 +137,7 @@ const dadosRender = dados.map((l) => {
               <input
                 type="checkbox"
                 checked={modo === m}
-                onChange={() => setModo(m)}
+               onChange={() => trocarModo(m)}
               />
               {m}
             </label>
