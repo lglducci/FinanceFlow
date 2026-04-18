@@ -310,13 +310,7 @@ export default function RelatorioFluxoCaixaGrafico() {
                       </span>
                     )}
                   />
-
-                  <Area
-                    type="monotone"
-                    dataKey="saldo_final"
-                    fill="url(#saldoArea)"
-                    stroke="none"
-                  />
+ 
 
                   <Bar
                     dataKey="entrada"
