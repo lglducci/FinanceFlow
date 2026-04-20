@@ -109,12 +109,7 @@ export default function Reports() {
       path: "/relatorios/saldoporconta",
       icon: <IconCashFlow />,
     },
-    {
-      title: "teste",
-      desc: "teste",
-      path: "/teste-echarts",
-       icon: <IconJournal />,
-    },
+     
     {
       title: "Balancete",
       desc: "Débito e crédito por conta contábil",
