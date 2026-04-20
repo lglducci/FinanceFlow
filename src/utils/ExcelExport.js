@@ -35,7 +35,7 @@ export default class ExcelExport {
         Data: "",
         Historico: "",
         Conta: "",
-        Valor: "",
+        Valor: null,
         NomeConta: ""
       });
     }
