@@ -14,13 +14,13 @@ export default function RelatorioFluxoProjetadpGrafico() {
   const [dataIni, setDataIni] = useState(hojeLocal());
   const [dataFim, setDataFim] = useState(hojeLocal());
   const [modo, setModo] = useState("MENSAL");
-  //const [dados, setDados] = useState([]);
+  const [dados, setDados] = useState([]);
 
-  const [dados, setDados] = useState([
-  { label: "01/04", entrada: 12000, saida: 4500, saldo_final: 7500, saldo_inicial: 0 },
-  { label: "02/04", entrada: 8000, saida: 5200, saldo_final: 10300, saldo_inicial: 7500 },
-  { label: "03/04", entrada: 9500, saida: 6100, saldo_final: 13700, saldo_inicial: 10300 },
-]);
+  //const [dados, setDados] = useState([
+ // { label: "01/04", entrada: 12000, saida: 4500, saldo_final: 7500, saldo_inicial: 0 },
+ // { label: "02/04", entrada: 8000, saida: 5200, saldo_final: 10300, saldo_inicial: 7500 },
+//  { label: "03/04", entrada: 9500, saida: 6100, saldo_final: 13700, saldo_inicial: 10300 },
+//]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
