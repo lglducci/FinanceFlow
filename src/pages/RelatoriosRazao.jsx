@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
  
 import { useLocation } from "react-router-dom";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+import ExcelExport from "../utils/ExcelExport";
 
 
 const empresa_id =
@@ -181,6 +182,28 @@ function linhaZerada(l) {
     }
   }
 
+ function exportarExcel() {
+ 
+  const dadosExcel = dados
+    .filter((l) => mostrarZeradas || !linhaZerada(l))
+    .map((l) => ({
+      Data: formatarData(l.data_mov || l.data),
+      Conta: l.conta_codigo ? `${l.conta_codigo} - ${l.conta_nome || ""}` : "",
+      Contrapartida: l.conta_contrapartida || "",
+      Historico: l.historico || "",
+      SaldoInicial: l.saldo_inicial ?? "",
+      Debito: l.debito ?? "",
+      Credito: l.credito ?? "",
+      Valor: l.valor ?? "",
+      Saldo: l.saldo_final ?? l.saldo ?? "",
+      Lote: l.lote_id ?? "",
+      Lancamento: l.id ?? "",
+      MesAno: l.mes_ano ?? "",
+    }));
+
+  ExcelExport.exportar(dadosExcel, "razao_contabil.xlsx");
+}
+
   return (
     <div className="p-6">
        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
@@ -267,22 +290,71 @@ function linhaZerada(l) {
 
     <button
       onClick={consultar}
-      className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
-    >
+      className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
       Consultar
     </button>
 
     <button
       onClick={() => window.print()}
-      className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
-    >
+        className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-gray-500 via-gray-600 to-green-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+   
       🖨️ Imprimir
     </button>
 
+    
+        <button
+            onClick={exportarExcel}
+            className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-green-500 via-green-600 to-green-800
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
+          Exportar Excel
+          </button>
+
     <button
       onClick={() => navigate("/reports")}
-      className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
-    >
+      className="
+                        px-5 py-2 rounded-full
+                        font-bold text-sm tracking-wide
+                        text-white
+                        bg-gradient-to-b from-gray-200 via-gray-400 to-gray-500
+                        border-2 border-black
+                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                        hover:brightness-110 hover:scale-105
+                        active:scale-95
+                        transition-all duration-200
+                        inline-flex items-center gap-2
+                      ">
       Voltar
     </button>
   </div>
