@@ -325,9 +325,9 @@ barMaxWidth: modo === "DIARIO" ? 22 : 32,
           <div className="flex flex-col gap-5">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
-                <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">
-                  Fluxo de Caixa Projetado
-                </h1>
+                 <div style={{ color: "red", fontWeight: "bold", fontSize: "32px" }}>
+  TESTE NOVO VERCEL 999
+</div>
                 <p className="text-sm text-slate-500 mt-1">
                   Visualização de entradas, saídas e saldo acumulado
                 </p>
