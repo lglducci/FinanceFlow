@@ -82,19 +82,26 @@ export default function Reports() {
   //  },
 
     {
-      title: "Fluxo de Caixa",
+      title: "Fluxo de Caixa Realizado",
       desc: "Entradas e saídas no período, mensal e consolidado",
      // path: "/relatorios/fluxo-caixa-detalhado",
         path: "/relatorios/fluxo-caixa",
        icon: <IconChart />,
     },
 
-   // {
- //     title: "Fluxo de Caixa Mensal",
-   //   desc: "Entradas e saídas mensal",
-//path: "/relatorios/fluxo-caixa-mensal",
-   //    icon: <IconChart />,
-   // },
+     {
+      title: "Relatório Fluxo Caixa Gráfico",
+      desc: "Fluxo de Caixa Realizado Gráfico",
+      path: "/fluxo-caixa-grafico",
+      icon: <IconChart />,
+    },
+
+      {
+      title: "Relatório Fluxo Caixa Projetado Gráfico",
+      desc: "Fluxo de Caixa Projetado Gráfico",
+      path: "/fluxo-projetado-grafico",
+      icon: <IconChart />,
+    },
 
     {
       title: "Saldos por Conta",
@@ -120,6 +127,8 @@ export default function Reports() {
       path: "/relatorios/dre",
         icon: <IconSigma />,
     },
+
+    
     
     {
       title: "Relação Razão",
@@ -163,12 +172,7 @@ export default function Reports() {
       icon: <IconReport />,
     },
 
-    {
-      title: "Relatório Fluxo Caixa Gráfico",
-      desc: "Fluxo de Caixa Realizado Gráfico",
-      path: "/fluxo-caixa-grafico",
-      icon: <IconReport />,
-    },
+    
     
 
       

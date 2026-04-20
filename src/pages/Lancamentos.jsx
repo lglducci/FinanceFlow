@@ -16,6 +16,8 @@ export default function Lancamentos() {
   const [total, setTotal] = useState(0);
   const [periodo, setPeriodo] = useState("mes");
   const [modalConta, setModalConta] = useState(false);
+  const [qtdVencidos, setQtdVencidos] = useState(0);
+  
   
 const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
@@ -322,12 +324,19 @@ setCarregando(true);
 
       setLista(tratados);
       setTotal(soma);
+
+        if (tipo === "vencidos") {
+     
+          setQtdVencidos(tratados.length);
+        }
        
     } catch (e) {
       console.error(e);
       alert("Erro ao consultar lançamentos.");
     }
     setCarregando(false);
+
+    
   }   
 
   function abrirNovoLancamento() {
@@ -541,6 +550,7 @@ async function processarTitulo(titulo, conta_id) {
        window.dispatchEvent(new Event("contabil-atualizado"));
     pesquisar(tipoOperacao || "");
    carregarSaldoConta(conta_id);
+    await carregarQtdVencidos();
   } catch (e) {
     alert("Erro ao processar título.");
   } finally {
@@ -608,6 +618,37 @@ const listaFiltrada = lista.filter((l) => {
     (l.valor || "").toString().toLowerCase().includes(texto)
   );
 });
+
+ 
+async function carregarQtdVencidos() {
+  try {
+    if (!empresa_id) {
+      setQtdVencidos(0);
+      return;
+    }
+
+    const url = buildWebhookUrl("vencidos", {
+      id_empresa: empresa_id
+    });
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    const item = Array.isArray(data) ? data[0] : data;
+    setQtdVencidos(Number(item?.qtd_vencidos || 0));
+  } catch (e) {
+    setQtdVencidos(0);
+  }
+}
+ 
+useEffect(() => {
+  setPeriodo("mes");
+  aplicarPeriodo("mes");
+
+  if (empresa_id) {
+    carregarQtdVencidos();
+  }
+}, [empresa_id]);
 
 return (
   <div className="p-4 space-y-4">
@@ -801,7 +842,7 @@ return (
         </div>
         {/* BUSCA */}
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-gray-700  mt-12">
               Busca
             </label>
 
@@ -813,6 +854,19 @@ return (
               className="px-3 py-2 border rounded-lg w-64"
             />
           </div>
+        
+
+        {qtdVencidos > 0 && (
+          <div className="text-center mt-12  ml-20">
+            <button
+              onClick={() => pesquisar("vencidos")}
+              className="text-red-500 font-bold underline text-sm"
+            >
+             Existem {qtdVencidos} título(s) vencido(s), favor verificar
+            </button>
+          </div>
+        )}
+          
 
        <div className="flex items-center gap-10"> 
 

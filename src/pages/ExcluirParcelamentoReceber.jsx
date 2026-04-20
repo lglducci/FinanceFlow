@@ -15,6 +15,8 @@ export default function ExcluirParcelamentoReceber() {
   const [parcelamentos, setParcelamentos] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [reloadKey, setReloadKey] = useState(0);
+
   // ============================================================
   // 1) CARREGAR CATEGORIAS + FORNECEDORES
   // ============================================================
@@ -153,6 +155,12 @@ export default function ExcluirParcelamentoReceber() {
 }
 
 
+useEffect(() => {
+  if (reloadKey > 0) {
+    filtrar();
+  }
+}, [reloadKey]);
+
   // ============================================================
   // TELA
   // ============================================================
@@ -259,7 +267,10 @@ export default function ExcluirParcelamentoReceber() {
                   <strong>Valor total:</strong> R${" "}
                   {Number(p.valor_total || 0).toLocaleString("pt-BR")}
                 </p>
-
+                <p>
+            <strong>Data Registro:</strong>{" "}
+            {new Date(p.criado_em).toLocaleDateString("pt-BR")}
+          </p>
                 <p><strong>Parcelas:</strong> {Number(p.parcelas || 0)}</p>
                 <p><strong>Status:</strong> {p.status}</p>
                 <p><strong>Lote ID:</strong> {p.lote_id}</p>

@@ -22,6 +22,7 @@ const [dataFim, setDataFim] = useState(hojeLocal());
  
 const [loadingDatas, setLoadingDatas] = useState(true);
 const [ultimoFechamento, setUltimoFechamento] = useState("15/04/2025"); 
+const [processar_de, SetDataReferencia] = useState("15/04/2025"); 
 // depois você liga no webhook
 const [mostrarContabil, setMostrarContabil] = useState(false);
 const [dados, setDados] = useState([]);
@@ -258,10 +259,12 @@ async function gerarStaging() {
     if (!item?.ultimo_dia_processado) return;
 
     const data = item.ultimo_dia_processado.slice(0, 10);
+     const data_processar_de = item.data_referencia.slice(0, 10);   
 
     setUltimoFechamento(data);
-    setDataIni(data);
-    setDataFim( data);
+    SetDataReferencia(data_processar_de);
+    setDataIni(data_processar_de);
+    setDataFim( hojeLocal());
   } finally {
     setLoadingDatas(false);
   }

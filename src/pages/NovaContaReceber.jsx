@@ -16,6 +16,7 @@ export default function NovaContaReceber() {
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
+     data: hojeMaisDias(1),
     vencimento: hojeMaisDias(1),
     categoria_id: "",
     fornecedor_id: "",
@@ -192,6 +193,7 @@ const THEME = {
         empresa_id,
         descricao: form.descricao,
         valor: Number(form.valor),
+        data:  form.data,
         vencimento: form.vencimento,
         categoria_id: Number(form.categoria_id) ,
         fornecedor_id: Number(form.fornecedor_id) || null,
@@ -217,6 +219,7 @@ const THEME = {
 
     if (sucesso) {
       alert("Conta a Receber cadastrada com sucesso!");
+      window.dispatchEvent(new Event("contabil-atualizado"));
       navigate("/contas-receber");
       return;
     }
@@ -360,22 +363,35 @@ useEffect(() => {
           />
         </div>
           </div>
-                   <div>
-                      <label className="label label-required font-bold text-[#1e40af]">
-                        Forma de Recebimento
-                      </label>
 
-                      <select
-                        name="forma_recebimento"
-                        value={form.forma_recebimento || ""}
-                        onChange={handleChange}
-                        className="input-premium w-full"
-                      >
-                        <option value="">Selecione</option>  
-                        <option value="cartao_credito">Cartão Crédito</option> 
-                          <option value="aprazo">A prazo</option>
-                      </select>
-                    </div>
+              <div className="w-2/3"> 
+              <label   className="label label-required">Data</label>
+              <input
+                type="date"
+                min={hojeMaisDias(-7)}
+                name="data"
+                value={form.data}
+                onChange={handleChange}
+                className="input-premium w-24"
+                placeholder="data"
+              />
+        </div>
+              <div>
+                <label className="label label-required font-bold text-[#1e40af]">
+                  Forma de Recebimento
+                </label>
+
+                <select
+                  name="forma_recebimento"
+                  value={form.forma_recebimento || ""}
+                  onChange={handleChange}
+                  className="input-premium w-full"
+                >
+                  <option value="">Selecione</option>  
+                  <option value="cartao_credito">Cartão Crédito</option> 
+                    <option value="aprazo">A prazo</option>
+                </select>
+              </div>
           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">  
         {/* CATEGORIA */}
@@ -462,16 +478,16 @@ useEffect(() => {
         {/* VENCIMENTO */}
         <div>
             <div className="w-2/3"> 
-          <label   className="label label-required">Vencimento</label>
-          <input
-            type="date"
-             min={hojeMaisDias(1)}
-            name="vencimento"
-            value={form.vencimento}
-            onChange={handleChange}
-             className="input-premium w-24"
-            placeholder="vencto"
-          />
+              <label   className="label label-required">Vencimento</label>
+              <input
+                type="date"
+                min={hojeMaisDias(1)}
+                name="vencimento"
+                value={form.vencimento}
+                onChange={handleChange}
+                className="input-premium w-24"
+                placeholder="vencto"
+              />
         </div>
          </div>
          </div>  
