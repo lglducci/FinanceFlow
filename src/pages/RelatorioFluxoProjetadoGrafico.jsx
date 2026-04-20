@@ -452,12 +452,9 @@ barMaxWidth: modo === "DIARIO" ? 22 : 32,
                       height: 560,
                     }}
                   >
-                <ReactECharts
-                  option={option}
-                  style={{ width: "100%", height: "100%" }}
-                  notMerge={true}
-                  lazyUpdate={true}
-                />
+                 <div style={{ color: "red", fontWeight: "bold" }}>
+  GRAFICO REMOVIDO TEMPORARIAMENTE
+</div>
               </div>
             </div>
           )}
