@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
 import ReactECharts from "echarts-for-react";
+import "echarts-gl";
 
 export default function RelatorioFluxoProjetadpGrafico() {
   const navigate = useNavigate();
