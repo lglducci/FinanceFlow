@@ -16,11 +16,7 @@ export default function RelatorioFluxoProjetadpGrafico() {
   const [modo, setModo] = useState("MENSAL");
   const [dados, setDados] = useState([]);
 
-  //const [dados, setDados] = useState([
- // { label: "01/04", entrada: 12000, saida: 4500, saldo_final: 7500, saldo_inicial: 0 },
- // { label: "02/04", entrada: 8000, saida: 5200, saldo_final: 10300, saldo_inicial: 7500 },
-//  { label: "03/04", entrada: 9500, saida: 6100, saldo_final: 13700, saldo_inicial: 10300 },
-//]);
+  
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
@@ -47,6 +43,92 @@ export default function RelatorioFluxoProjetadpGrafico() {
 
     return payload;
   }
+
+
+  function serieBarra3D({
+  name,
+  valores,
+  xShift = 0,
+  largura = 18,
+  profundidadeX = 10,
+  profundidadeY = 7,
+  corFrente,
+  corTopo,
+  corLado,
+  sombra = "rgba(0,0,0,0.18)",
+}) {
+  return {
+    name,
+    type: "custom",
+    renderItem: (params, api) => {
+      const idx = api.value(0);
+      const valor = Number(api.value(1) || 0);
+
+      const xBase = api.coord([idx, 0])[0] + xShift;
+      const yTopo = api.coord([idx, valor])[1];
+      const yBase = api.coord([idx, 0])[1];
+
+      const altura = yBase - yTopo;
+      if (altura <= 0) return null;
+
+      const x = xBase - largura / 2;
+      const y = yTopo;
+
+      return {
+        type: "group",
+        children: [
+          {
+            type: "rect",
+            shape: {
+              x,
+              y,
+              width: largura,
+              height: altura,
+              r: 4,
+            },
+            style: {
+              fill: corFrente,
+              shadowBlur: 12,
+              shadowColor: sombra,
+            },
+          },
+
+          {
+            type: "polygon",
+            shape: {
+              points: [
+                [x, y],
+                [x + profundidadeX, y - profundidadeY],
+                [x + largura + profundidadeX, y - profundidadeY],
+                [x + largura, y],
+              ],
+            },
+            style: {
+              fill: corTopo,
+            },
+          },
+
+          {
+            type: "polygon",
+            shape: {
+              points: [
+                [x + largura, y],
+                [x + largura + profundidadeX, y - profundidadeY],
+                [x + largura + profundidadeX, yBase - profundidadeY],
+                [x + largura, yBase],
+              ],
+            },
+            style: {
+              fill: corLado,
+            },
+          },
+        ],
+      };
+    },
+    data: valores.map((v, i) => [i, Number(v || 0)]),
+    z: 10,
+  };
+}
 
   async function consultar() {
     setLoading(true);
@@ -75,13 +157,23 @@ export default function RelatorioFluxoProjetadpGrafico() {
   setErro("");
 }
 
+
+function formatarMesAno(d) {
+  if (!d) return "";
+  const txt = String(d).slice(0, 10);
+  const [ano, mes] = txt.split("-");
+  return `${mes}/${ano}`;
+}
+
+
  const dadosGrafico = useMemo(() => {
   return dados.map((item) => {
     const label =
-      modo === "DIARIO"
-        ? formatarData(item.data_ref)
-        : item.legenda ||
-          `${formatarData(item.periodo_ini)} a ${formatarData(item.periodo_fim)}`;
+  modo === "DIARIO"
+    ? formatarData(item.data_ref)
+    : modo === "MENSAL"
+    ? formatarMesAno(item.periodo_ini)
+    : item.legenda || `${formatarData(item.periodo_ini)} - ${formatarData(item.periodo_fim)}`;
 
     return {
       ...item,
@@ -137,191 +229,183 @@ export default function RelatorioFluxoProjetadpGrafico() {
 }, [dadosGrafico, modo]);
 
   const option = useMemo(() => {
-    return {
-      backgroundColor: "#0b1020",
+  const entradas = dadosGraficoRender.map((d) => Number(d.entrada || 0));
+  const saidas = dadosGraficoRender.map((d) => Number(d.saida || 0));
+  const saldos = dadosGraficoRender.map((d) => Number(d.saldo_final || 0));
 
-      tooltip: {
-        trigger: "axis",
-        backgroundColor: "#111827",
-        borderColor: "#374151",
-        borderWidth: 1,
-        padding: 12,
-        textStyle: { color: "#ffffff" },
-        formatter: (params) => {
-          const linhas = params.map((p) => {
-            const valor = fmtMoeda.format(Number(p.value || 0));
-            return `${p.marker} ${p.seriesName}: <b>${valor}</b>`;
-          });
+  return {
+    backgroundColor: "#0b1020",
 
-          return `<div style="font-weight:700;margin-bottom:8px;color:#fff;">${params?.[0]?.axisValue || ""}</div>${linhas.join("<br/>")}`;
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
+        shadowStyle: {
+          color: "rgba(255,255,255,0.04)",
         },
       },
- dataZoom: [
-  {
-    type: "inside",
-    xAxisIndex: 0,
-    start: 0,
-    end: modo === "DIARIO" ? 25 : 100,
-  },
-  {
-    type: "slider",
-    xAxisIndex: 0,
-    start: 0,
-    end: modo === "DIARIO" ? 25 : 100,
-    height: 18,
-    bottom: 10,
-  },
-],
-      legend: {
-        top: 10,
-        icon: "roundRect",
-        itemWidth: 18,
-        itemHeight: 10,
-        textStyle: {
-          color: "#e5e7eb",
-          fontWeight: 700,
-          fontSize: 13,
-        },
-        data: ["Entradas", "Saídas", "Saldo"],
-      },
+      backgroundColor: "#111827",
+      borderColor: "#374151",
+      borderWidth: 1,
+      padding: 12,
+      textStyle: { color: "#ffffff" },
+      formatter: (params) => {
+        const linhas = params.map((p) => {
+          const bruto = Array.isArray(p.value) ? p.value[1] : p.value;
+          const valor = fmtMoeda.format(Number(bruto || 0));
+          return `${p.marker} ${p.seriesName}: <b>${valor}</b>`;
+        });
 
-        grid: {
-          left: 20,
-          right: 20,
-          top: 70,
-          bottom: 20,
-          containLabel: true,
-        },
-      xAxis: {
-        type: "category",
-        data: dadosGraficoRender.map((d) => d.label),
-        axisLine: { lineStyle: { color: "#475569" } },
-        axisTick: { lineStyle: { color: "#475569" } },
-       axisLabel: {
+        return `<div style="font-weight:700;margin-bottom:8px;color:#fff;">${
+          params?.[0]?.axisValue || ""
+        }</div>${linhas.join("<br/>")}`;
+      },
+    },
+
+    dataZoom: [
+      {
+        type: "inside",
+        xAxisIndex: 0,
+        start: 0,
+        end: modo === "DIARIO" ? 25 : 100,
+      },
+      {
+        type: "slider",
+        xAxisIndex: 0,
+        start: 0,
+        end: modo === "DIARIO" ? 25 : 100,
+        height: 18,
+        bottom: 10,
+      },
+    ],
+
+    legend: {
+      top: 10,
+      icon: "roundRect",
+      itemWidth: 18,
+      itemHeight: 10,
+      textStyle: {
+        color: "#e5e7eb",
+        fontWeight: 700,
+        fontSize: 13,
+      },
+      data: ["Entradas", "Saídas", "Saldo"],
+    },
+
+    grid: {
+      left: 20,
+      right: 20,
+      top: 70,
+      bottom: 40,
+      containLabel: true,
+    },
+
+    xAxis: {
+      type: "category",
+      data: dadosGraficoRender.map((d) => d.label),
+      axisLine: { lineStyle: { color: "#475569" } },
+      axisTick: { lineStyle: { color: "#475569" } },
+      axisLabel: {
         color: "#cbd5e1",
         fontSize: 11,
         interval: 0,
         rotate: modo === "DIARIO" ? 45 : 0,
       },
-      },
+    },
 
     yAxis: [
-  {
-    type: "value",
-    name: "Entradas / Saídas",
-    axisLine: { lineStyle: { color: "#475569" } },
-    axisTick: { lineStyle: { color: "#475569" } },
-    splitLine: {
-      lineStyle: {
-        color: "rgba(255,255,255,0.08)",
-        type: "dashed",
-      },
-    },
-    axisLabel: {
-      color: "#cbd5e1",
-      formatter: (value) => abreviarValor(value),
-    },
-  },
-  {
-    type: "value",
-    name: "Saldo",
-    axisLine: { lineStyle: { color: "#60a5fa" } },
-    axisTick: { lineStyle: { color: "#60a5fa" } },
-    splitLine: { show: false },
-    axisLabel: {
-      color: "#93c5fd",
-      formatter: (value) => abreviarValor(value),
-    },
-  },
-],
-
-      series: [
-        {
-          name: "Entradas",
-          type: "bar",
-            yAxisIndex: 0,
-          data: dadosGraficoRender.map((d) => d.entrada),
-          barWidth: modo === "DIARIO" ? 22 : 32,
-barMaxWidth: modo === "DIARIO" ? 22 : 32,
-          itemStyle: {
-            color: {
-              type: "linear",
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: "#4ade80" },
-                { offset: 1, color: "#15803d" },
-              ],
-            },
-            borderRadius: [10, 10, 0, 0],
-            shadowBlur: 18,
-            shadowColor: "rgba(74,222,128,0.35)",
-          },
-        },
-        {
-          name: "Saídas",
-          type: "bar",
-           yAxisIndex: 0,
-          data: dadosGraficoRender.map((d) => d.saida),
-          barMaxWidth: 28,
-          itemStyle: {
-            color: {
-              type: "linear",
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: "#fb7185" },
-                { offset: 1, color: "#be123c" },
-              ],
-            },
-            borderRadius: [10, 10, 0, 0],
-            shadowBlur: 18,
-            shadowColor: "rgba(251,113,133,0.35)",
-          },
-        },
-        {
-          name: "Saldo",
-          type: "line",
-          yAxisIndex: 1,
-          smooth: true,
-          data: dadosGraficoRender.map((d) => d.saldo_final),
-          symbol: "circle",
-          symbolSize: 10,
+      {
+        type: "value",
+        name: "Entradas / Saídas",
+        axisLine: { lineStyle: { color: "#475569" } },
+        axisTick: { lineStyle: { color: "#475569" } },
+        splitLine: {
           lineStyle: {
-            width: 5,
-            color: "#60a5fa",
-            shadowBlur: 12,
-            shadowColor: "rgba(96,165,250,0.35)",
-          },
-          itemStyle: {
-            color: "#60a5fa",
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          },
-          areaStyle: {
-            color: {
-              type: "linear",
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: "rgba(96,165,250,0.28)" },
-                { offset: 1, color: "rgba(96,165,250,0.03)" },
-              ],
-            },
+            color: "rgba(255,255,255,0.08)",
+            type: "dashed",
           },
         },
-      ],
+        axisLabel: {
+          color: "#cbd5e1",
+          formatter: (value) => abreviarValor(value),
+        },
+      },
+      {
+        type: "value",
+        name: "Saldo",
+        axisLine: { lineStyle: { color: "#60a5fa" } },
+        axisTick: { lineStyle: { color: "#60a5fa" } },
+        splitLine: { show: false },
+        axisLabel: {
+          color: "#93c5fd",
+          formatter: (value) => abreviarValor(value),
+        },
+      },
+    ],
 
-      animationDuration: 1200,
-      animationEasing: "cubicOut",
-    };
-  }, [dadosGraficoRender, fmtMoeda]);
+    series: [
+      serieBarra3D({
+        name: "Entradas",
+        valores: entradas,
+        xShift: -14,
+        largura: modo === "DIARIO" ? 14 : 18,
+        corFrente: "#22c55e",
+        corTopo: "#4ade80",
+        corLado: "#15803d",
+        sombra: "rgba(34,197,94,0.35)",
+      }),
+
+      serieBarra3D({
+        name: "Saídas",
+        valores: saidas,
+        xShift: 14,
+        largura: modo === "DIARIO" ? 14 : 18,
+        corFrente: "#f43f5e",
+        corTopo: "#fb7185",
+        corLado: "#be123c",
+        sombra: "rgba(244,63,94,0.35)",
+      }),
+
+      {
+        name: "Saldo",
+        type: "line",
+        yAxisIndex: 1,
+        smooth: true,
+        data: saldos,
+        symbol: "circle",
+        symbolSize: 10,
+        lineStyle: {
+          width: 5,
+          color: "#60a5fa",
+          shadowBlur: 12,
+          shadowColor: "rgba(96,165,250,0.35)",
+        },
+        itemStyle: {
+          color: "#60a5fa",
+          borderColor: "#ffffff",
+          borderWidth: 2,
+        },
+        areaStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(96,165,250,0.28)" },
+              { offset: 1, color: "rgba(96,165,250,0.03)" },
+            ],
+          },
+        },
+        z: 20,
+      },
+    ],
+
+    animationDuration: 900,
+    animationEasing: "cubicOut",
+  };
+}, [dadosGraficoRender, modo]);
 
   return (
     <div className="p-6 bg-[#f8fafc] min-h-screen">
