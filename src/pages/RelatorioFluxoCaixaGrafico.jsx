@@ -2,18 +2,90 @@
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
-import {
-  ResponsiveContainer,
-  ComposedChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Bar,
-  Line,
-  Area,
-} from "recharts";
+import ReactECharts from "echarts-for-react";
+
+function serieBarra3D({
+  name,
+  valores,
+  xShift = 0,
+  largura = 18,
+  profundidadeX = 10,
+  profundidadeY = 7,
+  corFrente,
+  corTopo,
+  corLado,
+  sombra = "rgba(0,0,0,0.18)",
+}) {
+  return {
+    name,
+    type: "custom",
+    renderItem: (params, api) => {
+      const idx = api.value(0);
+      const valor = Number(api.value(1) || 0);
+
+      const xBase = api.coord([idx, 0])[0] + xShift;
+      const yTopo = api.coord([idx, valor])[1];
+      const yBase = api.coord([idx, 0])[1];
+
+      const altura = yBase - yTopo;
+      if (altura <= 0) return null;
+
+      const x = xBase - largura / 2;
+      const y = yTopo;
+
+      return {
+        type: "group",
+        children: [
+          {
+            type: "rect",
+            shape: {
+              x,
+              y,
+              width: largura,
+              height: altura,
+              r: 4,
+            },
+            style: {
+              fill: corFrente,
+              shadowBlur: 12,
+              shadowColor: sombra,
+            },
+          },
+          {
+            type: "polygon",
+            shape: {
+              points: [
+                [x, y],
+                [x + profundidadeX, y - profundidadeY],
+                [x + largura + profundidadeX, y - profundidadeY],
+                [x + largura, y],
+              ],
+            },
+            style: {
+              fill: corTopo,
+            },
+          },
+          {
+            type: "polygon",
+            shape: {
+              points: [
+                [x + largura, y],
+                [x + largura + profundidadeX, y - profundidadeY],
+                [x + largura + profundidadeX, yBase - profundidadeY],
+                [x + largura, yBase],
+              ],
+            },
+            style: {
+              fill: corLado,
+            },
+          },
+        ],
+      };
+    },
+    data: valores.map((v, i) => [i, Number(v || 0)]),
+    z: 10,
+  };
+}
 
 export default function RelatorioFluxoCaixaGrafico() {
   const navigate = useNavigate();
@@ -87,7 +159,7 @@ export default function RelatorioFluxoCaixaGrafico() {
         modo === "DIARIO"
           ? formatarData(item.data_ref)
           : item.legenda ||
-            `${formatarData(item.periodo_ini)} a ${formatarData(item.periodo_fim)}`;
+            `${formatarData(item.periodo_ini)} - ${formatarData(item.periodo_fim)}`;
 
       return {
         ...item,
@@ -131,6 +203,195 @@ export default function RelatorioFluxoCaixaGrafico() {
       movimento: entradas - saidas,
     };
   }, [dadosGrafico]);
+
+  const dadosGraficoRender = useMemo(() => {
+    if (modo === "DIARIO") {
+      return dadosGrafico.filter((item) => {
+        return Number(item.entrada || 0) !== 0 || Number(item.saida || 0) !== 0;
+      });
+    }
+
+    return dadosGrafico;
+  }, [dadosGrafico, modo]);
+
+  const option = useMemo(() => {
+    const entradas = dadosGraficoRender.map((d) => Number(d.entrada || 0));
+    const saidas = dadosGraficoRender.map((d) => Number(d.saida || 0));
+    const saldos = dadosGraficoRender.map((d) => Number(d.saldo_final || 0));
+
+    return {
+      backgroundColor: "#0b1020",
+
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+          shadowStyle: {
+            color: "rgba(255,255,255,0.04)",
+          },
+        },
+        backgroundColor: "#111827",
+        borderColor: "#374151",
+        borderWidth: 1,
+        padding: 12,
+        textStyle: { color: "#ffffff" },
+        formatter: (params) => {
+          const linhas = params.map((p) => {
+            const bruto = Array.isArray(p.value) ? p.value[1] : p.value;
+            const valor = fmtMoeda.format(Number(bruto || 0));
+            return `${p.marker} ${p.seriesName}: <b>${valor}</b>`;
+          });
+
+          return `<div style="font-weight:700;margin-bottom:8px;color:#fff;">${
+            params?.[0]?.axisValue || ""
+          }</div>${linhas.join("<br/>")}`;
+        },
+      },
+
+      dataZoom: [
+        {
+          type: "inside",
+          xAxisIndex: 0,
+          start: 0,
+          end: modo === "DIARIO" ? 25 : 100,
+        },
+        {
+          type: "slider",
+          xAxisIndex: 0,
+          start: 0,
+          end: modo === "DIARIO" ? 25 : 100,
+          height: 18,
+          bottom: 10,
+        },
+      ],
+
+      legend: {
+        top: 10,
+        icon: "roundRect",
+        itemWidth: 18,
+        itemHeight: 10,
+        textStyle: {
+          color: "#e5e7eb",
+          fontWeight: 700,
+          fontSize: 13,
+        },
+        data: ["Entradas", "Saídas", "Saldo"],
+      },
+
+      grid: {
+        left: 20,
+        right: 20,
+        top: 70,
+        bottom: 40,
+        containLabel: true,
+      },
+
+      xAxis: {
+        type: "category",
+        data: dadosGraficoRender.map((d) => d.label),
+        axisLine: { lineStyle: { color: "#475569" } },
+        axisTick: { lineStyle: { color: "#475569" } },
+        axisLabel: {
+          color: "#cbd5e1",
+          fontSize: 11,
+          interval: 0,
+          rotate: modo === "DIARIO" ? 45 : 0,
+        },
+      },
+
+      yAxis: [
+        {
+          type: "value",
+          name: "Entradas / Saídas",
+          axisLine: { lineStyle: { color: "#475569" } },
+          axisTick: { lineStyle: { color: "#475569" } },
+          splitLine: {
+            lineStyle: {
+              color: "rgba(255,255,255,0.08)",
+              type: "dashed",
+            },
+          },
+          axisLabel: {
+            color: "#cbd5e1",
+            formatter: (value) => abreviarValor(value),
+          },
+        },
+        {
+          type: "value",
+          name: "Saldo",
+          axisLine: { lineStyle: { color: "#60a5fa" } },
+          axisTick: { lineStyle: { color: "#60a5fa" } },
+          splitLine: { show: false },
+          axisLabel: {
+            color: "#93c5fd",
+            formatter: (value) => abreviarValor(value),
+          },
+        },
+      ],
+
+      series: [
+        serieBarra3D({
+          name: "Entradas",
+          valores: entradas,
+          xShift: -14,
+          largura: modo === "DIARIO" ? 14 : 18,
+          corFrente: "#22c55e",
+          corTopo: "#4ade80",
+          corLado: "#15803d",
+          sombra: "rgba(34,197,94,0.35)",
+        }),
+
+        serieBarra3D({
+          name: "Saídas",
+          valores: saidas,
+          xShift: 14,
+          largura: modo === "DIARIO" ? 14 : 18,
+          corFrente: "#f43f5e",
+          corTopo: "#fb7185",
+          corLado: "#be123c",
+          sombra: "rgba(244,63,94,0.35)",
+        }),
+
+        {
+          name: "Saldo",
+          type: "line",
+          yAxisIndex: 1,
+          smooth: true,
+          data: saldos,
+          symbol: "circle",
+          symbolSize: 10,
+          lineStyle: {
+            width: 5,
+            color: "#60a5fa",
+            shadowBlur: 12,
+            shadowColor: "rgba(96,165,250,0.35)",
+          },
+          itemStyle: {
+            color: "#60a5fa",
+            borderColor: "#ffffff",
+            borderWidth: 2,
+          },
+          areaStyle: {
+            color: {
+              type: "linear",
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: "rgba(96,165,250,0.28)" },
+                { offset: 1, color: "rgba(96,165,250,0.03)" },
+              ],
+            },
+          },
+          z: 20,
+        },
+      ],
+
+      animationDuration: 900,
+      animationEasing: "cubicOut",
+    };
+  }, [dadosGraficoRender, modo]);
 
   return (
     <div className="p-6 bg-[#f8fafc] min-h-screen">
@@ -247,98 +508,32 @@ export default function RelatorioFluxoCaixaGrafico() {
           </div>
 
           {loading ? (
-            <div className="h-[460px] flex items-center justify-center text-blue-600 font-bold">
+            <div className="h-[560px] flex items-center justify-center text-blue-600 font-bold">
               Carregando...
             </div>
           ) : erro ? (
-            <div className="h-[460px] flex items-center justify-center text-red-600 font-bold">
+            <div className="h-[560px] flex items-center justify-center text-red-600 font-bold">
               {erro}
             </div>
           ) : dadosGrafico.length === 0 ? (
-            <div className="h-[460px] flex items-center justify-center text-slate-500 font-semibold">
+            <div className="h-[560px] flex items-center justify-center text-slate-500 font-semibold">
               Nenhum dado carregado.
             </div>
           ) : (
-            <div style={{ width: "100%", height: 460 }}>
-              <ResponsiveContainer>
-                <ComposedChart
-                  data={dadosGrafico}
-                  margin={{ top: 16, right: 12, left: 0, bottom: 0 }}
-                  barCategoryGap="26%"
-                >
-                  <defs>
-                    <linearGradient id="saldoArea" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.20} />
-                      <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.02} />
-                    </linearGradient>
-                  </defs>
-
-                  <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" />
-
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fill: "#64748b", fontSize: 12 }}
-                    axisLine={{ stroke: "#cbd5e1" }}
-                    tickLine={{ stroke: "#cbd5e1" }}
-                  />
-
-                  <YAxis
-                    tick={{ fill: "#64748b", fontSize: 12 }}
-                    axisLine={{ stroke: "#cbd5e1" }}
-                    tickLine={{ stroke: "#cbd5e1" }}
-                    tickFormatter={(v) => abreviarValor(v)}
-                  />
-
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#ffffff",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: 16,
-                      boxShadow: "0 10px 30px rgba(15, 23, 42, 0.10)",
-                    }}
-                    formatter={(value, name) => [
-                      fmtMoeda.format(Number(value || 0)),
-                      nomeSerie(name),
-                    ]}
-                    labelStyle={{ color: "#0f172a", fontWeight: 700 }}
-                  />
-
-                  <Legend
-                    formatter={(value) => (
-                      <span style={{ color: "#475569", fontWeight: 600 }}>
-                        {nomeSerie(value)}
-                      </span>
-                    )}
-                  />
- 
-
-                  <Bar
-                    dataKey="entrada"
-                    name="entrada"
-                    fill="#10b981"
-                    radius={[10, 10, 0, 0]}
-                    maxBarSize={34}
-                  />
-
-                  <Bar
-                    dataKey="saida"
-                    name="saida"
-                    fill="#ef4444"
-                    radius={[10, 10, 0, 0]}
-                    maxBarSize={34}
-                  />
-
-                  <Line
-                    type="monotone"
-                    dataKey="saldo_final"
-                    name="saldo_final"
-                    stroke="#2563eb"
-                    strokeWidth={3.5}
-                    dot={{ r: 4, fill: "#2563eb", strokeWidth: 0 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
+            <div className="w-full">
+              <div
+                style={{
+                  width: "100%",
+                  height: 560,
+                }}
+              >
+                <ReactECharts
+                  option={option}
+                  style={{ width: "100%", height: "100%" }}
+                  notMerge={true}
+                  lazyUpdate={true}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -370,13 +565,6 @@ function formatarData(d) {
   return `${dia}/${mes}/${ano}`;
 }
 
-function nomeSerie(chave) {
-  if (chave === "entrada") return "Entradas";
-  if (chave === "saida") return "Saídas";
-  if (chave === "saldo_final") return "Saldo";
-  return chave;
-}
-
 function abreviarValor(v) {
   const n = Number(v || 0);
   if (Math.abs(n) >= 1000000) return `R$ ${(n / 1000000).toFixed(1)}M`;
@@ -402,7 +590,7 @@ function CardMovimento({ entradas, saidas, movimento, saldoInicial }) {
           <div className="text-2xl font-extrabold text-slate-800 mt-1">
             Movimento financeiro
           </div>
-        </div> 
+        </div>
         <div
           className={`rounded-3xl shadow-sm p-6 h-full flex flex-col justify-between border overflow-hidden ${
             positivo
@@ -443,10 +631,11 @@ function CardMovimento({ entradas, saidas, movimento, saldoInicial }) {
         <MiniCard
           titulo="Resultado líquido"
           valor={fmt.format(Number(movimento || 0))}
-          fundo={positivo
-          ? "bg-gradient-to-br from-blue-500/15 via-sky-500/10 to-cyan-500/15"
-          : "bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-yellow-500/15"
-        }
+          fundo={
+            positivo
+              ? "bg-gradient-to-br from-blue-500/15 via-sky-500/10 to-cyan-500/15"
+              : "bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-yellow-500/15"
+          }
           tituloCor={positivo ? "text-blue-700" : "text-amber-700"}
           valorCor={positivo ? "text-blue-700" : "text-amber-700"}
         />
@@ -457,7 +646,9 @@ function CardMovimento({ entradas, saidas, movimento, saldoInicial }) {
 
 function MiniCard({ titulo, valor, fundo, tituloCor, valorCor }) {
   return (
-    <div className={`rounded-2xl p-5 border border-slate-200/70 shadow-sm backdrop-blur-sm ${fundo}`}>
+    <div
+      className={`rounded-2xl p-5 border border-slate-200/70 shadow-sm backdrop-blur-sm ${fundo}`}
+    >
       <div className={`text-sm font-semibold ${tituloCor}`}>{titulo}</div>
       <div className={`text-2xl font-extrabold mt-2 tracking-tight ${valorCor}`}>
         {valor}
@@ -465,7 +656,6 @@ function MiniCard({ titulo, valor, fundo, tituloCor, valorCor }) {
     </div>
   );
 }
- 
 
 function CardSaldoFinal({ valor }) {
   const fmt = new Intl.NumberFormat("pt-BR", {
