@@ -12,6 +12,8 @@ import Header from "./components/Header";
 import Login from "./pages/Login";
 import RedefinirSenha from "./pages/RedefinirSenha";
 
+import TesteEcharts from "./pages/TesteEcharts";
+
 
 import Dashboard from "./pages/Dashboard";
 
@@ -95,6 +97,7 @@ import MapContabilImpacto from "./pages/MapContabilImpacto";
 import RelatorioFluxoCaixa from "./pages/RelatorioFluxoCaixa";
 
 import RelatorioFluxoCaixaGrafico  from   "./pages/RelatorioFluxoCaixaGrafico";
+import RelatorioFluxoProjetadoGrafico  from   "./pages/RelatorioFluxoProjetadoGrafico";
 
 import CompraCartao from "./pages/CompraCartao";
 import LancamentosContabeis from "./pages/LancamentosContabeis";
@@ -302,7 +305,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
     
       <Route path="/relatorios/fluxo-caixa" element={<RelatorioFluxoCaixa />}/>
        <Route path="/fluxo-caixa-grafico" element={<RelatorioFluxoCaixaGrafico />}/>
-
+          <Route path="/fluxo-projetado-grafico" element={<RelatorioFluxoProjetadoGrafico />}/>
        
    
   <Route path="/compras-cartao" element={<CompraCartao />} />
@@ -429,7 +432,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 <Route path="/reldregerencial" element={<RelatorioDreGerencial />} />
   <Route path="/dashboardfinanceiro" element={<DashboardFinanceiro />} />
 
- 
+ <Route path="/teste-echarts" element={<TesteEcharts />} />
 
 </Routes>
 
