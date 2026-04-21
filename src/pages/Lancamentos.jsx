@@ -194,6 +194,21 @@ useEffect(() => {
   let vence_sete_dias = "";
   let origem = "";
 
+
+  if (tipo === "titulos_pagos") {
+  dataIniLocal = "2020-01-01";
+  dataFimLocal = hojeLocal();
+  contaLocal = 0;
+  categoriaLocal = 0;
+  fornecedorLocal = 0;
+  tipoOperacaoLocal = "transacao";
+  vencidoLocal = "";
+  origem = "titulos_pagos";
+}
+
+
+ 
+
   if (tipo === "vencidos") {
     dataIniLocal = "2020-01-01";
     dataFimLocal = hojeLocal();
@@ -235,7 +250,7 @@ useEffect(() => {
     contaLocal = 0;
     categoriaLocal = 0;
     fornecedorLocal = 0;
-    tipoOperacaoLocal = "";
+    tipoOperacaoLocal = "transacao";
     vencidoLocal = "";
      vence_hoje = "";
      vence_sete_dias = "";
@@ -975,8 +990,20 @@ return (
                           }}
                       className="btn-pill btn-red"
                     >
-                      🔁 Estorno
+                      🔁 Estornados
                     </button>
+                    
+
+                        <button
+                       onClick={() => {
+                            setTipoOperacao("titulos_pagos");
+                            pesquisar("titulos_pagos");
+                          }}
+                      className="btn-pill btn-purple"
+                    >
+                      ✅ Titulos Pagos
+                    </button>
+                    
 
                 </div>
          
