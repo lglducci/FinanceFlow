@@ -34,6 +34,12 @@ export default function TitulosVencidos() {
     carregarContas();
   }, [empresa_id]);
 
+
+  function formatarDataSemFuso(data) {
+  if (!data) return "";
+  return data.substring(0, 10).split("-").reverse().join("/");
+}
+
   /* ================= SALDO ================= */
   useEffect(() => {
     async function carregarSaldo() {
@@ -301,7 +307,7 @@ export default function TitulosVencidos() {
               </td>
 
               <td className="px-3 py-2 text-center">
-                {new Date(l.vencimento).toLocaleDateString("pt-BR")}
+                {formatarDataSemFuso(l.vencimento)}
               </td>
 
               <td

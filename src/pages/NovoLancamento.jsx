@@ -691,18 +691,18 @@ const podeCriarModelo =
     if (["cartao_credito","boleto","aprazo"].includes(form.forma_recebimento))
       return "#16a34a"; // verde (conta receber)
 
-    return "#eab308"; // amarelo (financeiro)
+    return "#372e13"; // amarelo (financeiro)
   }
 
   if (form.tipo === "saida") {
 
     if (form.forma_pagamento === "cartao_credito")
-      return "#2563eb"; // azul (compra cartão)
+      return "#1349bd"; // azul (compra cartão)
 
     if (form.forma_pagamento === "aprazo")
-      return "#dc2626"; // vermelho (conta pagar)
+      return "#ae1111"; // vermelho (conta pagar)
 
-    return "#eab308"; // financeiro
+    return "#624d0c"; // financeiro
   }
 
   return "#ff9f43"; // fallback
@@ -732,7 +732,7 @@ const descricao = (() => {
      
       <div className="min-h-screen py-6 px-4 bg-bgSoft">
        <div
- className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-slate-900 mt-1 mb-1"
+ className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-slate-200 mt-1 mb-1"
  style={{ borderTop: `6px solid ${corTitulo}` }}
 >
   
@@ -741,7 +741,7 @@ const descricao = (() => {
         {/* TÍTULO IGUAL AO EDITAR */}
         <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center"  style={{ color: corTitulo }}>
             {titulo}
-            <p className="text-sm text-gray-300 text-center">
+            <p className="text-sm text-gray-700 text-center">
              {descricao}
           </p>
           </h1>
@@ -750,7 +750,7 @@ const descricao = (() => {
        <div className="flex border-b mb-4"> 
           <button
             onClick={() => setAba("principal")}
-            className={`px-4 py-2 font-semibold ${
+            className={`px-4 py-2 font-bold ${
               aba === "principal"
                 ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
                 : "text-gray-500"
@@ -761,7 +761,7 @@ const descricao = (() => {
 
           <button
             onClick={() => setAba("contabil")}
-            className={`px-4 py-2 font-semibold ${
+            className={`px-4 py-2 font-bold ${
               aba === "contabil"
                 ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
                 : "text-gray-500"

@@ -93,15 +93,32 @@ const filtrados = dados.filter(item => {
     (item.id || "").toLowerCase().includes(f) 
   );
 });
-async function Estornar(lote_id) {
-  if (!confirm("Confirma o estorno deste lote? Ele pode conter uma única partida dobrada ou vários lançamentos importados. Todo o lote será processado de uma só vez.")) return;
+ async function Estornar(lote_id, importacao_id) {
+  const loteId = Number(lote_id) || 0;
+  const importacaoId = Number(importacao_id) || 0;
+
+  let mensagem = "";
+
+  if (loteId === 0 && importacaoId > 0) {
+    mensagem = `ATENÇÃO\n\nVocê está excluindo a IMPORTAÇÃO número ${importacaoId}.\n\nIsso apagará todos os lançamentos vinculados a essa importação.\n\nDeseja continuar?`;
+  } else if (loteId > 0 && importacaoId === 0) {
+    mensagem = `ATENÇÃO\n\nVocê está excluindo o LOTE número ${loteId}.\n\nIsso apagará somente os lançamentos desse lote.\n\nDeseja continuar?`;
+  } else {
+    alert("Parâmetros inválidos para exclusão.");
+    return;
+  }
+
+  if (!confirm(mensagem)) return;
+
+  // segue a chamada
+ 
   try {
     const url = buildWebhookUrl("excluilanctolote");
 
     const resp = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id: empresaId, lote_id }),
+      body: JSON.stringify({ empresa_id: empresaId, lote_id ,importacao_id}),
     });
 
     const texto = await resp.text();
@@ -300,7 +317,12 @@ return (
             <th className="p-2 text-left">Crédito</th>
             <th className="p-2 text-right">Valor</th>
             <th className="p-2 text-center">Lote</th>
-            <th className="p-2 text-center">Ação</th>
+            <th className="p-2 text-center">Lote Importação</th>
+           <th className="p-2 text-center">
+            <span className="p-2 text-center text-red-400">Ação Excluir</span>
+            <span className="mx-3">-</span>
+            <span>Ação Editar</span>
+          </th>
           </tr>
         </thead>
 
@@ -321,15 +343,25 @@ return (
                 {fmt.format(l.credito)}
               </td>
               <td className="p-2 text-center font-bold">{l.lote_id}</td>
+
+              <td   className="p-2 font-bold text-center font-size: 16px">{l.importacao_id}</td>
               <td className="p-2 text-center">
               <div className="flex gap-3 justify-center">
   
                   <button
-                    onClick={() => Estornar(l.lote_id)}
-                    className="text-red-600 underline font-bold"
+                    onClick={() => Estornar(l.lote_id,0)}
+                    className="text-red-600 underline font-bold  text-left ml-4"
                   >
-                    Excluir
+                     Lote
                   </button>
+
+                   <button
+                    onClick={() => Estornar(0,l.importacao_id)}
+                    className="text-green-600 underline font-bold text-left ml-4"
+                  >
+                     Importação
+                  </button>
+
 
                   <button
                     onClick={(e) => {
@@ -338,7 +370,7 @@ return (
                         state: { id: l.lote_id }
                       });
                     }}
-                    className="text-blue-700 underline font-bold"
+                    className="text-blue-700 underline font-bold ml-4"
                   >
                     Editar
                   </button>

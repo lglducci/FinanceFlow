@@ -17,8 +17,8 @@ export default function Lancamentos() {
   const [periodo, setPeriodo] = useState("mes");
   const [modalConta, setModalConta] = useState(false);
   const [qtdVencidos, setQtdVencidos] = useState(0);
-  
-  
+   const [qtdRegistros, setQtdRegistros] = useState(0);
+   
 const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
 const [saldoInicial, setSaldoInicial] = useState(0);
@@ -245,6 +245,18 @@ useEffect(() => {
      origem ="";
   }
 
+    if (tipo === "transacao") { 
+    
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "transacao";
+    vencidoLocal = "";
+     vence_hoje = "";
+     vence_sete_dias = "";
+     origem ="transacao";
+  }
+
    if (tipo === "estorno") { 
     
     contaLocal = 0;
@@ -288,12 +300,12 @@ setCarregando(true);
       const resp = await fetch(url);
       
       const dados = await resp.json();
-      
+       
       let soma = 0;
       let somaEntrada = 0;
       let somaSaida = 0;
 
-      const tratados = dados.map((l) => {
+      const tratados = dados.filter((l) => l && (l.id || l.descricao || l.valor || l.data_movimento || l.vencimento || l.origem)).map((l) => {
         const valorNum = Number(l.valor || 0);
 
             if (l.tipo === "entrada") {
@@ -344,6 +356,9 @@ setCarregando(true);
      
           setQtdVencidos(tratados.length);
         }
+
+       
+      setQtdRegistros(tratados.length);
        
     } catch (e) {
       console.error(e);
@@ -665,6 +680,38 @@ useEffect(() => {
   }
 }, [empresa_id]);
 
+
+function RelatorioEscolhido(tipo) {
+ 
+    tipo = (tipo ?? "").trim();
+  switch (tipo) {
+    case "vencidos":
+      return "Vencidos"; 
+      case "vence_hoje":
+      return "Vence Hoje"; 
+    case "transacao":
+      return "Financeiro";
+    case "conta_pagar":
+      return "Contas a Pagar";
+    case "conta_receber":
+      return "Contas a Receber";
+    case "fatura_cartao":
+      return "Faturas no Cartão";
+         case "cartao_compra":
+      return "Compras no Cartão";
+      case "titulos_pagos":
+      return "Titulos Pagos";
+       case "vence_sete_dias":
+        return "Vence em sete dias.";
+        case "estorno":
+      return "Operações estornadas";
+        case "todos":
+      return "Todos";
+    default:
+      return tipo || "Todos";
+  }
+}
+
 return (
   <div className="p-4 space-y-4">
 
@@ -870,17 +917,35 @@ return (
             />
           </div>
         
-
-        {qtdVencidos > 0 && (
-          <div className="text-center mt-12  ml-20">
-            <button
-              onClick={() => pesquisar("vencidos")}
-              className="text-red-500 font-bold underline text-sm"
-            >
-             Existem {qtdVencidos} título(s) vencido(s), favor verificar
-            </button>
+         {qtdVencidos > 0 && (
+  <div className="mt-10 ml-20 flex justify-center">
+    <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
+      <button onClick={() => pesquisar("vencidos")}>
+        <span className="text-base text-red-600 font-semibold">
+          Existem {qtdVencidos} título(s) vencido(s), favor verificar
+        </span>
+      </button>
+    </div>
+  </div>
+)}
+         
+         {tipoOperacao !== undefined && tipoOperacao !== null && ( 
+        <div className="mt-10 ml-20 flex justify-center">
+          <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
+            <span className="text-base text-slate-600">
+              Exibindo o filtro de:{" "}
+              <span className="font-bold text-blue-700">
+                {RelatorioEscolhido(tipoOperacao)}
+              </span>
+              {" — Foram encontrados "}
+              <span className="font-bold text-slate-700 text-blue-700">
+                {qtdRegistros}
+              </span>
+              {" registros"}
+            </span>
           </div>
-        )}
+        </div>
+      )}
           
 
        <div className="flex items-center gap-10"> 
@@ -892,7 +957,7 @@ return (
                     <button
                     
                        onClick={() => {
-                              setTipoOperacao("");
+                              setTipoOperacao("todos");
                               pesquisar("");
                             }}
                       className="btn-pill btn-blue"
