@@ -17,6 +17,7 @@ export default function NovaContaPagar() {
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
+     data: hojeMaisDias(1),
     vencimento: hojeMaisDias(1), // amanhã (BR)
     categoria_id: "",
     fornecedor_id: "",
@@ -182,6 +183,7 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
           empresa_id,
           descricao: form.descricao,
           valor: Number(form.valor),
+            data:  form.data,
           vencimento: form.vencimento,
           categoria_id: Number(form.categoria_id) || null,
           fornecedor_id: Number(form.fornecedor_id) || null,
@@ -213,6 +215,7 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
 
       // ✅ SUCESSO
       alert("Conta a pagar cadastrada com sucesso!");
+         window.dispatchEvent(new Event("contabil-atualizado"));
       navigate("/contas-pagar");
 
     } catch (e) {
@@ -361,7 +364,23 @@ useEffect(() => {
                 placeholder="descricao"
               />
             </div>
+
+            
           </div>
+ 
+
+              <div className="w-2/3"> 
+                    <label   className="label label-required">Data</label>
+                    <input
+                      type="date"
+                      min={hojeMaisDias(-7)}
+                      name="data"
+                      value={form.data}
+                      onChange={handleChange}
+                      className="input-premium w-24"
+                      placeholder="data"
+                    />
+        </div>
 
           
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 

@@ -89,6 +89,7 @@ export default function NovoCardTransaction() {
   });
 
   alert("Transação registrada com sucesso!");
+     window.dispatchEvent(new Event("contabil-atualizado"));
   navigate(-1);
 
 } catch (err) {

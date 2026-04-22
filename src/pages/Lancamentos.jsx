@@ -1319,7 +1319,7 @@ return (
                       className="text-red-600 hover:underline font-semibold"
                      
                     >
-                      Excluir Compra 
+                      Excluir  
                     </button>
                   )}
 

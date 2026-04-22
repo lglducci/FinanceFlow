@@ -365,16 +365,16 @@ useEffect(() => {
           </div>
 
               <div className="w-2/3"> 
-              <label   className="label label-required">Data</label>
-              <input
-                type="date"
-                min={hojeMaisDias(-7)}
-                name="data"
-                value={form.data}
-                onChange={handleChange}
-                className="input-premium w-24"
-                placeholder="data"
-              />
+                    <label   className="label label-required">Data</label>
+                    <input
+                      type="date"
+                      min={hojeMaisDias(-7)}
+                      name="data"
+                      value={form.data}
+                      onChange={handleChange}
+                      className="input-premium w-24"
+                      placeholder="data"
+                    />
         </div>
               <div>
                 <label className="label label-required font-bold text-[#1e40af]">

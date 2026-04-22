@@ -3,6 +3,8 @@ import { buildWebhookUrl } from "../config/globals";
 import { useNavigate,useLocation } from "react-router-dom";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import ExcelExport from "../utils/ExcelExport";
+
+
  
 export default function RelatoriosDiario() {
   const hoje = new Date().toISOString().slice(0, 10);
@@ -19,6 +21,10 @@ export default function RelatoriosDiario() {
     const btnPadrao =
   "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
+
+ const [importacoes, setImportacoes] = useState([]);
+const [importacaoSelecionada, setImportacaoSelecionada] = useState("");
+const [importacaoFiltroAplicado, setImportacaoFiltroAplicado] = useState("");
 
   useEffect(() => {
     const id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
@@ -44,12 +50,15 @@ function formatarDataBR(data) {
 }
 
 
+ async function consultar(importacaoIdParam = null) {
+  if (!empresaId) return alert("Empresa não carregada");
 
-  async function consultar() {
-    if (!empresaId) return alert("Empresa não carregada");
+  const importacaoIdFinal =
+    importacaoIdParam !== null
+      ? Number(importacaoIdParam) || 0
+      : Number(importacaoSelecionada) || 0;
 
-    setLoading(true);
-   // setDados([]);
+  setLoading(true);
 
     try {
       const r = await fetch(buildWebhookUrl("movimento_contabil"), {
@@ -59,7 +68,8 @@ function formatarDataBR(data) {
           empresa_id: empresaId,
           data_ini: dataIni,
           data_fim: dataFim,
-          todos:'T'
+          todos:'T',
+          importacao_id: importacaoIdParam  || 0
         }),
       });
 
@@ -79,20 +89,23 @@ function formatarDataBR(data) {
 
 }, [empresaId, dataIni, dataFim]);
 
-const filtrados = dados.filter(item => {
-  if (!filtro) return true;
-
+ const filtrados = dados.filter((item) => {
   const f = filtro.toLowerCase();
 
   return (
+    !filtro ||
     (item.conta_credito || "").toLowerCase().includes(f) ||
     (item.conta_debito || "").toLowerCase().includes(f) ||
     (item.historico || "").toLowerCase().includes(f) ||
-    (item.modelo_codigo || "").toLowerCase().includes(f)||
-    (item.lote_id || "").toLowerCase().includes(f) ||
-    (item.id || "").toLowerCase().includes(f) 
+    (item.modelo_codigo || "").toLowerCase().includes(f) ||
+    String(item.lote_id || "").toLowerCase().includes(f) ||
+    String(item.id || "").toLowerCase().includes(f)
   );
 });
+
+
+
+
  async function Estornar(lote_id, importacao_id) {
   const loteId = Number(lote_id) || 0;
   const importacaoId = Number(importacao_id) || 0;
@@ -110,15 +123,17 @@ const filtrados = dados.filter(item => {
 
   if (!confirm(mensagem)) return;
 
-  // segue a chamada
- 
   try {
     const url = buildWebhookUrl("excluilanctolote");
 
     const resp = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id: empresaId, lote_id ,importacao_id}),
+      body: JSON.stringify({
+        empresa_id: empresaId,
+        lote_id,
+        importacao_id
+      }),
     });
 
     const texto = await resp.text();
@@ -145,9 +160,16 @@ const filtrados = dados.filter(item => {
       return;
     }
 
-    alert("Lote excluído com sucesso!");
+    alert(importacaoId > 0 ? "Importação excluída com sucesso!" : "Lote excluído com sucesso!");
 
-    consultar();
+    if (importacaoId > 0) {
+  setImportacaoSelecionada("");
+  setImportacaoFiltroAplicado("");
+  await carregarImportacoes();
+}
+
+ 
+      await consultar(importacaoSelecionada || 0);
 
   } catch (e) {
     console.error("ERRO Estornar:", e);
@@ -170,6 +192,56 @@ const filtrados = dados.filter(item => {
   ExcelExport.exportar(dadosExcel, "lancamentos_contabeis.xlsx");
 }
 
+const carregarImportacoes = async () => {
+  try {
+    const url = buildWebhookUrl("lote_importacao");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        empresa_id: empresaId
+      })
+    });
+
+    const data = await resp.json();
+
+    const lista = Array.isArray(data) ? data : (data?.dados || []);
+    setImportacoes(lista);
+  } catch (err) {
+    console.error("Erro ao carregar importações:", err);
+    setImportacoes([]);
+  }
+};
+
+useEffect(() => {
+  carregarImportacoes();
+}, []);
+
+ const aplicarFiltro = async () => {
+  await consultar(importacaoSelecionada || 0);
+};
+
+ const limparFiltro = async () => {
+  setImportacaoSelecionada("");
+  await consultar(0);
+};
+
+
+ useEffect(() => {
+  const id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
+  if (id) setEmpresaId(Number(id));
+}, []);
+
+useEffect(() => {
+  if (empresaId) {
+    carregarImportacoes();
+  }
+}, [empresaId]);
+ 
+
 return (
   <div className="p-4 bg-gray-100 rounded-xl">
 
@@ -179,7 +251,7 @@ return (
         📘 Lançamentos Contábeis (Detalhes) 
       </h2>
 
-      <div className="flex flex-wrap gap-4 items-end">
+       <div className="flex flex-wrap gap-4 items-end mt-6">
 
         <div className="flex flex-col">
           <label className="font-bold text-blue-800 mb-1">Data inicial</label>
@@ -202,7 +274,7 @@ return (
         </div>
 
         <div className="flex flex-col flex-1 min-w-[260px]">
-          <label className="font-bold text-blue-800 mb-1">Conta / Histórico/ Lancto id/ Lote</label>
+          <label className="font-bold text-blue-800 mb-1">Conta / Histórico/ Lancto id/ Lote </label>
           <input
             type="text"
             placeholder="Conta, histórico ou modelo"
@@ -213,7 +285,7 @@ return (
         </div>
 
         <button
-          onClick={consultar}
+          onClick={() => consultar()}
            className="
                           px-5 py-2 rounded-full
                           font-bold text-sm tracking-wide
@@ -302,6 +374,91 @@ return (
           </button>
 
       </div>
+
+      <div className="flex flex-wrap gap-4 items-end mt-6">
+     <div className="flex items-center gap-3 mb-4">
+  <label className="font-semibold text-sm text-slate-700">
+    Filtrar importação:
+  </label>
+
+  <select
+    value={importacaoSelecionada}
+    onChange={(e) => setImportacaoSelecionada(e.target.value)}
+    className="border rounded px-3 py-2 text-sm"
+  >
+    <option value="">Todas</option>
+
+    {importacoes.map((imp, i) => (
+      <option
+        key={i}
+        value={imp.importacao_id}
+      >
+        {imp.importacao_id}
+      </option>
+    ))}
+  </select>
+
+  <button
+    onClick={aplicarFiltro}
+       className="
+                          px-5 py-2 rounded-full
+                          font-bold text-sm tracking-wide
+                          text-white
+                          bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
+                          border-2 border-black
+                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                          hover:brightness-110 hover:scale-105
+                          active:scale-95
+                          transition-all duration-200
+                          inline-flex items-center gap-2
+                        ">
+    Filtrar
+  </button>
+
+  <button
+    onClick={limparFiltro}
+     className="
+                          px-5 py-2 rounded-full
+                          font-bold text-sm tracking-wide
+                          text-white
+                          bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
+                          border-2 border-black
+                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                          hover:brightness-110 hover:scale-105
+                          active:scale-95
+                          transition-all duration-200
+                          inline-flex items-center gap-2
+                        ">
+    Limpar
+  </button>
+
+   <button
+    onClick={() => {
+    if (!importacaoSelecionada) {
+      alert("Selecione uma importação.");
+      return;
+    }
+    Estornar(0, importacaoSelecionada);
+  }}
+  className="
+    px-5 py-2 rounded-full
+    font-bold text-sm tracking-wide
+    text-white
+    bg-gradient-to-b from-red-500 via-red-600 to-red-800
+    border-2 border-black
+    shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+    hover:brightness-110 hover:scale-105
+    active:scale-95
+    transition-all duration-200
+    inline-flex items-center gap-2
+  "
+>
+  Excluir Importação
+</button>
+
+</div>
+</div>
+
     </div>
 
     {/* ===== TABELA ===== */}
@@ -315,14 +472,15 @@ return (
             <th className="p-2 text-left">Histórico</th>
             <th className="p-2 text-left">Débito</th>
             <th className="p-2 text-left">Crédito</th>
-            <th className="p-2 text-right">Valor</th>
-            <th className="p-2 text-center">Lote</th>
-            <th className="p-2 text-center">Lote Importação</th>
-           <th className="p-2 text-center">
-            <span className="p-2 text-center text-red-400">Ação Excluir</span>
-            <span className="mx-3">-</span>
-            <span>Ação Editar</span>
-          </th>
+            <th className="p-2 text-right pr-6">Valor</th>
+           <th className="p-2 text-center pl-6">Lote</th>
+            <th className="p-2 text-center text-blue-700">Importação</th>
+           <th className="p-2">
+          
+             
+            <span  className="text-blue-700 font-bold">Ação</span>
+           
+        </th>
           </tr>
         </thead>
 
@@ -339,29 +497,23 @@ return (
                 </td>
               <td className="p-2 font-bold">{l.conta_debito}</td>
               <td className="p-2 font-bold">{l.conta_credito}</td>
-              <td className="p-2 text-right font-bold">
-                {fmt.format(l.credito)}
-              </td>
-              <td className="p-2 text-center font-bold">{l.lote_id}</td>
+              <td className="p-2 text-right font-bold pr-6">
+                  {fmt.format(l.credito)}
+                </td>
+                <td className="p-2 text-center font-bold pl-6">
+                  {l.lote_id}
+                </td>
 
-              <td   className="p-2 font-bold text-center font-size: 16px">{l.importacao_id}</td>
-              <td className="p-2 text-center">
+              <td   className="p-2 font-bold text-center font-size: 16px text-blue-900">{l.importacao_id}</td>
+             
               <div className="flex gap-3 justify-center">
   
                   <button
                     onClick={() => Estornar(l.lote_id,0)}
-                    className="text-red-600 underline font-bold  text-left ml-4"
+                    className="text-red-700 underline font-bold  text-left ml-4"
                   >
-                     Lote
-                  </button>
-
-                   <button
-                    onClick={() => Estornar(0,l.importacao_id)}
-                    className="text-green-600 underline font-bold text-left ml-4"
-                  >
-                     Importação
-                  </button>
-
+                     Excluir
+                  </button> 
 
                   <button
                     onClick={(e) => {
@@ -376,7 +528,7 @@ return (
                   </button>
 
                 </div>
-              </td>
+              
             </tr>
           ))}
 
