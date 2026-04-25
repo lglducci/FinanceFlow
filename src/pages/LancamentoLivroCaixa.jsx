@@ -559,15 +559,39 @@ function resolverContaPorCodigo(codigoImportado) {
   return null;
 }
 
-function parseNumeroBR(valor) {
+ function parseNumeroBR(valor) {
   if (valor == null) return 0;
 
-  return Number(
-    String(valor)
-      .trim()
-      .replace(/\./g, "")   // remove milhar
-      .replace(",", ".")    // troca decimal
-  ) || 0;
+  let txt = String(valor)
+    .trim()
+    .toUpperCase();
+
+  const temCredito = /\bC\b$/.test(txt);
+  const temDebito = /\bD\b$/.test(txt);
+
+  txt = txt
+    .replace(/R\$/g, "")
+    .replace(/\s+/g, "")
+    .replace(/[CD]$/g, "");
+
+  let negativo = false;
+
+  if (txt.startsWith("-")) {
+    negativo = true;
+    txt = txt.replace(/^-+/, "");
+  }
+
+  txt = txt
+    .replace(/\./g, "")
+    .replace(",", ".")
+    .replace(/[^\d.]/g, "");
+
+  let numero = Number(txt) || 0;
+
+  if (temDebito || negativo) numero = -Math.abs(numero);
+  if (temCredito) numero = Math.abs(numero);
+
+  return numero;
 }
   
 
@@ -623,7 +647,7 @@ function limparEdicao() {
 return (
       <div className="flex justify-center mt-10 bg-gray-100 min-h-screen py-10">
 
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-[1300px]">
+      <div className="bg-white rounded-2xl border border-gray-300 w-[1300px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
         <div className="bg-gray-650 rounded-lg p-8"> 
         <div className="bg-gray-600 border-b rounded-t-xl p-6"> 
        <div className="bg-gray-600 border-b rounded-t-xl p-6">  
