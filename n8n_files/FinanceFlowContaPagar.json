@@ -149,13 +149,19 @@
             {
               "id": "431290aa-6b84-492b-b3e3-ff5b8908822d",
               "name": "codigo",
-              "value": "={{ $json.body._modelo_codigo}}",
+              "value": "={{ $json.body.modelo_codigo}}",
               "type": "string"
             },
             {
               "id": "4b05e2a2-4d6a-4da2-9f7d-2e7b293ad547",
               "name": "forma_pagamento",
               "value": "={{ $json.body.forma_pagamento}}",
+              "type": "string"
+            },
+            {
+              "id": "c8ebce15-f161-42f0-a7b7-aeeaa911a816",
+              "name": "data",
+              "value": "={{ $json.body.data}}",
               "type": "string"
             }
           ]
@@ -286,7 +292,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}',\n   '{{$json.classificacao}}',\n    '{{ $json.codigo }}',\n   '{{$json.forma_pagamento }}'\n)\n  \n ",
+        "query": " select  * from ff_registrar_conta_pagar_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.data }}',\n   '{{ $json.vencimento }}',\n   null, \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n     '{{ $json.doc_ref }}',\n   '{{$json.classificacao}}',\n    '{{ $json.codigo }}',\n   '{{$json.forma_pagamento }}'\n)\n  \n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -639,7 +645,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        816,
+        976,
         1296
       ],
       "id": "d0db60b3-8894-4185-8616-d38d03a9c392",
@@ -699,7 +705,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n    cp.lote_id,\n    cp.descricao,\n    p.nome AS fornecedor_nome,\n    c.nome AS categoria_nome,\n    cp.parcelas,\n    cp.status,\n    SUM(cp.valor) AS valor_total\nFROM contas_a_pagar cp\nLEFT JOIN pessoa p \n       ON p.id = cp.fornecedor_id\nLEFT JOIN categorias_gerenciais c \n       ON c.id = cp.categoria_id\nWHERE cp.empresa_id =  {{ $json.empresa_id }}\n  AND ( {{ $json.lote_id }} =0   OR cp.lote_id IS NULL OR cp.lote_id = {{ $json.lote_id }}  )\n  AND (cp.fornecedor_id = {{ $json.fornecedor_id }} OR {{ $json.fornecedor_id }} = 0)\n  AND (cp.categoria_id = {{ $json.categoria_id }} OR {{ $json.categoria_id }} = 0)\n  AND  cp.parcelas > 1  \nGROUP BY \n    cp.lote_id,\n    cp.descricao,\n    p.nome,\n    c.nome,\n    cp.parcelas,\n    cp.status\nORDER BY cp.lote_id;\n",
+        "query": " SELECT \n    cp.lote_id,\n    cp.descricao,\n    p.nome AS fornecedor_nome,\n    c.nome AS categoria_nome,\n    MAX(cp.parcelas) AS parcelas,\n    CASE\n        WHEN SUM(CASE WHEN cp.status = 'pago' THEN 1 ELSE 0 END) > 0\n        THEN 'Parcela Paga'\n        ELSE 'aberto'\n    END AS status,\n    SUM(cp.valor) AS valor_total\nFROM contas_a_pagar cp\nLEFT JOIN pessoa p \n       ON p.id = cp.fornecedor_id\nLEFT JOIN categorias_gerenciais c \n       ON c.id = cp.categoria_id\nWHERE cp.empresa_id = {{ $json.empresa_id }}\n  AND ({{ $json.lote_id }} = 0 OR cp.lote_id IS NULL OR cp.lote_id = {{ $json.lote_id }})\n  AND (cp.fornecedor_id = {{ $json.fornecedor_id }} OR {{ $json.fornecedor_id }} = 0)\n  AND (cp.categoria_id = {{ $json.categoria_id }} OR {{ $json.categoria_id }} = 0)\n  AND cp.parcelas > 1\nGROUP BY \n    cp.lote_id,\n    cp.descricao,\n    p.nome,\n    c.nome\nORDER BY cp.lote_id;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -710,28 +716,6 @@
       ],
       "id": "cb8be5c2-c5fc-455c-9563-4daec16de896",
       "name": "BuscaParcelamento",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "delete \nFROM  contas_a_pagar   \n  where empresa_id =  {{ $json.id_empresa }}  \n  and    lote_id = {{ $json.lote_id }} ;\n ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        592,
-        1296
-      ],
-      "id": "9296adfe-e187-41a8-b6d1-16832baff566",
-      "name": "ExcluiTodaContaParcelada",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
@@ -844,6 +828,42 @@
           "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        1296
+      ],
+      "id": "4545bbfa-e2d5-4086-8ca7-6361409b271c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select  * \nFROM   ff_excluir_parcelamento_pagar(    {{ $json.id_empresa }}  \n , {{ $json.lote_id }} ) ;\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        592,
+        1296
+      ],
+      "id": "9296adfe-e187-41a8-b6d1-16832baff566",
+      "name": "ff_excluir_parcelamento_pagar",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -1017,7 +1037,7 @@
       "main": [
         [
           {
-            "node": "ExcluiTodaContaParcelada",
+            "node": "ff_excluir_parcelamento_pagar",
             "type": "main",
             "index": 0
           }
@@ -1040,17 +1060,6 @@
         [
           {
             "node": "Respond to Webhook45",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "ExcluiTodaContaParcelada": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook46",
             "type": "main",
             "index": 0
           }
@@ -1089,13 +1098,35 @@
           }
         ]
       ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook46",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_excluir_parcelamento_pagar": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "97a68bf8-1a02-4bf3-ac1b-74ce2de401dd",
+  "versionId": "a2d6a79a-fd79-47b9-a4a3-d4ffeaf6039c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

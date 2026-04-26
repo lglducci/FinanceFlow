@@ -509,7 +509,8 @@
             "nivel": "={{ $json.nivel }}",
             "tipo": "={{ $json.tipo }}",
             "conta_pai_id": "={{ $json.conta_pai }}",
-            "sistema": false
+            "sistema": false,
+            "classificacao_gerencial": "={{$json.classificacao_gerencial}}"
           },
           "matchingColumns": [
             "id"
@@ -607,6 +608,16 @@
               "type": "boolean",
               "canBeUsedToMatch": true,
               "removed": false
+            },
+            {
+              "id": "classificacao_gerencial",
+              "displayName": "classificacao_gerencial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -675,6 +686,12 @@
               "name": "conta_pai",
               "value": "={{ $json.query.conta_pai_id}}",
               "type": "string"
+            },
+            {
+              "id": "0c74c10e-a1ff-443d-b68a-ee0d165b0d69",
+              "name": "classificacao_gerencial",
+              "value": "={{ $ifEmpty((($json.query.classificacao || '') + '').trim().toLowerCase(), null) }}",
+              "type": "string"
             }
           ]
         },
@@ -699,7 +716,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2352,
+        2544,
         352
       ],
       "id": "17a0e0eb-fb32-4a30-8666-5eeefc4981f1",
@@ -723,14 +740,15 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "analitica": false,
+            "analitica": true,
             "codigo": "={{ $json.codigo }}",
             "empresa_id": "={{ $json.empresa_id }}",
             "nome": "={{ $json.nome }}",
             "natureza": "={{ $json.natureza }}",
             "nivel": "={{ $json.nivel }}",
             "tipo": "={{ $json.tipo }}",
-            "id": "={{ $json.id }}"
+            "id": "={{ $json.id }}",
+            "classificacao_gerencial": "={{ $json.classificacao_gerencial }}"
           },
           "matchingColumns": [
             "id",
@@ -820,6 +838,26 @@
               "display": true,
               "type": "boolean",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "sistema",
+              "displayName": "sistema",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "classificacao_gerencial",
+              "displayName": "classificacao_gerencial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -840,7 +878,8 @@
           "id": "wvOAuqaHViEwm60r",
           "name": "FInanceFlow"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -886,6 +925,12 @@
               "id": "6fb987e1-456b-4c59-92b0-693556727602",
               "name": "id",
               "value": "={{ $json.query.id}}",
+              "type": "string"
+            },
+            {
+              "id": "536c9624-ef80-4f7f-8b28-09e4cf312033",
+              "name": "classificacao_gerencial",
+              "value": "={{ $ifEmpty((($json.query.classificacao || '') + '').trim().toLowerCase(), null) }}",
               "type": "string"
             }
           ]
@@ -1017,7 +1062,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza,\n    nivel,\n   sistema \nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND ( {{ $json.id }} IS NULL OR {{ $json.id }} = 0 OR id = {{ $json.id }} )\n  AND ( '{{ $json.dc }}' IS NULL OR '{{ $json.dc }}' = '' OR natureza = '{{ $json.dc }}' )\nORDER BY codigo;\n",
+        "query": " SELECT \n    id,\n    codigo,\n    nome,\n    tipo,\n    natureza,\n    nivel,\n   sistema ,\n   classificacao_gerencial\nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND ( {{ $json.id }} IS NULL OR {{ $json.id }} = 0 OR id = {{ $json.id }} )\n  AND ( '{{ $json.dc }}' IS NULL OR '{{ $json.dc }}' = '' OR natureza = '{{ $json.dc }}' )\nORDER BY codigo;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1829,6 +1874,191 @@
       ],
       "id": "674c50e1-9479-4263-8dfd-2ec7e0faa676",
       "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2320,
+        1680
+      ],
+      "id": "0c497499-e31e-46f1-a155-1142d9887ca8",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2320,
+        1856
+      ],
+      "id": "514c76a6-543d-4459-8da7-980d5f7832e5",
+      "name": "Respond to Webhook15"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from  contab.ff_salvar_saldo_inicial(\n    {{ $json.empresa_id }},\n    {{ $json.conta_id }},\n    {{ $json.saldo }}\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2064,
+        1856
+      ],
+      "id": "b0c1e36d-08ad-4499-ae01-7b6557ccb4e5",
+      "name": "ContasContb3",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "saldo_inicial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1664,
+        1680
+      ],
+      "id": "7fd5c04a-df61-495f-bf5f-b840e5a96a8e",
+      "name": "SaldosIniciais",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c513e47-430c-4734-8e0e-f9784c983fe0",
+              "name": "filtro",
+              "value": "={{ $json.body.filtro}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        1680
+      ],
+      "id": "b67a040e-ee0b-44a6-956a-a4ed6e1954a6",
+      "name": "EditSaldosIniciais"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT \n  c.id,\n  c.codigo,\n  c.nome,\n  c.tipo,\n  COALESCE(s.saldo, 0) AS saldo\nFROM contab.contas c\nLEFT JOIN contab.saldos_iniciais s\n  ON c.empresa_id = s.empresa_id\n AND c.id = s.conta_id\nWHERE \n  c.empresa_id = {{ $json.empresa_id }}\n  AND c.analitica = true\n  AND (\n       btrim('{{ $json.filtro || \"\" }}') = ''\n       OR c.codigo ILIKE '%' || '{{ $json.filtro || \"\" }}' || '%'\n       OR c.nome   ILIKE '%' || '{{ $json.filtro || \"\" }}' || '%'\n  )\nORDER BY c.codigo ASC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2064,
+        1680
+      ],
+      "id": "7ab1d7c1-5905-47e6-9e1d-b06f2f3e9cf7",
+      "name": "SaldosIniciais1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "salva_saldo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1664,
+        1856
+      ],
+      "id": "f3c69a06-7c63-41c7-822b-ebc34346e58b",
+      "name": "SalvaSaldoInicial",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "4c513e47-430c-4734-8e0e-f9784c983fe0",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "714c0182-8a53-458e-8479-14975ab13b53",
+              "name": "saldo",
+              "value": "={{ $json.body.saldo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        1856
+      ],
+      "id": "ff48f95c-0a43-4a6b-a503-47bbf5034c69",
+      "name": "EditSalvaSaldo"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        352
+      ],
+      "id": "699705d9-fb72-4dd2-baea-0b22470044cf",
+      "name": "Code in JavaScript5"
     }
   ],
   "pinData": {
@@ -1840,16 +2070,20 @@
         }
       }
     ],
-    "Editnovaconta": [
+    "EditSalvaSaldo": [
       {
         "json": {
           "empresa_id": 1,
-          "codigo": "1.1.23",
-          "nome": "teste",
-          "natureza": "D",
-          "nivel": 4,
-          "tipo": "ATIVO",
-          "conta_pai": null
+          "conta_id": 4,
+          "saldo": 1500
+        }
+      }
+    ],
+    "EditSaldosIniciais": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "filtro": "1.1.1"
         }
       }
     ]
@@ -2057,7 +2291,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook5",
+            "node": "Code in JavaScript5",
             "type": "main",
             "index": 0
           }
@@ -2448,13 +2682,90 @@
           }
         ]
       ]
+    },
+    "ContasContb3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaldosIniciais": {
+      "main": [
+        [
+          {
+            "node": "EditSaldosIniciais",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditSaldosIniciais": {
+      "main": [
+        [
+          {
+            "node": "SaldosIniciais1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SaldosIniciais1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SalvaSaldoInicial": {
+      "main": [
+        [
+          {
+            "node": "EditSalvaSaldo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditSalvaSaldo": {
+      "main": [
+        [
+          {
+            "node": "ContasContb3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "29463f90-0e97-45e1-9416-febaf27a218d",
+  "versionId": "0f8def26-9778-4dbe-92e7-fd834b4cda1c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

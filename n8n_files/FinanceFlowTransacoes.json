@@ -78,6 +78,24 @@
               "name": "vencidos",
               "value": "={{ $json.query.vencido}}",
               "type": "string"
+            },
+            {
+              "id": "a753061b-6e96-47d1-96a9-ff2e15905332",
+              "name": "vence_hoje",
+              "value": "={{ $json.query.vence_hoje}}",
+              "type": "string"
+            },
+            {
+              "id": "f907bf46-e81f-47f7-9d91-e256ad088fee",
+              "name": "vence_sete_dias",
+              "value": "={{ $json.query.vence_sete_dias}}",
+              "type": "string"
+            },
+            {
+              "id": "cd5dbd9d-1557-4704-aeab-4f7c35eac23e",
+              "name": "origem",
+              "value": "={{ $json.query.origem}}",
+              "type": "string"
             }
           ]
         },
@@ -95,7 +113,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n   t.id,\n  t.descricao,\n  c.nome AS categoria_nome,\n  f.nome AS conta_nome,\n  t.tipo,\n  t.data_movimento,\n    t.vencimento,\n   t.vencido,\n   t.parcelas, \n   t.parcela_total,\n   t.origem,\n   t.forma, \n  t.valor,\n    0 origem_id,\n   t.evento_codigo, \n   t.conta_id, t.classificacao,\n   t.tipo_operacao as tipo_operacao ,\n   t.origem_id, t.status\nFROM vw_eventos_financeiros t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\n WHERE t.empresa_id = {{ $json.id_empresa }}\n  AND (\n        t.data_movimento::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n     OR t.vencimento BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  )\n   and  ( categoria_id =  {{ $json.categoria_id }}  or  {{ $json.categoria_id }}  =0 )    \n    AND (\n  COALESCE('{{ $json.tipo_operacao }}','') = ''\n  OR t.tipo_operacao = '{{ $json.tipo_operacao }}'\n) AND (\n  COALESCE('{{ $json.vencidos }}','') = ''\n  OR   ( t.vencido = '{{ $json.vencidos }}' )  AND COALESCE(t.status,'') NOT IN ('paga','recebido','pago')  )\nORDER BY t.data_movimento asc, t.id asc;\n",
+        "query": "  SELECT \n   t.id,\n   t.descricao,\n   c.nome AS categoria_nome,\n   f.nome AS conta_nome,\n   t.tipo,\n   t.data_movimento,\n   t.vencimento,\n   t.vencido,\n   t.vence_hoje,\n   t.vence_sete_dias,\n   t.parcelas, \n   t.parcela_total,\n   t.origem,\n   t.forma, \n   t.valor,\n   t.origem_id,\n   t.evento_codigo, \n   t.conta_id,\n   t.classificacao,\n   t.tipo_operacao AS tipo_operacao,\n   t.origem_id,\n   t.status,\n   ca.nome,\n   ca.numero\nFROM vw_eventos_financeiros t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\nLEFT JOIN cartoes ca  \n       ON ca.id = t.origem_id\n      AND ca.empresa_id = t.empresa_id\nWHERE t.empresa_id = {{ $json.id_empresa }}\n\n  AND (\n        t.data_movimento::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n     OR t.vencimento BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  )\n\n  AND (\n        categoria_id = {{ $json.categoria_id }}\n        OR {{ $json.categoria_id }} = 0\n  )\n\n  AND (\n        COALESCE('{{ $json.tipo_operacao }}','') = ''\n        OR t.tipo_operacao = '{{ $json.tipo_operacao }}'\n  )\n\n  AND (\n        COALESCE('{{ $json.vencidos }}','') = ''\n        OR (\n             t.vencido = '{{ $json.vencidos }}'\n             AND COALESCE(t.status,'') NOT IN ('paga','recebido','pago')\n           )\n  )\n\n  AND (\n        COALESCE('{{ $json.vence_hoje }}','') = ''\n        OR (\n             t.vence_hoje = '{{ $json.vence_hoje }}'\n             AND COALESCE(t.status,'') NOT IN ('paga','recebido','pago')\n           )\n  )\n\n  AND (\n        COALESCE('{{ $json.vence_sete_dias }}','') = ''\n        OR (\n             t.vence_sete_dias = '{{ $json.vence_sete_dias }}'\n             AND COALESCE(t.status,'') NOT IN ('paga','recebido','pago')\n           )\n  )\n\n  AND (\n        COALESCE('{{ $json.origem }}','estorno') = ''\n        OR t.origem_id > 0 \n  )  and  '{{ $json.origem }}' not in ( 'titulos_pagos','transacao')\nunion \n  SELECT \n   t.id,\n   t.descricao,\n   c.nome AS categoria_nome,\n   f.nome AS conta_nome,\n   t.tipo,\n   t.data_movimento,\n   t.vencimento,\n   t.vencido,\n   t.vence_hoje,\n   t.vence_sete_dias,\n   t.parcelas, \n   t.parcela_total,\n   t.origem,\n   t.forma, \n   t.valor,\n   t.origem_id,\n   t.evento_codigo, \n   t.conta_id,\n   t.classificacao,\n   t.tipo_operacao AS tipo_operacao,\n   t.origem_id,\n   t.status,\n   ca.nome,\n   ca.numero\nFROM vw_eventos_financeiros t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\nLEFT JOIN cartoes ca  \n       ON ca.id = t.origem_id\n      AND ca.empresa_id = t.empresa_id\nWHERE t.empresa_id = {{ $json.id_empresa }}\n\n  AND (\n        t.data_movimento::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n     OR t.vencimento BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  )\n\n  AND (\n        categoria_id = {{ $json.categoria_id }}\n        OR {{ $json.categoria_id }} = 0\n  )\n\n  AND (\n        COALESCE('{{ $json.tipo_operacao }}','') = ''\n        OR t.tipo_operacao = '{{ $json.tipo_operacao }}'\n  ) and  '{{ $json.origem }}' = 'titulos_pagos' and t.origem not in ( 'estorno','transacao')\nand (t.origem_id = 0 or t.origem_id is null )\n\n\nunion \n  SELECT \n   t.id,\n   t.descricao,\n   c.nome AS categoria_nome,\n   f.nome AS conta_nome,\n   t.tipo,\n   t.data_movimento,\n   t.vencimento,\n   t.vencido,\n   t.vence_hoje,\n   t.vence_sete_dias,\n   t.parcelas, \n   t.parcela_total,\n   t.origem,\n   t.forma, \n   t.valor,\n   t.origem_id,\n   t.evento_codigo, \n   t.conta_id,\n   t.classificacao,\n   t.tipo_operacao AS tipo_operacao,\n   t.origem_id,\n   t.status,\n   ca.nome,\n   ca.numero\nFROM vw_eventos_financeiros t\nLEFT JOIN categorias_gerenciais c \n       ON c.id = t.categoria_id \n      AND c.empresa_id = t.empresa_id\nLEFT JOIN contas_financeiras f \n       ON f.id = t.conta_id\n      AND f.empresa_id = t.empresa_id\nLEFT JOIN cartoes ca  \n       ON ca.id = t.origem_id\n      AND ca.empresa_id = t.empresa_id\nWHERE t.empresa_id = {{ $json.id_empresa }}\n\n  AND (\n        t.data_movimento::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n     OR t.vencimento BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  ) \n\n  AND    t.tipo_operacao = '{{ $json.tipo_operacao }}'\n  and  t.origem = '{{ $json.origem }}'  \n \n ORDER BY data_movimento ASC, id ASC",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -610,7 +628,7 @@
     {
       "parameters": {
         "content": "## Carregar cópia de segurança\nDivida os arquivos JSON em lotes de 1, verifique se eles foram carregados no repositório antes. Se sim (true), carregue a nova versão do arquivo. Caso contrário (false) crie o arquivo no repositório.",
-        "height": 1196,
+        "height": 1436,
         "width": 1312,
         "color": 3
       },
@@ -619,8 +637,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -128,
-        -752
+        -112,
+        -768
       ]
     },
     {
@@ -644,19 +662,106 @@
           "name": "FInanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        784,
+        464
+      ],
+      "id": "0c70b3ca-deb3-4e7d-b940-cfc8b4f0ceba",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.id_empresa}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        464
+      ],
+      "id": "d4416f5f-884e-43bd-97cb-abd059ced6a7",
+      "name": "TransacaoEdit1"
+    },
+    {
+      "parameters": {
+        "path": "vencidos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        464
+      ],
+      "id": "88d2160c-e63d-462c-8463-ceab1a0282fb",
+      "name": "Vencidos",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT COALESCE(COUNT(*), 0) AS qtd_vencidos\nFROM vw_eventos_financeiros t\nWHERE t.empresa_id = {{ $json.id_empresa }}\n  AND t.vencido = 'sim'\n  AND COALESCE(t.status,'') NOT IN ('paga','recebido','pago');",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        544,
+        464
+      ],
+      "id": "7551c8f9-b544-4d93-8775-e723b7992202",
+      "name": "vencidos",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
     }
   ],
   "pinData": {
+    "TransacaoEdit1": [
+      {
+        "json": {
+          "id_empresa": null
+        }
+      }
+    ],
     "TransacaoEdit": [
       {
         "json": {
           "id_empresa": 1,
-          "data_ini": "20200101",
-          "data_fim": "20260306",
+          "data_ini": "20260101",
+          "data_fim": "20270101",
           "fornecedor_id": 0,
           "categoria_id": 0,
-          "tipo_operacao": "",
-          "vencidos": "sim"
+          "tipo_operacao": "transacao",
+          "vencidos": "",
+          "vence_hoje": "",
+          "vence_sete_dias": "",
+          "origem": "transacao"
         }
       }
     ]
@@ -859,13 +964,46 @@
           }
         ]
       ]
+    },
+    "TransacaoEdit1": {
+      "main": [
+        [
+          {
+            "node": "vencidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vencidos": {
+      "main": [
+        [
+          {
+            "node": "TransacaoEdit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "vencidos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3a317d01-5e1f-41e9-949c-0417620d91c0",
+  "versionId": "1c64ae43-236a-4a4f-b744-dbaef6864213",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

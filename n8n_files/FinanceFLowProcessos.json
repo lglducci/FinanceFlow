@@ -344,20 +344,6 @@
     },
     {
       "parameters": {
-        "jsCode": " return [\n  {\n    empresa_id: $json.empresa_id,\n    faturas: JSON.stringify( $input.first().json.faturas).replace(/\\\\/g, '').replace(/^\"|\"$/g, ''),\n    conta_id: $input.first().json.conta_id\n  }\n];\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1536,
-        464
-      ],
-      "id": "be2b3cef-f9b5-4860-a5b3-60dde361a2c2",
-      "name": "CodeReceber3",
-      "disabled": true
-    },
-    {
-      "parameters": {
         "httpMethod": "POST",
         "path": "estornarlancto",
         "responseMode": "responseNode",
@@ -694,7 +680,7 @@
     },
     {
       "parameters": {
-        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+        "jsCode": " const items = $input.all();\n\n// se veio erro em algum item\nconst itemComErro = items.find(i => i.json?.error);\n\nif (itemComErro) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: itemComErro.json.message || \"Erro desconhecido\",\n        details: itemComErro.json.error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso: devolve todas as linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -715,8 +701,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1056,
-        1536
+        2544,
+        176
       ],
       "id": "ab4cea32-85bf-4de6-a9c2-540fcc32f5cb",
       "name": "Respond to Webhook5"
@@ -742,6 +728,12 @@
               "name": "lancamentos",
               "value": "={{ $json.body.lancamentos}}",
               "type": "array"
+            },
+            {
+              "id": "9f13ff79-5393-42dc-aaab-2c13321458af",
+              "name": "importacao",
+              "value": "={{ $json.body.importacao}}",
+              "type": "string"
             }
           ]
         },
@@ -750,8 +742,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        352,
-        1536
+        1840,
+        176
       ],
       "id": "0a5360ff-557a-41f9-b8b6-4b1f75981f03",
       "name": "EditPartidaDobrada1"
@@ -763,8 +755,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        816,
-        1536
+        2304,
+        176
       ],
       "id": "7ede3e2e-2d65-448a-a41f-826e700ff8ab",
       "name": "Code in JavaScript6"
@@ -772,14 +764,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT contab.ff_lote_lancamentos(\n  {{ $json.empresa_id }},\n  {{ $json.conta_observada }},\n    '{{ JSON.stringify($json.lancamentos) }}'::jsonb\n);",
+        "query": " SELECT contab.ff_lote_lancamentos(\n  {{ $json.empresa_id }},\n  {{ $json.conta_observada }},\n    '{{ JSON.stringify($json.lancamentos) }}'::jsonb,\n   {{ $json.importacao }}\n);",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        624,
-        1536
+        2112,
+        176
       ],
       "id": "7bb23628-3956-4859-ba42-0146fc349b93",
       "name": "ff_lancamento_partida_dobrada1",
@@ -801,8 +793,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        112,
-        1536
+        1600,
+        176
       ],
       "id": "7366045d-9c78-4411-ba18-3d095d45313a",
       "name": "PartidaLote",
@@ -818,8 +810,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1024,
-        1776
+        1120,
+        1552
       ],
       "id": "eb179afb-23db-4928-bb8f-8be41d5c0990",
       "name": "Respond to Webhook6"
@@ -889,8 +881,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        320,
-        1776
+        416,
+        1552
       ],
       "id": "fd1b10ea-c147-4c5c-8645-85312dcb8e83",
       "name": "EditPartidaDobrada2"
@@ -902,8 +894,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        784,
-        1776
+        880,
+        1552
       ],
       "id": "53d467d5-13aa-48c8-aca7-51c6b22e89f8",
       "name": "Code in JavaScript7"
@@ -918,8 +910,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        80,
-        1776
+        176,
+        1552
       ],
       "id": "82612d3e-ffc6-48e2-b4b6-b22f221b0d9b",
       "name": "EditaPartidaDobrada",
@@ -934,8 +926,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        592,
-        1776
+        688,
+        1552
       ],
       "id": "dfec937d-eb58-41e6-ab27-0a3675413ae9",
       "name": "contab.ff_atualiza_lancto_partida",
@@ -946,6 +938,616 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Importaçõs de extrato bancario para contabil ou  financeiro\n ",
+        "height": 1388,
+        "width": 1328,
+        "color": 3
+      },
+      "id": "c2ce2879-8f7c-4120-96aa-e0daca88150e",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2544,
+        384
+      ],
+      "id": "d81dc80d-df5b-4dfd-b905-51adf9f34b96",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "c41666a4-f294-4f09-9bff-30c3673a3f29",
+              "name": "conta_observada",
+              "value": "={{ $json.body.conta_observada}}",
+              "type": "string"
+            },
+            {
+              "id": "dfacf8d5-4306-40b2-8e79-2867acad663d",
+              "name": "lancamentos",
+              "value": "={{ $json.body.lancamentos}}",
+              "type": "array"
+            },
+            {
+              "id": "9f13ff79-5393-42dc-aaab-2c13321458af",
+              "name": "importacao",
+              "value": "={{ $json.body.importacao}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        384
+      ],
+      "id": "4e45bb59-8bd1-4bd8-a7b7-ea189cf65cd2",
+      "name": "EditPartidaDobrada3"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2304,
+        384
+      ],
+      "id": "44abe6bf-cb75-4f82-b20d-eb97a26c1e4c",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "importa_extrato",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        384
+      ],
+      "id": "b3423033-383c-426e-89d4-1fe1978d470d",
+      "name": "PartidaLote1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT public.fn_importar_extrato_e_conciliar(\n  {{ $json.empresa_id }},\n  {{ $json.conta_observada }},\n  '{{ JSON.stringify($json.lancamentos) }}'::jsonb\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2112,
+        384
+      ],
+      "id": "ac92a6a1-bacd-4164-90bc-f8d26ea83035",
+      "name": "fn_importar_extrato_e_conciliar",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dados_importados",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        592
+      ],
+      "id": "7156c970-ccd4-4e6d-bf47-ba0b76bba1bb",
+      "name": "Dados Bancarios Importado",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "e51013a7-32ef-49f8-b249-2694b48db6eb",
+              "name": "conta_financeira_id",
+              "value": "={{ $json.query.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1840,
+        592
+      ],
+      "id": "0b129a9b-929a-44ac-962b-c65284a08a3c",
+      "name": "Editmportacao"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n  id,\n  data_mov,\n  historico,\n  valor,\n  tipo,\n  tipo_evento,\n  importar,\n  COALESCE(status_conciliacao, 'pendente') AS situacao,\n  COALESCE(mensagem_conciliacao, 'Linha precisa de revisão') AS mensagem\nFROM public.conciliacao_financeira\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND conta_financeira_id =  {{ $json.conta_financeira_id }}\n     AND lote_conciliacao_id IS NULL\nORDER BY data_mov, id;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2112,
+        592
+      ],
+      "id": "24eb7f9d-aaea-41d7-86b0-bd64b4199480",
+      "name": "conciliacao_bancaria",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2576,
+        592
+      ],
+      "id": "38e355f6-94dd-4f0c-bc24-23fd4696027b",
+      "name": "Respond to Webhook8"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all().map(i => i.json);\n\n// erro\nif (items[0]?.error) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: items[0].message || \"Erro desconhecido\",\n        details: items[0].error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso com várias linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        592
+      ],
+      "id": "6d9053f7-7730-4e90-8a3f-f256ccf31ad1",
+      "name": "Code in JavaScript9"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2528,
+        800
+      ],
+      "id": "cd7ef0f5-3e42-41b6-9e42-67c886583fb9",
+      "name": "Respond to Webhook9"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all().map(i => i.json);\n\n// erro\nif (items[0]?.error) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: items[0].message || \"Erro desconhecido\",\n        details: items[0].error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso com várias linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        800
+      ],
+      "id": "0db68e2c-782c-44ae-bc19-8c6aa1aae27e",
+      "name": "Code in JavaScript10"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "aceitar_conciliacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1616,
+        800
+      ],
+      "id": "973862d1-3c51-4ccd-8f61-34fd09d94123",
+      "name": "Revisaoaceita",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " UPDATE public.conciliacao_financeira\nSET status_conciliacao = 'ok',\n    mensagem_conciliacao = 'Aceito manualmente pelo usuário',\n    importar = true\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND id = ANY(ARRAY[{{ ($json.ids || []).join(\",\") }}]::bigint[]);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2128,
+        800
+      ],
+      "id": "15175ef3-fed1-456f-90dc-eca33c65359f",
+      "name": "Aceite",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "e51013a7-32ef-49f8-b249-2694b48db6eb",
+              "name": "ids",
+              "value": "={{ $json.body.ids}}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1856,
+        800
+      ],
+      "id": "3d4d332f-f634-4d92-b580-1597d0cf7e1c",
+      "name": "Editaceite"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2544,
+        976
+      ],
+      "id": "5e2557d0-2316-4ac0-a229-7bbe204d192b",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all().map(i => i.json);\n\n// erro\nif (items[0]?.error) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: items[0].message || \"Erro desconhecido\",\n        details: items[0].error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso com várias linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        976
+      ],
+      "id": "18cc2f64-eb92-4a36-a72e-71d7650e0fa9",
+      "name": "Code in JavaScript11"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "execucao_conciliacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1632,
+        976
+      ],
+      "id": "7658c005-a3d2-44f8-bdf6-fa298da37979",
+      "name": "ExecucaoConciliacao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "2ba2771b-513b-4f4b-873d-72379fe89079",
+              "name": "conta_id",
+              "value": "={{ $json.query.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        976
+      ],
+      "id": "8251b109-9120-473a-8358-c835dc24e3aa",
+      "name": "EditaExecucao"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  SELECT public.fn_executar_conciliacao(\n  {{ $json.empresa_id }},\n  {{ $json.conta_id }}\n   \n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2144,
+        976
+      ],
+      "id": "5b004256-6852-4dfa-a9e8-8b5857144161",
+      "name": "ExecutaConciliacao",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2528,
+        1168
+      ],
+      "id": "e9cba9bf-4ee8-492b-8bc8-0c369a24f343",
+      "name": "Respond to Webhook11"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all().map(i => i.json);\n\n// erro\nif (items[0]?.error) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: items[0].message || \"Erro desconhecido\",\n        details: items[0].error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso com várias linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        1168
+      ],
+      "id": "9b5b444e-dcce-4f38-b674-a279a9c83fa2",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reverter_conciliacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1616,
+        1168
+      ],
+      "id": "6ae0f67b-4ff7-4d96-b956-2d0b27adb006",
+      "name": "Reverter",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "e51013a7-32ef-49f8-b249-2694b48db6eb",
+              "name": "conta_id",
+              "value": "={{ $json.query.conta_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1856,
+        1168
+      ],
+      "id": "92a26250-641a-4dbd-816b-c8568d02746e",
+      "name": "EditaReverter"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " UPDATE public.conciliacao_financeira\nSET status_conciliacao = 'pendente',\n    mensagem_conciliacao = 'Revertido manualmente para revisão'\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND conta_financeira_id = {{ $json.conta_id }}\n  AND status_conciliacao = 'ok';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2128,
+        1168
+      ],
+      "id": "a42267ff-33aa-400a-b342-36cf652ba5be",
+      "name": "ReverterConciliacao",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2544,
+        1328
+      ],
+      "id": "ae72c37b-e065-41cd-8f41-961a3460c3cf",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all().map(i => i.json);\n\n// erro\nif (items[0]?.error) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: items[0].message || \"Erro desconhecido\",\n        details: items[0].error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso com várias linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        1328
+      ],
+      "id": "0ea537bb-4c23-4cde-8332-aca461ab77a1",
+      "name": "Code in JavaScript13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "e51013a7-32ef-49f8-b249-2694b48db6eb",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        1328
+      ],
+      "id": "0d4b219e-45ad-4135-8aee-a598c0d015b8",
+      "name": "EditaReverter1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT public.fn_rejeitar_conciliacao_linha(\n  {{ $json.empresa_id }},\n  {{ $json.id }}\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2144,
+        1328
+      ],
+      "id": "5cb399b2-ae1e-426c-b0b4-74aea5beec93",
+      "name": "ReverterConciliacao1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rejeitar_conciliacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1632,
+        1328
+      ],
+      "id": "83b295bf-d96d-43ff-a28a-d2d3ea9921d8",
+      "name": "RejeitarConciliacao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     }
   ],
   "pinData": {
@@ -954,6 +1556,22 @@
         "json": {
           "empresa_id": 1,
           "dias": 15
+        }
+      }
+    ],
+    "Editmportacao": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conta_financeira_id": 2
+        }
+      }
+    ],
+    "EditaExecucao": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conta_id": 2
         }
       }
     ]
@@ -1343,13 +1961,277 @@
           }
         ]
       ]
+    },
+    "EditPartidaDobrada3": {
+      "main": [
+        [
+          {
+            "node": "fn_importar_extrato_e_conciliar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript8": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PartidaLote1": {
+      "main": [
+        [
+          {
+            "node": "EditPartidaDobrada3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fn_importar_extrato_e_conciliar": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados Bancarios Importado": {
+      "main": [
+        [
+          {
+            "node": "Editmportacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editmportacao": {
+      "main": [
+        [
+          {
+            "node": "conciliacao_bancaria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "conciliacao_bancaria": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript9": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript10": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revisaoaceita": {
+      "main": [
+        [
+          {
+            "node": "Editaceite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aceite": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editaceite": {
+      "main": [
+        [
+          {
+            "node": "Aceite",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript11": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExecucaoConciliacao": {
+      "main": [
+        [
+          {
+            "node": "EditaExecucao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaExecucao": {
+      "main": [
+        [
+          {
+            "node": "ExecutaConciliacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExecutaConciliacao": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript12": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reverter": {
+      "main": [
+        [
+          {
+            "node": "EditaReverter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaReverter": {
+      "main": [
+        [
+          {
+            "node": "ReverterConciliacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReverterConciliacao": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript13": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaReverter1": {
+      "main": [
+        [
+          {
+            "node": "ReverterConciliacao1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReverterConciliacao1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RejeitarConciliacao": {
+      "main": [
+        [
+          {
+            "node": "EditaReverter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "94be9890-41c3-484e-b8c0-e8455c1aed37",
+  "versionId": "9c7b8f1f-0b17-4c75-a928-021319a479e8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

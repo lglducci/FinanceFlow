@@ -1012,8 +1012,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -368,
-        2064
+        -464,
+        1968
       ],
       "id": "e3363e84-f518-47e2-835d-a5516d9463cd",
       "name": "Sticky Note4"
@@ -1058,8 +1058,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -48,
-        2240
+        -64,
+        2256
       ],
       "id": "9a067302-e47a-4c91-a6c3-9e77b98e6fda",
       "name": "Edit Fields"
@@ -1130,7 +1130,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer  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"
+              "value": "Bearer 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"
             },
             {
               "name": "Content-Type",
@@ -1368,13 +1368,13 @@
     },
     {
       "parameters": {
-        "jsCode": " const listaFormatada = items\n  .map(i => `- ${i.json.item}`)\n  .join(\"\\n\");\n\nconst empresa_id = $('Edit Fields').first().json.empresa_id;\nconst pergunta =  $('Edit Fields').first().json.conversa;\n\nconst prompt = `\nVocê é um classificador.\n\nLISTA:\n${listaFormatada}\n\nPERGUNTA:\n${pergunta}\n\n \nCLASSIFICAÇÃO:\n\nprocesso:\nQuando o usuário quer executar ou aprender como fazer algo\n\nEx:\n- como fazer lançamento\n- quero fazer lançamento\n- preciso registrar pagamento\n- lançar aporte de capital\n- fazer lançamento contábil\n\nnavegacao:\nQuando o usuário quer acessar uma tela ou ver algo\n\nEx:\n- abrir lançamentos\n- ver fluxo de caixa\n- acessar DRE\n- ir para contas a pagar\n\nREGRA DE OURO (OBRIGATÓRIA):\n\nSe houver QUALQUER indicação de ação (fazer, lançar, registrar, cadastrar, criar, gerar) → processo\n\nSÓ usar navegacao quando for claramente visualização (ver, abrir, acessar)\n\nNunca tratar ação como navegacao\nResposta JSON:\n{\"tipo\":\"\",\"assunto\":\"\"}\n`;\n\nreturn [{\n  prompt,\n  empresa_id,\n  conversa: pergunta\n}];"
+        "jsCode": " const listaFormatada = items\n  .map(i => `- ${i.json.item}`)\n  .join(\"\\n\");\n\nconst empresa_id = $('Edit Fields').first().json.empresa_id;\nconst pergunta = $('Edit Fields').first().json.conversa;\n\nconst prompt = `\nVocê é um classificador.\n\nLISTA:\n${listaFormatada}\n\nPERGUNTA:\n${pergunta}\n\nCLASSIFICAÇÃO:\n\nprocesso:\nQuando o usuário quer executar ou aprender como fazer algo\n\nnavegacao:\nQuando o usuário quer acessar uma tela ou ver algo\n\nREGRA DE OURO:\n\nSe houver ação → processo\nSe for só ver → navegacao\n\nIMPORTANTE:\nResponda SOMENTE com um objeto JSON com duas chaves:\ntipo e assunto\n`;\n\nreturn [{\n  json: {\n    prompt,\n    empresa_id,\n    conversa: pergunta\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         368,
-        2272
+        2256
       ],
       "id": "a3938fa0-d7aa-4ddb-a6a5-e09e5eba2d87",
       "name": "Lista Assuntos Titulos"
@@ -1433,7 +1433,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer  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"
+              "value": "Bearer  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"
             },
             {
               "name": "Content-Type",
@@ -1464,7 +1464,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "Bearer  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"
+              "value": "Bearer  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"
             },
             {
               "name": "Content-Type",
@@ -1547,6 +1547,19 @@
         }
       },
       "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const listaFormatada = items\n  .map(i => `- ${i.json.item}`)\n  .join(\"\\n\");\n\nconst empresa_id = $('Edit Fields').first().json.empresa_id;\nconst pergunta = $('Edit Fields').first().json.conversa;\n\nconst prompt = `\nVocê é um classificador.\n\nLISTA:\n${listaFormatada}\n\nPERGUNTA:\n${pergunta}\n\nCLASSIFICAÇÃO:\n\nprocesso:\nQuando o usuário quer executar ou aprender como fazer algo\n\nEx:\n- como fazer lançamento\n- quero fazer lançamento\n- preciso registrar pagamento\n- lançar aporte de capital\n- fazer lançamento contábil\n\nnavegacao:\nQuando o usuário quer acessar uma tela ou ver algo\n\nEx:\n- abrir lançamentos\n- ver fluxo de caixa\n- acessar DRE\n- ir para contas a pagar\n\nREGRA DE OURO (OBRIGATÓRIA):\n\nSe houver QUALQUER indicação de ação (fazer, lançar, registrar, cadastrar, criar, gerar) → processo\n\nSÓ usar navegacao quando for claramente visualização (ver, abrir, acessar)\n\nNunca tratar ação como navegacao\n\nResponda APENAS com JSON válido:\n{\"tipo\":\"\",\"assunto\":\"\"}\n`;\n\nreturn [{\n  json: {\n    prompt,\n    empresa_id,\n    conversa: pergunta\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        1728
+      ],
+      "id": "2c46f589-b07c-4396-83ed-deffc83ff633",
+      "name": "Lista Assuntos Titulos1"
     }
   ],
   "pinData": {
@@ -2232,7 +2245,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "4fa2b4cf-c9ee-4ea2-90fd-63f94bb54d77",
+  "versionId": "8b00ebbe-e4b8-43b3-96d9-2ac895db5cf4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

@@ -20,8 +20,8 @@
     {
       "parameters": {
         "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
-        "height": 2140,
-        "width": 1328,
+        "height": 1020,
+        "width": 1280,
         "color": 4
       },
       "id": "c0238189-c26b-47e5-bb8b-e4edb3e37b2c",
@@ -29,8 +29,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1552,
-        0
+        1504,
+        -80
       ]
     },
     {
@@ -213,8 +213,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        832
+        3712,
+        288
       ],
       "id": "862abbe8-0914-44ed-a849-30524621bbae",
       "name": "Respond to Webhook1"
@@ -229,8 +229,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        832
+        3120,
+        288
       ],
       "id": "2b379115-534a-4424-81fc-ce9ffe3f4fe3",
       "name": "balanco",
@@ -259,8 +259,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        832
+        3328,
+        288
       ],
       "id": "1ede8fdd-5810-45f0-81fc-da69b7fb5b2b",
       "name": "EdtBalanco"
@@ -274,8 +274,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        832
+        3520,
+        288
       ],
       "id": "e3edf0c9-8959-490c-afd9-c7a60cce851c",
       "name": "ff_relatorio_balanco",
@@ -819,7 +819,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "\n\nselect receita_liquida, cmv_csp, margem_contribuicao, despesa_fixa, resultado_liquido, liquidez_aprox , endividamento_aprox \nFROM contab.sp_kpi_gerencial_mensal({{ $json.empresa_id }}\n   ,{{ $json.ano }} , {{ $json.mes }}\n);\n",
+        "query": "\n\nselect  receita_liquida         ,\n  cmv_csp                 ,\n  margem_contribuicao    ,\n  despesa_fixa          ,\n  resultado_liquido    ,\n  ebitda                ,\n  margem_ebitda         ,\n  liquidez_aprox        ,\n  endividamento_aprox   \nFROM contab.sp_kpi_gerencial_mensal({{ $json.empresa_id }}\n   ,{{ $json.ano }} , {{ $json.mes }}\n);\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1448,29 +1448,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": " WITH partidas AS (\n  SELECT\n    MIN(l.id)                           AS id,\n    l.data_mov::date                   AS data,\n    l.historico                        AS historico,\n\n    MAX(CASE WHEN l.debito  > 0 THEN l.conta_id END) AS conta_debito_id,\n    SUM(COALESCE(l.debito, 0))          AS debito,\n\n    MAX(CASE WHEN l.credito > 0 THEN l.conta_id END) AS conta_credito_id,\n    SUM(COALESCE(l.credito, 0))         AS credito,\n\n    l.lote_id\n  FROM contab.lancamentos l\n  WHERE l.empresa_id = {{ $json.empresa_id }}\n    AND l.data_mov::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n  GROUP BY l.lote_id, l.data_mov::date, l.historico\n)\n\nSELECT\n  p.id,\n  p.data,\n  p.historico,\n\n  cd.codigo || ' - ' || cd.nome AS conta_debito,\n  p.debito,\n\n  cc.codigo || ' - ' || cc.nome AS conta_credito,\n  p.credito,\n\n  p.lote_id \nFROM partidas p\nLEFT JOIN contab.contas cd ON cd.id = p.conta_debito_id\nLEFT JOIN contab.contas cc ON cc.id = p.conta_credito_id\nORDER BY p.data DESC, p.lote_id;\n",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        2144,
-        1424
-      ],
-      "id": "99374e61-9699-4375-b754-7390eccb7b7b",
-      "name": "ff_diario_contabil1",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
-      "parameters": {
         "assignments": {
           "assignments": [
             {
@@ -1495,6 +1472,18 @@
               "id": "bbc07985-5eb4-44e4-bd9f-594e807e884e",
               "name": "conta_id",
               "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "dcb77396-c0c3-4e79-84c1-1c4dfca3b049",
+              "name": "todos",
+              "value": "={{ $json.body.todos}}",
+              "type": "string"
+            },
+            {
+              "id": "3d1f534c-e5f7-44cf-ae2b-f4abdaa46595",
+              "name": "importacao_id",
+              "value": "={{ $json.body.importacao_id}}",
               "type": "string"
             }
           ]
@@ -1634,8 +1623,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2384,
-        1888
+        2304,
+        1824
       ],
       "id": "394345de-8b11-4faa-b7be-0c67a969707c",
       "name": "Respond to Webhook5"
@@ -1675,8 +1664,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2000,
-        1888
+        1920,
+        1824
       ],
       "id": "96c99fd3-80ec-48d2-b930-6f71b27be2f5",
       "name": "Edit_RazãoPorCont1"
@@ -1691,8 +1680,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1792,
-        1888
+        1712,
+        1824
       ],
       "id": "07ffdf10-07e9-445b-bf75-2f9ab0df5dd1",
       "name": "BalancoPorNivel",
@@ -1707,11 +1696,1260 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2192,
-        1888
+        2112,
+        1824
       ],
       "id": "24d3547a-c924-4e21-a44c-f44ec783d10a",
       "name": "ff_balanco_por_nivel",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " WITH partidas AS (\n  SELECT\n    MIN(l.id)                          AS id,\n    l.data_mov::date                   AS data,\n    l.historico                        AS historico,\n\n    MAX(CASE WHEN l.debito  > 0 THEN l.conta_id END) AS conta_debito_id,\n    SUM(COALESCE(l.debito, 0))         AS debito,\n\n    MAX(CASE WHEN l.credito > 0 THEN l.conta_id END) AS conta_credito_id,\n    SUM(COALESCE(l.credito, 0))        AS credito,\n\n    l.lote_id,\n    l.importacao_id\n  FROM contab.lancamentos l\n  WHERE l.empresa_id = {{ $json.empresa_id }}\n\n    AND (\n      (\n        {{ Number($json.importacao_id || 0) }} > 0\n        AND l.importacao_id = {{ Number($json.importacao_id || 0) }}\n      )\n      OR\n      (\n        {{ Number($json.importacao_id || 0) }} = 0\n        AND l.data_mov::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n      )\n    )\n\n    AND (\n      '{{ $json.todos }}' = 'T'\n      OR (l.origem <> 'CONTABIL' OR l.origem IS NULL)\n    )\n\n  GROUP BY\n    l.lote_id,\n    l.importacao_id,\n    l.data_mov::date,\n    l.historico\n)\n\nSELECT\n  p.id,\n  p.data,\n  p.historico,\n\n  cd.codigo || ' - ' || cd.nome AS conta_debito,\n  p.debito,\n\n  cc.codigo || ' - ' || cc.nome AS conta_credito,\n  p.credito,\n\n  p.lote_id,\n  p.importacao_id\nFROM partidas p\nLEFT JOIN contab.contas cd ON cd.id = p.conta_debito_id\nLEFT JOIN contab.contas cc ON cc.id = p.conta_credito_id\nORDER BY p.data DESC, p.lote_id, p.importacao_id;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2144,
+        1424
+      ],
+      "id": "99374e61-9699-4375-b754-7390eccb7b7b",
+      "name": "LancamentoProcessaCtb",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2320,
+        2016
+      ],
+      "id": "67c21070-c657-46f9-8761-0f6649b0ae62",
+      "name": "Respond to Webhook30"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "2cce7d03-881a-46e7-808d-fd6a9916f752",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        2016
+      ],
+      "id": "eb9f48dd-248f-4879-854f-49abc02872f0",
+      "name": "EditDer1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dre_analitico",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        2016
+      ],
+      "id": "8fb4fc3b-59b6-4cd5-a16c-b7e129c5e4b7",
+      "name": "dre_analitico",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT * from contab.ff_dre_analitico(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2128,
+        2016
+      ],
+      "id": "632f2961-d75f-4610-a952-36e13a45f18e",
+      "name": "ff_dre_analitico",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
+        "height": 1260,
+        "width": 1216,
+        "color": 4
+      },
+      "id": "0f1a73d3-1db6-4822-abc2-a4c24c39cd8c",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
+        "height": 1260,
+        "width": 1216,
+        "color": 5
+      },
+      "id": "80b386b1-6f15-43c4-b26a-b2bf622385cb",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2928,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3712,
+        80
+      ],
+      "id": "df1507c3-042d-456f-8277-f346e0e65e85",
+      "name": "Respond to Webhook6"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "balanco_patrimonial",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        3120,
+        80
+      ],
+      "id": "2a375049-3029-4bb3-8c8f-a3276b4fab6d",
+      "name": "balanco1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_corte",
+              "value": "={{ $json.body.data_corte}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3328,
+        80
+      ],
+      "id": "77c99241-4585-4312-9e8e-d139765e8ad5",
+      "name": "EdtBalanco1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT * FROM  contab.ff_balanco_patrimonial(\n  {{ $json.empresa_id }},\n  '{{ $json.data_corte }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3520,
+        80
+      ],
+      "id": "42435cd3-804e-489e-a9ca-2daa6c1205e8",
+      "name": "ff_balanco_patrimonial",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3792,
+        544
+      ],
+      "id": "cba2afd7-82c3-4227-90dd-111a423ca4e2",
+      "name": "Respond to Webhook7"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "balanco_comparativo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        3104,
+        544
+      ],
+      "id": "526da10a-94b1-42c8-8de5-551303f8cc5e",
+      "name": "balanco_comparativo",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "1008a792-1e60-4f13-8506-ad21021a31f4",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3296,
+        544
+      ],
+      "id": "91f8bdda-ec5b-4d7e-85f1-c9335d894e16",
+      "name": "EdtBalancocomparativo"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT * FROM contab.ff_balanco_patrimonial_comparativo(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini}}', '{{ $json.data_fim}}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3504,
+        544
+      ],
+      "id": "0222912f-fa5b-49a1-8b0e-2c6253699560",
+      "name": "ff_balanco_patrimonial_comparativo",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
+        "height": 1260,
+        "width": 1216,
+        "color": 5
+      },
+      "id": "2704aa79-6e29-4bfc-97e4-118787d5b6d9",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3648,
+        1328
+      ],
+      "id": "5746c464-2214-45d5-a533-20240f0c0a78",
+      "name": "Respond to Webhook8"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.query.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "1008a792-1e60-4f13-8506-ad21021a31f4",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3216,
+        1328
+      ],
+      "id": "31f079c0-3d1a-4a50-b7bd-dc6fece2e62f",
+      "name": "EdtBalancocomparativo1"
+    },
+    {
+      "parameters": {
+        "path": "dre_gerencial_analitico",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        3024,
+        1328
+      ],
+      "id": "0590a4b9-f543-466a-a270-7661b18548a6",
+      "name": "DRE GEN ANALITICO",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT * FROM contab.ff_dre_gerencial_analitico(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini}}', '{{ $json.data_fim}}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3424,
+        1328
+      ],
+      "id": "cf0d044e-5911-45f7-ac50-712f195c79c5",
+      "name": "ff_dre_gerencial_analitico",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3712,
+        1568
+      ],
+      "id": "ef52dbed-a6ac-492f-810a-6532c7811b44",
+      "name": "Respond to Webhook9"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.query.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "1008a792-1e60-4f13-8506-ad21021a31f4",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3216,
+        1568
+      ],
+      "id": "b8a39cd9-902b-4983-a5dc-6c2d5ee91ed7",
+      "name": "EdtBalancocomparativo2"
+    },
+    {
+      "parameters": {
+        "path": "dre_gerencial_resumo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        3024,
+        1568
+      ],
+      "id": "9700d266-c3c1-4630-b08a-53a134f578ea",
+      "name": "DRE GEN RESUMO",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT * FROM  contab.ff_dre_gerencial_resumo(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini}}', '{{ $json.data_fim}}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3424,
+        1568
+      ],
+      "id": "d1be87f0-5860-4e24-b092-c24ff66f9215",
+      "name": "ff_dre_gerencial_resumo",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3712,
+        1840
+      ],
+      "id": "31f6360f-cdd0-4e49-b2ae-e74763ab9f6e",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.query.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "1008a792-1e60-4f13-8506-ad21021a31f4",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3216,
+        1840
+      ],
+      "id": "288dcf14-5fe4-4520-9b8b-9afd27aaa978",
+      "name": "EdtBalancocomparativo3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT * FROM  contab.ff_dre_gerencial_totais(\n  {{ $json.empresa_id }},\n  '{{ $json.data_ini}}', '{{ $json.data_fim}}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3424,
+        1840
+      ],
+      "id": "c7e31e68-9709-47c0-b385-b8dcbf40b8be",
+      "name": "ff_dre_gerencial_totais",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "path": "dre_gerencial_totais",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        3024,
+        1840
+      ],
+      "id": "8d1155e9-2dd4-4f4b-bdab-6b8b5beb63f7",
+      "name": "DRE GEN totais",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2336,
+        2512
+      ],
+      "id": "d3180cec-e5c7-47cb-9d05-efd53468850c",
+      "name": "Respond to Webhook31"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        2512
+      ],
+      "id": "eb4251f5-553d-4dd5-b41f-e8274885ebdf",
+      "name": "Editflxcaixadetalhado1"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2336,
+        2704
+      ],
+      "id": "521f91cf-8a67-4cfc-8ebe-adbbea65765a",
+      "name": "Respond to Webhook32"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "3afa3e23-b736-4798-99a5-62ec7618850a",
+              "name": "tipo",
+              "value": "={{ $json.body.tipo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        2704
+      ],
+      "id": "6495a5b8-1bd5-4abc-96db-4f148bbfa2d2",
+      "name": "Editflxcaixamensal2"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2336,
+        2896
+      ],
+      "id": "cb4b200c-8798-4955-ae1d-cbac759fb61c",
+      "name": "Respond to Webhook33"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        2896
+      ],
+      "id": "31b0bdbe-4941-4a0e-a141-3d0f5a45dd7c",
+      "name": "Editflxcaixamensal3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM  contab.sp_fluxo_caixa_consolidado (\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2128,
+        2896
+      ],
+      "id": "6baa95fd-31c8-4d8b-ab71-83823eb93fe7",
+      "name": "sp_fluxo_caixa_consolidado1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gera_fluxo_caixa_consolidado",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        2896
+      ],
+      "id": "854a1b55-2481-43cf-ae28-5d72a4eaebd2",
+      "name": "Fluxo_Caixa_consolidado1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "content": "## Relatórios Contabeis Fluxo Caixa Grafico\nRelatórios Contábeis.. Fluxo de caixa.",
+        "height": 1436,
+        "width": 1328,
+        "color": 4
+      },
+      "id": "337c88e1-b557-4fd9-9430-0daffbd0e890",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1504,
+        2416
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gera_fluxo_caixa_grafico_agrupado",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        2704
+      ],
+      "id": "aa57071c-6335-465d-8412-c591049f1c62",
+      "name": "Fluxo_Caixa_Agrupado",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gera_fluxo_caixa_grafico_diario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        2512
+      ],
+      "id": "48e6ec32-6b9c-4ab7-8a08-f0778f5d7bd5",
+      "name": "Fluxo_Caixa_Diario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM contab.sp_fluxo_caixa_grafico_agrupado(\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}','{{ $json.tipo }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2128,
+        2704
+      ],
+      "id": "b4477f6e-c1ed-4459-9384-96c2923f4466",
+      "name": "sp_fluxo_caixa_grafico_agrupado",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM contab.sp_fluxo_caixa_grafico_diario(\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2128,
+        2512
+      ],
+      "id": "1b43bb0e-b473-4ed9-9a46-9fa71744304a",
+      "name": "sp_fluxo_caixa_grafico_diario",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2384,
+        3200
+      ],
+      "id": "3d48a9ec-881b-40e9-aa21-2eb56f8e0280",
+      "name": "Respond to Webhook34"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1984,
+        3200
+      ],
+      "id": "471b0c1d-f780-4566-a02c-4dfc3502915d",
+      "name": "Editflxcaixadetalhado2"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2384,
+        3392
+      ],
+      "id": "a00c42a7-9f9d-4381-82d6-4d1c3a12b2f4",
+      "name": "Respond to Webhook35"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "3afa3e23-b736-4798-99a5-62ec7618850a",
+              "name": "tipo",
+              "value": "={{ $json.body.tipo}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1984,
+        3392
+      ],
+      "id": "a309f661-4c4c-4d8b-bae7-cec133d47392",
+      "name": "Editflxcaixamensal4"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2384,
+        3584
+      ],
+      "id": "496901b3-7312-47af-a921-4198302feea1",
+      "name": "Respond to Webhook36"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1984,
+        3584
+      ],
+      "id": "1a0947b4-51f6-4867-83b7-e360a3fc2ae0",
+      "name": "Editflxcaixamensal5"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM  contab.sp_fluxo_caixa_consolidado (\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2176,
+        3584
+      ],
+      "id": "1be12313-55b2-4670-a623-e139645d0b64",
+      "name": "sp_fluxo_caixa_consolidado2",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gera_fluxo_caixa_consolidado",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1760,
+        3584
+      ],
+      "id": "9cea1f8d-6729-4a10-b3aa-f6eae85e1f2b",
+      "name": "Fluxo_Caixa_consolidado2",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM contab.sp_fluxo_caixa_projetado_agrupado(\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}','{{ $json.tipo }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2176,
+        3392
+      ],
+      "id": "e6c7f991-07ec-4fd5-9301-320f8f6a5a3a",
+      "name": "sp_fluxo_caixa_grafico_agrupado1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n\nSELECT * \nFROM contab.sp_fluxo_caixa_projetado_diario (\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio }}',\n  '{{ $json.data_fim }}'\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2160,
+        3200
+      ],
+      "id": "673b4587-9567-494e-b42a-3d2d8a73830e",
+      "name": "sp_fluxo_caixa_grafico_diario1",
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fluxo_caixa_projetado_diario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1760,
+        3200
+      ],
+      "id": "53f903d5-56b3-49db-8a13-4384a2fd9ca7",
+      "name": "Fluxo_Caixa_projetado_Diario1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fluxo_caixa_projetado_agrupado",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1760,
+        3392
+      ],
+      "id": "94a64a8a-2e0f-4f52-be3e-d7558eaa4cf3",
+      "name": "Fluxo_Caixa_Agrupado_projetado",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2336,
+        800
+      ],
+      "id": "ef6193f7-dd47-4e07-80b7-9a25754ae175",
+      "name": "Respond to Webhook11"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        800
+      ],
+      "id": "07e9b7fe-1342-4112-bde0-f2f49812997c",
+      "name": "Edtranscartao4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lote_importacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1744,
+        800
+      ],
+      "id": "fed7cf87-e81e-4802-8674-5cd75ed37701",
+      "name": "LoteImportacao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT DISTINCT importacao_id from  contab.lancamentos where empresa_id =\n  {{ $json.empresa_id }}  and importacao_id  > 0;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2144,
+        800
+      ],
+      "id": "92797a1c-e4a1-4623-8203-d5662ab0b6a2",
+      "name": "lote_importacao",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
@@ -1731,16 +2969,6 @@
           "data_fim": "20251231",
           "filtro": null,
           "tipo": "d"
-        }
-      }
-    ],
-    "EditDiario1": [
-      {
-        "json": {
-          "empresa_id": 1,
-          "data_ini": "2026-01-01",
-          "data_fim": "2026-01-31",
-          "conta_id": null
         }
       }
     ],
@@ -1791,6 +3019,78 @@
           "data_ini": "20260101",
           "data_fim": "20260601",
           "nivel": 1
+        }
+      }
+    ],
+    "EditDiario1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260101",
+          "data_fim": "20260331",
+          "conta_id": null,
+          "todos": "P"
+        }
+      }
+    ],
+    "EditDer1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260701",
+          "data_fim": "20260406"
+        }
+      }
+    ],
+    "EdtBalancocomparativo": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260401",
+          "data_fim": "20260501"
+        }
+      }
+    ],
+    "EdtBalancocomparativo1": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260401",
+          "data_fim": "20260501"
+        }
+      }
+    ],
+    "EdtBalancocomparativo2": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260401",
+          "data_fim": "20260501"
+        }
+      }
+    ],
+    "EdtBalancocomparativo3": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260401",
+          "data_fim": "20260501"
+        }
+      }
+    ],
+    "Editflxcaixadetalhado2": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_inicio": "20260331",
+          "data_fim": "20260901"
+        }
+      }
+    ],
+    "Edtranscartao4": [
+      {
+        "json": {
+          "empresa_id": 1
         }
       }
     ]
@@ -2291,22 +3591,11 @@
         ]
       ]
     },
-    "ff_diario_contabil1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook29",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "EditDiario1": {
       "main": [
         [
           {
-            "node": "ff_diario_contabil1",
+            "node": "LancamentoProcessaCtb",
             "type": "main",
             "index": 0
           }
@@ -2389,13 +3678,453 @@
           }
         ]
       ]
+    },
+    "LancamentoProcessaCtb": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook29",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditDer1": {
+      "main": [
+        [
+          {
+            "node": "ff_dre_analitico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dre_analitico": {
+      "main": [
+        [
+          {
+            "node": "EditDer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_dre_analitico": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook30",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "balanco1": {
+      "main": [
+        [
+          {
+            "node": "EdtBalanco1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EdtBalanco1": {
+      "main": [
+        [
+          {
+            "node": "ff_balanco_patrimonial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_balanco_patrimonial": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "balanco_comparativo": {
+      "main": [
+        [
+          {
+            "node": "EdtBalancocomparativo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EdtBalancocomparativo": {
+      "main": [
+        [
+          {
+            "node": "ff_balanco_patrimonial_comparativo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_balanco_patrimonial_comparativo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EdtBalancocomparativo1": {
+      "main": [
+        [
+          {
+            "node": "ff_dre_gerencial_analitico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DRE GEN ANALITICO": {
+      "main": [
+        [
+          {
+            "node": "EdtBalancocomparativo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_dre_gerencial_analitico": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EdtBalancocomparativo2": {
+      "main": [
+        [
+          {
+            "node": "ff_dre_gerencial_resumo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DRE GEN RESUMO": {
+      "main": [
+        [
+          {
+            "node": "EdtBalancocomparativo2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_dre_gerencial_resumo": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EdtBalancocomparativo3": {
+      "main": [
+        [
+          {
+            "node": "ff_dre_gerencial_totais",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_dre_gerencial_totais": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DRE GEN totais": {
+      "main": [
+        [
+          {
+            "node": "EdtBalancocomparativo3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editflxcaixadetalhado1": {
+      "main": [
+        [
+          {
+            "node": "sp_fluxo_caixa_grafico_diario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editflxcaixamensal2": {
+      "main": [
+        [
+          {
+            "node": "sp_fluxo_caixa_grafico_agrupado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editflxcaixamensal3": {
+      "main": [
+        [
+          {
+            "node": "sp_fluxo_caixa_consolidado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_fluxo_caixa_consolidado1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook33",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo_Caixa_consolidado1": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixamensal3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo_Caixa_Agrupado": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixamensal2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo_Caixa_Diario": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixadetalhado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_fluxo_caixa_grafico_agrupado": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook32",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_fluxo_caixa_grafico_diario": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook31",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editflxcaixadetalhado2": {
+      "main": [
+        [
+          {
+            "node": "sp_fluxo_caixa_grafico_diario1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editflxcaixamensal4": {
+      "main": [
+        [
+          {
+            "node": "sp_fluxo_caixa_grafico_agrupado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editflxcaixamensal5": {
+      "main": [
+        [
+          {
+            "node": "sp_fluxo_caixa_consolidado2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_fluxo_caixa_consolidado2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook36",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo_Caixa_consolidado2": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixamensal5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_fluxo_caixa_grafico_agrupado1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook35",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sp_fluxo_caixa_grafico_diario1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook34",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo_Caixa_projetado_Diario1": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixadetalhado2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fluxo_Caixa_Agrupado_projetado": {
+      "main": [
+        [
+          {
+            "node": "Editflxcaixamensal4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edtranscartao4": {
+      "main": [
+        [
+          {
+            "node": "lote_importacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LoteImportacao": {
+      "main": [
+        [
+          {
+            "node": "Edtranscartao4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lote_importacao": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "6c750105-0495-497b-9590-61080e40c455",
+  "versionId": "8a5b2816-94b4-47bc-b2cc-7d9d5470eeaa",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

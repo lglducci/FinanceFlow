@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -384,
-        224
+        1008,
+        976
       ],
       "id": "48ef2362-8249-44a4-b6fa-072be651cd8b",
       "name": "Respond to Webhook"
@@ -27,16 +27,17 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -368,
-        48
+        1024,
+        800
       ],
       "id": "7db0ed76-de0f-45a2-b981-935c9397e228",
-      "name": "Respond to Webhook2"
+      "name": "Respond to Webhook2",
+      "disabled": true
     },
     {
       "parameters": {
         "content": "## Diário",
-        "height": 1164,
+        "height": 876,
         "width": 1248,
         "color": 3
       },
@@ -45,8 +46,8 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1328,
-        -48
+        -1344,
+        0
       ]
     },
     {
@@ -59,12 +60,13 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1200,
-        48
+        192,
+        800
       ],
       "id": "aee11869-1d2c-42de-a029-ee16bd73ca44",
       "name": "GeraStaging",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb",
+      "disabled": true
     },
     {
       "parameters": {
@@ -95,11 +97,12 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -992,
-        48
+        400,
+        800
       ],
       "id": "e0cf3813-0814-4526-8082-e906bbb9b633",
-      "name": "EditStaging"
+      "name": "EditStaging",
+      "disabled": true
     },
     {
       "parameters": {
@@ -110,8 +113,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -752,
-        48
+        640,
+        800
       ],
       "id": "952d2eec-2cae-4e96-a12f-e213f7214229",
       "name": "ff_gerar_diario_tudo",
@@ -123,6 +126,7 @@
           "name": "FInanceFlow"
         }
       },
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -135,12 +139,13 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1216,
-        224
+        176,
+        976
       ],
       "id": "32cb2a9b-54a2-49ab-83b3-846771ec7550",
       "name": "ConsolidaDiario",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb",
+      "disabled": true
     },
     {
       "parameters": {
@@ -159,11 +164,12 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -992,
-        224
+        400,
+        976
       ],
       "id": "7438c33e-6c39-47cd-82b8-24457b8d36f3",
-      "name": "EditDelLote1"
+      "name": "EditDelLote1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -174,8 +180,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -768,
-        224
+        624,
+        976
       ],
       "id": "b46ce0e5-26a9-4f39-977c-d1d01be2e572",
       "name": "ff_consolidar_diario_staging",
@@ -187,6 +193,7 @@
           "name": "FInanceFlow"
         }
       },
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -200,7 +207,7 @@
       "typeVersion": 1.4,
       "position": [
         -544,
-        576
+        288
       ],
       "id": "acef373c-7a36-497e-861a-5d8f05d3d9a5",
       "name": "Respond to Webhook3"
@@ -215,7 +222,7 @@
       "typeVersion": 2.1,
       "position": [
         -1232,
-        576
+        288
       ],
       "id": "be2ac9ce-0f7a-4841-9d88-5242a2cb8555",
       "name": "Ultimo_process",
@@ -239,7 +246,7 @@
       "typeVersion": 3.4,
       "position": [
         -992,
-        576
+        288
       ],
       "id": "2ff1ce1d-22d6-4a82-a3c4-35ee2f8a2719",
       "name": "EditUltimo_process"
@@ -254,8 +261,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -336,
-        400
+        1056,
+        1152
       ],
       "id": "60e17bad-14e8-43ca-8f2d-d904e05ae888",
       "name": "Respond to Webhook4"
@@ -289,11 +296,12 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -992,
-        400
+        400,
+        1152
       ],
       "id": "32f4ddeb-d14a-4a06-b8f6-1d93e14ac722",
-      "name": "EditStaging1"
+      "name": "EditStaging1",
+      "disabled": true
     },
     {
       "parameters": {
@@ -304,8 +312,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -752,
-        400
+        640,
+        1152
       ],
       "id": "a876b11b-2e5a-452d-8e2f-8b85d969c932",
       "name": "ff_gerar_contabil_final",
@@ -316,6 +324,7 @@
           "name": "FInanceFlow"
         }
       },
+      "disabled": true,
       "onError": "continueRegularOutput"
     },
     {
@@ -329,7 +338,7 @@
       "typeVersion": 1.4,
       "position": [
         -336,
-        768
+        480
       ],
       "id": "331ab41c-b585-41b2-bbd3-1f632dc1c26f",
       "name": "Respond to Webhook5"
@@ -352,7 +361,7 @@
       "typeVersion": 3.4,
       "position": [
         -992,
-        768
+        480
       ],
       "id": "dbb66384-1ccc-4d00-8396-7a869cb783f7",
       "name": "EditUltimo_process1"
@@ -368,7 +377,7 @@
       "typeVersion": 2.1,
       "position": [
         -1248,
-        768
+        480
       ],
       "id": "4b145539-21a8-455b-8899-bc100ea7ff5a",
       "name": "voltadiaroo",
@@ -384,12 +393,13 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1232,
-        400
+        160,
+        1152
       ],
       "id": "50bfad86-e967-4836-9acc-b950f5bb5853",
       "name": "geractbfinal",
-      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb",
+      "disabled": true
     },
     {
       "parameters": {
@@ -402,7 +412,7 @@
       "typeVersion": 1.4,
       "position": [
         -336,
-        944
+        656
       ],
       "id": "09a5dead-9021-4f2c-8ca8-a417aa4110a8",
       "name": "Respond to Webhook6"
@@ -418,7 +428,7 @@
       "typeVersion": 2.1,
       "position": [
         -1232,
-        944
+        656
       ],
       "id": "9e479802-faf3-439d-a4cc-dd6a516a44de",
       "name": "ExcluiLanctoLote",
@@ -432,7 +442,7 @@
       "typeVersion": 2,
       "position": [
         -528,
-        944
+        656
       ],
       "id": "a3a112bf-60b7-40dc-9221-d004da9dc5e9",
       "name": "Code in JavaScript2"
@@ -604,7 +614,7 @@
     {
       "parameters": {
         "content": "## Apurações",
-        "height": 1196,
+        "height": 668,
         "width": 1264,
         "color": 4
       },
@@ -777,6 +787,12 @@
               "name": "lote_id",
               "value": "={{ $json.body.lote_id}}",
               "type": "string"
+            },
+            {
+              "id": "1df50c41-45c1-4d63-89b3-c569d56048d4",
+              "name": "importacao_id",
+              "value": "={{ $json.body.importacao_id}}",
+              "type": "string"
             }
           ]
         },
@@ -786,7 +802,7 @@
       "typeVersion": 3.4,
       "position": [
         -992,
-        944
+        656
       ],
       "id": "b3ae6c37-ef5d-4dde-b98f-f7327474d64a",
       "name": "Editexclui_lote"
@@ -801,7 +817,7 @@
       "typeVersion": 2.6,
       "position": [
         -752,
-        768
+        480
       ],
       "id": "6b0985c9-2092-4f83-9251-673fd40fbb52",
       "name": "sp_reset_contabil_desde_data",
@@ -818,14 +834,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " select * from contab.controle_fechamento  where empresa_id =  {{ $json.empresa_id }} ",
+        "query": "  SELECT\n  empresa_id,ultimo_dia_processado, \n  COALESCE(data_reprocessar_de, ultimo_dia_processado) AS data_referencia,\n data_reprocessar_de  \nFROM contab.controle_fechamento\nWHERE empresa_id = 1;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         -752,
-        576
+        288
       ],
       "id": "d3241a89-4a6b-456a-addd-6dcd1e71a98b",
       "name": "controle_fechamento",
@@ -842,14 +858,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select * from  contab.ff_excluir_lancamentos_lote( \n {{ $json.empresa_id }}, {{ $json.lote_id }})",
+        "query": "select * from  contab.ff_excluir_lancamentos_lote( \n {{ $json.empresa_id }}, {{ $json.lote_id }},{{ $json.importacao_id }} )",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         -752,
-        944
+        656
       ],
       "id": "87b7f299-f922-4d0b-b8a5-8499ee41feda",
       "name": "ff_excluir_lancamentos_lote",
@@ -871,7 +887,7 @@
       "typeVersion": 2,
       "position": [
         -544,
-        768
+        480
       ],
       "id": "7d183e2a-f5b7-4cca-8cad-b701d945ca6d",
       "name": "Code in JavaScript4"
@@ -883,11 +899,12 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -560,
-        48
+        832,
+        800
       ],
       "id": "16ba723b-530e-4dbc-afd6-c3db2a0b6fee",
-      "name": "Code in JavaScript7"
+      "name": "Code in JavaScript7",
+      "disabled": true
     },
     {
       "parameters": {
@@ -896,11 +913,12 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -576,
-        224
+        816,
+        976
       ],
       "id": "8144871c-e6da-4204-b8c3-2745f3da5ab3",
-      "name": "Code in JavaScript8"
+      "name": "Code in JavaScript8",
+      "disabled": true
     },
     {
       "parameters": {
@@ -909,11 +927,133 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -544,
-        400
+        848,
+        1152
       ],
       "id": "5755b302-4fab-41c6-840d-8bcb9c6899c4",
-      "name": "Code in JavaScript9"
+      "name": "Code in JavaScript9",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -368,
+        64
+      ],
+      "id": "7ff5fe8d-af46-4f8c-9b50-b5d2a3ca20ea",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "84d4691f-07a7-48da-85b9-ad6557a565a7",
+              "name": "data_ini",
+              "value": "= {{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "e652a562-a4ac-4eba-ae02-bef31ce39227",
+              "name": "data_fim",
+              "value": "= {{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -992,
+        64
+      ],
+      "id": "a253237a-344c-47f9-84a0-f47a4c5a4612",
+      "name": "EditStaging2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        64
+      ],
+      "id": "edec0d56-9d22-4fa7-9188-66ac2408edf6",
+      "name": "Code in JavaScript10"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "processa_tudo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1200,
+        64
+      ],
+      "id": "b8aebebd-0e98-4c9d-8aec-4cd458d4d4d8",
+      "name": "Processa_Contabil",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "content": "# # Desativar",
+        "height": 668,
+        "width": 1264,
+        "color": 2
+      },
+      "id": "ba71fedc-2e00-4b5c-a219-53ca7ab4e01e",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        32,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from  contab.ff_processa_automatico ( {{ $json.empresa_id }} ) ;\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -752,
+        64
+      ],
+      "id": "f4776acd-7bfd-4ab2-8a7e-494a5066f486",
+      "name": "ff_processa_automatico",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {
@@ -926,18 +1066,19 @@
         }
       }
     ],
-    "Editexclui_lote": [
-      {
-        "json": {
-          "empresa_id": 1,
-          "lote_id": 22
-        }
-      }
-    ],
     "EditUltimo_process1": [
       {
         "json": {
           "empresa_id": 1
+        }
+      }
+    ],
+    "Editexclui_lote": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "lote_id": 1,
+          "importacao_id": 0
         }
       }
     ]
@@ -1327,13 +1468,62 @@
           }
         ]
       ]
+    },
+    "EditStaging2": {
+      "main": [
+        [
+          {
+            "node": "ff_processa_automatico",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ff_processa_automatico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript10": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processa_Contabil": {
+      "main": [
+        [
+          {
+            "node": "EditStaging2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_processa_automatico": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a8225708-b63b-441e-a107-4fcce2495600",
+  "versionId": "8d4d41e3-66ec-4f04-a39f-0bf8d63cd58d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"

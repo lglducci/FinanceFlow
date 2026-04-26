@@ -213,6 +213,12 @@
               "name": "forma_recebimento",
               "value": "={{ $json.body.forma_recebimento}}",
               "type": "string"
+            },
+            {
+              "id": "46e3f9a3-326a-44e6-a6f8-5e75f69e22d3",
+              "name": "data",
+              "value": "={{ $json.body.data}}",
+              "type": "string"
             }
           ]
         },
@@ -230,7 +236,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n   '{{ $json.vencimento }}',\n   '{{ $json.categoria }}' , \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}', \n      {{ $json.conta_id }},\n   '{{ $json.classificacao }}',\n   '{{ $json.canal }}',\n   '{{ $json.modelo_codigo }}',\n  '{{ $json.forma_recebimento }}'\n)\n ",
+        "query": "  select  * from ff_registrar_conta_receber_com_parcelas(\n  {{ $json.empresa_id }} ,\n  '{{ $json.descricao}}',\n   {{ $json.valor}} , \n    '{{ $json.data }}',\n   '{{ $json.vencimento }}',\n   '{{ $json.categoria }}' , \n   {{ $json.parcelas}},\n   {{ $json.fornecedor_id }},\n   {{ $json.categoria_id}} ,\n   '{{ $json.doc_ref }}', \n      {{ $json.conta_id }},\n   '{{ $json.classificacao }}',\n   '{{ $json.canal }}',\n   '{{ $json.modelo_codigo }}',\n  '{{ $json.forma_recebimento }}'\n)\n ",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -701,7 +707,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " SELECT \n    cp.lote_id,\n    cp.descricao,\n    p.nome AS fornecedor_nome,\n    c.nome AS categoria_nome,\n    cp.parcelas,\n    cp.status,\n    SUM(cp.valor) AS valor_total\nFROM contas_a_receber cp\nLEFT JOIN pessoa p \n       ON p.id = cp.fornecedor_id\nLEFT JOIN categorias_gerenciais c \n       ON c.id = cp.categoria_id\nWHERE cp.empresa_id =  {{ $json.empresa_id }}\n  AND ( {{ $json.lote_id }} =0   OR cp.lote_id IS NULL OR cp.lote_id = {{ $json.lote_id }}  )\n  AND (cp.fornecedor_id = {{ $json.fornecedor_id }} OR {{ $json.fornecedor_id }} = 0)\n  AND (cp.categoria_id = {{ $json.categoria_id }} OR {{ $json.categoria_id }} = 0)\n  AND  cp.parcelas > 1  \nGROUP BY \n    cp.lote_id,\n    cp.descricao,\n    p.nome,\n    c.nome,\n    cp.parcelas,\n    cp.status\nORDER BY cp.lote_id;\n",
+        "query": " SELECT \n    cp.lote_id,\n    cp.descricao,\n    p.nome AS fornecedor_nome,\n    c.nome AS categoria_nome,\n   cp.criado_em,\n    MAX(cp.parcelas) AS parcelas,\n    CASE\n        WHEN SUM(CASE WHEN cp.status = 'recebido' THEN 1 ELSE 0 END) > 0\n        THEN 'Parcela Recebida'\n        ELSE 'aberto'\n    END AS status,\n    SUM(cp.valor) AS valor_total\nFROM contas_a_receber cp\nLEFT JOIN pessoa p \n       ON p.id = cp.fornecedor_id\nLEFT JOIN categorias_gerenciais c \n       ON c.id = cp.categoria_id\nWHERE cp.empresa_id = {{ $json.empresa_id }}\n  AND ({{ $json.lote_id }} = 0 OR cp.lote_id IS NULL OR cp.lote_id = {{ $json.lote_id }})\n  AND (cp.fornecedor_id = {{ $json.fornecedor_id }} OR {{ $json.fornecedor_id }} = 0)\n  AND (cp.categoria_id = {{ $json.categoria_id }} OR {{ $json.categoria_id }} = 0)\n  AND cp.parcelas > 1\nGROUP BY \n    cp.lote_id,\n    cp.descricao,\n    cp.criado_em,\n    p.nome,\n    c.nome\nORDER BY cp.lote_id;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -730,7 +736,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        752,
+        912,
         1168
       ],
       "id": "1d292e42-ab33-4721-862b-8e988367b347",
@@ -841,28 +847,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "delete \nFROM  contas_a_receber   \n  where empresa_id =  {{ $json.id_empresa }}  \n  and    lote_id = {{ $json.lote_id }} ;\n ",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        512,
-        1168
-      ],
-      "id": "68fedbe2-b5b0-488f-847a-6cbb28e5a11c",
-      "name": "ExcluiConta_a_receber1",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
-        }
-      }
-    },
-    {
-      "parameters": {
         "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
       },
       "type": "n8n-nodes-base.code",
@@ -873,6 +857,42 @@
       ],
       "id": "0076d78e-4bcd-43a3-867b-47ccd14d4571",
       "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * \nFROM  ff_excluir_parcelamento_receber ( {{ $json.id_empresa }} ,  {{ $json.lote_id }} ) ;\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        512,
+        1168
+      ],
+      "id": "68fedbe2-b5b0-488f-847a-6cbb28e5a11c",
+      "name": "ff_excluir_parcelamento_receber",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "wvOAuqaHViEwm60r",
+          "name": "FInanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": " const item = $input.first().json;\n\n// 🔥 1) DETECTA ERRO (Postgres mandou objeto com error)\nif (item?.error) {\n  return [\n    {\n      json: { \n      \n        ok: false,\n        message: $input.first().json.message|| \"Erro desconhecido\",\n        details:$input.first().json.error.description || null,\n        responseCode: 400\n    \n      }\n    }\n  ];\n}\n\n// 🔥 2) DETECTA SUCESSO (Postgres retornou array normal)\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: item || null\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        1168
+      ],
+      "id": "82080b15-a2d2-45da-a6ad-c5382a72d37a",
+      "name": "Code in JavaScript"
     }
   ],
   "pinData": {},
@@ -1068,7 +1088,7 @@
       "main": [
         [
           {
-            "node": "ExcluiConta_a_receber1",
+            "node": "ff_excluir_parcelamento_receber",
             "type": "main",
             "index": 0
           }
@@ -1097,22 +1117,33 @@
         ]
       ]
     },
-    "ExcluiConta_a_receber1": {
+    "Code in JavaScript1": {
       "main": [
         [
           {
-            "node": "Respond to Webhook51",
+            "node": "Respond to Webhook41",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Code in JavaScript1": {
+    "ff_excluir_parcelamento_receber": {
       "main": [
         [
           {
-            "node": "Respond to Webhook41",
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook51",
             "type": "main",
             "index": 0
           }
@@ -1124,7 +1155,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b3d2101a-745c-486c-a4bb-6c572b610fba",
+  "versionId": "ab7c4682-38d5-4991-ab38-24ba661f8c90",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
