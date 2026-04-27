@@ -668,12 +668,12 @@ function limparEdicao() {
 
 
 return (
-      <div className="flex justify-center mt-10 bg-gray-100 min-h-screen py-10">
+      <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
 
-      <div className="bg-white rounded-2xl border border-gray-300 w-[1300px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
-        <div className="bg-gray-650 rounded-lg p-8"> 
-        <div className="bg-gray-600 border-b rounded-t-xl p-6"> 
-       <div className="bg-gray-600 border-b rounded-t-xl p-6">  
+      <div className="bg-white rounded-2xl border border-gray-300 w-[1400px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
+        <div className="bg-gray-650 rounded-lg p-3"> 
+        <div className="bg-gray-600 border-b rounded-t-xl p-4"> 
+       <div className="bg-gray-600 border-b rounded-t-xl p-4">  
         {/* TÍTULO */}
         <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
           ⚡ Lançamento Contábil Inteligente
@@ -693,7 +693,7 @@ return (
       <div className="relative">
 
                     <input
-                    className="w-full border rounded-lg p-2"
+                    className="w-full border rounded-lg p-1"
                     placeholder="Digite conta (ex: banco, caixa, 1.1...)"
                     value={conta}
                     onChange={(e)=>{
@@ -742,7 +742,7 @@ return (
                         }}
                          />
                     {contasFiltradas.length > 0 && (
-                    <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-40 overflow-y-auto z-50">
+                    <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-30 overflow-y-auto z-50">
 
                        {contasFiltradas.map((c,i) => ( 
                         <div
@@ -794,24 +794,26 @@ return (
         currency: "BRL"
       })
   }
-</div>
+        </div> 
+    </div> 
+  </div>  
+  </div> 
+  </div>
 
-    </div>
+     
 
-  </div>  </div>
-
-</div>
           {/* TABELA */}
                    {resumoImportacao && (
-                <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
+                <div className="mt-2 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
                   ✔ {resumoImportacao.qtd} registros importados | 
                   Entradas: {resumoImportacao.entrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} | 
                   Saídas: {resumoImportacao.saida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </div>
               )}
-                                            
-                 <div  className="grid  grid-cols-[120px_400px_120px_120px_220px_120px_60px]  gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
-                                   
+                 
+                <div className="mt-4 max-h-[680px] overflow-y-auto rounded-xl border border-gray-200 bg-white"> 
+                
+               <div className="sticky top-0 z-20 grid grid-cols-[120px_400px_120px_120px_320px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 bg-white">     
                 <div>Data</div>
                 <div>Histórico</div>
                 
@@ -836,7 +838,7 @@ return (
                   {linhas.map((l) => (
                   <div
                     key={l._id}
-                    className="grid grid-cols-[120px_400px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
+                    className="grid grid-cols-[120px_400px_120px_120px_320px_120px_90px] gap-2 text-sm border-b py-1"
                   >
                     <div>
                       {String(l.data || "").includes("-")
@@ -844,9 +846,9 @@ return (
                         : l.data}
                     </div>
 
-                    <div className="truncate">{l.historico}</div>
+                    <div className="truncate font-semibold">{l.historico}</div>
 
-                    <div className="text-center">
+                    <div className="text-center font-semibold">
                       {l.tipo === "entrada" ? (
                         <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
                           <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
@@ -871,7 +873,7 @@ return (
                         })}
                     </div>
 
-                    <div>{l.contra}</div>
+                    <div className="text-left font-semibold">{l.contra}</div>
 
                     <div
                       className={`border rounded p-2 text-right font-semibold ${
@@ -905,12 +907,13 @@ return (
                         🗑
                       </button>
                     </div>
-                  </div>
-                ))}
+                    
+                  </div> 
+                ))} </div> 
           {/* NOVA LINHA */}
-
+          
             {mostrarNovaLinha && (
-            <div className="grid grid-cols-[120px_400px_120px_120px_220px_120px_60px] gap-2 mb-4">
+         <div className="sticky bottom-0 z-20 grid grid-cols-[120px_400px_120px_120px_320px_120px_60px] gap-2 border-t bg-white p-2">
          
                  <input
                         ref={dataRef}
@@ -1034,8 +1037,8 @@ return (
                 }}
                     />
                     {contasFiltradasContra.length > 0 && (
-                          <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-48 overflow-y-auto z-50">
-                            
+                         
+                            <div className="absolute bottom-full left-0 w-full bg-white border rounded shadow max-h-64 overflow-y-auto z-[9999]">
                             {contasFiltradasContra.map((c, i) => (
                               <div
                                 key={c.id}
@@ -1080,10 +1083,10 @@ return (
                 </div>     
 
                 </div>)}
-
+          
           {/* BOTÕES */}
 
-           <div className="flex justify-end gap-3 mt-4">
+            <div className="flex justify-end gap-5 mt-8">
 
          
                  <button
@@ -1098,7 +1101,7 @@ return (
                       className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800`}
                     >
                       💾 Salvar
-                    </button>
+                  </button>
  
                  <button
                 onClick={() => setModalContaAberto(true)}
