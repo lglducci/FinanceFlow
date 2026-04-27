@@ -354,12 +354,14 @@ const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
               {/* RESULTADO FINAL */}
               <tr className="border-t-4 border-black text-xl font-bold">
                 <td className="p-3">Resultado do Período</td>
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(resultado)}
-                </td>
+                
                 <td className="p-3 text-right text-green-700">
                   {fmt.format(resultado)}
                 </td>
+                <td className="p-3 text-right text-blue-900">
+                  {percReceitaTotal(resultado)}
+                </td>
+
               </tr>
             </tbody>
         </table>
