@@ -26,6 +26,7 @@ const [importacao, setImportacao] = useState(0);
 const [saldoBase, setSaldoBase] = useState(0); 
 const [editandoId, setEditandoId] = useState(null);
  const dataMin = hojeMaisDias(-7);
+ const [resumoImportacao, setResumoImportacao] = useState(null);
  
  const botaoBase = `
   px-5 py-2 rounded-full
@@ -666,6 +667,23 @@ async function colarLancamentos() {
 
     const novasLinhas = parseTextoParaLinhas(texto);
 
+    let totalEntrada = 0;
+let totalSaida = 0;
+
+novasLinhas.forEach(l => {
+  const v = parseNumeroBR(l.valor);
+  if (v >= 0) totalEntrada += v;
+  else  totalSaida += Math.abs(v);;
+});
+
+setResumoImportacao({
+  qtd: novasLinhas.length,
+  entrada: totalEntrada,
+  saida: totalSaida
+});
+
+ 
+
     if (!novasLinhas.length) {
       console.log("TEXTO COLADO:", JSON.stringify(texto));
       alert("Nenhuma linha válida encontrada. Veja o console.");
@@ -715,12 +733,12 @@ return (
           <div className="flex flex-col gap-1">
 
             <label className="text-sm font-semibold text-gray-50">
-              Instituição Financeira
+               Conta Bancária 
             </label>
 
      
                  <div>
-          <label className="text-sm font-semibold text-gray-700">Conta Bancária</label>
+          
           <select
             value={contaId}
              
@@ -782,11 +800,18 @@ return (
 </div>
           {/* TABELA */}
              {/* CABEÇALHO */}
+             {resumoImportacao && (
+              <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
+                ✔ {resumoImportacao.qtd} registros importados | 
+                Entradas: {resumoImportacao.entrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} | 
+                Saídas: {resumoImportacao.saida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </div>
+            )}
 
                  <div  className="grid  grid-cols-[120px_400px_120px_120px_220px_120px_60px]  gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
                                    
-                <div>Data</div>
-                <div>Histórico</div>
+                <div className="text-left font-bold" >Data </div>
+                <div className="text-left font-bold" >Histórico</div>
                 
                <div className="text-center">
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
@@ -883,7 +908,7 @@ return (
           {/* NOVA LINHA */}
 
             {mostrarNovaLinha && (
-  <div className="grid grid-cols-[120px_430px_120px_140px_140px_60px] gap-2 mb-4">
+             <div className="grid grid-cols-[120px_430px_120px_140px_140px_60px] gap-2 mb-4">
          
                  <input
                         ref={dataRef}

@@ -918,16 +918,16 @@ return (
           </div>
         
          {qtdVencidos > 0 && (
-  <div className="mt-10 ml-20 flex justify-center">
-    <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
-      <button onClick={() => pesquisar("vencidos")}>
-        <span className="text-base text-red-600 font-semibold">
-          Existem {qtdVencidos} título(s) vencido(s), favor verificar
-        </span>
-      </button>
-    </div>
-  </div>
-)}
+            <div className="mt-10 ml-20 flex justify-center">
+              <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
+                <button onClick={() => pesquisar("vencidos")}>
+                  <span className="text-base text-red-600 font-semibold">
+                    Existem {qtdVencidos} título(s) vencido(s), favor verificar
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
          
          {tipoOperacao !== undefined && tipoOperacao !== null && ( 
         <div className="mt-10 ml-20 flex justify-center">

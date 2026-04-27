@@ -26,6 +26,9 @@ const [importacao, setImportacao] = useState(0);
 const [saldoBase, setSaldoBase] = useState(0); 
 const [editandoId, setEditandoId] = useState(null);
  const dataMin = hojeMaisDias(-7);
+const [resumoImportacao, setResumoImportacao] = useState(null);
+
+
 
  const botaoBase = `
   px-5 py-2 rounded-full
@@ -606,6 +609,26 @@ async function colarLancamentos() {
 
     const novasLinhas = parseTextoParaLinhas(texto);
 
+ 
+ let totalEntrada = 0;
+let totalSaida = 0;
+
+novasLinhas.forEach(l => {
+  const v = Math.abs(parseNumeroBR(l.valor));
+
+  if (l.tipo === "entrada") {
+    totalEntrada += v;
+  } else {
+    totalSaida += v;
+  }
+});
+
+setResumoImportacao({
+  qtd: novasLinhas.length,
+  entrada: totalEntrada,
+  saida: totalSaida
+});
+
     if (!novasLinhas.length) {
       console.log("TEXTO COLADO:", texto);
       alert("Nenhuma linha válida encontrada. Veja o console.");
@@ -779,8 +802,14 @@ return (
 
 </div>
           {/* TABELA */}
-             {/* CABEÇALHO */}
-
+                   {resumoImportacao && (
+                <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
+                  ✔ {resumoImportacao.qtd} registros importados | 
+                  Entradas: {resumoImportacao.entrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} | 
+                  Saídas: {resumoImportacao.saida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </div>
+              )}
+                                            
                  <div  className="grid  grid-cols-[120px_400px_120px_120px_220px_120px_60px]  gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
                                    
                 <div>Data</div>

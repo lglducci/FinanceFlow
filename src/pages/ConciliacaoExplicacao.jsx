@@ -19,7 +19,7 @@ export default function ConciliacaoExplicacao() {
 
     const timer = setTimeout(() => {
       setIndice((i) => i + 1);
-    }, 2500);
+    }, 1300);
 
     return () => clearTimeout(timer);
   }, [indice]);

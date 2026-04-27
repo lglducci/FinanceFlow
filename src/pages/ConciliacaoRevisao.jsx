@@ -11,7 +11,17 @@ export default function ConciliacaoRevisao() {
   const [aviso, setAviso] = useState("");
 const navigate = useNavigate();
   const [selecionados, setSelecionados] = useState([]);
+// const [resultadoExecucao, setResultadoExecucao] = useState(() => {
+ //const salvo = localStorage.getItem("resultado_conciliacao");
+ // return salvo ? JSON.parse(salvo) : null;
+//});
 
+const [resultadoExecucao, setResultadoExecucao] = useState(null);
+const [operacoesGeradas, setOperacoesGeradas] = useState([]);
+const [mostrarOperacoes, setMostrarOperacoes] = useState(false);
+const [loadingOperacoes, setLoadingOperacoes] = useState(false);
+
+ 
   async function carregarDados() {
     try {
       setLoading(true);
@@ -115,8 +125,7 @@ async function aceitarSelecionados(idsParam = null) {
   setSelecionados([]);
 }
 
-
-async function executarConciliacao() {
+ async function executarConciliacao() {
   if (!confirm("Confirma executar a conciliação das linhas marcadas como OK?")) {
     return;
   }
@@ -136,15 +145,26 @@ async function executarConciliacao() {
       }),
     });
 
-    const data = await resp.json();
+    const retorno = await resp.json();
 
-    if (data?.ok === false) {
-      alert(data.message || "Erro ao executar conciliação.");
+    const resultado =
+      retorno?.[0]?.data?.[0]?.fn_executar_conciliacao ||
+      retorno?.data?.[0]?.fn_executar_conciliacao ||
+      retorno?.[0]?.fn_executar_conciliacao ||
+      retorno?.fn_executar_conciliacao ||
+      retorno;
+
+    if (resultado?.ok === false) {
+      alert(resultado.message || "Erro ao executar conciliação.");
       return;
     }
 
-    alert("Conciliação executada com sucesso!");
-    carregarDados();
+     localStorage.setItem("resultado_conciliacao", JSON.stringify(resultado));
+
+   setResultadoExecucao(resultado);  
+   setLinhas([]);
+    setSelecionados([]);
+
   } catch (e) {
     console.error(e);
     alert("Erro ao executar conciliação.");
@@ -304,11 +324,107 @@ const podeExecutar =
     ["ok", "rejeitado", "executado"].includes(l.situacao)
   );
 
+
+  async function verOperacoesGeradas() {
+  const importacao_id = resultadoExecucao?.lote_conciliacao_id;
+
+  if (!importacao_id) {
+    alert("Lote/importação não encontrado.");
+    return;
+  }
+
+  try {
+    setLoadingOperacoes(true);
+
+    const url = buildWebhookUrl("importacao_bancaria", {
+      empresa_id,
+      conta_id,
+      importacao_id,
+    });
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        conta_id: Number(conta_id),
+        importacao_id: Number(importacao_id),
+      }),
+    });
+
+    const retorno = await resp.json();
+
+    const lista =
+      Array.isArray(retorno?.[0]?.data)
+        ? retorno[0].data
+        : Array.isArray(retorno?.data)
+          ? retorno.data
+          : Array.isArray(retorno)
+            ? retorno
+            : [];
+
+    setOperacoesGeradas(lista);
+    setMostrarOperacoes(true);
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao carregar operações geradas.");
+  } finally {
+    setLoadingOperacoes(false);
+  }
+}
+async function excluirImportacao() {
+  const ids = operacoesGeradas.map((l) => Number(l.id)).filter(Boolean);
+
+  if (ids.length === 0) {
+    alert("Nenhuma operação encontrada para excluir.");
+    return;
+  }
+
+  if (!confirm(`Confirma excluir ${ids.length} operação(ões) desta importação?`)) {
+    return;
+  }
+
+  try {
+    const url = buildWebhookUrl("exclui_importacao", {
+      empresa_id,
+      conta_id,
+    });
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        conta_id: Number(conta_id),
+        ids,
+      }),
+    });
+
+    const data = await resp.json();
+
+    if (data?.ok === false) {
+      alert(data.message || "Erro ao excluir importação.");
+      return;
+    }
+
+    alert("Importação excluída com sucesso.");
+
+    setOperacoesGeradas([]);
+    setMostrarOperacoes(false);
+    localStorage.removeItem("resultado_conciliacao");
+    setResultadoExecucao(null);
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao excluir importação.");
+  }
+}
+
+
   return (
     <div className="min-h-screen bg-slate-100 p-6">
       <div className="mx-auto max-w-7xl">
 
-        <div className="mb-6 rounded-3xl bg-white p-6 shadow-lg border border-slate-200">
+         {!resultadoExecucao && (  <div className="mb-6 rounded-3xl bg-white p-6 shadow-lg border border-slate-200">
           <h1 className="text-2xl font-black text-slate-800">
             Revisão da Conciliação
           </h1>
@@ -367,7 +483,10 @@ const podeExecutar =
                  
             
             <button
-                  onClick={() => navigate("/relatorios/diario")}
+                  onClick={() => {
+                    localStorage.removeItem("resultado_conciliacao");
+                    navigate("/importacao-bancaria");
+                  }}
                 className="
                 px-5 py-2 rounded-full
                 bg-gradient-to-r from-gray-600 to-gray-900
@@ -405,10 +524,219 @@ const podeExecutar =
           )}
 
 
-        </div>
+        </div>)}
 
         <div className="rounded-3xl bg-white shadow-lg border border-slate-200 overflow-hidden">
-          {loading ? (
+
+          {resultadoExecucao && (
+  <div className="mb-6 rounded-3xl border border-emerald-300 bg-emerald-50 p-6 shadow-lg">
+    <h2 className="text-2xl font-black text-emerald-800">
+      ✅ Conciliação executada com sucesso
+    </h2>
+
+    <p className="mt-2 text-emerald-700 font-semibold">
+      Os lançamentos foram processados e não aparecerão mais na revisão.
+    </p>
+
+    <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="rounded-2xl bg-white p-4 shadow border">
+        <div className="text-xs text-slate-500 font-bold">Lote</div>
+        <div className="text-xl font-black text-slate-800">
+          {resultadoExecucao.lote_conciliacao_id || "-"}
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4 shadow border">
+        <div className="text-xs text-slate-500 font-bold">Pagas</div>
+        <div className="text-xl font-black text-slate-800">
+          {resultadoExecucao.pagar || 0}
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4 shadow border">
+        <div className="text-xs text-slate-500 font-bold">Recebidas</div>
+        <div className="text-xl font-black text-slate-800">
+          {resultadoExecucao.receber || 0}
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4 shadow border">
+        <div className="text-xs text-slate-500 font-bold">Faturas</div>
+        <div className="text-xl font-black text-slate-800">
+          {resultadoExecucao.faturas || 0}
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-white p-4 shadow border">
+        <div className="text-xs text-slate-500 font-bold">Transações</div>
+        <div className="text-xl font-black text-slate-800">
+          {resultadoExecucao.transacoes || 0}
+        </div>
+      </div>
+    </div>
+
+    <div className="mt-6 flex gap-3">
+      <button
+        onClick={() => navigate("/importacao-bancaria")}
+        className="px-5 py-2 rounded-full bg-slate-800 text-white font-bold shadow hover:brightness-110"
+      >
+        Nova importação
+      </button>
+
+      <button
+          onClick={verOperacoesGeradas}
+        className="px-5 py-2 rounded-full bg-blue-700 text-white font-bold shadow hover:brightness-110"
+      >
+        Ver transações geradas
+      </button>
+  
+      <button
+        onClick={excluirImportacao}
+        className="px-5 py-2 rounded-full bg-red-700 text-white font-bold shadow hover:brightness-110"
+      >
+        Estornar lote
+      </button>
+    </div>
+  </div>
+)}
+
+
+
+{mostrarOperacoes && (
+  <div className="mb-6 rounded-3xl bg-white border border-slate-200 shadow-lg overflow-hidden">
+    <div className="bg-slate-800 text-white px-6 py-4">
+      <h2 className="text-xl font-black">Operações geradas</h2>
+      <p className="text-sm text-slate-200">
+        Lote/importação nº {resultadoExecucao?.lote_conciliacao_id}
+      </p>
+    </div>
+
+    {loadingOperacoes ? (
+      <div className="p-6 text-center font-bold text-slate-500">
+        Carregando operações...
+      </div>
+    ) : operacoesGeradas.length === 0 ? (
+      <div className="p-6 text-center font-bold text-slate-500">
+        Nenhuma operação encontrada para este lote.
+      </div>
+    ) : (
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr>
+              <th className="px-3 py-2 text-left">ID</th>
+              <th className="px-3 py-2 text-left">Descrição</th>
+              <th className="px-3 py-2 text-center">Data</th>
+              <th className="px-3 py-2 text-left">Conta</th>
+              <th className="px-3 py-2 text-left">Tipo</th>
+              <th className="px-3 py-2 text-left">Origem</th>
+              <th className="px-3 py-2 text-left">Classificação</th>
+              <th className="px-3 py-2 text-left">Forma</th>
+              <th className="px-3 py-2 text-right">Valor</th>
+              <th className="px-3 py-2 text-left">Evento</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {operacoesGeradas.map((l) => (
+              <tr key={l.id} className="border-t hover:bg-blue-50/50">
+                <td className="px-3 py-2 font-bold">{l.id}</td>
+
+                <td className="px-3 py-2 whitespace-normal break-words max-w-[260px]">
+                  {l.descricao}
+                </td>
+
+                <td className="px-3 py-2 font-bold text-center">
+                  {String(l.data_movimento || "")
+                    .slice(0, 10)
+                    .split("-")
+                    .reverse()
+                    .join("/")}
+                </td>
+
+                <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
+                  {l.conta_nome || "-"}
+                </td>
+
+                <td
+                  className={`px-3 py-2 font-bold ${
+                    l.tipo === "entrada" ? "text-green-700" : "text-red-700"
+                  }`}
+                >
+                  {l.tipo === "entrada" ? "Entrada" : "Saída"}
+                </td>
+
+                <td className="px-3 py-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      l.origem === "conta_pagar"
+                        ? "bg-red-100 text-red-700"
+                        : l.origem === "conta_receber"
+                        ? "bg-green-100 text-green-700"
+                        : l.origem === "fatura_cartao"
+                        ? "bg-purple-100 text-purple-700"
+                        : l.origem === "estorno"
+                        ? "bg-gray-200 text-gray-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {l.origem === "conta_pagar"
+                      ? "Pagar"
+                      : l.origem === "conta_receber"
+                      ? "Receber"
+                      : l.origem === "fatura_cartao"
+                      ? "Fatura"
+                      : l.origem === "estorno"
+                      ? "Estorno"
+                      : "Financeiro"}
+                  </span>
+                </td>
+
+                <td className="px-3 py-2 font-medium">
+                  {l.classificacao || "-"}
+                </td>
+
+                <td className="px-3 py-2 font-medium">
+                  {l.forma || "-"}
+                </td>
+
+                <td className="px-3 py-2 text-right font-black">
+                  {Number(l.valor || 0).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </td>
+
+                <td className="px-3 py-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      l.tipo_operacao === "conta_pagar"
+                        ? "bg-red-100 text-red-700"
+                        : l.tipo_operacao === "conta_receber"
+                        ? "bg-green-100 text-green-700"
+                        : l.tipo_operacao === "fatura_cartao"
+                        ? "bg-purple-100 text-purple-700"
+                        : "bg-yellow-200 text-yellow-800"
+                    }`}
+                  >
+                    {l.tipo_operacao === "conta_pagar"
+                      ? "A pagar"
+                      : l.tipo_operacao === "conta_receber"
+                      ? "A receber"
+                      : l.tipo_operacao === "fatura_cartao"
+                      ? "Fatura cartão"
+                      : "Financeiro"}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+)}
+  {loading ? (
             <div className="p-10 text-center text-slate-500 font-bold">
               Carregando dados importados...
             </div>
@@ -425,7 +753,7 @@ const podeExecutar =
                   <th className="p-3 text-left">Histórico</th>
                   <th className="p-3 text-right">Valor</th>
                   <th className="p-3 text-center">Situação</th>
-                  <th className="p-3 text-left">Mensagem</th>
+                  <th className="p-3 text-left">Mensagem</th>a
                   <th className="p-3 text-center">Ação</th>
                 </tr>
               </thead>
@@ -527,6 +855,9 @@ const podeExecutar =
               </tbody>
             </table>
           )}
+
+
+        
         </div>
       </div>
     </div>
