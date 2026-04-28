@@ -150,44 +150,61 @@ body {
 
 
 .btn-pill {
-  @apply px-5 py-2 rounded-full font-bold text-sm tracking-wide text-white
-  border-2 border-black
-  shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-  hover:brightness-110 hover:scale-105
-  active:scale-95
-  transition-all duration-200
-  inline-flex items-center gap-2;
+  @apply
+    px-5 py-2.5
+    rounded-full
+    font-bold text-sm tracking-wide
+    text-white
+    border border-black/70
+    shadow-[0_5px_0_rgba(0,0,0,0.45),0_8px_18px_rgba(0,0,0,0.25)]
+    hover:brightness-110 hover:scale-105
+    active:scale-95 active:translate-y-[2px]
+    transition-all duration-200
+    inline-flex items-center justify-center gap-2
+    select-none;
 }
 
-.btn-blue {
-  @apply bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800;
+ 
+ .btn-blue {
+  @apply bg-gradient-to-b from-sky-300 via-blue-600 to-blue-950;
 }
 
 .btn-green {
-  @apply bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800;
+  @apply bg-gradient-to-b from-emerald-300 via-emerald-600 to-emerald-950;
 }
 
 .btn-red {
-  @apply bg-gradient-to-b from-red-500 via-red-600 to-red-800;
+  @apply bg-gradient-to-b from-rose-300 via-red-600 to-red-950;
 }
 
 .btn-yellow {
-  @apply text-black bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b];
+  @apply text-black bg-gradient-to-b from-yellow-100 via-amber-400 to-yellow-700;
 }
 
 .btn-purple {
-   @apply bg-gradient-to-b from-purple-500 via-purple-600 to-purple-800;
+  @apply bg-gradient-to-b from-violet-300 via-purple-600 to-purple-950;
 }
 
 .btn-gray {
-   @apply bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800;
+  @apply bg-gradient-to-b from-slate-300 via-slate-600 to-slate-900;
+}
+
+.btn-dark-blue {
+  @apply bg-gradient-to-b from-blue-500 via-blue-800 to-slate-950;
 }
 
 .btn-black {
-   @apply bg-gradient-to-b from-purple-500 via-purple-600 to-purple-800;
+  @apply bg-gradient-to-b from-zinc-400 via-zinc-800 to-black;
 }
 
 
 .btn-dark-blue {
   @apply bg-gradient-to-b from-blue-800 via-blue-900 to-blue-900;
+}
+
+
+
+
+.btn-emerald {
+  @apply bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800;
 }
