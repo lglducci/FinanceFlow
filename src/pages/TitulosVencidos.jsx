@@ -15,6 +15,8 @@ export default function TitulosVencidos() {
 
   const [contaId, setContaId] = useState(0);
   const [contas, setContas] = useState([]);
+
+  const [selecionados, setSelecionados] = useState([]);
   const [dadosConta, setDadosConta] = useState({
     conta_nome: "—",
     nro_banco: "—",
@@ -82,15 +84,22 @@ export default function TitulosVencidos() {
       });
 
       const r = await fetch(url);
-      const j = await r.json();
-     // setLista(Array.isArray(j) ? j : []);
+const j = await r.json();
 
      if (Array.isArray(j) && j[0]?.ok) {
-        const dados = j[0].data;
-        setLista(Array.isArray(dados) ? dados : [dados]);
-      } else {
-        setLista([]);
-      }
+  const dadosBrutos = Array.isArray(j[0].data) ? j[0].data : [j[0].data];
+
+  const dados = dadosBrutos.map((item) => ({
+    ...item,
+    uid: `${item.origem_tabela}:${item.origem_id}`,
+  }));
+
+  setLista(dados);
+  setSelecionados([]);
+} else {
+  setLista([]);
+  setSelecionados([]);
+}
     } finally {
       setLoading(false);
     }
@@ -166,116 +175,248 @@ export default function TitulosVencidos() {
 }
 
 
+function toggleSelecionado(id) {
+  setSelecionados((prev) =>
+    prev.includes(id)
+      ? prev.filter((x) => x !== id)
+      : [...prev, id]
+  );
+}
+
+
+ function toggleSelecionarTodos(lista) {
+  const ids = lista.map((l) => l.uid);
+
+  const todosMarcados = ids.every((id) => selecionados.includes(id));
+
+  setSelecionados(todosMarcados ? [] : ids);
+}
+
+
+
+function executarSelecionados() {
+  console.log("Selecionados:", selecionados);
+  alert(`Selecionados: ${selecionados.join(", ")}`);
+}
+
+
+
+async function executarSelecionados() {
+  if (!contaId || Number(contaId) === 0) {
+    alert("Selecione uma conta bancária.");
+    return;
+  }
+
+  const itens = lista
+    .filter((l) => selecionados.includes(l.uid))
+    .map((l) => ({
+      origem_tabela: l.origem_tabela,
+      origem_id: Number(l.origem_id),
+      evento_codigo: l.evento_codigo,
+      tipo_origem: l.tipo_origem,
+    }));
+
+  if (itens.length === 0) {
+    alert("Selecione ao menos um título.");
+    return;
+  }
+
+  const payload = {
+    empresa_id: Number(empresa_id),
+    conta_id: Number(contaId),
+    itens,
+  };
+
+  const resp = await fetch(buildWebhookUrl("executar_titulos"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await resp.json();
+
+  if (!resp.ok || data?.ok === false) {
+    alert(data?.message || "Erro ao executar títulos.");
+    return;
+  }
+
+  alert("Títulos executados com sucesso!");
+  setSelecionados([]);
+  pesquisar();
+}
+
+
+
    return (
   <div className="p-4 space-y-6">
 
     {/* HEADER */}
+     <div className="bg-white rounded-xl shadow-sm p-2 shadow-lg border border-slate-200">
+  <div className="flex items-center justify-between gap-3">
+
     <div>
-      <h1 className="text-xl font-bold text-blue-800">
+        <h1 className="text-2xl font-black text-slate-800">
         Títulos vencidos e a vencer
       </h1>
-      <p className="text-sm text-gray-500">
+       <p className="mt-2 text-slate-600">
         Controle de contas vencidas e próximas do vencimento.
       </p>
     </div>
 
-    {/* FILTROS */}
-    <div className="bg-white rounded-xl shadow-sm p-5">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-end">
+    <div className="
+        text-right
+        rounded-2xl
+        px-5 py-3
+        border border-emerald-200
+        bg-gradient-to-br from-emerald-150 via-white to-blue-150
+        shadow-sm
+      ">
+        <p className="font-bold text-slate-800">
+          🏦 {dadosConta.conta_nome}
+        </p>
 
-        {/* PERÍODO */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Período
-          </label>
-          <select
-            value={modo}
-            onChange={(e) => setModo(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-          >
-            <option value="vencidos">Somente vencidos</option>
-            <option value="vencer">Vencidos + a vencer</option>
-          </select>
-        </div>
+        <p className="text-xs text-slate-500 mt-1">
+          Banco: {dadosConta.nro_banco} • Ag: {dadosConta.agencia} • Conta: {dadosConta.conta}
+        </p>
 
-        {/* DIAS */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Dias
-          </label>
-          <select
-            value={dias}
-            disabled={modo === "vencidos"}
-            onChange={(e) => setDias(Number(e.target.value))}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:bg-slate-100"
-          >
-            <option value={7}>7</option>
-            <option value={15}>15</option>
-            <option value={30}>30</option>
-          </select>
-        </div>
-
-        {/* CONTA */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Conta bancária
-          </label>
-          <select
-            value={contaId}
-            onChange={(e) => setContaId(Number(e.target.value))}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-          >
-            <option value={0}>Todas</option>
-            {contas.map(c => (
-              <option key={c.id} value={c.id}>{c.nome}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* AÇÃO */}
-        <button
-          onClick={pesquisar}
-         className="
-                      px-5 py-2 rounded-full
-                      font-bold text-sm tracking-wide
-                      text-white
-                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                      border-2 border-black
-                      shadow-md
-                      hover:brightness-110 hover:scale-105
-                      active:scale-95
-                      transition-all duration-200
-                    "
-                  >
-          Atualizar
-        </button>
+        <p className="text-xl font-black text-emerald-700 mt-1">
+          {Number(dadosConta.saldo_final).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </p>
       </div>
+
+  </div>
+
+    
+  {/* FILTROS */}
+<div className="bg-white rounded-xl shadow-sm p-4">
+  <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 items-end">
+
+    {/* PERÍODO */}
+        {/* PERÍODO */}
+<div>
+  <label className="block text-base font-bold text-blue-700 mb-1">
+    Período
+  </label>
+
+  <div className="flex gap-2">
+    <button
+      type="button"
+      onClick={() => setModo("vencidos")}
+      className={`
+        px-4 py-2 rounded-xl border text-sm font-bold transition
+        ${
+          modo === "vencidos"
+            ? "bg-red-400 text-white border-red-600 shadow-md"
+            : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+        }
+      `}
+    >
+      Vencidos
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setModo("vencer")}
+      className={`
+        px-4 py-2 rounded-xl border text-sm font-bold transition
+        ${
+          modo === "vencer"
+            ? "bg-blue-600 text-white border-blue-700 shadow-md"
+            : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+        }
+      `}
+    >
+      A vencer
+    </button>
+  </div>
+</div>
+     <div>
+  <label className="block text-base font-bold text-blue-700 mb-1">
+    Dias
+  </label>
+
+  <div className="flex gap-2">
+    {[7, 15, 30].map((d) => (
+      <button
+        key={d}
+        type="button"
+        disabled={modo === "vencidos"}
+        onClick={() => setDias(d)}
+        className={`
+          px-4 py-2 rounded-xl border text-sm font-bold transition
+          ${
+            dias === d
+              ? "bg-blue-600 text-white border-blue-700 shadow-md"
+              : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
+          }
+          disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed
+        `}
+      >
+        {d}D
+      </button>
+    ))}
+  </div>
+</div>
+
+    {/* CONTA */}
+    <div>
+      <label className="block text-base font-bold text-blue-700 mb-1">
+        Conta bancária
+      </label>
+      <select
+        value={contaId}
+        onChange={(e) => setContaId(Number(e.target.value))}
+        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+      >
+        <option value={0}>Todas</option>
+        {contas.map(c => (
+          <option key={c.id} value={c.id}>{c.nome}</option>
+        ))}
+      </select>
     </div>
 
-    {/* CARD CONTA */}
-    <div className="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-700">
-      <h3 className="font-semibold text-gray-900">
-        🏦 {dadosConta.conta_nome}
-      </h3>
-
-      <p className="text-sm text-gray-600 mt-1">
-        Banco: {dadosConta.nro_banco} • Agência: {dadosConta.agencia} • Conta: {dadosConta.conta}
-      </p>
-
-      <p className="mt-3 text-lg font-semibold text-emerald-600">
-        Saldo atual:{" "}
-        {Number(dadosConta.saldo_final).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        })}
-      </p>
+    {/* AÇÃO */}
+    <div className="flex justify-end">
+      <button
+        onClick={pesquisar}
+        className="btn-pill btn-blue"
+      >
+        Atualizar
+      </button>
     </div>
+    <div className="mb-1 flex justify-end">
+          <button
+            onClick={() => executarSelecionados()}
+            disabled={selecionados.length === 0}
+            className="btn-pill btn-gray"
+              >
+            Executar selecionados ({selecionados.length})
+          </button>
+        </div>
+  </div>
+</div>
+</div>
+       
 
-    {/* TABELA */}
-    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-100 text-slate-700">
+    {/* TABELA  
+    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">*/}
+      <div className="max-h-[720px] overflow-y-auto overflow-x-auto"> 
+      <table className="w-full text-base"> 
+        <thead className="sticky top-0 z-20 bg-slate-800 text-white"> 
           <tr>
+             <th className="p-2 text-center">
+              <input
+                  type="checkbox"
+                  checked={
+                    lista.length > 0 &&
+                    lista.every((item) => selecionados.includes(item.uid))
+                  }
+                  onChange={() => toggleSelecionarTodos(lista)}
+                />
+              </th>
             <th className="px-3 py-2 text-left">Status</th>
             <th className="px-3 py-2 text-left">Tipo</th>
             <th className="px-3 py-2 text-center">Vencimento</th>
@@ -290,14 +431,22 @@ export default function TitulosVencidos() {
         <tbody>
           {lista.length === 0 && (
             <tr>
-              <td colSpan={8} className="text-center py-6 text-gray-500">
+              <td colSpan={9} className="text-center py-6 text-gray-500">
                 Nenhum título encontrado.
               </td>
             </tr>
           )}
 
           {lista.map((l, i) => (
-            <tr key={i} className="border-t">
+           <tr key={l.uid} className="border-t">
+
+              <td className="px-3 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={selecionados.includes(l.uid)}
+                 onChange={() => toggleSelecionado(l.uid)}
+                />
+              </td>
               <td className="px-3 py-2 font-semibold">
                 {l.critico ? "⚠ Crítico" : "Normal"}
               </td>

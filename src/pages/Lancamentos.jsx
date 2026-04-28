@@ -18,7 +18,7 @@ export default function Lancamentos() {
   const [modalConta, setModalConta] = useState(false);
   const [qtdVencidos, setQtdVencidos] = useState(0);
    const [qtdRegistros, setQtdRegistros] = useState(0);
-   
+   const [selecionados, setSelecionados] = useState([]);
 const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
 const [saldoInicial, setSaldoInicial] = useState(0);
@@ -521,10 +521,7 @@ async function Estornar(id) {
 }, [refreshKey]);
 
 
-
-
-
-async function processarTitulo(titulo, conta_id) {
+async function executarTitulos(titulos, conta_id) {
   if (loading) return;
 
   if (!conta_id || Number(conta_id) === 0) {
@@ -532,65 +529,72 @@ async function processarTitulo(titulo, conta_id) {
     contaRef.current?.focus();
     return;
   }
- 
+
+  const itens = titulos.map((l) => ({
+    origem_tabela:
+      l.tipo_operacao === "conta_pagar"
+        ? "contas_a_pagar"
+        : l.tipo_operacao === "conta_receber"
+        ? "contas_a_receber"
+        : l.tipo_operacao === "fatura_cartao"
+        ? "cartoes_faturas"
+        : "",
+
+    origem_id: Number(l.id),
+    tipo_operacao: l.tipo_operacao,
+  }));
 
   setLoading(true);
 
   try {
-    let webhook = "";
-
-    const payload = {
-      empresa_id: Number(empresa_id), 
-      contas: [], // 🔥 ARRAY PURO
-       conta_id: Number(conta_id)
-    };
-
-    if (titulo.tipo_operacao === "conta_pagar") {
-      webhook = "pagar_contas";
-      payload.contas = [ Number(titulo.id) ];
-
-    } else if (titulo.tipo_operacao === "conta_receber") {
-      webhook = "receber_contas";
-      payload.contas = [ Number(titulo.id) ];
-
-    } else if (titulo.tipo_operacao === "fatura_cartao") {
-      webhook = "pagar_faturas";
-      payload.contas = [ Number(titulo.id) ];
-
-    } else {
-      alert("Tipo de título desconhecido.");
-      return;
-    }
-
-    const resp = await fetch(buildWebhookUrl(webhook), {
+    const resp = await fetch(buildWebhookUrl("executar_titulos"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        conta_id: Number(conta_id),
+        itens,
+      }),
     });
 
-    const text = await resp.text();
-    const data = text ? JSON.parse(text) : null;
+    const data = await resp.json();
 
-    if (!resp.ok || data?.erro) {
-      alert(text || data?.erro || "Erro");
+    if (!resp.ok || data?.ok === false) {
+      alert(data?.message || "Erro ao executar títulos.");
       return;
     }
 
     alert("Processado com sucesso!");
-       window.dispatchEvent(new Event("contabil-atualizado"));
+    setSelecionados([]);
+    window.dispatchEvent(new Event("contabil-atualizado"));
     pesquisar(tipoOperacao || "");
-   carregarSaldoConta(conta_id);
+    carregarSaldoConta(conta_id);
     await carregarQtdVencidos();
+
   } catch (e) {
-    alert("Erro ao processar título.");
+    alert("Erro ao processar títulos.");
   } finally {
     setLoading(false);
   }
 }
 
+
+async function processarTitulo(titulo, conta_id) {
+  return executarTitulos([titulo], conta_id);
+}
+
+function executarSelecionados() {
+  const titulos = listaFiltrada.filter((l) =>
+    selecionados.includes(getUid(l))
+  );
+
+  executarTitulos(titulos, contaId);
+}
+ 
+
 useEffect(() => {
   if (dataIni && dataFim) {
-    pesquisar(tipoOperacao || "");
+    pesquisar("transacao");
   }
 }, [dataIni, dataFim]);
 
@@ -690,7 +694,7 @@ function RelatorioEscolhido(tipo) {
       case "vence_hoje":
       return "Vence Hoje"; 
     case "transacao":
-      return "Financeiro";
+      return "À vista";
     case "conta_pagar":
       return "Contas a Pagar";
     case "conta_receber":
@@ -700,16 +704,130 @@ function RelatorioEscolhido(tipo) {
          case "cartao_compra":
       return "Compras no Cartão";
       case "titulos_pagos":
-      return "Titulos Pagos";
+      return "Titulos Baixados";
        case "vence_sete_dias":
         return "Vence em sete dias.";
         case "estorno":
-      return "Operações estornadas";
+      return "Operações Estornadas";
         case "todos":
       return "Todos";
     default:
       return tipo || "Todos";
   }
+}
+
+ function getUid(l) {
+  return `${l.tipo_operacao || tipoOperacao}:${l.id}`;
+}
+
+function toggleSelecionado(l) {
+  const uid = getUid(l);
+
+  setSelecionados((prev) =>
+    prev.includes(uid)
+      ? prev.filter((x) => x !== uid)
+      : [...prev, uid]
+  );
+}
+
+function toggleSelecionarTodos() {
+  const ids = listaFiltrada.map((l) => getUid(l));
+
+  const todosMarcados = ids.every((id) => selecionados.includes(id));
+
+  setSelecionados(todosMarcados ? [] : ids);
+}
+
+function executarSelecionados() {
+  const itens = listaFiltrada.filter((l) =>
+    selecionados.includes(getUid(l))
+  );
+
+  if (itens.length === 0) {
+    alert("Selecione ao menos um item.");
+    return;
+  }
+
+  const temFinanceiroOuPago = itens.some(
+    (l) =>
+      l.tipo_operacao === "transacao" ||
+      tipoOperacao === "titulos_pagos"
+  );
+
+  if (temFinanceiroOuPago) {
+    estornarSelecionados(itens);
+    return;
+  }
+
+  executarTitulos(itens, contaId);
+}
+
+
+async function estornarSelecionados(itens) {
+  if (!confirm(`Confirma estornar ${itens.length} lançamento(s)?`)) return;
+
+  try {
+    setLoading(true);
+
+    const ids = itens.map((l) => Number(l.id));
+
+    const resp = await fetch(buildWebhookUrl("estornar_lancamentos_lote"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        ids,
+      }),
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok || data?.ok === false) {
+      alert(data?.message || "Erro ao estornar selecionados.");
+      return;
+    }
+
+    alert("Estorno realizado com sucesso!");
+    setSelecionados([]);
+    window.dispatchEvent(new Event("contabil-atualizado"));
+    pesquisar(tipoOperacao || "");
+  } catch (e) {
+    alert("Erro ao estornar selecionados.");
+  } finally {
+    setLoading(false);
+  }
+}
+
+ function labelBotaoSelecionados() {
+  const qtd = selecionados.length;
+  const sufixo = qtd > 0 ? ` (${qtd})` : "";
+
+  switch ((tipoOperacao || "").trim()) {
+    case "transacao":
+    case "titulos_pagos":
+      return `Estornar Selecionados${sufixo}`;
+
+    case "conta_pagar":
+      return `Pagar Seleção${sufixo}`;
+
+    case "conta_receber":
+      return `Receber Seleção${sufixo}`;
+
+    case "fatura_cartao":
+      return `Pagar Faturas${sufixo}`;
+
+    case "vencidos":
+    case "vence_hoje":
+    case "vence_sete_dias":
+      return `Executar Selecionados${sufixo}`;
+
+    default:
+      return `Executar Selecionados${sufixo}`;
+  }
+}
+
+ function permiteSelecao() {
+  return tipoOperacao !== "estorno" && tipoOperacao !== "cartao_compra";
 }
 
 return (
@@ -751,18 +869,8 @@ return (
    
      <button
       onClick={abrirNovoLancamento}
-      className="
-        px-5 py-2 rounded-full
-        font-bold text-sm tracking-wide
-        text-white
-        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
-        border-2 border-black
-        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-        hover:brightness-110 hover:scale-105
-        active:scale-95
-        transition-all duration-200
-        inline-flex items-center gap-2
-      ">
+       className="btn-pill btn-emerald"
+                    >
       + Novo lançamento
     </button>
 
@@ -776,18 +884,8 @@ return (
     <a
       href="#"
       onClick={() => window.print()}
-            className="
-                px-5 py-2 rounded-full
-                font-bold text-sm tracking-wide
-                text-white
-                bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
-                border-2 border-black
-                shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                hover:brightness-110 hover:scale-105
-                active:scale-95
-                transition-all duration-200
-                inline-flex items-center gap-2
-              ">
+              className="btn-pill btn-black"
+                    >
       🖨️ Imprimir
     </a>
   </div>
@@ -904,7 +1002,7 @@ return (
         </div>
         {/* BUSCA */}
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700  mt-12">
+            <label className="text-sm font-semibold text-gray-700  mt-4">
               Busca
             </label>
 
@@ -918,35 +1016,48 @@ return (
           </div>
         
          {qtdVencidos > 0 && (
-            <div className="mt-10 ml-20 flex justify-center">
+            <div className="mt-3 ml-3 flex justify-center">
               <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
                 <button onClick={() => pesquisar("vencidos")}>
                   <span className="text-base text-red-600 font-semibold">
-                    Existem {qtdVencidos} título(s) vencido(s), favor verificar
+                    Existem {qtdVencidos} título(s) vencido(s).
                   </span>
                 </button>
               </div>
             </div>
           )}
-         
+         <div className="flex items-center gap-20 mt-3"> 
          {tipoOperacao !== undefined && tipoOperacao !== null && ( 
-        <div className="mt-10 ml-20 flex justify-center">
-          <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
+        <div className="mt-3 ml-3 flex justify-center">
+          <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm  ">
             <span className="text-base text-slate-600">
-              Exibindo o filtro de:{" "}
+             Filtro de:{" "}
               <span className="font-bold text-blue-700">
                 {RelatorioEscolhido(tipoOperacao)}
               </span>
-              {" — Foram encontrados "}
+              {" — Encontrados "}
               <span className="font-bold text-slate-700 text-blue-700">
                 {qtdRegistros}
               </span>
               {" registros"}
             </span>
           </div>
-        </div>
-      )}
           
+        </div>
+        
+      )}      
+
+       <button
+    onClick={executarSelecionados}
+    disabled={!permiteSelecao() || selecionados.length === 0}
+    className="btn-pill btn-gray disabled:opacity-60 disabled:cursor-not-allowed"
+  >
+    {tipoOperacao === "estorno"
+      ? "Somente consulta"
+      : labelBotaoSelecionados()}
+  </button>
+        
+        </div>
 
        <div className="flex items-center gap-10"> 
 
@@ -954,7 +1065,7 @@ return (
                   
                 <div className="flex gap-6 text-sm font-semibold">
                  
-                    <button
+                   {/*} <button
                     
                        onClick={() => {
                               setTipoOperacao("todos");
@@ -963,7 +1074,7 @@ return (
                       className="btn-pill btn-blue"
                     >
                       🔎 Todos
-                    </button>
+                    </button>*/}
 
                     <button
                       onClick={() => {
@@ -972,7 +1083,7 @@ return (
                               }}
                       className="btn-pill btn-yellow"
                     >
-                      💰 Financeiro
+                      💰 À vista
                     </button>
 
                     <button
@@ -997,6 +1108,7 @@ return (
 
                     <button
                        onClick={() => {
+                             setSelecionados([]);
                             setTipoOperacao("cartao_compra");
                             pesquisar("cartao_compra");
                           }}
@@ -1066,7 +1178,7 @@ return (
                           }}
                       className="btn-pill btn-purple"
                     >
-                      ✅ Titulos Pagos
+                      ✅ Titulos Baixados
                     </button>
                     
 
@@ -1087,6 +1199,16 @@ return (
         <table className="w-full text-sm">
           <thead className="bg-gray-50 text-gray-600">
             <tr>
+             {permiteSelecao() && ( <th className="px-3 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={
+                    listaFiltrada.length > 0 &&
+                    listaFiltrada.every((l) => selecionados.includes(getUid(l)))
+                  }
+                  onChange={toggleSelecionarTodos}
+                />
+              </th> )}
                <th className="px-3 py-2 text-left">id</th>
               <th className="px-3 py-2 text-left">Descrição</th>
                <th className="px-3 py-2 text-center  font-bold ">Data Movimento</th>
@@ -1123,7 +1245,7 @@ return (
               {temTransacao && (
                  <>  <th className="px-3 py-2 text-right"> Estorno</th> </> )}
                 <th className="px-3 py-2 text-left "> Tipo Evento</th>
-              <th className="px-3 py-2 text-center">Ações</th>
+              
             </tr>
           </thead>  
 
@@ -1132,8 +1254,22 @@ return (
             
             {listaFiltrada.map((l, i) => (
 
-             
-              <tr key={l.id} className="border-t">
+                 <tr
+                      key={getUid(l)}
+                      onDoubleClick={(e) => {
+                        if (e.target.closest("button") || e.target.closest("input")) return;
+                        editarLancamento(l);
+                      }}
+                      title="Clique duas vezes para editar"
+                      className="border-t hover:bg-blue-50 cursor-pointer"
+                    >
+                 {permiteSelecao() && ( <td className="px-3 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selecionados.includes(getUid(l))}
+                      onChange={() => toggleSelecionado(l)}
+                    />
+                  </td>)}
                    
                  <td className="px-3 py-2 text-left font-bold">{l.id}</td>
                   <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]"> {l.descricao}</td>
@@ -1264,13 +1400,8 @@ return (
                     </td>
                   
                 <td className="px-3 py-2 text-center space-x-2">
-                  <button
-                    onClick={() => editarLancamento(l)}
-                    className="text-blue-600 hover:underline font-semibold"
-                  >
-                    Editar
-                  </button>
-                 {l.tipo_operacao === "transacao" && (
+                  
+                {/*} {l.tipo_operacao === "transacao" && (
                     <button
                       onClick={() => l.origem_id == null && Estornar(l.id)}
                       disabled={l.origem_id != null}
@@ -1280,13 +1411,15 @@ return (
                           ? "text-red-600 hover:underline"
                           : "text-gray-400 cursor-not-allowed"
                       }`}
+
+                      
                     >
                       Estornar
                     </button>
-                  )}
+                  )}*/}
 
                  
-                    {l.tipo_operacao !== "cartao_compra" && l.tipo_operacao !== "transacao" && (
+                    {/*{l.tipo_operacao !== "cartao_compra" && l.tipo_operacao !== "transacao" && (
                           <button
                             onClick={() => processarTitulo(l, contaId)}
                             disabled={l.status !== "aberto" && l.status !== "aberta"}
@@ -1310,7 +1443,7 @@ return (
                               ? "Pagar"
                               : "Pago"}
                           </button>
-                        )}
+                        )}*/}
         
 
                     {l.tipo_operacao === "cartao_compra" && (

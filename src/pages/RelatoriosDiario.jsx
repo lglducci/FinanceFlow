@@ -286,90 +286,41 @@ return (
 
         <button
           onClick={() => consultar()}
-           className="
-                          px-5 py-2 rounded-full
-                          font-bold text-sm tracking-wide
-                          text-white
-                          bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                          border-2 border-black
-                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                          hover:brightness-110 hover:scale-105
-                          active:scale-95
-                          transition-all duration-200
-                          inline-flex items-center gap-2
-                        ">
+             className="btn-pill btn-blue"
+                    >
           Consultar
         </button>
 
         <button
           onClick={() => navigate("/lancamentocontabilrapido")}
            
-            className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
+               className="btn-pill btn-emerald"
+                    >
           ⚡ Novo Lançamento
         </button>
 
 
             <button 
             onClick={() => navigate("/livro-caixa")}
-            className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
+            className="btn-pill btn-yellow"
+                    >
           ⚡ Lançar Livro Caixa
         </button>
 
         <button
           onClick={() => window.print()}
          
-
-           className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
+            className="btn-pill btn-gray"
+                    >
+           
           🖨️ Imprimir
         </button>
 
         <button
             onClick={exportarExcel}
-            className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-green-500 via-green-600 to-green-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
+               
+            className="btn-pill btn-green"
+                    >
           Exportar Excel
           </button>
 
@@ -400,35 +351,16 @@ return (
 
   <button
     onClick={aplicarFiltro}
-       className="
-                          px-5 py-2 rounded-full
-                          font-bold text-sm tracking-wide
-                          text-white
-                          bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
-                          border-2 border-black
-                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                          hover:brightness-110 hover:scale-105
-                          active:scale-95
-                          transition-all duration-200
-                          inline-flex items-center gap-2
-                        ">
+       className="btn-pill btn-gray"
+                    >
     Filtrar
   </button>
 
   <button
     onClick={limparFiltro}
-     className="
-                          px-5 py-2 rounded-full
-                          font-bold text-sm tracking-wide
-                          text-white
-                          bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                          border-2 border-black
-                          shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                          hover:brightness-110 hover:scale-105
-                          active:scale-95
-                          transition-all duration-200
-                          inline-flex items-center gap-2
-                        ">
+
+    className="btn-pill btn-blue"
+            >
     Limpar
   </button>
 
@@ -440,19 +372,9 @@ return (
     }
     Estornar(0, importacaoSelecionada);
   }}
-  className="
-    px-5 py-2 rounded-full
-    font-bold text-sm tracking-wide
-    text-white
-    bg-gradient-to-b from-red-500 via-red-600 to-red-800
-    border-2 border-black
-    shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-    hover:brightness-110 hover:scale-105
-    active:scale-95
-    transition-all duration-200
-    inline-flex items-center gap-2
-  "
->
+    
+    className="btn-pill btn-red"
+            >
   Excluir Importação
 </button>
 

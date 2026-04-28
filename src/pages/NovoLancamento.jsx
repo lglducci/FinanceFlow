@@ -1071,7 +1071,7 @@ const descricao = (() => {
                                     <input
                                       type="date"
                                       name="vencimento"
-                                      min={hojeMaisDias(1)}
+                                      min={hojeMaisDias(-7)}
                                       value={form.vencimento}
                                       onChange={handleChange}
                                       className="input-premium w-full"

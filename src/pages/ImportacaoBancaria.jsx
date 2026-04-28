@@ -715,19 +715,19 @@ setResumoImportacao({
 }
 
 return (
-      <div className="flex justify-center mt-10 bg-gray-100 min-h-screen py-10">
+       <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
 
-       <div className="bg-white rounded-2xl border border-gray-300 w-[1300px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
+       <div className="bg-white rounded-2xl border border-gray-300 w-[1400px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
         <div className="bg-gray-650 rounded-lg p-8"> 
-        <div className="bg-gray-600 border-b rounded-t-xl p-6"> 
-       <div className="bg-gray-600 border-b rounded-t-xl p-6">  
+        <div className="bg-gray-600 border-b rounded-t-xl p-2"> 
+       <div className="bg-gray-600 border-b rounded-t-xl p-2">  
         {/* TÍTULO */}
         <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
           ⚡ Importação de Extratos Bancários
         </h2>
 
         {/* CONTA + SALDO */}
-        <div className="grid grid-cols-[1fr_200px] gap-6 items-end">
+        <div className="grid grid-cols-[1fr_200px] gap-4 items-end">
 
           {/* CONTA */}
           <div className="flex flex-col gap-1">
@@ -735,9 +735,7 @@ return (
             <label className="text-sm font-semibold text-gray-50">
                Conta Bancária 
             </label>
-
-     
-                 <div>
+               <div>
           
           <select
             value={contaId}
@@ -807,24 +805,24 @@ return (
                 Saídas: {resumoImportacao.saida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </div>
             )}
-
+               <div className="mt-4 max-h-[580px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
                  <div  className="grid  grid-cols-[120px_400px_120px_120px_220px_120px_60px]  gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
                                    
-                <div className="text-left font-bold" >Data </div>
-                <div className="text-left font-bold" >Histórico</div>
-                
-               <div className="text-center">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                      Tipo
-                    </span>
-                  </div>
+                    <div className="text-left font-bold" >Data </div>
+                    <div className="text-left font-bold" >Histórico</div>
+                        
+                      <div className="text-center">
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                              Tipo
+                            </span>
+                          </div>
 
-                  <div className="text-right">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-700">
-                      Valor
-                    </span>
-                  </div>
-           
+                            <div className="text-right">
+                              <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-700">
+                                Valor
+                              </span>
+                            </div>
+                    
                 <div className="text-right">Saldo</div>
                 <div className="text-center">Ação</div>
                 </div>
@@ -904,7 +902,7 @@ return (
                       </button>
                     </div>
                   </div>
-                ))}
+                ))} 
           {/* NOVA LINHA */}
 
             {mostrarNovaLinha && (
@@ -997,8 +995,8 @@ return (
                       </button>
                 </div>     
 
-                </div>)}
-
+                </div> )} </div>
+              
           {/* BOTÕES */}
 
            <div className="flex justify-end gap-3 mt-4">
@@ -1047,7 +1045,7 @@ return (
                 </div>
       
         </div>
-      </div>
+      </div> 
  
   <ModalBase
   open={modalContaAberto}

@@ -11,12 +11,12 @@ export default function ConciliacaoRevisao() {
   const [aviso, setAviso] = useState("");
 const navigate = useNavigate();
   const [selecionados, setSelecionados] = useState([]);
-// const [resultadoExecucao, setResultadoExecucao] = useState(() => {
- //const salvo = localStorage.getItem("resultado_conciliacao");
- // return salvo ? JSON.parse(salvo) : null;
-//});
+ // const [resultadoExecucao, setResultadoExecucao] = useState(() => {
+  //const salvo = localStorage.getItem("resultado_conciliacao");
+  //return salvo ? JSON.parse(salvo) : null;
+ //});
 
-const [resultadoExecucao, setResultadoExecucao] = useState(null);
+ const [resultadoExecucao, setResultadoExecucao] = useState(null);
 const [operacoesGeradas, setOperacoesGeradas] = useState([]);
 const [mostrarOperacoes, setMostrarOperacoes] = useState(false);
 const [loadingOperacoes, setLoadingOperacoes] = useState(false);
@@ -154,16 +154,23 @@ async function aceitarSelecionados(idsParam = null) {
       retorno?.fn_executar_conciliacao ||
       retorno;
 
+      const loteId =
+          resultado?.lote_conciliacao_id ||
+          resultado?.importacao_id ||
+          resultado?.lote_id ||
+          resultado?.data?.lote_conciliacao_id;
+
     if (resultado?.ok === false) {
       alert(resultado.message || "Erro ao executar conciliação.");
       return;
     }
 
-     localStorage.setItem("resultado_conciliacao", JSON.stringify(resultado));
+    
 
    setResultadoExecucao(resultado);  
    setLinhas([]);
     setSelecionados([]);
+      await verOperacoesGeradas(resultado.lote_conciliacao_id);
 
   } catch (e) {
     console.error(e);
@@ -318,15 +325,27 @@ function statusClasse(situacao) {
   return "bg-blue-100 text-blue-700 border-blue-300";
 }
 
-const podeExecutar =
-  linhas.length > 0 &&
+ const podeExecutar =
+  linhas.some((l) => l.situacao === "ok") &&
   linhas.every((l) =>
     ["ok", "rejeitado", "executado"].includes(l.situacao)
   );
 
 
-  async function verOperacoesGeradas() {
-  const importacao_id = resultadoExecucao?.lote_conciliacao_id;
+  const pendentes = linhas.filter((l) => l.situacao === "pendente");
+
+const podeAceitar =
+  pendentes.length > 0 &&
+  pendentes.every((l) => selecionados.includes(l.id));
+
+
+
+ async function verOperacoesGeradas(importacaoIdParam = null) {
+  const importacao_id =
+    importacaoIdParam ||
+    resultadoExecucao?.lote_conciliacao_id ||
+    resultadoExecucao?.importacao_id ||
+    resultadoExecucao?.lote_id;
 
   if (!importacao_id) {
     alert("Lote/importação não encontrado.");
@@ -372,15 +391,22 @@ const podeExecutar =
     setLoadingOperacoes(false);
   }
 }
+ 
 async function excluirImportacao() {
   const ids = operacoesGeradas.map((l) => Number(l.id)).filter(Boolean);
+  const importacao_id = resultadoExecucao?.lote_conciliacao_id;
+
+  if (!importacao_id) {
+    alert("Importação não encontrada.");
+    return;
+  }
 
   if (ids.length === 0) {
     alert("Nenhuma operação encontrada para excluir.");
     return;
   }
 
-  if (!confirm(`Confirma excluir ${ids.length} operação(ões) desta importação?`)) {
+  if (!confirm(`Confirma excluir ${ids.length} operação(ões) da importação nº ${importacao_id}?`)) {
     return;
   }
 
@@ -388,6 +414,7 @@ async function excluirImportacao() {
     const url = buildWebhookUrl("exclui_importacao", {
       empresa_id,
       conta_id,
+      importacao_id, // 👈 aqui também
     });
 
     const resp = await fetch(url, {
@@ -396,6 +423,7 @@ async function excluirImportacao() {
       body: JSON.stringify({
         empresa_id: Number(empresa_id),
         conta_id: Number(conta_id),
+        importacao_id: Number(importacao_id), // 👈 ESSENCIAL
         ids,
       }),
     });
@@ -410,21 +438,22 @@ async function excluirImportacao() {
     alert("Importação excluída com sucesso.");
 
     setOperacoesGeradas([]);
-    setMostrarOperacoes(false);
-    localStorage.removeItem("resultado_conciliacao");
+    setMostrarOperacoes(false); 
     setResultadoExecucao(null);
+    
+
   } catch (e) {
     console.error(e);
     alert("Erro ao excluir importação.");
   }
 }
 
-
   return (
-    <div className="min-h-screen bg-slate-100 p-6">
+     <div className="min-h-screen bg-slate-100 px-2 pt-0 pb-2">
       <div className="mx-auto max-w-7xl">
 
-         {!resultadoExecucao && (  <div className="mb-6 rounded-3xl bg-white p-6 shadow-lg border border-slate-200">
+         {!resultadoExecucao && (   
+          <div className="mb-6 rounded-3xl bg-white p-3 shadow-lg border border-slate-200">
           <h1 className="text-2xl font-black text-slate-800">
             Revisão da Conciliação
           </h1>
@@ -450,18 +479,22 @@ async function excluirImportacao() {
             {selecionados.length > 0 ? "❌ Desselecionar todos" : "✅ Selecionar todos"}
           </button>
 
-
-            <button
-              onClick={() => aceitarSelecionados()}
-              className="
-                px-5 py-2 rounded-full
-                bg-gradient-to-r from-emerald-500 to-green-700
-                text-white font-bold text-sm shadow
-                hover:brightness-110
-              "
-            >
-              ✅ Aceitar selecionados
-            </button>
+                <button
+                        onClick={() => aceitarSelecionados()}
+                        disabled={!podeAceitar}
+                        className={`
+                          px-5 py-2 rounded-full
+                          text-white font-bold text-sm shadow
+                          hover:brightness-110
+                          ${
+                            podeAceitar
+                              ? "bg-gradient-to-r from-emerald-500 to-green-700"
+                              : "bg-gradient-to-r from-slate-300 to-slate-500 cursor-not-allowed opacity-90"
+                          }
+                        `}
+                      >
+                        ✅ Aceitar selecionados
+                      </button>
             
              <button
                 onClick={executarConciliacao}
@@ -470,10 +503,10 @@ async function excluirImportacao() {
                   px-5 py-2 rounded-full
                   text-white font-bold text-sm shadow
                   hover:brightness-110
-                  ${
+                 ${
                     podeExecutar
                       ? "bg-gradient-to-r from-blue-500 to-blue-700"
-                      : "bg-gray-300 cursor-not-allowed opacity-60"
+                      : "bg-gradient-to-r from-slate-300 to-slate-500 cursor-not-allowed opacity-90"
                   }
                 `}
               >
@@ -526,7 +559,7 @@ async function excluirImportacao() {
 
         </div>)}
 
-        <div className="rounded-3xl bg-white shadow-lg border border-slate-200 overflow-hidden">
+       <div className="rounded-3xl bg-white shadow-lg border border-slate-200 overflow-hidden">
 
           {resultadoExecucao && (
   <div className="mb-6 rounded-3xl border border-emerald-300 bg-emerald-50 p-6 shadow-lg">
@@ -619,9 +652,9 @@ async function excluirImportacao() {
       <div className="p-6 text-center font-bold text-slate-500">
         Nenhuma operação encontrada para este lote.
       </div>
-    ) : (
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+     ) : (
+  <div className="max-h-[620px] overflow-y-auto">
+    <table className="w-full text-sm">
           <thead className="bg-gray-50 text-gray-600">
             <tr>
               <th className="px-3 py-2 text-left">ID</th>
@@ -745,18 +778,19 @@ async function excluirImportacao() {
               Nenhum dado encontrado.
             </div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-slate-800 text-white">
-                <tr>
-                <th className="p-3 text-center">Sel.</th>
-                  <th className="p-3 text-left">Data</th>
-                  <th className="p-3 text-left">Histórico</th>
-                  <th className="p-3 text-right">Valor</th>
-                  <th className="p-3 text-center">Situação</th>
-                  <th className="p-3 text-left">Mensagem</th>a
-                  <th className="p-3 text-center">Ação</th>
-                </tr>
-              </thead>
+            <div className="max-h-[720px] overflow-y-auto overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="sticky top-0 z-20 bg-slate-800 text-white">
+                  <tr>
+                  <th className="p-3 text-center">Sel.</th>
+                    <th className="p-3 text-left">Data</th>
+                    <th className="p-3 text-left">Histórico</th>
+                    <th className="p-3 text-right">Valor</th>
+                    <th className="p-3 text-center">Situação</th>
+                    <th className="p-3 text-left">Mensagem</th> 
+                    <th className="p-3 text-center">Ação</th>
+                  </tr>
+                </thead>
 
               <tbody>
                 {linhas.map((l) => (
@@ -803,32 +837,40 @@ async function excluirImportacao() {
                       </span>
                     </td>
 
-                    <td className="p-3 text-slate-600">
+                    <td className="p-3 text-slate-600 font-semibold">
                       {l.mensagem}
                     </td>
 
                     <td className="p-3 text-center">
                        <div className="flex justify-center gap-2">
                        <button
-                        onClick={() => rejeitarLinha(l.id)}
-                        disabled={
-                          l.situacao === "ok" ||
-                          l.situacao === "executado" ||
-                          !["pagar", "receber", "fatura_cartao"].includes(l.tipo_evento)
-                        }
-                        className="
-                          px-4 py-2 rounded-full
-                          border border-gray-400
-                          bg-rose-50
-                          text-gray-700 font-bold text-xs
-                          hover:bg-gray-300
-                          transition disabled:opacity-40
-                        "
-                      >
-                        Rejeitar
-                      </button>
+                            onClick={() => rejeitarLinha(l.id)}
+                            disabled={
+                              l.situacao === "ok" ||
+                              l.situacao === "executado"  ||
+                              l.situacao === "rejeitado"
+                            }
+                            className="
+                              px-4 py-2 rounded-full
+                              border font-bold text-xs transition
 
-                       <button
+                              enabled:bg-rose-100
+                              enabled:text-rose-700
+                              enabled:border-rose-300
+                              enabled:hover:bg-rose-200
+                              enabled:hover:scale-105
+                              enabled:cursor-pointer
+
+                              disabled:bg-gray-200
+                              disabled:text-gray-400
+                              disabled:border-gray-300
+                              disabled:cursor-not-allowed
+                              disabled:opacity-60
+                            "
+                          >
+                            Rejeitar
+                          </button>
+                         <button
                       onClick={() => aceitarSelecionados([l.id])}
                       disabled={
                         l.situacao === "ok" ||
@@ -837,13 +879,20 @@ async function excluirImportacao() {
                       }
                       className="
                         ml-2 px-4 py-2 rounded-full
-                        border border-emerald-400
-                        bg-emerald-100
-                        text-emerald-800 font-bold text-xs
-                        hover:bg-emerald-200
-                        transition
-                        disabled:opacity-75
+                        border font-bold text-xs transition
+
+                        enabled:bg-emerald-500
+                        enabled:text-white
+                        enabled:border-emerald-600
+                        enabled:hover:bg-emerald-600
+                        enabled:hover:scale-105
+                        enabled:cursor-pointer
+
+                        disabled:bg-gray-300
+                        disabled:text-black
+                        disabled:border-gray-400
                         disabled:cursor-not-allowed
+                        disabled:opacity-100
                       "
                     >
                       Aceitar
@@ -854,6 +903,7 @@ async function excluirImportacao() {
                 ))}
               </tbody>
             </table>
+              </div>
           )}
 
 

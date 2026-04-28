@@ -828,7 +828,7 @@ return (
                       Valor
                     </span>
                   </div>
-                <div className="text-center">Contra Conta</div>
+                <div className="text-left">Contra Conta</div>
                 <div className="text-right">Saldo</div>
                 <div className="text-center">Ação</div>
                 </div>
@@ -873,7 +873,7 @@ return (
                         })}
                     </div>
 
-                    <div className="text-left font-semibold">{l.contra}</div>
+                    <div className="text-left font-semibold ml-3">{l.contra}</div>
 
                     <div
                       className={`border rounded p-2 text-right font-semibold ${

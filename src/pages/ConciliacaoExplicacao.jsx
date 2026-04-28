@@ -13,16 +13,22 @@ const mensagens = [
 export default function ConciliacaoExplicacao() {
   const navigate = useNavigate();
   const [indice, setIndice] = useState(0);
-
+ 
   useEffect(() => {
-    if (indice >= mensagens.length - 1) return;
-
+  if (indice >= mensagens.length - 1) {
     const timer = setTimeout(() => {
-      setIndice((i) => i + 1);
-    }, 1300);
+      navigate("/conciliacao-revisao");
+    }, 1200);
 
     return () => clearTimeout(timer);
-  }, [indice]);
+  }
+
+  const timer = setTimeout(() => {
+    setIndice((i) => i + 1);
+  }, 1000);
+
+  return () => clearTimeout(timer);
+}, [indice, navigate]);
 
   const terminou = indice === mensagens.length - 1;
 
@@ -54,30 +60,7 @@ export default function ConciliacaoExplicacao() {
             />
           ))}
         </div>
-
-        {terminou && (
-          <div className="mt-10 flex justify-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="px-6 py-3 rounded-full border border-slate-300 text-slate-700 font-bold hover:bg-slate-100"
-            >
-              Voltar
-            </button>
-
-            <button
-              onClick={() => navigate("/conciliacao-revisao")}
-              className="
-                px-8 py-3 rounded-full
-                font-black text-white
-                bg-gradient-to-r from-blue-600 to-indigo-700
-                shadow-lg hover:brightness-110 hover:scale-105
-                transition
-              "
-            >
-              Abrir revisão
-            </button>
-          </div>
-        )}
+ 
       </div>
     </div>
   );
