@@ -271,6 +271,7 @@ async function executarSelecionados() {
         bg-gradient-to-br from-emerald-150 via-white to-blue-150
         shadow-sm
       ">
+         <p className="text-base font-bold text-slate-900">Conta bancária</p>
         <p className="font-bold text-slate-800">
           🏦 {dadosConta.conta_nome}
         </p>

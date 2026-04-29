@@ -1090,37 +1090,39 @@ return (
 
          
                  <button
-                  onClick={adicionarLinha}
-                  className={`${botaoBase} text-white bg-gradient-to-b from-slate-500 via-slate-600 to-slate-800`}
-                >
-                  ➕ Linha
+                  onClick={adicionarLinha} 
+                  className="btn-pill btn-black"
+                    >
+                    ➕ Linha
                 </button>
 
                   <button
-                      onClick={salvarLancamentos}
-                      className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800`}
-                    >
+                      onClick={salvarLancamentos} 
+                      className="btn-pill btn-blue"
+                              >
                       💾 Salvar
                   </button>
  
                  <button
                 onClick={() => setModalContaAberto(true)}
-                className={`${botaoBase} text-white bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800`}
-              >
+                 
+                className="btn-pill btn-emerald"
+                        >
                 ➕ Nova Conta
               </button>
 
                 <button
                 onClick={colarLancamentos}
-                className={`${botaoBase} text-white bg-gradient-to-b from-cyan-500 via-teal-600 to-teal-800`}
-              >
+                
+                className="btn-pill btn-green"
+                 >
                 📋 Colar
               </button>
 
               <button
                     onClick={limparEdicao}
-                    className={`${botaoBase} text-white bg-gradient-to-b from-red-500 via-red-600 to-red-800`}
-                  >
+                    className="btn-pill btn-red"
+                        >
                     🗑 Limpar
                   </button>
                
@@ -1128,8 +1130,8 @@ return (
 
                  <button
                   onClick={() => navigate("/relatorios/diario")}
-                  className={`${botaoBase} text-white bg-gradient-to-b from-zinc-500 via-zinc-600 to-zinc-800`}
-                >
+                   className="btn-pill btn-black"
+                   >
                   ↩ Sair
                 </button>
 

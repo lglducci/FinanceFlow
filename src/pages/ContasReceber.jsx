@@ -333,8 +333,15 @@ async function receberSelecionadas() {
           {somenteVencidas ? "Somente vencidas" : "Inclui todas"}
         </p>
       </div>
-
-     <div className="rounded-xl border-l-4 border-emerald-600 bg-white p-4">
+ 
+        <div className="
+        text-right
+        rounded-2xl
+        px-5 py-3
+        border border-emerald-200
+        bg-gradient-to-br from-emerald-150 via-white to-blue-150
+        shadow-sm
+      ">
         <p className="text-base font-bold text-slate-900">Conta bancária</p>
         <p className="mt-1 text-sm font-semibold text-slate-900">
           {dadosConta?.conta_nome ?? "Não selecionada"}
@@ -348,199 +355,168 @@ async function receberSelecionadas() {
     </div>
 
     {/* FILTROS + CONTA (layout moderno) */}
-    <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-      {/* FILTROS (COLAPSÁVEL) */}
-      <details open className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4 open:shadow-sm">
-          
-            <summary className="cursor-pointer list-none">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
-                  <span className="text-xs text-slate-500">
-                    {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
-                  </span>
-                </div>
-                <span className="text-xs text-slate-500">clique para abrir/fechar</span>
-              </div>
-            </summary>
-
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-7">
-          {/* DATA INÍCIO */}
-          <div>
-            <label className="block text-xs font-bold text-blue-800">Data início</label>
-            <input
-              type="date"
-              value={dataIni}
-              disabled={somenteVencidas}
-              onChange={(e) => setDataIni(e.target.value)}
-              className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${
-                somenteVencidas ? "bg-slate-100 text-slate-500" : "bg-white"
-              }`}
-            />
-          </div>
-
-          {/* DATA FIM */}
-          <div>
-            <label className="block text-xs font-bold text-blue-800">Data fim</label>
-            <input
-              type="date"
-              value={dataFim}
-              disabled={somenteVencidas}
-              onChange={(e) => setDataFim(e.target.value)}
-              className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${
-                somenteVencidas ? "bg-slate-100 text-slate-500" : "bg-white"
-              }`}
-            />
-          </div>
-
-          {/* STATUS */}
-          <div>
-            <label className="block text-xs font-bold text-blue-800">Status</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
-            >
-              <option value="0">Todos</option>
-              <option value="aberto">Aberto</option>
-              <option value="recebido">Recebido</option>
-            </select>
-          </div>
-
-          {/* FORNECEDOR */}
-          <div className="md:col-span-2">
-            <label className="block text-xs font-semibold text-slate-600">Fornecedor</label>
-            <select
-              value={fornecedor_id}
-              onChange={(e) => setFornecedorId(Number(e.target.value))}
-              className="mt-1 w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
-            >
-              <option value={0}>Todos</option>
-              {fornecedores.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-
-             {/* CONTA BANCÁRIA */}
-     
-         
-    {/* Conta Bancária */}
-    <div>
-      <label className="block text-xs font-semibold text-slate-600 mb-1">
-        Conta bancária
-      </label>
-      <select
-        value={conta_id}
-        onChange={async (e) => {
-          const id = Number(e.target.value);
-          setContaId(id);
-
-          if (id === 0) {
-            setDadosConta(null);
-            return;
-          }
-
-          const empresa = localStorage.getItem("empresa_id") || 1;
-
-          const url = buildWebhookUrl("consultasaldo", {
-            inicio: new Date().toISOString().split("T")[0],
-            fim: new Date().toISOString().split("T")[0],
-            empresa_id: empresa,
-            conta_id: id,
-          });
-
-          const resp = await fetch(url);
-          const json = await resp.json();
-          setDadosConta(json[0]);
-        }}
-        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
-      >
-        <option value={0}>Selecione...</option>
-        {contas.map(ct => (
-          <option key={ct.id} value={ct.id}>{ct.nome}</option>
-        ))}
-      </select>
-    </div>
-
-        
-      
-
-          {/* SOMENTE VENCIDAS */}
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={somenteVencidas}
-              onChange={(e) => setSomenteVencidas(e.target.checked)}
-              className="h-4 w-4"
-            />
-            <label className="text-sm font-semibold text-slate-700">Somente vencidas</label>
-          </div>
+ 
+  <details
+    open
+    className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+  >
+    <summary className="list-none cursor-pointer">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
+          <span className="text-xs text-slate-500">
+            {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
+          </span>
         </div>
 
+        <span className="text-xs text-slate-500">
+          clique para abrir/fechar
+        </span>
+      </div>
+    </summary>
 
-    <div className="mt-6 flex flex-wrap justify-end gap-5 border-t pt-4"> 
-    
-         <button
-            onClick={receberSelecionadas}
-            className="
-              px-5 py-2 rounded-full
-              font-bold text-sm tracking-wide
-              text-white
-              bg-gradient-to-b from-slate-800 to-black
-              border-2 border-black
-              shadow-md
-              hover:brightness-110 hover:scale-105
-              active:scale-95
-              transition-all duration-200
-              inline-flex items-center gap-2
-            "
-          >
-            Receber selecionadas
-            {selecionadas.length > 0 && (
-              <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs">
-                {selecionadas.length}
-              </span>
-            )}
-          </button>
+    <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12">
+      <div className="xl:col-span-2">
+        <label className="mb-1 block text-xs font-semibold text-slate-600">
+          Data início
+        </label>
+        <input
+          type="date"
+          value={dataIni}
+          disabled={somenteVencidas}
+          onChange={(e) => setDataIni(e.target.value)}
+          className={`w-full rounded-lg border px-3 py-2 text-sm ${
+            somenteVencidas ? "bg-slate-100 text-slate-500" : "bg-white"
+          }`}
+        />
+      </div>
 
-        {/* BOTÃO PESQUISAR (só 1 aqui)   */}
+      <div className="xl:col-span-2">
+        <label className="mb-1 block text-xs font-semibold text-slate-600">
+          Data fim
+        </label>
+        <input
+          type="date"
+          value={dataFim}
+          disabled={somenteVencidas}
+          onChange={(e) => setDataFim(e.target.value)}
+          className={`w-full rounded-lg border px-3 py-2 text-sm ${
+            somenteVencidas ? "bg-slate-100 text-slate-500" : "bg-white"
+          }`}
+        />
+      </div>
 
-          <button
-            onClick={pesquisar}
-            className="
-              px-5 py-2 rounded-full
-              font-bold text-sm tracking-wide
-              text-black
-              bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b]
-              border-2 border-black
-              shadow-md
-              hover:brightness-110 hover:scale-105
-              active:scale-95
-              transition-all duration-200
-            "
-          >
-            🔎 Pesquisar
-        </button> 
- 
+      <div className="xl:col-span-2">
+        <label className="mb-1 block text-xs font-semibold text-slate-600">
+          Status
+        </label>
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className="w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
+        >
+          <option value="0">Todos</option>
+          <option value="aberto">Aberto</option>
+          <option value="recebido">Recebido</option>
+        </select>
+      </div>
 
-        </div> 
-      </details> 
-      {/* CONTA / SALDO */} 
+      <div className="xl:col-span-3">
+        <label className="mb-1 block text-xs font-semibold text-slate-600">
+          Fornecedor
+        </label>
+        <select
+          value={fornecedor_id}
+          onChange={(e) => setFornecedorId(Number(e.target.value))}
+          className="w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
+        >
+          <option value={0}>Todos</option>
+          {fornecedores.map((f) => (
+            <option key={f.id} value={f.id}>
+              {f.nome}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="xl:col-span-3">
+        <label className="mb-1 block text-xs font-semibold text-slate-600">
+          Conta bancária
+        </label>
+        <select
+          value={conta_id}
+          onChange={async (e) => {
+            const id = Number(e.target.value);
+            setContaId(id);
+
+            if (id === 0) {
+              setDadosConta(null);
+              return;
+            }
+
+            const empresa = localStorage.getItem("empresa_id") || 1;
+
+            const url = buildWebhookUrl("consultasaldo", {
+              inicio: new Date().toISOString().split("T")[0],
+              fim: new Date().toISOString().split("T")[0],
+              empresa_id: empresa,
+              conta_id: id,
+            });
+
+            const resp = await fetch(url);
+            const json = await resp.json();
+            setDadosConta(json[0]);
+          }}
+          className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
+        >
+          <option value={0}>Selecione...</option>
+          {contas.map((ct) => (
+            <option key={ct.id} value={ct.id}>
+              {ct.nome}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-end xl:col-span-4">
+        <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
+          <input
+            type="checkbox"
+            checked={somenteVencidas}
+            onChange={(e) => setSomenteVencidas(e.target.checked)}
+          />
+          Somente vencidas
+        </label>
+      </div>
+
+      <div className="flex items-end justify-end gap-3 border-t pt-4 md:col-span-2 xl:col-span-8">
+        <button
+          onClick={receberSelecionadas}
+          className="btn-pill btn-black whitespace-nowrap"
+        >
+          Receber selecionadas
+          {selecionadas.length > 0 && (
+            <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
+              {selecionadas.length}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={pesquisar}
+          className="btn-pill btn-yellow whitespace-nowrap"
+        >
+          🔎 Pesquisar
+        </button>
+      </div>
     </div>
-
+  </details>
+ 
     {/* TABELA */}
-    <div className="rounded-xl border border-slate-200 bg-white overflow-x-auto">
-      {loading && <div className="p-4 text-sm text-slate-600">Carregando...</div>}
-
-      <table className="min-w-full text-sm">
-       {/* <thead className="bg-slate-50 text-slate-700">*/}
-          <thead className="bg-blue-150 text-blue-900 border-b border-blue-200">
-
-        <tr className="border-b hover:bg-blue-150 transition-colors">
-
+        <div className="max-h-[720px] overflow-y-auto overflow-x-auto"> 
+      <table className="w-full text-base"> 
+       <thead className="sticky top-0 z-20 bg-slate-800 text-white"> 
+          <tr>
             <th className="px-3 py-3 text-left">Sel.</th>
             <th className="px-3 py-3 text-left">ID</th>
             <th className="px-3 py-3 text-left">Descrição</th>

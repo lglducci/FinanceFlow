@@ -279,40 +279,20 @@ return (
           Consulte, selecione e pague contas com poucos cliques.
         </p>
       </div>
-<div className="flex flex-wrap items-center gap-3">
-  {/* AÇÃO PRINCIPAL */}
-  <button
-    onClick={() => navigate("/nova-conta-pagar")}
-     className="
-        px-5 py-2 rounded-full
-        font-bold text-sm tracking-wide
-        text-white
-        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
-        border-2 border-black
-        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-        hover:brightness-110 hover:scale-105
-        active:scale-95
-        transition-all duration-200
-        inline-flex items-center gap-2
-      ">
-    + Nova conta
-  </button> 
+    <div className="flex flex-wrap items-center gap-3">
+      {/* AÇÃO PRINCIPAL */}
+      <button
+        onClick={() => navigate("/nova-conta-pagar")}
+          className="btn-pill btn-emerald"
+                      >
+        + Nova conta
+      </button> 
 
   {/* AÇÕES SECUNDÁRIAS */}
   <button
     onClick={() => window.print()}
-     className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
+       className="btn-pill btn-gray"
+         >
     🖨️ Imprimir
   </button>
 
@@ -324,12 +304,13 @@ return (
                         text-red-700
                         bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300
                         border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
+                         shadow-[0_5px_0_rgba(0,0,0,0.45),0_8px_18px_rgba(0,0,0,0.25)]
                         hover:brightness-110 hover:scale-105
-                        active:scale-95
+                         active:scale-95 active:translate-y-[2px]
                         transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
+                         inline-flex items-center justify-center gap-2
+                      "> 
+
     Excluir parcelamento
   </button>
 </div>
@@ -355,7 +336,15 @@ return (
         </p>
       </div>
 
-      <div className="rounded-xl border-l-4 border-emerald-600 bg-white p-4">
+       
+    <div className="
+        text-right
+        rounded-2xl
+        px-5 py-3
+        border border-emerald-200
+        bg-gradient-to-br from-emerald-150 via-white to-blue-150
+        shadow-sm
+      ">
         <p className="text-base font-bold text-slate-900">Conta bancária</p>
         <p className="mt-1 text-sm font-semibold text-slate-900">
           {dadosConta?.conta_nome ?? "Não selecionada"}
@@ -365,62 +354,65 @@ return (
             ? `Saldo: R$ ${Number(dadosConta.saldo_final).toLocaleString("pt-BR")}`
             : "Selecione para ver saldo"}
         </p>
-      </div>
+      </div> 
+
+
+      
     </div>
 
     {/* FILTROS + CONTA */}
-    <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <details
+  open
+  className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+>
+  <summary className="list-none cursor-pointer">
+    <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center gap-2">
+        <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
+        <span className="text-xs text-slate-500">
+          {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
+        </span>
+      </div>
 
-      {/* FILTROS */}
-<details open  className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4">
-  <summary className="cursor-pointer text-base font-bold text-slate-900">
-     <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
-              <span className="text-xs text-slate-500">
-                {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
-              </span>
-            </div>
-            <span className="text-xs text-slate-500">clique para abrir/fechar</span>
-          </div>
+      <span className="text-xs text-slate-500">
+        clique para abrir/fechar
+      </span>
+    </div>
   </summary>
 
-  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-7">
+  <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12">
 
-    {/* Data Inicial */}
-    <div>
-      <label className="block text-xs font-semibold text-slate-600 mb-1">
+    <div className="xl:col-span-2">
+      <label className="mb-1 block text-xs font-semibold text-slate-600">
         Data inicial
       </label>
       <input
         type="date"
         value={dataIni}
-        onChange={e => setDataIni(e.target.value)}
+        onChange={(e) => setDataIni(e.target.value)}
         className="w-full rounded-lg border px-3 py-2 text-sm"
       />
     </div>
 
-    {/* Data Final */}
-    <div>
-      <label className="block text-xs font-semibold text-slate-600 mb-1">
+    <div className="xl:col-span-2">
+      <label className="mb-1 block text-xs font-semibold text-slate-600">
         Data final
       </label>
       <input
         type="date"
         value={dataFim}
-        onChange={e => setDataFim(e.target.value)}
+        onChange={(e) => setDataFim(e.target.value)}
         className="w-full rounded-lg border px-3 py-2 text-sm"
       />
     </div>
 
-    {/* Status */}
-    <div>
-      <label className="block text-xs font-semibold text-slate-600 mb-1">
+    <div className="xl:col-span-2">
+      <label className="mb-1 block text-xs font-semibold text-slate-600">
         Status
       </label>
       <select
         value={status}
-        onChange={e => setStatus(e.target.value)}
+        onChange={(e) => setStatus(e.target.value)}
         className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
       >
         <option value="0">Todos</option>
@@ -429,26 +421,26 @@ return (
       </select>
     </div>
 
-    {/* Fornecedor */}
-    <div>
-      <label className="block text-xs font-semibold text-slate-600 mb-1">
+    <div className="xl:col-span-3">
+      <label className="mb-1 block text-xs font-semibold text-slate-600">
         Fornecedor
       </label>
       <select
         value={fornecedor_id}
-        onChange={e => setFornecedorId(Number(e.target.value))}
+        onChange={(e) => setFornecedorId(Number(e.target.value))}
         className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
       >
         <option value={0}>Todos</option>
-        {fornecedores.map(f => (
-          <option key={f.id} value={f.id}>{f.nome}</option>
+        {fornecedores.map((f) => (
+          <option key={f.id} value={f.id}>
+            {f.nome}
+          </option>
         ))}
       </select>
     </div>
 
-    {/* Conta Bancária */}
-    <div>
-      <label className="block text-xs font-semibold text-slate-600 mb-1">
+    <div className="xl:col-span-3">
+      <label className="mb-1 block text-xs font-semibold text-slate-600">
         Conta bancária
       </label>
       <select
@@ -478,91 +470,52 @@ return (
         className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
       >
         <option value={0}>Selecione...</option>
-        {contas.map(ct => (
-          <option key={ct.id} value={ct.id}>{ct.nome}</option>
+        {contas.map((ct) => (
+          <option key={ct.id} value={ct.id}>
+            {ct.nome}
+          </option>
         ))}
       </select>
     </div>
 
-    {/* Checkbox */}
-    <div className="flex items-center">
-      <label className="flex items-center gap-10 text-sm font-semibold">
+    <div className="flex items-end xl:col-span-4">
+      <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
         <input
           type="checkbox"
           checked={somenteVencidas}
-          onChange={e => setSomenteVencidas(e.target.checked)}
+          onChange={(e) => setSomenteVencidas(e.target.checked)}
         />
         Somente vencidas
       </label>
     </div>
 
-  </div>
+    <div className="flex items-end justify-end gap-3 border-t pt-4 md:col-span-2 xl:col-span-8">
+      <button
+        onClick={pagarSelecionadas}
+        className="btn-pill btn-black whitespace-nowrap"
+      >
+        Pagar selecionadas
+        {selecionadas.length > 0 && (
+          <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
+            {selecionadas.length}
+          </span>
+        )}
+      </button>
 
-  {/* BOTÕES */}
-  <div className="mt-6 flex flex-wrap justify-end gap-3 border-t pt-4">
-    <button
-      onClick={pagarSelecionadas}
-       className="
-              px-5 py-2 rounded-full
-              font-bold text-sm tracking-wide
-              text-white
-              bg-gradient-to-b from-slate-800 to-black
-              border-2 border-black
-              shadow-md
-              hover:brightness-110 hover:scale-105
-              active:scale-95
-              transition-all duration-200
-              inline-flex items-center gap-2
-            "
-           
-    >
-      Pagar selecionadas
-      {selecionadas.length > 0 && (
-        <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
-          {selecionadas.length}
-        </span>
-      )}
-    </button>
- 
- 
-
-      {/* BOTÃO PESQUISAR (só 1 aqui)   */}
-
-          <button
-            onClick={pesquisar}
-            className="
-              px-5 py-2 rounded-full
-              font-bold text-sm tracking-wide
-              text-black
-              bg-gradient-to-b from-[#fff6b0] via-[#f0c419] to-[#b8860b]
-              border-2 border-black
-              shadow-md
-              hover:brightness-110 hover:scale-105
-              active:scale-95
-              transition-all duration-200
-            "
-          >
-            🔎 Pesquisar
-        </button> 
- 
-
-
-
-
-
-
+      <button
+        onClick={pesquisar}
+        className="btn-pill btn-yellow whitespace-nowrap"
+      >
+        🔎 Pesquisar
+      </button>
+    </div>
   </div>
 </details>
 
-
-      {/* CONTA BANCÁRIA */}
-       
-    </div>
-
     {/* TABELA */}
-    <div className="rounded-xl border border-blue-100 bg-white overflow-x-auto">
-      <table className="min-w-full text-sm">
-        <thead className="bg-blue-50 text-blue-900 border-b border-blue-200">
+     <div className="max-h-[720px] overflow-y-auto overflow-x-auto"> 
+      <table className="w-full text-base"> 
+       <thead className="sticky top-0 z-20 bg-slate-800 text-white"> 
           <tr>
             <th className="px-3 py-3">Sel.</th>
             <th className="px-3 py-3 text-left">ID</th>
