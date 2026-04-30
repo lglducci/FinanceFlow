@@ -22,7 +22,7 @@ function BlocoEtapa({
 }) {
   return (
     <div
-      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-300 to-slate-400  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-100 ${className}`}
+      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-200 to-slate-300  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-300 ${className}`}
     >
       <div
         onClick={() => {
@@ -82,10 +82,12 @@ export default function LancamentoRapidoDesktop() {
   const [cartaoSelecionado, setCartaoSelecionado] = useState("");
   const valorRef = useRef(null);
     const descricaoRef = useRef(null);
+ 
     const vencimentoRef = useRef(null);
     const parcelasRef = useRef(null);
     const [idxClassificacao, setIdxClassificacao] = useState(0);
  const contaRef = useRef(null);
+  const fornecedorRef = useRef(null);
   const [form, setForm] = useState({
     empresa_id,
     tipo: "",
@@ -322,7 +324,7 @@ function selecionarForma(forma) {
     if (!formaSelecionada) erros.push("Escolha a forma.");
     if (!form.valor || Number(form.valor) <= 0) erros.push("Informe um valor válido.");
     if (!form.descricao?.trim()) erros.push("Informe a descrição.");
-    if (!form.classificacao) erros.push("Escolha a classificação.");
+   // if (!form.classificacao) erros.push("Escolha a classificação.");
     if (!form.categoria_id) erros.push("Escolha a categoria.");
 
     if (mostrarContaFinanceira && !form.conta_id) erros.push("Escolha a conta financeira.");
@@ -331,6 +333,10 @@ function selecionarForma(forma) {
     if (ehAPrazo && !form.vencimento) erros.push("Informe o vencimento.");
     if ((ehAPrazo || mostrarCartao) && Number(form.parcelas || 0) < 1) {
       erros.push("Informe parcelas válidas.");
+
+    if (ehAPrazo && form.vencimento < (form.data || hojeLocal())) {
+  erros.push("Vencimento não pode ser menor que a data do lançamento.");
+}
     }
 
     return erros;
@@ -376,6 +382,10 @@ function selecionarForma(forma) {
     if (modo === "pagar") endpoint = "novacontapagar";
     if (modo === "cartao_compra") endpoint = "novatranscartao";
 
+      const valorNumerico = Number(
+  String(form.valor).replace(/\./g, "").replace(",", ".")
+);
+
     const payload = {
       empresa_id,
       tipo: form.tipo,
@@ -387,12 +397,12 @@ function selecionarForma(forma) {
       forma_pagamento: form.forma_pagamento || null,
       forma_recebimento: form.forma_recebimento || null,
       vencimento: form.vencimento || null,
-      valor: form.valor,
-      valor_total: form.valor,
+      valor: valorNumerico,
+      valor_total: valorNumerico,
       descricao: form.descricao,
       data: form.data,
       data_compra: form.data,
-      classificacao: form.classificacao,
+      classificacao: form.tipo === "entrada" ? "receita" : "despesa",
       origem: "WebApp",
       parcelas: Number(form.parcelas || 1),
       parcela_num: 1,
@@ -437,7 +447,7 @@ useEffect(() => {
   return (
     
   <div className="min-h-screen  bg-gradient-to-br from-slate-300 via-blue-50 to-purple-100 px-3 py-5">
-  <div className="mx-auto w-full max-w-[690px] rounded-[34px] bg-gradient-to-br from-slate-500 via-slate-600 to-purple-750 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
+  <div className="mx-auto w-full max-w-[490px] rounded-[14px] bg-gradient-to-br from-slate-300 via-slate-600 to-purple-450 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
@@ -445,7 +455,7 @@ useEffect(() => {
             </h1>
 
             <div className="mt-2 inline-flex rounded-full bg-slate-900/40 px-3 py-1 text-[16px] font-medium text-slate-300">
-                Dica: use Tab para navegar
+                Dica: use Enter para navegar
                 </div>
             <p className="text-xs text-slate-500">
               Fluxo simples, passo a passo.
@@ -482,7 +492,7 @@ useEffect(() => {
                 onClick={() => selecionarTipo("entrada")}
                 className="flex flex-col items-center gap-2"
                 >
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(16,185,129,0.4)] active:scale-90 transition">
+                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(16,185,129,0.4)] active:scale-90 transition">
                     ↑
                 </div>
                 <span className="text-sm font-bold text-slate-200">Entrada</span>
@@ -493,7 +503,7 @@ useEffect(() => {
                     onClick={() => selecionarTipo("saida")}
                     className="flex flex-col items-center gap-2"
                     >
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-red-400 to-red-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(239,68,68,0.4)] active:scale-90 transition">
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(239,68,68,0.4)] active:scale-90 transition">
                         ↓
                     </div>
                     <span className="text-sm font-bold text-slate-200">Saída</span>
@@ -519,7 +529,7 @@ useEffect(() => {
                             flex flex-col items-center justify-center
                             gap-1
                             rounded-2xl
-                            px-3 py-3
+                            px-1 py-1
                             text-xs font-semibold
                             transition-all duration-200
                             active:scale-95
@@ -548,29 +558,50 @@ useEffect(() => {
             onAbrir={setEtapaAberta}
              onFocusCampo={() => valorRef.current?.focus()}
             >
-              <input
-                ref={valorRef}
-                type="number"
-                name="valor"
-                value={form.valor}
-                onChange={handleChange}
-                placeholder="0,00"
-                className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-              />
+             <input
+              ref={valorRef}
+              type="text"
+              inputMode="decimal"
+              name="valor"
+              value={form.valor}
+              onChange={(e) => {
+                let valor = e.target.value;
 
-             <button
-                type="button"
-                onClick={() => {
-                    irPara("descricao");
+                valor = valor
+                  .replace(/\D/g, "")
+                  .replace(/^0+/, "");
 
-                    setTimeout(() => {
-                    descricaoRef.current?.focus();
-                    }, 150);
-                }}
-                className="mt-4 w-full rounded-[22px] bg-purple-600 px-4 py-4 text-sm font-black text-white shadow-lg transition-all active:scale-95"
-                >
-                Continuar
-                </button>
+                if (!valor) valor = "0";
+
+                const numero = (Number(valor) / 100).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+
+                setForm((prev) => ({
+                  ...prev,
+                  valor: numero,
+                }));
+              }}
+              onFocus={() => {
+                if (!form.valor) {
+                  setForm((prev) => ({ ...prev, valor: "0,00" }));
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+
+                  if (!form.valor || form.valor === "0,00") return;
+
+                  irPara("descricao");
+                  setTimeout(() => descricaoRef.current?.focus(), 150);
+                }
+              }}
+              placeholder="0,00"
+              className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-right text-xl font-bold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+            />
+             
             </BlocoEtapa>
           )}
 
@@ -582,32 +613,28 @@ useEffect(() => {
                onFocusCampo={() => descricaoRef.current?.focus()}>
             
               <input
-                type="text"
                   ref={descricaoRef}
-                name="descricao"
-                value={form.descricao}
-                onChange={handleChange}
-                placeholder="Ex: mercado, venda, aluguel..."
-                className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-              />
-
-              <button
-                type="button"
-                onClick={() => {
-                    irPara("classificacao");
-
-                    setTimeout(() => {
-                    classificacaoRef.current?.focus();
-                    }, 150);
-                }}
-                className="mt-4 w-full rounded-[22px] bg-purple-600 px-4 py-4 text-sm font-black text-white shadow-lg transition-all active:scale-95"
-                >
-                Continuar
-                </button>
+                  type="text"
+                  name="descricao"
+                  value={form.descricao}
+                  onChange={handleChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      if (!form.descricao?.trim()) return;
+                      irPara("categoria");
+                      setTimeout(() => categoriaRef.current?.focus(), 150);
+                      
+                    }
+                  }}
+                  placeholder="Ex: mercado, venda, aluguel..."
+                   className="w-full rounded-[10px] border border-slate-200 bg-white px-1 py-1 text-lg font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                />
+ 
             </BlocoEtapa>
           )}
 
-          {form.descricao && (
+        {/*}  {form.descricao && (
         <BlocoEtapa
             id="classificacao"
             titulo="5. Classificação"
@@ -627,6 +654,10 @@ useEffect(() => {
                     setIdxClassificacao((prev) =>
                         Math.min(prev + 1, classificacoes.length - 1)
                     );
+                      irPara("categoria");
+                                        setTimeout(() => {
+                      categoriaRef.current?.focus();
+                    }, 150);
                     }
 
                     if (e.key === "ArrowUp") {
@@ -637,11 +668,18 @@ useEffect(() => {
                     if (e.key === "Enter") {
                     setForm((prev) => ({ ...prev, classificacao: c.value }));
                     irPara("categoria");
+                                        setTimeout(() => {
+                      categoriaRef.current?.focus();
+                    }, 150);
                     }
                 }}
                 onClick={() => {
                     setForm((prev) => ({ ...prev, classificacao: c.value }));
                     irPara("categoria");
+
+                    setTimeout(() => {
+                      categoriaRef.current?.focus();
+                    }, 150);
                 }}
                 className={`w-full rounded-xl border px-3 py-3 text-left text-sm font-bold ${
                     form.classificacao === c.value
@@ -654,12 +692,12 @@ useEffect(() => {
             ))}
             </div>
         </BlocoEtapa>
-        )}
+        )}*/}
 
-          {form.classificacao && (
+          {form.descricao && (
                <BlocoEtapa
                 id="categoria"
-                titulo="6. Categoria"
+                titulo="5. Categoria"
                 resumo={nomeCategoria()}
                 aberto={etapaAberta === "categoria"}
                 onAbrir={setEtapaAberta}
@@ -671,31 +709,40 @@ useEffect(() => {
                         name="categoria_id"
                         value={form.categoria_id}
                         onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                            e.preventDefault();
+                              if (e.key === "Enter") {
+                                e.preventDefault();
 
-                            if (!form.categoria_id) return;
+                                const categoriaId = e.currentTarget.value;
+                                if (!categoriaId) return;
 
-                            const proxima = proximaDepoisCategoria();
-                            setEtapaAberta(proxima);
+                                setForm((prev) => ({
+                                  ...prev,
+                                  categoria_id: categoriaId,
+                                }));
 
-                            setTimeout(() => {
-                                if (proxima === "conta") contaRef.current?.focus();
-                            }, 150);
-                            }
-                        }}
-                        onChange={(e) => {
+                                const proxima = proximaDepoisCategoria();
+                                setEtapaAberta(proxima);
+
+                                setTimeout(() => {
+                                  if (proxima === "conta") contaRef.current?.focus();
+                                  if (proxima === "fornecedor") fornecedorRef.current?.focus();
+                                  if (proxima === "cartao") cartaoRef.current?.focus();
+                                }, 150);
+                              }
+                            }}
+                          onChange={(e) => {
                             if (e.target.value === "__nova__") {
-                            setModalCategoria(true);
-                            return;
+                              setModalCategoria(true);
+                              return;
                             }
 
                             setForm((prev) => ({
-                            ...prev,
-                            categoria_id: e.target.value,
+                              ...prev,
+                              categoria_id: e.target.value,
                             }));
-                        }}
-                        className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                          }}
+                     
+                        className="w-full rounded-[22px] border border-slate-200 bg-white px-1 py-1 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
                         >
                   <option value="">Selecione</option>
                   {categorias.map((c) => (
@@ -706,22 +753,22 @@ useEffect(() => {
                   <option value="__nova__">➕ Nova Categoria</option>
                 </select>
 
-                <button
+               {/*} <button
                   type="button"
                   tabIndex={-1}
                   onClick={() => setModalCategoria(true)}
                   className="rounded-xl bg-blue-900 px-3 font-bold text-white"
                 >
                   +
-                </button>
+                </button>*/}
               </div>
             </BlocoEtapa>
-          )}
+          )} 
 
           {form.categoria_id && mostrarContaFinanceira && (
               <BlocoEtapa
                 id="conta"
-                titulo="7. Conta Financeira"
+                titulo="6. Conta Financeira"
                 resumo={nomeConta()}
                 aberto={etapaAberta === "conta"}
                 onAbrir={setEtapaAberta}
@@ -751,7 +798,7 @@ useEffect(() => {
                             conta_id: e.target.value,
                             }));
                         }}
-                        className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                        className="w-full rounded-[22px] border border-slate-200 bg-white px-1 py-1 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
                         >
                   <option value="">Selecione</option>
                   {contas.map((c) => (
@@ -762,24 +809,20 @@ useEffect(() => {
                   <option value="__nova__">➕ Nova Conta Financeira</option>
                 </select>
 
-                <button
-                  type="button"
-                  onClick={() => setModalConta(true)}
-                  className="rounded-xl bg-blue-900 px-3 font-bold text-white"
-                >
-                  +
-                </button>
+                
               </div>
             </BlocoEtapa>
           )}
 
           {form.categoria_id && mostrarCartao && (
-            <BlocoEtapa id="cartao" titulo="7. Cartão" resumo={cartaoSelecionado} 
+            <BlocoEtapa id="cartao" titulo="6. Cartão" resumo={cartaoSelecionado} 
             aberto={etapaAberta === "cartao"}
              onAbrir={setEtapaAberta}>
+                 
               <div className="flex gap-2">
                  <select
                     value={cartaoSelecionado}
+                    
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                         e.preventDefault();
@@ -792,7 +835,7 @@ useEffect(() => {
                     onChange={(e) => {
                         setCartaoSelecionado(e.target.value);
                     }}
-                    className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                    className="w-full rounded-[22px] border border-slate-200 bg-white px-1 py-1 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
                     >
                   <option value="">Selecione</option>
                   {cartoes.map((c) => (
@@ -805,7 +848,7 @@ useEffect(() => {
                 <button
                   type="button"
                   onClick={() => setModalCartao(true)}
-                  className="rounded-xl bg-blue-900 px-3 font-bold text-white"
+                  className="rounded-xl bg-blue-900 px-2 font-bold text-white"
                 >
                   +
                 </button>
@@ -814,34 +857,44 @@ useEffect(() => {
           )}
 
           {form.categoria_id && precisaFornecedor && !mostrarCartao && (
-            <BlocoEtapa id="fornecedor" titulo="7. Fornecedor / Cliente" resumo={nomeFornecedor()}
-            aberto={etapaAberta === "fornecedor"}
-            onAbrir={setEtapaAberta}>
+            <BlocoEtapa
+              id="fornecedor"
+              titulo="6. Fornecedor / Cliente"
+              resumo={nomeFornecedor()}
+              aberto={etapaAberta === "fornecedor"}
+              onAbrir={setEtapaAberta}
+              onFocusCampo={() => fornecedorRef.current?.focus()}
+            >
               <div className="flex gap-2">
-                   <select
-                        value={String(form.fornecedor_id || "")}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                            e.preventDefault();
+                <select
+                  ref={fornecedorRef}
+                  value={String(form.fornecedor_id || "")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
 
-                            if (!form.fornecedor_id) return;
+                      if (!form.fornecedor_id) return;
 
-                            irPara(ehAPrazo ? "prazo" : "revisao");
-                            }
-                        }}
-                        onChange={(e) => {
-                            if (e.target.value === "__novo__") {
-                            setModalFornecedor(true);
-                            return;
-                            }
+                      irPara(ehAPrazo ? "prazo" : "revisao");
 
-                            setForm((prev) => ({
-                            ...prev,
-                            fornecedor_id: e.target.value,
-                            }));
-                        }}
-                        className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-                        >
+                      setTimeout(() => {
+                        if (ehAPrazo) vencimentoRef.current?.focus();
+                      }, 150);
+                    }
+                  }}
+                  onChange={(e) => {
+                    if (e.target.value === "__novo__") {
+                      setModalFornecedor(true);
+                      return;
+                    }
+
+                    setForm((prev) => ({
+                      ...prev,
+                      fornecedor_id: e.target.value,
+                    }));
+                  }}
+                  className="w-full rounded-[22px] border border-slate-200 bg-white px-1 py-1 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                >
                   <option value="">Selecione</option>
                   {fornecedores.map((f) => (
                     <option key={f.id} value={String(f.id)}>
@@ -850,14 +903,6 @@ useEffect(() => {
                   ))}
                   <option value="__novo__">➕ Novo Fornecedor / Cliente</option>
                 </select>
-
-                <button
-                  type="button"
-                  onClick={() => setModalFornecedor(true)}
-                  className="rounded-xl bg-blue-900 px-3 font-bold text-white"
-                >
-                  +
-                </button>
               </div>
             </BlocoEtapa>
           )}
@@ -865,19 +910,29 @@ useEffect(() => {
           {form.categoria_id && ehAPrazo && (
             <BlocoEtapa
               id="prazo"
-              titulo="8. Vencimento / Parcelas"
+              titulo="7. Vencimento / Parcelas"
               resumo={`${form.vencimento} | ${form.parcelas} parcela(s)`}
              aberto={etapaAberta === "prazo"}
-               onAbrir={setEtapaAberta} >
+               onAbrir={setEtapaAberta} 
+                   onFocusCampo={() => vencimentoRef.current?.focus()} >
               {!mostrarCartao && (
                 <div className="mb-3">
                   <label className="text-xs font-bold text-slate-600">Vencimento</label>
                   <input
                     type="date"
                     name="vencimento"
+                    ref={vencimentoRef}
                     value={form.vencimento}
-                    onChange={handleChange}
-                   className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                    min={form.data || hojeLocal()}
+                    onChange={(e) => {
+                      if (e.target.value < (form.data || hojeLocal())) {
+                        alert("Vencimento não pode ser menor que a data do lançamento.");
+                        return;
+                      }
+
+                      handleChange(e);
+                    }}
+                    className="w-full rounded-[22px] border border-slate-200 bg-white px-1 py-1 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
                   />
                 </div>
               )}
@@ -890,14 +945,14 @@ useEffect(() => {
                   min="1"
                   value={form.parcelas}
                   onChange={handleChange}
-                  className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                  className="w-full rounded-[22px] border border-slate-200 bg-white px-1 py-1 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={() => irPara("revisao")}
-               className="mt-4 w-full rounded-[22px] bg-purple-600 px-4 py-4 text-sm font-black text-white shadow-lg transition-all active:scale-95"
+               className="mt-4 w-full rounded-[22px] bg-purple-600 px-1 py-1 text-sm font-black text-white shadow-lg transition-all active:scale-95"
               >
                 Continuar
               </button>
@@ -926,7 +981,7 @@ useEffect(() => {
                 type="button"
                 onClick={salvar}
                 disabled={salvando}
-                className="mt-4 w-full rounded-2xl bg-emerald-600 px-4 py-4 text-base font-black text-white shadow-lg disabled:opacity-60"
+                className="mt-4 w-full rounded-2xl bg-emerald-600 px-1 py-1 text-base font-black text-white shadow-lg disabled:opacity-60"
               >
                 {salvando ? "Salvando..." : "Salvar lançamento"}
               </button>

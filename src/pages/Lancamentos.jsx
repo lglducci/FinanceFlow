@@ -619,7 +619,7 @@ useEffect(() => {
   }
 }, [dataIni, dataFim]);
 
- async function excluir(compra) {
+ async function excluirCompra(compra_id) {
   if (!window.confirm("Excluir compra do cartão?")) return;
 
   try {
@@ -631,7 +631,7 @@ useEffect(() => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           empresa_id: empresa_id,
-          compra_id: compra.id
+          compra_id: compra_id
         })
       }
     );
@@ -891,6 +891,71 @@ function corBotaoSelecionado() {
   return tipoOperacao !== "estorno" && tipoOperacao !== "cartao_compra";
 }
 
+async function excluirPagar(id) {
+    if (!confirm("Confirmar exclusão?")) return;
+
+    try {
+      const url = buildWebhookUrl("exclui_conta_pagar"); // <<< trocar pelo webhook real
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, empresa_id }),
+      });
+
+      const texto = await resp.text();
+      let json = {};
+
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      if (texto.includes("foreign key") || texto.includes("violates")) {
+        alert("Não é possível excluir: esta conta possui vínculos.");
+        return;
+      }
+
+      alert(json?.message || "Excluído com sucesso!");
+ 
+      pesquisar(tipoOperacao || "");
+    } catch (e) {
+      console.log("ERRO EXCLUIR:", e);
+      alert("Erro ao excluir");
+    }
+  }
+
+
+  async function excluirReceber(id) {
+    if (!confirm("Confirmar exclusão?")) return;
+
+    try {
+      const url = buildWebhookUrl("exclui_conta_receber"); // <<< trocar pelo webhook real
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, empresa_id }),
+      });
+
+      const texto = await resp.text();
+      let json = {};
+
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      if (texto.includes("foreign key") || texto.includes("violates")) {
+        alert("Não é possível excluir: esta conta possui vínculos.");
+        return;
+      }
+
+      alert(json?.message || "Excluído com sucesso!");
+        pesquisar(tipoOperacao || "");
+    } catch (e) {
+      console.log("ERRO EXCLUIR:", e);
+      alert("Erro ao excluir");
+    }
+  }
 
 
 function labelBotaoPorTipo(tipo) {
@@ -918,6 +983,21 @@ function labelBotaoPorTipo(tipo) {
   }
 }
 
+
+function excluir(id, tipo_operacao) {
+  if (tipo_operacao === "conta_pagar") {
+    return excluirPagar(id);
+  }
+
+  if (tipo_operacao === "conta_receber") {
+    return excluirReceber(id);
+  }
+
+  if (tipo_operacao === "cartao_compra") {
+    return excluirCompra(id);
+  }
+}
+ 
 
 return (
   <div className="p-4 space-y-4">
@@ -1195,7 +1275,7 @@ return (
                       }}
                       className="btn-pill btn-green"
                     >
-                      📥 Contas a Receber
+                      📥  A Receber
                     </button>
 
                     <button
@@ -1208,7 +1288,7 @@ return (
                           }}
                       className="btn-pill btn-red"
                     >
-                      📤 Contas a Pagar
+                      📤 A Pagar
                     </button>
 
                     <button
@@ -1235,7 +1315,7 @@ return (
                           }}
                       className="btn-pill btn-purple"
                     >
-                      💳 Fatura Cartão
+                      💳 Faturas
                     </button>
                  
 
@@ -1250,7 +1330,7 @@ return (
                           }}
                       className="btn-pill btn-blue"
                     >
-                      ⏰ Vence Hoje
+                      ⏰ Vencimentos
                     </button>
                        
                        <button
@@ -1277,7 +1357,7 @@ return (
                           }}
                       className="btn-pill btn-gray"
                     >
-                      📅 Vence Sete Dias
+                      📅 Vence 7 Dias
                     </button>
 
                          <button
@@ -1304,7 +1384,7 @@ return (
                           }}
                       className="btn-pill btn-purple"
                     >
-                      ✅ Titulos Baixados
+                      ✅ Baixados
                     </button>
                     
 
@@ -1375,6 +1455,7 @@ return (
               {temTransacao && (
                  <>  <th className="px-3 py-2 text-right"> Estorno</th> </> )}
                 <th className="px-3 py-2 text-left "> Tipo Evento</th>
+                 <th className="px-3 py-2 text-left "> Ação</th>
               
             </tr>
           </thead>  
@@ -1577,13 +1658,28 @@ return (
                         )}*/}
         
 
-                    {l.tipo_operacao === "cartao_compra" && (
-                    <button
-                      onClick={() =>  excluir(l)} 
-                      className="text-red-600 hover:underline font-semibold"
-                     
+                    {["cartao_compra", "conta_pagar", "conta_receber"].includes(l.tipo_operacao) && (
+                      <button
+                      onClick={() => {
+                        if (
+                          (l.tipo_operacao === "conta_pagar" && l.status === "pago") ||
+                          (l.tipo_operacao === "conta_receber" && l.status === "recebido")
+                        ) return;
+
+                        excluir(l.id,l.tipo_operacao);
+                      }}
+                      disabled={
+                        (l.tipo_operacao === "conta_pagar" && l.status === "pago") ||
+                        (l.tipo_operacao === "conta_receber" && l.status === "recebido")
+                      }
+                      className={
+                        (l.tipo_operacao === "conta_pagar" && l.status === "pago") ||
+                        (l.tipo_operacao === "conta_receber" && l.status === "recebido")
+                          ? "text-gray-400 cursor-not-allowed font-semibold"
+                          : "text-red-600 hover:underline font-semibold"
+                      }
                     >
-                      Excluir  
+                      Excluir
                     </button>
                   )}
 

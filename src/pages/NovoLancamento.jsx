@@ -68,6 +68,8 @@ const [contasCredito, setContasCredito] = useState([]);
   
   const [resultadoBusca, setResultadoBusca] = useState([]); // contas retornadas
   const [modeloSelecionado, setModeloSelecionado] = useState(null);
+
+ 
   async function buscarContas(linha, texto) {
       if (!texto || texto.length < 2) {
         setResultadoBusca([]);
