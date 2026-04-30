@@ -77,14 +77,12 @@ function podeVer(menuKey) {
        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold">
  
         {podeVer("visao_geral") && (
-           <MenuItem icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboard")} />
+           <MenuItem icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboardfinanceiro")} />
            
         )}
          
 
-         
-        {podeVer("visao_geral") && ( <MenuItem icon={<IconHome />} label="DashBoard Financeiro 2" onClick={() => navigate("/dashboardfinanceiro")} />
-          )}
+          
           <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
           
           {podeVer("visao_geral") && (
@@ -93,19 +91,20 @@ function podeVer(menuKey) {
            label="Movimentacoes"
            open={open === "financeiro"}
            onClick={() => toggle("financeiro")}
-         > 
+         >  
+
+           
+           <SubItem icon={<IconDoc />} label="Lançamentos rápidos" onClick={() => navigate("/lancamento-rapido")}  />
            <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
-         {/*}  <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
-           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />
-           <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
-           <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
-           <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} />
-           <SubItem icon={<IconBook />} label="Receita Rapida" onClick={() => navigate("/registrareceitarapida")} />  */}
+             <SubItem icon={<IconDoc />} label="Importação Bancária" onClick={() => navigate("/importacao-bancaria")}  />
+              <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
+           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
+           <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
          </MenuGroup>
          )}
 
 
-        {podeVer("visao_geral") && (
+       {/*} {podeVer("visao_geral") && (
          <MenuGroup
            icon={<IconMoney />}
            label="Contas"
@@ -116,7 +115,7 @@ function podeVer(menuKey) {
            <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
            <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
          </MenuGroup>
-         )}
+         )}*/}
 
          {podeVer("visao_geral") && (
          <MenuGroup
