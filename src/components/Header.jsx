@@ -2,6 +2,7 @@
 import { buildWebhookUrl } from "../config/globals";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 export default function Header() {
   const { empresa, usuario, documento, tipo, email, loading, perfil } = useApp();
@@ -22,10 +23,17 @@ export default function Header() {
       const data = await resp.json();
       const item = Array.isArray(data) ? data[0] : data;
 
-      const hoje = new Date().toISOString().slice(0, 10);
+      const hoje =  hojeLocal();
+
       const ultimoProcessado = item?.ultimo_dia_processado
       ? item.ultimo_dia_processado.slice(0, 10)
       : null;
+
+      const data_reprocessamento  = item?.reprocessar
+      ? item.reprocessar.slice(0, 10)
+      : null;
+
+
 
     if (perfil === "CONTABIL") {
       setAlertaContabil(null);
@@ -33,7 +41,7 @@ export default function Header() {
     }
 
     if (
-      item?.data_reprocessar_de ||
+      item?.data_reprocessar_de  ||
       (ultimoProcessado && ultimoProcessado < hoje)
     ) {
       setAlertaContabil(item);
@@ -73,7 +81,7 @@ export default function Header() {
   return (
     <>
       {alertaContabil && (
-        <div className="bg-yellow-300 text-red-800 font-bold text-center py-2 px-4">
+        <div className="bg-yellow-100 text-red-600 font-bold text-center py-2 px-4">
           ⚠️ ATENÇÃO: Existem lançamentos não processados até{" "}
           {formatarDataBR(
             alertaContabil.data_reprocessar_de ||
