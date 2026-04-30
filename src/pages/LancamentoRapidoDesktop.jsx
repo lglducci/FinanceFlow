@@ -78,7 +78,7 @@ export default function LancamentoRapidoDesktop() {
   const [modalConta, setModalConta] = useState(false);
   const [modalFornecedor, setModalFornecedor] = useState(false);
   const [modalCartao, setModalCartao] = useState(false);
-
+ const tipoRef = useRef(null);
   const [cartaoSelecionado, setCartaoSelecionado] = useState("");
   const valorRef = useRef(null);
     const descricaoRef = useRef(null);
@@ -413,6 +413,9 @@ function selecionarForma(forma) {
       setMensagem("✅ Lançamento salvo com sucesso.");
       window.dispatchEvent(new Event("contabil-atualizado"));
       limparFormulario();
+      setTimeout(() => {
+        tipoRef.current?.focus();
+        }, 150);
 
       setTimeout(() => setMensagem(""), 5000);
     } catch (err) {
@@ -426,6 +429,9 @@ function selecionarForma(forma) {
   classificacaoRef.current?.focus();
 }, [idxClassificacao]);
  
+useEffect(() => {
+  tipoRef.current?.focus();
+}, []);
  
 
   return (
@@ -437,6 +443,10 @@ function selecionarForma(forma) {
             <h1 className="text-xl font-black text-slate-900">
               ⚡ Lançamento Rápido
             </h1>
+
+            <div className="mt-2 inline-flex rounded-full bg-slate-900/40 px-3 py-1 text-[16px] font-medium text-slate-300">
+                Dica: use Tab para navegar
+                </div>
             <p className="text-xs text-slate-500">
               Fluxo simples, passo a passo.
             </p>
@@ -468,6 +478,7 @@ function selecionarForma(forma) {
             <div className="flex gap-4 justify-center">
                <button
                 type="button"
+                 ref={tipoRef}
                 onClick={() => selecionarTipo("entrada")}
                 className="flex flex-col items-center gap-2"
                 >
@@ -655,32 +666,37 @@ function selecionarForma(forma) {
                 onFocusCampo={() => categoriaRef.current?.focus()}
                 >
               <div className="flex gap-2">
-                 <select
-                    ref={categoriaRef}
-                    name="categoria_id"
-                    value={form.categoria_id}
-                    onChange={(e) => {
-                        if (e.target.value === "__nova__") {
+                  <select
+                        ref={categoriaRef}
+                        name="categoria_id"
+                        value={form.categoria_id}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                            e.preventDefault();
+
+                            if (!form.categoria_id) return;
+
+                            const proxima = proximaDepoisCategoria();
+                            setEtapaAberta(proxima);
+
+                            setTimeout(() => {
+                                if (proxima === "conta") contaRef.current?.focus();
+                            }, 150);
+                            }
+                        }}
+                        onChange={(e) => {
+                            if (e.target.value === "__nova__") {
                             setModalCategoria(true);
                             return;
-                        }
+                            }
 
-                        const valor = e.target.value;
-                        const proxima = proximaDepoisCategoria();
-
-                        setForm((prev) => ({
+                            setForm((prev) => ({
                             ...prev,
-                            categoria_id: valor,
-                        }));
-
-                        setEtapaAberta(proxima);
-
-                        setTimeout(() => {
-                            if (proxima === "conta") contaRef.current?.focus();
-                        }, 200);
+                            categoria_id: e.target.value,
+                            }));
                         }}
-                    className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-                    >
+                        className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                        >
                   <option value="">Selecione</option>
                   {categorias.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -692,6 +708,7 @@ function selecionarForma(forma) {
 
                 <button
                   type="button"
+                  tabIndex={-1}
                   onClick={() => setModalCategoria(true)}
                   className="rounded-xl bg-blue-900 px-3 font-bold text-white"
                 >
@@ -711,20 +728,31 @@ function selecionarForma(forma) {
                 onFocusCampo={() => contaRef.current?.focus()}
                 >
               <div className="flex gap-2">
-                  <select
-                    ref={contaRef}
-                    value={String(form.conta_id || "")}
-                    onChange={(e) => {
-                        if (e.target.value === "__nova__") {
-                        setModalConta(true);
-                        return;
-                        }
+                    <select
+                        ref={contaRef}
+                        value={String(form.conta_id || "")}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                            e.preventDefault();
 
-                        setForm((prev) => ({ ...prev, conta_id: e.target.value }));
-                        irPara("revisao");
-                    }}
-                    className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-                    >
+                            if (!form.conta_id) return;
+
+                            irPara("revisao");
+                            }
+                        }}
+                        onChange={(e) => {
+                            if (e.target.value === "__nova__") {
+                            setModalConta(true);
+                            return;
+                            }
+
+                            setForm((prev) => ({
+                            ...prev,
+                            conta_id: e.target.value,
+                            }));
+                        }}
+                        className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                        >
                   <option value="">Selecione</option>
                   {contas.map((c) => (
                     <option key={c.id} value={String(c.id)}>
@@ -750,14 +778,22 @@ function selecionarForma(forma) {
             aberto={etapaAberta === "cartao"}
              onAbrir={setEtapaAberta}>
               <div className="flex gap-2">
-                <select
-                  value={cartaoSelecionado}
-                  onChange={(e) => {
-                    setCartaoSelecionado(e.target.value);
-                    irPara("prazo");
-                  }}
-                 className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-                >
+                 <select
+                    value={cartaoSelecionado}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                        e.preventDefault();
+
+                        if (!cartaoSelecionado) return;
+
+                        irPara("prazo");
+                        }
+                    }}
+                    onChange={(e) => {
+                        setCartaoSelecionado(e.target.value);
+                    }}
+                    className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                    >
                   <option value="">Selecione</option>
                   {cartoes.map((c) => (
                     <option key={c.id} value={c.nome}>
@@ -782,19 +818,30 @@ function selecionarForma(forma) {
             aberto={etapaAberta === "fornecedor"}
             onAbrir={setEtapaAberta}>
               <div className="flex gap-2">
-                <select
-                  value={String(form.fornecedor_id || "")}
-                  onChange={(e) => {
-                    if (e.target.value === "__novo__") {
-                      setModalFornecedor(true);
-                      return;
-                    }
+                   <select
+                        value={String(form.fornecedor_id || "")}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                            e.preventDefault();
 
-                    setForm((prev) => ({ ...prev, fornecedor_id: e.target.value }));
-                    irPara(ehAPrazo ? "prazo" : "revisao");
-                  }}
-                   className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-                >
+                            if (!form.fornecedor_id) return;
+
+                            irPara(ehAPrazo ? "prazo" : "revisao");
+                            }
+                        }}
+                        onChange={(e) => {
+                            if (e.target.value === "__novo__") {
+                            setModalFornecedor(true);
+                            return;
+                            }
+
+                            setForm((prev) => ({
+                            ...prev,
+                            fornecedor_id: e.target.value,
+                            }));
+                        }}
+                        className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-base font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                        >
                   <option value="">Selecione</option>
                   {fornecedores.map((f) => (
                     <option key={f.id} value={String(f.id)}>
