@@ -17,6 +17,7 @@ import TesteEcharts from "./pages/TesteEcharts";
 
 import Dashboard from "./pages/Dashboard";
 
+import ImportacaoBancaria from "./pages/ImportacaoBancaria";
 
 import DashboardFinanceiro from "./pages/DashboardFinanceiro";
 
@@ -151,6 +152,12 @@ import AjudaRelatorios from "./pages/ajuda/Relatorios";
  import CalculadoraGerencial from "./pages/CalculadoraGerencial";
 
  import RelatorioDreGerencial from "./pages/RelatorioDreGerencial";
+import ConciliacaoExplicacao  from "./pages/ConciliacaoExplicacao";
+import ConciliacaoRevisao     from "./pages/ConciliacaoRevisao";
+
+import  LancamentoRapido from "./pages/LancamentoRapido";
+
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -432,8 +439,13 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 <Route path="/reldregerencial" element={<RelatorioDreGerencial />} />
   <Route path="/dashboardfinanceiro" element={<DashboardFinanceiro />} />
 
- <Route path="/teste-echarts" element={<TesteEcharts />} />
+ <Route path="/importacao-bancaria" element={<ImportacaoBancaria />} />
 
+ <Route path="/conciliacao-explicacao" element={<ConciliacaoExplicacao />} />
+ <Route path="/conciliacao-revisao" element={<ConciliacaoRevisao />} />
+ 
+ <Route path="/lancamento-rapido" element={<LancamentoRapido />} />
+ 
 </Routes>
 
  
