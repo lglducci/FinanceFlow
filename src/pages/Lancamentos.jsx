@@ -42,6 +42,16 @@ const [fornecedores, setFornecedores] = useState([]);
   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 const [tipoOperacao, setTipoOperacao] = useState("");
 const [busca, setBusca] = useState("");
+const [msgEstorno, setMsgEstorno] = useState("");
+const [piscarBotaoAcao, setPiscarBotaoAcao] = useState(false);
+
+function chamarAtencaoBotaoAcao() {
+  setPiscarBotaoAcao(true);
+
+  setTimeout(() => {
+    setPiscarBotaoAcao(false);
+  }, 1000);
+}
 
  function formatarDataBR(data) {
   if (!data) return "-";
@@ -150,6 +160,14 @@ useEffect(() => {
 }, [dataIni, dataFim, contaId]);*/}
 
 
+function mostrarMensagemTela(mensagem, tempo = 20000) {
+  setMsgEstorno(mensagem);
+
+  setTimeout(() => {
+    setMsgEstorno("");
+  }, tempo);
+}
+
  async function carregarContas() {
   try {
     const url = buildWebhookUrl("listacontas", { empresa_id });
@@ -180,7 +198,7 @@ useEffect(() => {
 
   tipo = tipo || "";
 
-  
+      setSelecionados([]);
 
   // REGRA PARA VENCIDOS
   let dataIniLocal = dataIni;
@@ -502,6 +520,9 @@ async function Estornar(id) {
      //wait carregarSaldoConta(contaId);
         setRefreshKey(prev => prev + 1);
         alert("Lancamento estornado com sucesso!"); 
+
+        
+
            window.dispatchEvent(new Event("contabil-atualizado"));
         return;
       }
@@ -563,7 +584,7 @@ async function executarTitulos(titulos, conta_id) {
       alert(data?.message || "Erro ao executar títulos.");
       return;
     }
-
+ 
     alert("Processado com sucesso!");
     setSelecionados([]);
     window.dispatchEvent(new Event("contabil-atualizado"));
@@ -788,6 +809,10 @@ async function estornarSelecionados(itens) {
     }
 
     alert("Estorno realizado com sucesso!");
+ 
+   mostrarMensagemTela(  "Operação excluída com sucesso. Quando o estorno é feito no mesmo dia, ele não gera movimentação financeira adicional.",10000);
+           
+
     setSelecionados([]);
     window.dispatchEvent(new Event("contabil-atualizado"));
     pesquisar(tipoOperacao || "");
@@ -819,19 +844,89 @@ async function estornarSelecionados(itens) {
     case "vencidos":
     case "vence_hoje":
     case "vence_sete_dias":
-      return `Executar Selecionados${sufixo}`;
+      return `Baixar Selecionados${sufixo}`;
 
     default:
-      return `Executar Selecionados${sufixo}`;
+      return `Baixar Selecionados${sufixo}`;
   }
 }
+
+
+function corBotaoSelecionado() {
+  switch ((tipoOperacao || "").trim()) {
+    case "transacao":
+      return "btn-yellow";
+
+    case "conta_receber":
+      return "btn-emerald";
+
+    case "conta_pagar":
+      return "btn-red";
+
+    case "fatura_cartao":
+      return "btn-blue";
+
+    case "vence_hoje":
+      return "btn-blue";
+
+    case "vencidos":
+      return "btn-red";
+
+    case "vence_sete_dias":
+      return "btn-gray";
+
+    case "estorno":
+      return "btn-red";
+
+    case "titulos_pagos":
+      return "btn-purple";
+
+    default:
+      return "btn-gray";
+  }
+}
+ 
 
  function permiteSelecao() {
   return tipoOperacao !== "estorno" && tipoOperacao !== "cartao_compra";
 }
 
+
+
+function labelBotaoPorTipo(tipo) {
+  switch ((tipo || "").trim()) {
+    case "transacao":
+    case "titulos_pagos":
+      return "Estornar Selecionados";
+
+    case "conta_pagar":
+      return "Pagar Seleção";
+
+    case "conta_receber":
+      return "Receber Seleção";
+
+    case "fatura_cartao":
+      return "Pagar Faturas";
+
+    case "vencidos":
+    case "vence_hoje":
+    case "vence_sete_dias":
+      return "Baixar Selecionados";
+
+    default:
+      return "Baixar Selecionados";
+  }
+}
+
+
 return (
   <div className="p-4 space-y-4">
+
+    {msgEstorno && (
+  <div className="mb-4 rounded-xl border border-amber-400 bg-amber-150 px-5 py-3 text-base font-bold text-amber-800 shadow-sm">
+    {msgEstorno}
+  </div>
+)}
 
     {mostrarAlerta && (
   <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-yellow-100 text-red px-6 py-3 rounded shadow-lg animate-bounce z-50">
@@ -861,7 +956,7 @@ return (
     </p>
   </div>
 
-  <div className="flex gap-4 text-sm font-semibold">
+  <div className="flex gap-4 text-base font-semibold">
          <p className="text-sm text-gray-500 mt-30">
           ℹ️ Transações já estornadas ou estornos não podem ser estornados novamente.
         </p>
@@ -947,7 +1042,7 @@ return (
 
     {/* FILTROS */}
     <div className="bg-white rounded-xl p-4 shadow-sm">
-      <div className="flex flex-wrap items-end gap-4">
+      <div className="flex flex-wrap items-end gap-2">
 
         <div>
           <label className="text-sm font-semibold text-gray-700">Data início</label>
@@ -968,8 +1063,8 @@ return (
            // max={hojeMaisDias(15)}
             onChange={(e) => setDataFim(e.target.value)}
             className="block border rounded-lg px-3 py-2 text-sm"
-          />
-        </div>
+            />
+          </div>
 
         <div>
           <label className="text-sm font-semibold text-gray-700">Conta Bancária</label>
@@ -983,11 +1078,8 @@ return (
                 }
 
                 setContaId(e.target.value);
-              }}
- 
-            
-            className="block border rounded-lg px-3 py-2 text-sm"
-          >
+              }} 
+            className="block border rounded-lg px-3 py-2 text-sm" >
           <option value="">Selecione</option>
 
           {contas.map((c) => (
@@ -1026,37 +1118,41 @@ return (
               </div>
             </div>
           )}
-         <div className="flex items-center gap-20 mt-3"> 
-         {tipoOperacao !== undefined && tipoOperacao !== null && ( 
-        <div className="mt-3 ml-3 flex justify-center">
-          <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm  ">
-            <span className="text-base text-slate-600">
-             Filtro de:{" "}
-              <span className="font-bold text-blue-700">
-                {RelatorioEscolhido(tipoOperacao)}
-              </span>
-              {" — Encontrados "}
-              <span className="font-bold text-slate-700 text-blue-700">
-                {qtdRegistros}
-              </span>
-              {" registros"}
-            </span>
-          </div>
-          
-        </div>
-        
-      )}      
+         <div className="flex items-center gap-2 mt-3"> 
+            {tipoOperacao !== undefined && tipoOperacao !== null && ( 
+            <div className="mt-3 ml-3 flex justify-center">
+              <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm  ">
+                <span className="text-base text-slate-600">
+                Filtro de:{" "}
+                  <span className="font-bold text-blue-700">
+                    {RelatorioEscolhido(tipoOperacao)}
+                  </span>
+                  {" — Encontrados "}
+                  <span className="font-bold text-slate-700 text-blue-700">
+                    {qtdRegistros}
+                  </span>
+                  {" registros"}
+                      </span>
+                  </div> 
+              </div> 
+            )}      
 
-       <button
-    onClick={executarSelecionados}
-    disabled={!permiteSelecao() || selecionados.length === 0}
-    className="btn-pill btn-gray disabled:opacity-60 disabled:cursor-not-allowed"
-  >
-    {tipoOperacao === "estorno"
-      ? "Somente consulta"
-      : labelBotaoSelecionados()}
-  </button>
-        
+        <button
+          onClick={executarSelecionados}
+          disabled={!permiteSelecao() || selecionados.length === 0}
+          className={`
+            btn-pill ${corBotaoSelecionado()}
+            disabled:opacity-90 disabled:cursor-not-allowed
+            ${piscarBotaoAcao ? "animate-pulse ring-4 ring-yellow-300 scale-105" : ""}
+          `}
+        >
+          {tipoOperacao === "estorno"
+            ? "Somente consulta"
+            : labelBotaoSelecionados()}
+        </button>
+            
+
+       
         </div>
 
        <div className="flex items-center gap-10"> 
@@ -1078,8 +1174,11 @@ return (
 
                     <button
                       onClick={() => {
+                                const tipo = "transacao";
                                 setTipoOperacao("transacao");
-                                pesquisar("transacao");
+                                pesquisar("transacao"); 
+                                chamarAtencaoBotaoAcao()
+                                mostrarMensagemTela(  "Ação permitida, estorno. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                               }}
                       className="btn-pill btn-yellow"
                     >
@@ -1088,8 +1187,11 @@ return (
 
                     <button
                       onClick={() => {
+                          const tipo = "conta_receber";
                         setTipoOperacao("conta_receber");
                         pesquisar("conta_receber");
+                         chamarAtencaoBotaoAcao()
+                         mostrarMensagemTela(  "Ação permitida, baixar recebimentos. Selecione os registros e clique no botão " +   labelBotaoPorTipo(tipo) + ".",5000);
                       }}
                       className="btn-pill btn-green"
                     >
@@ -1098,8 +1200,11 @@ return (
 
                     <button
                        onClick={() => {
+                             const tipo = "conta_pagar";
                             setTipoOperacao("conta_pagar");
                             pesquisar("conta_pagar");
+                             chamarAtencaoBotaoAcao()
+                         mostrarMensagemTela(  "Ação permitida, baixar pagamentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                           }}
                       className="btn-pill btn-red"
                     >
@@ -1108,9 +1213,12 @@ return (
 
                     <button
                        onClick={() => {
+                              const tipo = "cartao_compra";
                              setSelecionados([]);
                             setTipoOperacao("cartao_compra");
                             pesquisar("cartao_compra");
+                             chamarAtencaoBotaoAcao()
+                            mostrarMensagemTela(  "Ação permitida, excluir compras no cartão. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                           }}
                       className="btn-pill btn-blue"
                     >
@@ -1119,8 +1227,11 @@ return (
           
                     <button
                        onClick={() => {
+                              const tipo = "fatura_cartao";
                             setTipoOperacao("fatura_cartao");
                             pesquisar("fatura_cartao");
+                             chamarAtencaoBotaoAcao()
+                             mostrarMensagemTela(  "Ação permitida, pagar faturas do cartão.  Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                           }}
                       className="btn-pill btn-purple"
                     >
@@ -1131,8 +1242,11 @@ return (
                     
                      <button
                        onClick={() => {
+                              const tipo = "vence_hoje";
                             setTipoOperacao("vence_hoje");
                             pesquisar("vence_hoje");
+                             chamarAtencaoBotaoAcao()
+                            mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                           }}
                       className="btn-pill btn-blue"
                     >
@@ -1141,8 +1255,11 @@ return (
                        
                        <button
                        onClick={() => {
+                             const tipo = "vencidos";
                             setTipoOperacao("vencidos");
                             pesquisar("vencidos");
+                             chamarAtencaoBotaoAcao()
+                               mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                           }}
                       className="btn-pill btn-red"
                     >
@@ -1152,8 +1269,11 @@ return (
                     
                      <button
                        onClick={() => {
+                             const tipo = "vence_sete_dias";
                             setTipoOperacao("vence_sete_dias");
                             pesquisar("vence_sete_dias");
+                             chamarAtencaoBotaoAcao()
+                               mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                           }}
                       className="btn-pill btn-gray"
                     >
@@ -1162,8 +1282,11 @@ return (
 
                          <button
                        onClick={() => {
+                              const tipo = "estorno";
                             setTipoOperacao("estorno");
                             pesquisar("estorno");
+                             chamarAtencaoBotaoAcao()
+                               mostrarMensagemTela(  "Ação permitida, estornar operações financeiras. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
                           }}
                       className="btn-pill btn-red"
                     >
@@ -1173,8 +1296,11 @@ return (
 
                         <button
                        onClick={() => {
+                             const tipo = "titulos_pagos";
                             setTipoOperacao("titulos_pagos");
                             pesquisar("titulos_pagos");
+                             chamarAtencaoBotaoAcao()
+                            mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",8000);
                           }}
                       className="btn-pill btn-purple"
                     >
@@ -1206,7 +1332,11 @@ return (
                     listaFiltrada.length > 0 &&
                     listaFiltrada.every((l) => selecionados.includes(getUid(l)))
                   }
-                  onChange={toggleSelecionarTodos}
+                  onChange={() => {
+                    toggleSelecionarTodos();
+                    chamarAtencaoBotaoAcao();
+                  }}
+                  
                 />
               </th> )}
                <th className="px-3 py-2 text-left">id</th>
@@ -1268,6 +1398,7 @@ return (
                       type="checkbox"
                       checked={selecionados.includes(getUid(l))}
                       onChange={() => toggleSelecionado(l)}
+
                     />
                   </td>)}
                    
