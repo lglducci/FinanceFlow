@@ -50,7 +50,7 @@ function BlocoEtapa({
       </div>
 
       {aberto && (
-        <div className="border-t border-slate-100 px-5 pb-5 pt-4">
+        <div className="border-t border-slate-100 px-2 p-2 pt-1">
           {children}
         </div>
       )}
@@ -970,31 +970,31 @@ useEffect(() => {
               >
                 <div className="rounded-2xl bg-slate-800/90 p-3 text-xs text-slate-100 shadow-inner">
                   <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                    <span className="text-slate-400">Tipo</span>
+                    <span className="text-slate-200">Tipo</span>
                     <span className="font-bold text-right">{form.tipo}</span>
 
-                    <span className="text-slate-400">Forma</span>
+                    <span className="text-slate-200">Forma</span>
                     <span className="font-bold text-right">{formaSelecionada}</span>
 
-                    <span className="text-slate-400">Valor</span>
+                    <span className="text-slate-200">Valor</span>
                     <span className="font-black text-right text-emerald-300">R$ {form.valor}</span>
 
-                    <span className="text-slate-400">Descrição</span>
+                    <span className="text-slate-200">Descrição</span>
                     <span className="font-bold text-right truncate">{form.descricao}</span>
 
-                    <span className="text-slate-400">Categoria</span>
+                    <span className="text-slate-200">Categoria</span>
                     <span className="font-bold text-right truncate">{nomeCategoria()}</span>
 
                     {form.conta_id && (
                       <>
-                        <span className="text-slate-400">Conta</span>
+                        <span className="text-slate-200">Conta</span>
                         <span className="font-bold text-right truncate">{nomeConta()}</span>
                       </>
                     )}
 
                     {cartaoSelecionado && (
                       <>
-                        <span className="text-slate-400">Cartão</span>
+                        <span className="text-slate-200">Cartão</span>
                         <span className="font-bold text-right truncate">{cartaoSelecionado}</span>
                       </>
                     )}
