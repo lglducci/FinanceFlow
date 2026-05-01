@@ -358,7 +358,7 @@ const podeAceitar =
     const url = buildWebhookUrl("importacao_bancaria", {
       empresa_id,
       conta_id,
-      importacao_id,
+      importacao_id: Number(importacao_id),
     });
 
     const resp = await fetch(url, {
