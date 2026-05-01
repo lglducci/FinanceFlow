@@ -156,7 +156,8 @@ import ConciliacaoExplicacao  from "./pages/ConciliacaoExplicacao";
 import ConciliacaoRevisao     from "./pages/ConciliacaoRevisao";
 
 import  LancamentoRapido from "./pages/LancamentoRapido";
-
+import AppLancamento from "./pages/app/AppLancamento";
+import AppLogin from "./pages/app/AppLogin";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -165,6 +166,17 @@ const [assinaturaAtiva, setAssinaturaAtiva] = useState(true); // FORÇADO PRA TE
 const [bloquearSistema, setBloquearSistema] = useState(null);
 
   
+
+const rotaAtual = window.location.pathname;
+if (rotaAtual.startsWith("/app")) {
+  return (
+    <Routes>
+      <Route path="/app/login" element={<AppLogin />} />
+      <Route path="/app/lancamento" element={<AppLancamento />} />
+    </Routes>
+  );
+}
+
  if (!token) {
   return (
     <Routes>
@@ -177,6 +189,12 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
     </Routes>
   );
 }
+
+
+ 
+ 
+
+
 
  useEffect(() => {
   async function checkAssinatura() {
@@ -210,6 +228,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   checkAssinatura();
 }, []);
 
+ 
  
  
  if ( token &&    bloquearSistema === true) { 
@@ -249,6 +268,8 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
   {/* Visão Geral */}
   <Route path="/" element={<DashboardContabil />} />
   <Route path="/dashboard" element={<Dashboard />} />
+
+ 
 
   {/* Outras rotas permanecem */}
   <Route path="/transactions" element={<Lancamentos />} />
