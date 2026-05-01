@@ -167,29 +167,7 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 
   
 
-const rotaAtual = window.location.pathname;
-if (rotaAtual.startsWith("/app")) {
-  return (
-    <Routes>
-      <Route path="/app/login" element={<AppLogin />} />
-      <Route path="/app/lancamento" element={<AppLancamento />} />
-    </Routes>
-  );
-}
-
- if (!token) {
-  return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/login" element={<Login onLogin={() => window.location.reload()} />} />
-      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
-      <Route path="/planos" element={<Planos />} />
-       <Route path="/cadastro" element={<Cadastro />} />
-      <Route path="*" element={<Index />} /> 
-    </Routes>
-  );
-}
-
+ 
 
  
  
@@ -229,6 +207,32 @@ if (rotaAtual.startsWith("/app")) {
 }, []);
 
  
+const rotaAtual = window.location.pathname;
+ 
+if (rotaAtual.startsWith("/app")) {
+  return (
+    <Routes>
+      <Route path="/app/login" element={<Login onLogin={() => window.location.href = "/app/lancamento"} />} />
+      <Route path="/app/lancamento" element={<AppLancamento />} />
+      <Route path="*" element={<Login onLogin={() => window.location.href = "/app/lancamento"} />} />
+    </Routes>
+  );
+}
+
+
+ if (!token) {
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/login" element={<Login onLogin={() => window.location.reload()} />} />
+      <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+      <Route path="/planos" element={<Planos />} />
+       <Route path="/cadastro" element={<Cadastro />} />
+      <Route path="*" element={<Index />} /> 
+    </Routes>
+  );
+}
+
  
  
  if ( token &&    bloquearSistema === true) { 
