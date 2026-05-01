@@ -960,32 +960,59 @@ useEffect(() => {
           )}
 
           {(form.conta_id || cartaoSelecionado || form.fornecedor_id || (!mostrarContaFinanceira && !mostrarCartao && !precisaFornecedor && form.categoria_id)) && (
-            <BlocoEtapa id="revisao" titulo="Revisão" resumo="Conferir e salvar"    
-            aberto={etapaAberta === "revisao"}
-            onAbrir={setEtapaAberta}>
-              <div className="space-y-1 rounded-xl bg-slate-150 p-3 text-sm font-bold text-slate-800">
-                <p>Tipo: {form.tipo}</p>
-                <p>Forma: {formaSelecionada}</p>
-                <p>Valor: R$ {form.valor}</p>
-                <p>Descrição: {form.descricao}</p>
-                <p>Classificação: {form.classificacao}</p>
-                <p>Categoria: {nomeCategoria()}</p>
-                {form.conta_id && <p>Conta: {nomeConta()}</p>}
-                {cartaoSelecionado && <p>Cartão: {cartaoSelecionado}</p>}
-                {form.fornecedor_id && <p>Fornecedor: {nomeFornecedor()}</p>}
-                {ehAPrazo && <p>Vencimento: {form.vencimento}</p>}
-                {ehAPrazo && <p>Parcelas: {form.parcelas}</p>}
-              </div>
-
-              <button
-                type="button"
-                onClick={salvar}
-                disabled={salvando}
-                className="mt-4 w-full rounded-2xl bg-emerald-600 px-1 py-1 text-base font-black text-white shadow-lg disabled:opacity-60"
+            
+            <BlocoEtapa
+                id="revisao"
+                titulo="Revisão"
+                resumo="Conferir e salvar"
+                aberto={etapaAberta === "revisao"}
+                onAbrir={setEtapaAberta}
               >
-                {salvando ? "Salvando..." : "Salvar lançamento"}
-              </button>
-            </BlocoEtapa>
+                <div className="rounded-2xl bg-slate-800/90 p-3 text-xs text-slate-100 shadow-inner">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                    <span className="text-slate-400">Tipo</span>
+                    <span className="font-bold text-right">{form.tipo}</span>
+
+                    <span className="text-slate-400">Forma</span>
+                    <span className="font-bold text-right">{formaSelecionada}</span>
+
+                    <span className="text-slate-400">Valor</span>
+                    <span className="font-black text-right text-emerald-300">R$ {form.valor}</span>
+
+                    <span className="text-slate-400">Descrição</span>
+                    <span className="font-bold text-right truncate">{form.descricao}</span>
+
+                    <span className="text-slate-400">Categoria</span>
+                    <span className="font-bold text-right truncate">{nomeCategoria()}</span>
+
+                    {form.conta_id && (
+                      <>
+                        <span className="text-slate-400">Conta</span>
+                        <span className="font-bold text-right truncate">{nomeConta()}</span>
+                      </>
+                    )}
+
+                    {cartaoSelecionado && (
+                      <>
+                        <span className="text-slate-400">Cartão</span>
+                        <span className="font-bold text-right truncate">{cartaoSelecionado}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={salvar}
+                  disabled={salvando}
+                  className="mt-3 w-full rounded-xl bg-emerald-600 py-2 text-sm font-black text-white shadow-md active:scale-95 transition disabled:opacity-60"
+                >
+                  {salvando ? "Salvando..." : "Salvar"}
+                </button>
+              </BlocoEtapa>
+
+
+  
           )}
         </div>
       </div>
