@@ -1,4 +1,4 @@
- import LancamentoRapidoMobile from "../LancamentoRapidoMobile";
+ import LancamentoRapidoMobile from "../LancamentoRapidoDesktop";
 
 export default function AppLancamento() {
   return <LancamentoRapidoDesktop />;
