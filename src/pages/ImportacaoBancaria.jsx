@@ -183,7 +183,18 @@ const linha = {
   }, 0);
 }
  
- 
+ async function atualizarFornecedoresServico() {
+  const url = buildWebhookUrl("atualiza_fornecedor_servico", {
+    empresa_id,
+  });
+
+  return await fetchSeguro(url, {
+    method: "GET",
+  });
+}
+
+
+
 // Rotina salvar definitiva assim espero
   async function salvarLancamentos() {
   if (editandoId !== null && nova._id === editandoId) {
@@ -256,6 +267,7 @@ const linha = {
       body: JSON.stringify(payload)
     });
 
+     await atualizarFornecedoresServico();
     alert("Lançamentos salvos!");
     navigate("/conciliacao-explicacao");
     setLinhas([]);
