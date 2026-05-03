@@ -22,6 +22,21 @@ const [mostrarOperacoes, setMostrarOperacoes] = useState(false);
 const [loadingOperacoes, setLoadingOperacoes] = useState(false);
 
  
+
+ const [filtroSituacao, setFiltroSituacao] = useState("todos");
+
+const linhasFiltradas =
+  filtroSituacao === "rejeitado"
+    ? linhas.filter((l) => l.situacao === "rejeitado")
+    : filtroSituacao === "pendente"
+      ? linhas.filter((l) => l.situacao === "pendente")
+      : filtroSituacao === "ok"
+        ? linhas.filter((l) => l.situacao === "ok")
+        : linhas;
+
+ 
+
+    
   async function carregarDados() {
     try {
       setLoading(true);
@@ -81,12 +96,14 @@ setLinhas(lista);
   );
 }
  
-async function aceitarSelecionados(idsParam = null) {
+ async function aceitarSelecionados(idsParam = null, rejeitado = 0, tipo_evento = "") {
   const idsParaEnviar = Array.isArray(idsParam)
     ? idsParam
     : idsParam
       ? [idsParam]
       : selecionados;
+
+      
 
   if (idsParaEnviar.length === 0) {
     alert("Selecione ao menos uma linha.");
@@ -94,6 +111,18 @@ async function aceitarSelecionados(idsParam = null) {
   }
 
   const idsNumeros = idsParaEnviar.map(Number);
+
+  // AVISO ESPECIAL PARA POSSÍVEL TRANSFERÊNCIA MESMA TITULARIDADE
+  if ( rejeitado === 1 &&
+    tipo_evento === "transf_mesma_tit"
+  ) {
+    const confirma = confirm(
+      "Este lançamento parece ser uma transferência de mesma titularidade.\n\n" +
+      "Confirma que NÃO é transferência de mesma titularidade e deseja aceitar mesmo assim?"
+    );
+
+    if (!confirma) return;
+  }
 
   const url = buildWebhookUrl("aceitar_conciliacao", {
     empresa_id,
@@ -123,6 +152,8 @@ async function aceitarSelecionados(idsParam = null) {
   );
 
   setSelecionados([]);
+  setMostrarPendentes(false);
+setMostrarRejeitados(false);
 }
 
  async function executarConciliacao() {
@@ -448,6 +479,17 @@ async function excluirImportacao() {
   }
 }
 
+function resolverTransferencia(linha) {
+  alert(
+    "Esta linha precisa ser tratada como transferência.\n\n" +
+    "Aqui vamos abrir uma janela para informar conta origem e conta destino.\n\n" +
+    `Histórico: ${linha.historico}\n` +
+    `Valor: ${Number(linha.valor || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    })}`
+  );
+}
   return (
      <div className="min-h-screen bg-slate-100 px-2 pt-0 pb-2">
       <div className="mx-auto max-w-7xl">
@@ -462,8 +504,15 @@ async function excluirImportacao() {
             Confira os lançamentos importados. As linhas pendentes podem ser editadas antes da confirmação final.
           </p>
 
+ 
 
-
+        <div className="mt-2 text-sm font-bold text-slate-700">
+          Total: {linhas.length} |
+          Exibindo: {linhasFiltradas.length} |
+          Pendentes: {linhas.filter((l) => l.situacao === "pendente").length} |
+          Rejeitados: {linhas.filter((l) => l.situacao === "rejeitado").length} |
+          OK: {linhas.filter((l) => l.situacao === "ok").length}
+        </div>
         
           <div className="mt-4 flex gap-3">
 
@@ -542,6 +591,23 @@ async function excluirImportacao() {
                     ✅ Reverter tudo 
                   </button>
 
+               <select
+                  value={filtroSituacao}
+                  onChange={(e) => setFiltroSituacao(e.target.value)}
+                  className="px-4 py-2 rounded-full border border-slate-300 bg-white text-sm font-bold text-slate-700"
+                >
+                  <option value="todos">Todos ({linhas.length})</option>
+                  <option value="pendente">
+                    Pendentes ({linhas.filter((l) => l.situacao === "pendente").length})
+                  </option>
+                  <option value="rejeitado">
+                    Rejeitados ({linhas.filter((l) => l.situacao === "rejeitado").length})
+                  </option>
+                  <option value="ok">
+                    OK ({linhas.filter((l) => l.situacao === "ok").length})
+                  </option>
+                </select>
+                  
 
             </div>
         {podeExecutar && (
@@ -629,6 +695,24 @@ async function excluirImportacao() {
       >
         Estornar lote
       </button>
+      <button
+          onClick={() => {
+            const lote_id =
+              resultadoExecucao?.lote_conciliacao_id ||
+              resultadoExecucao?.importacao_id ||
+              resultadoExecucao?.lote_id;
+
+            if (!lote_id) {
+              alert("Lote não encontrado.");
+              return;
+            }
+
+            navigate(`/revisar-transferencias?lote_id=${lote_id}`);
+          }}
+          className="px-5 py-2 rounded-full bg-slate-800 text-white font-bold shadow hover:brightness-110"
+        >
+          Revisar
+        </button>
     </div>
   </div>
 )}
@@ -787,13 +871,15 @@ async function excluirImportacao() {
                     <th className="p-3 text-left">Histórico</th>
                     <th className="p-3 text-right">Valor</th>
                     <th className="p-3 text-center">Situação</th>
-                    <th className="p-3 text-left">Mensagem</th> 
+                    <th className="p-3 text-left">Mensagem</th>
+                    <th className="p-3 text-center">Tipo Evento</th> 
                     <th className="p-3 text-center">Ação</th>
+                    
                   </tr>
                 </thead>
 
               <tbody>
-                {linhas.map((l) => (
+                 {linhasFiltradas.map((l) => (
                   <tr
                     key={l.id}
                     className="border-b border-slate-100 hover:bg-blue-50/60"
@@ -841,66 +927,81 @@ async function excluirImportacao() {
                       {l.mensagem}
                     </td>
 
+                     <td className="p-3 text-slate-600 font-semibold">
+                      {l.tipo_evento}
+                    </td>
+
                     <td className="p-3 text-center">
                        <div className="flex justify-center gap-2">
-                       <button
-                            onClick={() => rejeitarLinha(l.id)}
-                            disabled={
-                              l.situacao === "ok" ||
-                              l.situacao === "executado"  ||
-                              l.situacao === "rejeitado"
-                            }
-                            className="
-                              px-4 py-2 rounded-full
-                              border font-bold text-xs transition
+                          {l.tipo_evento !== "transf_mesma_tit" && (
+                                  <button
+                                    onClick={() => rejeitarLinha(l.id)}
+                                    disabled={
+                                      l.situacao === "ok" ||
+                                      l.situacao === "executado" ||
+                                      l.situacao === "rejeitado"
+                                    }
+                                    className="
+                                      px-2 py-1 rounded-full
+                                      border font-bold text-xs transition
+                                      enabled:bg-rose-100
+                                      enabled:text-rose-700
+                                      enabled:border-rose-300
+                                      enabled:hover:bg-rose-200
+                                      enabled:cursor-pointer
+                                      disabled:bg-gray-200
+                                      disabled:text-gray-400
+                                      disabled:border-gray-300
+                                      disabled:cursor-not-allowed
+                                      disabled:opacity-60
+                                    "
+                                  >
+                                    Rejeitar
+                                  </button>
+                                )}
+                               {l.tipo_evento === "transf_mesma_tit" ? (
+                                <>
+                                  <button
+                                    onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
+                                      className="
+                                          px-2 py-1 rounded-full border
+                                          text-[10px] leading-none font-bold
+                                          bg-emerald-500 text-white border-emerald-600
+                                          hover:bg-emerald-600
+                                        "
+                                      >
+                                     Aceitar
+                                  </button>
 
-                              enabled:bg-rose-100
-                              enabled:text-rose-700
-                              enabled:border-rose-300
-                              enabled:hover:bg-rose-200
-                              enabled:hover:scale-105
-                              enabled:cursor-pointer
-
-                              disabled:bg-gray-200
-                              disabled:text-gray-400
-                              disabled:border-gray-300
-                              disabled:cursor-not-allowed
-                              disabled:opacity-60
-                            "
-                          >
-                            Rejeitar
-                          </button>
-                         <button
-                      onClick={() => aceitarSelecionados([l.id])}
-                      disabled={
-                        l.situacao === "ok" ||
-                        l.situacao === "executado" ||
-                        l.situacao === "rejeitado"
-                      }
-                      className="
-                        ml-2 px-4 py-2 rounded-full
-                        border font-bold text-xs transition
-
-                        enabled:bg-emerald-500
-                        enabled:text-white
-                        enabled:border-emerald-600
-                        enabled:hover:bg-emerald-600
-                        enabled:hover:scale-105
-                        enabled:cursor-pointer
-
-                        disabled:bg-gray-300
-                        disabled:text-black
-                        disabled:border-gray-400
-                        disabled:cursor-not-allowed
-                        disabled:opacity-100
-                      "
-                    >
-                      Aceitar
-                    </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                                  <button
+                                    onClick={() => resolverTransferencia(l)}
+                                                                        className="
+                                      px-2 py-1 rounded-full border
+                                      text-[10px] leading-none font-bold
+                                      bg-purple-600 text-white border-purple-700
+                                      hover:bg-purple-700
+                                    ">
+                                   Transferir
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
+                                  disabled={l.situacao === "ok" || l.situacao === "executado"}
+                                    className="
+                                          px-2 py-1 rounded-full border
+                                          text-[10px] leading-none font-bold
+                                          bg-emerald-500 text-white border-emerald-600
+                                          hover:bg-emerald-600
+                                        "
+                                      > 
+                                  Aceitar
+                                </button>
+                              )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
               </div>

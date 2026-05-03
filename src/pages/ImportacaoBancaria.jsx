@@ -6,7 +6,8 @@ import { fetchSeguro } from "../utils/apiSafe";
 import ModalBase from "../components/ModalBase";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import FormContaContabilModal from "../components/forms/FormContaContabilModal";
- 
+import ImportadorSicoob from "../components/ImportadorSicoob";
+
 export default function ImportacaoBancaria() {
  
  
@@ -726,6 +727,32 @@ setResumoImportacao({
   }, 0);
 }
 
+function receberTextoImportadorSicoob(textoPronto) {
+  const novasLinhas = parseTextoParaLinhas(textoPronto);
+
+  if (!novasLinhas.length) {
+    alert("Nenhuma linha válida encontrada no arquivo Sicoob.");
+    return;
+  }
+
+  let totalEntrada = 0;
+  let totalSaida = 0;
+
+  novasLinhas.forEach((l) => {
+    const v = parseNumeroBR(l.valor);
+    if (v >= 0) totalEntrada += v;
+    else totalSaida += Math.abs(v);
+  });
+
+  setResumoImportacao({
+    qtd: novasLinhas.length,
+    entrada: totalEntrada,
+    saida: totalSaida,
+  });
+
+  recalcularLinhas([...linhas, ...novasLinhas]);
+  setImportacao(1);
+}
 return (
        <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
 
@@ -1030,6 +1057,8 @@ return (
                     </button>
  
                  
+                  <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
+
 
                 <button
                 onClick={colarLancamentos}
@@ -1037,6 +1066,8 @@ return (
               >
                 📋 Colar
               </button>
+
+              
 
               <button
                     onClick={limparEdicao}
