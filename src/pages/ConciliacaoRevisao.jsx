@@ -613,6 +613,7 @@ const lote_id =
           <div className="mt-4 flex gap-3">
 
            <button
+             title=" Selecionar todos registros 'PENDENTES' serem aceitos."
             onClick={aceitarTodosCheckbox}
             className="
               px-5 py-2 rounded-full
@@ -625,6 +626,7 @@ const lote_id =
           </button>
 
                 <button
+                     title="Aceitar registos selecionados para status de ok. Preparação para execução da conciliação."
                         onClick={() => aceitarSelecionados()}
                         disabled={!podeAceitar}
                         className={`
@@ -642,6 +644,7 @@ const lote_id =
                       </button>
             
              <button
+               title="Executar a conciliação. Finalizar o processo e realizar os lançamentos financeiros e pagamentos."
                 onClick={executarConciliacao}
                 disabled={!podeExecutar}
                 className={`
@@ -661,6 +664,7 @@ const lote_id =
                  
             
             <button
+                 title="Sair para janela de importação."
                   onClick={() => {
                     localStorage.removeItem("resultado_conciliacao");
                     navigate("/importacao-bancaria");
@@ -676,6 +680,7 @@ const lote_id =
             </button> 
             
                <button
+                   title="Reverte o status de ok para pendente."
                     onClick={Reverter}
                     className="
                       px-5 py-2 rounded-full
@@ -1031,6 +1036,7 @@ const lote_id =
                        <div className="flex justify-center gap-2">
                           {l.tipo_evento !== "transf_mesma_tit" && (
                                   <button
+                                   title="Rejeita o registro da importação."
                                     onClick={() => rejeitarLinha(l.id)}
                                     disabled={
                                       l.situacao === "ok" ||
@@ -1058,6 +1064,8 @@ const lote_id =
                                {l.tipo_evento === "transf_mesma_tit" ? (
                                 <>
                                   <button
+                                    title="Aceita o registro da forma em que ele veio do arquivo."
+                                     
                                     onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
                                       className="
                                           px-2 py-1 rounded-full border
@@ -1069,7 +1077,7 @@ const lote_id =
                                      Aceitar
                                   </button>
 
-                                  <button
+                                 {/*} <button
                                     onClick={() => resolverTransferencia(l)}
                                                                         className="
                                       px-2 py-1 rounded-full border
@@ -1078,11 +1086,12 @@ const lote_id =
                                       hover:bg-purple-700
                                     ">
                                    Transferir
-                                  </button>
+                                  </button>*/}
 
                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                                     
                                     <button
+                                         title="Resolve esta linha como transferência entre contas"
                                         onClick={() => {
                                             setLinhaEditando(l);
                                             setContaOrigemId(l.conta_financeira_id || "");
@@ -1098,6 +1107,7 @@ const lote_id =
                                 </>
                               ) : (
                                 <button
+                                  title="Confirmar este lançamento. Use quando estiver correto (pagamento, recebimento, etc.)"
                                   onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
                                   disabled={l.situacao === "ok" || l.situacao === "executado"}
                                     className="
@@ -1134,6 +1144,25 @@ const lote_id =
       <div className="mb-3 text-sm font-semibold text-slate-600">
         {linhaEditando.historico}
       </div>
+
+      <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+      <div className="text-xs font-bold text-slate-500">
+        Valor da transferência
+      </div>
+
+      <div
+        className={`text-xl font-black ${
+          Number(linhaEditando.valor || 0) >= 0
+            ? "text-emerald-700"
+            : "text-red-700"
+        }`}
+      >
+        {Number(linhaEditando.valor || 0).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })}
+      </div>
+    </div>
 
       <label className="block text-sm font-bold mb-1">Conta origem</label>
       <select

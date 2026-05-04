@@ -1,9 +1,12 @@
- import { useState, useEffect } from "react";
+   import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
-
-import { hojeLocal, dataLocal } from "../utils/dataLocal";
- 
+import ModalBase from "../components/ModalBase";
+import FormConta from "../components/forms/FormConta";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+import { Link } from "react-router-dom";
+import { fetchSeguro } from "../utils/apiSafe";
+import { useRef } from "react";
 
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
@@ -12,99 +15,93 @@ export default function Lancamentos() {
   const [carregando, setCarregando] = useState(false);
   const [total, setTotal] = useState(0);
   const [periodo, setPeriodo] = useState("mes");
-
-  
+  const [modalConta, setModalConta] = useState(false);
+  const [qtdVencidos, setQtdVencidos] = useState(0);
+   const [qtdRegistros, setQtdRegistros] = useState(0);
+   const [selecionados, setSelecionados] = useState([]);
 const [totalEntrada, setTotalEntrada] = useState(0);
 const [totalSaida, setTotalSaida] = useState(0);
 const [saldoInicial, setSaldoInicial] = useState(0);
 const [saldoFinal, setSaldoFinal] = useState(0);
-
-
+const [refreshKey, setRefreshKey] = useState(0);
+const contaRef = useRef(null);
  
 const [contas, setContas] = useState([]);
 const [loading, setLoading] = useState(false);
 
-  const empresa_id = localStorage.getItem("empresa_id") || 1;
+  const empresa_id = localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
   const navigate = useNavigate();
-
+const tipoOperacaoOldRef = useRef("");
   const [contaId, setContaId] = useState("");
+  const [dadosConta, setDadosConta] = useState(null);
+  const [categoriaId, setCategoriaId] = useState("");
+const [fornecedorId, setFornecedorId] = useState("");
 
+const [categorias, setCategorias] = useState([]);
+const [fornecedores, setFornecedores] = useState([]);
+  const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
+const [tipoOperacao, setTipoOperacao] = useState("");
+const [busca, setBusca] = useState("");
+const [msgEstorno, setMsgEstorno] = useState("");
+const [piscarBotaoAcao, setPiscarBotaoAcao] = useState(false);
 
+function chamarAtencaoBotaoAcao() {
+  setPiscarBotaoAcao(true);
 
-
-  async function Estornar(id) {
-   if (!confirm("Tem certeza que deseja estornar este lancamento?")) return;
-
-  try {
-    const url = buildWebhookUrl("estornarlancto");
-
-    const resp = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresa_id, id }),
-    });
-
-    const texto = await resp.text();
-    console.log("RETORNO:", texto);
-
-    let json = {};
-    try { json = JSON.parse(texto); } catch {}
-
-    // 🔥 TRATAMENTO CORRETO DO SEU FORMATO
-   const sucesso =
-  Array.isArray(json) &&
-  json.length > 0 &&
-  (json[0].success === true || json[0].ff_estornar_transacao === "sucesso");
-
-
-    if (sucesso) {
-      alert("Lancamento estornado com sucesso!");
-
-      // remove visualmente da tela ANTES de recarregar do backend
-        setLista((prev) => prev.filter((x) => x.id !== id));
-
-        // depois recarrega real do webhook
-        setTimeout(() => carregarLista(), 150);
-     {/*} carregarLista();  // atualiza tabela*/}
-      return;
-    }
-
-    // Se não entrou no sucesso, então deu erro (provavelmente FK)
-    alert(json[0]?.message || "Erro ao Estornar. Verifique vínculos (FK).");
-
-  } catch (e) {
-    console.log("ERRO Estornar:", e);
-    alert("Erro ao estornar.");
-  }
+  setTimeout(() => {
+    setPiscarBotaoAcao(false);
+  }, 1000);
 }
 
+ function formatarDataBR(data) {
+  if (!data) return "-";
 
+  // força yyyy-mm-dd
+  const [ano, mes, dia] = data.split("T")[0].split("-");
+
+  return `${dia}/${mes}/${ano}`;
+}
+ 
+
+const [mostrarAlerta, setMostrarAlerta] = useState(false);
+
+useEffect(() => {
+  const flag = sessionStorage.getItem("mostrar_alerta_lancamento");
+
+  if (flag === "1") {
+    setMostrarAlerta(true);
+    sessionStorage.removeItem("mostrar_alerta_lancamento");
+
+    setTimeout(() => {
+      setMostrarAlerta(false);
+    }, 10000); // 20 segundos
+  }
+}, []);
+
+  // ------------------- CARREGAR SALDO DA CONTA -------------------
+  async function carregarSaldoConta(id_conta) {
+    const hoje = new Date().toISOString().split("T")[0];
+
+    const url = buildWebhookUrl("consultasaldo", {
+      inicio: hoje,
+      fim: hoje,
+      empresa_id,
+      conta_id: id_conta,
+    });
+
+    const resp = await fetch(url);
+    const json = await resp.json();
+    setDadosConta(json[0]);
+  }
+  
+   
   function aplicarPeriodo(tipo) {
-    const hoje = new Date( hojeLocal() );;
+    const hoje = new Date( hojeLocal() ); 
     let ini, fim;
 
-    if (tipo === "mes") {
-      ini = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-      fim = new Date( hojeLocal() );
-    } else if (tipo === "15") {
-      ini = new Date( hojeLocal() );
-      ini.setDate(hoje.getDate() - 15);
-      fim = new Date( hojeLocal() );
-    } else if (tipo === "semana") {
-      ini = new Date( hojeLocal() );
-      ini.setDate(hoje.getDate() - 7);
-      fim = new Date( hojeLocal() );
-    } else if (tipo === "hoje") {
-      ini = new Date( hojeLocal() );
-      fim = new Date( hojeLocal() );
-    } else {
-      setDataIni("");
-      setDataFim("");
-      return;
-    }
-
-    setDataIni(ini.toISOString().substring(0, 10));
-    setDataFim(fim.toISOString().substring(0, 10));
+ 
+    setDataIni(    hojeLocal() );
+    setDataFim(  hojeLocal());
   }
 
   function handlePeriodoChange(tipo) {
@@ -163,59 +160,170 @@ const [loading, setLoading] = useState(false);
 }, [dataIni, dataFim, contaId]);*/}
 
 
+function mostrarMensagemTela(mensagem, tempo = 20000) {
+  setMsgEstorno(mensagem);
 
- useEffect(() => {
-     
+  setTimeout(() => {
+    setMsgEstorno("");
+  }, tempo);
+}
 
-    const carregarContas = async () => {
-      try {
-        const url = buildWebhookUrl("listacontas", { empresa_id });
-        const resp = await fetch(url);
-        const data = await resp.json();
-        setContas(data);
-      } catch (error) {
-        console.error("Erro ao carregar contas:", error);
-      }
-    }; 
-    carregarContas();
-    
-  }, [empresa_id]);
-  // ⭐ AQUI EMBAIXO
-      useEffect(() => {
-        if (contas.length > 0 && !contaId) {
-          setContaId(contas[0].id);
-        }
-      }, [contas]);
+ async function carregarContas() {
+  try {
+    const url = buildWebhookUrl("listacontas", { empresa_id });
+    const resp = await fetch(url);
+    const data = await resp.json();
+    setContas(data);
+  } catch (error) {
+    console.error("Erro ao carregar contas:", error);
+  }
+}
+useEffect(() => {
+  carregarContas();
+}, [empresa_id]);
 
+ 
+useEffect(() => {
+  if (contaId) {
+    carregarSaldoConta(contaId);
+  }
+}, [contaId]);
 
   useEffect(() => {
     setPeriodo("mes");
     aplicarPeriodo("mes");
   }, []);
 
-  async function pesquisar() {
-    if (!dataIni || !dataFim) {
-      alert("Informe o período.");
-      return;
-    }
-     await carregar(); // <-- Atualiza SALDO aqui e somente aqui
-    setCarregando(true);
-    try {
-      const url = buildWebhookUrl('listalancamentos', {
-        empresa_id: empresa_id,
-        conta_id: contaId,
-        data_ini: dataIni,
-        data_fim: dataFim
-      });
+ async function pesquisar(tipo = "") {
 
+  tipo = tipo || "";
+
+      setSelecionados([]);
+
+  // REGRA PARA VENCIDOS
+  let dataIniLocal = dataIni;
+  let dataFimLocal = dataFim;
+  let contaLocal = Number(contaId) || 0;
+  let categoriaLocal = Number(categoriaId) || 0;
+  let fornecedorLocal = Number(fornecedorId) || 0;
+  let tipoOperacaoLocal = tipo;
+  let vencidoLocal = "";
+  let vence_hoje = "";
+  let vence_sete_dias = "";
+  let origem = "";
+
+
+  if (tipo === "titulos_pagos") {
+  dataIniLocal = "2020-01-01";
+  dataFimLocal = hojeLocal();
+  contaLocal = 0;
+  categoriaLocal = 0;
+  fornecedorLocal = 0;
+  tipoOperacaoLocal = "transacao";
+  vencidoLocal = "";
+  origem = "titulos_pagos";
+}
+
+
+ 
+
+  if (tipo === "vencidos") {
+    dataIniLocal = "2020-01-01";
+    dataFimLocal = hojeLocal();
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "";
+    vencidoLocal = "sim";
+    origem ="";
+  }
+
+   if (tipo === "vence_hoje") {
+    dataIniLocal =  hojeLocal();
+    dataFimLocal = hojeLocal();
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "";
+    vencidoLocal = "";
+     vence_hoje = "sim";
+     vence_sete_dias = "";
+     origem ="";
+  }
+  if (tipo === "vence_sete_dias") { 
+     dataIniLocal = hojeMaisDias(1);
+    dataFimLocal = hojeMaisDias(7);
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "";
+    vencidoLocal = "";
+     vence_hoje = "";
+       vence_sete_dias = "sim";
+     origem ="";
+  }
+
+    if (tipo === "transacao") { 
+    
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "transacao";
+    vencidoLocal = "";
+     vence_hoje = "";
+     vence_sete_dias = "";
+     origem ="transacao";
+  }
+
+   if (tipo === "estorno") { 
+    
+    contaLocal = 0;
+    categoriaLocal = 0;
+    fornecedorLocal = 0;
+    tipoOperacaoLocal = "transacao";
+    vencidoLocal = "";
+     vence_hoje = "";
+     vence_sete_dias = "";
+     origem ="estorno";
+  }
+
+  if (!dataIniLocal || !dataFimLocal) {
+    alert("Informe o período.");
+    return;
+  }
+
+   if (tipo !== tipoOperacaoOldRef.current) {
+    setLista([]);
+  }
+    tipoOperacaoOldRef.current = tipo;
+setCarregando(true);
+
+  await carregar(); 
+  
+  try {
+    const url = buildWebhookUrl("listalancamentos", {
+      empresa_id: empresa_id,
+      conta_id: contaLocal,
+      data_ini: dataIniLocal,
+      data_fim: dataFimLocal,
+      categoria_id: categoriaLocal,
+      fornecedor_id: fornecedorLocal,
+      tipo_operacao: tipoOperacaoLocal,
+      vencido: vencidoLocal,
+      vence_hoje:vence_hoje,
+        vence_sete_dias : vence_sete_dias,
+        origem:origem 
+
+    });
       const resp = await fetch(url);
-      const dados = await resp.json();
       
+      const dados = await resp.json();
+       
       let soma = 0;
       let somaEntrada = 0;
       let somaSaida = 0;
 
-      const tratados = dados.map((l) => {
+      const tratados = dados.filter((l) => l && (l.id || l.descricao || l.valor || l.data_movimento || l.vencimento || l.origem)).map((l) => {
         const valorNum = Number(l.valor || 0);
 
             if (l.tipo === "entrada") {
@@ -237,11 +345,22 @@ const [loading, setLoading] = useState(false);
             currency: "BRL",
           }),
           // *** AQUI: sempre a data EXATA do banco ***
-          data: new Date(l.data_movimento).toLocaleDateString("pt-BR"),
-          // *** Origem com primeira maiúscula ***
-          origem: l.origem
-            ? l.origem.charAt(0).toUpperCase() + l.origem.slice(1)
-            : "-",
+          data: formatarDataBR(l.data_movimento),
+            // 👇 ADICIONA AQUI
+          nome: l.nome || "",
+          numero: l.numero || "",
+          evento_codigo: l.evento_codigo,
+          origem_id:l.origem_id,
+          tipo_operacao:l.tipo_operacao,
+          vencimento:l.vencimento,
+          parcelas:l.parcelas,
+          status:l.status,
+          origem:l.origem ,
+          vencido:l.vencido,
+          parcela_total:l.parcela_total,
+          forma:l.forma ,
+          classificacao:l.classificacao
+
         };
       });
        //  ✔️ EXATAMENTE AQUI  
@@ -250,283 +369,1361 @@ const [loading, setLoading] = useState(false);
 
       setLista(tratados);
       setTotal(soma);
+
+        if (tipo === "vencidos") {
+     
+          setQtdVencidos(tratados.length);
+        }
+
+       
+      setQtdRegistros(tratados.length);
        
     } catch (e) {
       console.error(e);
       alert("Erro ao consultar lançamentos.");
     }
     setCarregando(false);
+
+    
   }   
 
   function abrirNovoLancamento() {
     navigate("/new-transaction");
   }
 
-  function editarLancamento(id) {
-    navigate("/editar-lancamento", {
-      state: { id_lancamento: id, empresa_id: empresa_id }
-    });
+    function abrirNovaReceita() {
+    navigate("/registrareceitarapida");
   }
 
-  return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Lançamentos</h2> 
+ // function editarLancamento(id) {
+ //   navigate("/editar-lancamento", {
+  //    state: { id_lancamento: id, empresa_id: empresa_id }
+  //  });
+ // }
 
-      {/* FILTROS  
-      <div className="bg-white p-6 rounded-xl shadow mb-6 flex flex-col gap-6">*/}
-      <div className="bg-gray-100 p-6 rounded-xl shadow mb-8  border-[12px] border-blue-800 flex flex-col gap-2"> 
-        {/* linha 1 - períodos */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex flex-col">
-            <span className="text-base font-bold mb-1 font-bold text-[#1e40af] ">Períodos</span>
-            <div className="flex gap-4 text-base font-bold flex-wrap text-[#1e40af]">
-              {["mes", "15", "semana", "hoje"].map((tipo) => (
-                <label key={tipo}>
-                  <input
-                    type="checkbox"
-                    checked={periodo === tipo}
-                    onChange={() => handlePeriodoChange(tipo)}
-                    className="mr-1"
-                  />
-                  {tipo === "mes"
-                    ? "Mês"
-                    : tipo === "15"
-                    ? "Últimos 15 dias"
-                    : tipo === "semana"
-                    ? "Semana"
-                    : "Hoje"}
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>  
+ function editarLancamento(l) {
 
-        {/* linha 2 */}
+  if (l.tipo_operacao === "conta_pagar") {
+    navigate(`/edit-conta-pagar/${l.id}`);
+    return;
+  }
 
-         <div className="bg-gray-100 shadow rounded-lg p-4 border-l-4 border-gray-300"> 
+  if (l.tipo_operacao === "conta_receber") {
+    navigate(`/edit-conta-receber/${l.id}`);
+    return;
+  }
+
+  if (l.tipo_operacao === "compra_cartao") {
+    navigate(`/edit-card-transaction/${l.id}`);
+    return;
+  }
+
+  if (l.tipo_operacao === "fatura_cartao") {
+    navigate(`/edit-card-invoice/${l.id}`);
+    return;
+  }
+
+  if (l.tipo_operacao === "transacao") {
+    navigate("/editar-lancamento", {
+      state: { id_lancamento: l.id, empresa_id: empresa_id}
+    });
+    return;
+  }
+
+}
+
+  async function carregarFornecedores() {
+  try {
+    const url = buildWebhookUrl("fornecedorcliente", {
+      empresa_id,     tipo: "ambos"
+      // SEM tipo → backend retorna todos
+    });
+
+    const resp = await fetch(url);
+    const txt = await resp.text();
+
+    let lista = [];
+    try {
+      lista = JSON.parse(txt);
+    } catch {}
+
+    setFornecedores(Array.isArray(lista) ? lista : []);
+  } catch (e) {
+    console.log("ERRO ao carregar fornecedores:", e);
+  }
+}
+
+async function carregarCategorias() {
+  try {
+    const url = buildWebhookUrl("listacategorias", {
+      empresa_id , tipo:''
+      // SEM tipo → traz entrada + saída
+    });
+
+    const resp = await fetch(url);
+    const txt = await resp.text();
+
+    let lista = [];
+    try {
+      lista = JSON.parse(txt);
+    } catch {}
+
+    setCategorias(Array.isArray(lista) ? lista : []);
+  } catch (e) {
+    console.log("ERRO ao carregar categorias:", e);
+  }
+}
+
+ 
+
+useEffect(() => {
+  carregarFornecedores();
+  carregarCategorias();
+}, [empresa_id]);
+
+function calcularPeriodoDias(inicio, fim) {
+  if (!inicio || !fim) return null;
+
+  const d1 = new Date(inicio);
+  const d2 = new Date(fim);
+
+  const diffMs = d2.getTime() - d1.getTime();
+  const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+  return diffDias > 0 ? diffDias : null;
+}
+
+
+
+async function Estornar(id) {
+   if (!confirm("Tem certeza que deseja estornar este lancamento?")) return;
+
+  try {
+    const url = buildWebhookUrl("estornarlancto");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ empresa_id, id }),
+    });
+
+    const texto = await resp.text();
+    console.log("RETORNO:", texto);
+
+    let json = {};
+    try { json = JSON.parse(texto); } catch {}
+
+    // 🔥 TRATAMENTO CORRETO DO SEU FORMATO
+  const sucesso = json?.[0]?.ok === true;
+ 
+    if (sucesso) {
+     //wait carregarSaldoConta(contaId);
+        setRefreshKey(prev => prev + 1);
+        alert("Lancamento estornado com sucesso!"); 
+
         
-        <div className="flex flex-wrap items-end gap-4"> 
-            <div className="flex flex-col">
-              <label className="text-base font-bold text-[#1e40af]">Data início</label>
-              <input
-                type="date"
-                value={dataIni}
-                onChange={(e) => setDataIni(e.target.value)}
-                className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
-              />
-            </div> 
 
-          <div className="flex flex-col">
-            <label className="text-base font-bold text-[#1e40af]">Data fim</label>
-            <input
-              type="date"
-              value={dataFim}
-              onChange={(e) => setDataFim(e.target.value)}
-              className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500 "
-            />
-          </div>
+           window.dispatchEvent(new Event("contabil-atualizado"));
+        return;
+      }
+
+    // Se não entrou no sucesso, então deu erro (provavelmente FK)
+    alert(json[0]?.message || "Erro ao Estornar. Verifique vínculos (FK).");
+
+  } catch (e) {
+    console.log("ERRO Estornar:", e);
+    alert("Erro ao estornar.");
+  }
+}
+ useEffect(() => {
+  if (refreshKey > 0) {
+    pesquisar(tipoOperacao || "");
+  }
+}, [refreshKey]);
 
 
-         <div className="flex flex-col">
-            <label className="text- base font-bold text-[#1e40af]">Conta</label>
+async function executarTitulos(titulos, conta_id) {
+  if (loading) return;
+
+  if (!conta_id || Number(conta_id) === 0) {
+    alert("Selecione a conta bancária.");
+    contaRef.current?.focus();
+    return;
+  }
+
+  const itens = titulos.map((l) => ({
+    origem_tabela:
+      l.tipo_operacao === "conta_pagar"
+        ? "contas_a_pagar"
+        : l.tipo_operacao === "conta_receber"
+        ? "contas_a_receber"
+        : l.tipo_operacao === "fatura_cartao"
+        ? "cartoes_faturas"
+        : "",
+
+    origem_id: Number(l.id),
+    tipo_operacao: l.tipo_operacao,
+  }));
+
+  setLoading(true);
+
+  try {
+    const resp = await fetch(buildWebhookUrl("executar_titulos"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        conta_id: Number(conta_id),
+        itens,
+      }),
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok || data?.ok === false) {
+      alert(data?.message || "Erro ao executar títulos.");
+      return;
+    }
  
+    alert("Processado com sucesso!");
+    setSelecionados([]);
+    window.dispatchEvent(new Event("contabil-atualizado"));
+    pesquisar(tipoOperacao || "");
+    carregarSaldoConta(conta_id);
+    await carregarQtdVencidos();
+
+  } catch (e) {
+    alert("Erro ao processar títulos.");
+  } finally {
+    setLoading(false);
+  }
+}
+
+
+async function processarTitulo(titulo, conta_id) {
+  return executarTitulos([titulo], conta_id);
+}
+
+function executarSelecionados() {
+  const titulos = listaFiltrada.filter((l) =>
+    selecionados.includes(getUid(l))
+  );
+
+  executarTitulos(titulos, contaId);
+}
  
-          <select
-            value={contaId}
-            onChange={(e) => setContaId(Number(e.target.value))}
-            className="border rounded-lg px-3 py-2 w-40 mt-1 border-yellow-500"
-          >
-            {/* OPÇÃO DEFAULT QUE ENVIA 0 */}
-            <option value={0}>Todas</option>
 
-            {/* LISTA DE CONTAS */}
-            {contas.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome}
-              </option>
-            ))}
-          </select> 
+useEffect(() => {
+  if (dataIni && dataFim) {
+    pesquisar("transacao");
+  }
+}, [dataIni, dataFim]);
+
+ async function excluirCompra(compra_id) {
+  if (!window.confirm("Excluir compra do cartão?")) return;
+
+  try {
+
+    const data = await fetchSeguro(
+      buildWebhookUrl("excluircompras"),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id: empresa_id,
+          compra_id: compra_id
+        })
+      }
+    );
+
+    alert("Compra excluída com sucesso.");
+       window.dispatchEvent(new Event("contabil-atualizado"));
+    pesquisar(tipoOperacao || ""); // recarrega lista
+
+  } catch (e) {
+    alert("Erro ao excluir compra: " + e.message);
+  }
+}
+
+const temTransacao = lista.some(l => l.tipo_operacao === "transacao");
+
+const formaLabel = {
+  avista: "À vista",
+  pix: "Pix",
+  cartao_debito: "Cartão Débito",
+  cartao_credito: "Cartão Crédito",
+  boleto: "Boleto",
+  aprazo: "A prazo"
+};
+
+const listaFiltrada = lista.filter((l) => {
+
+  if (!busca) return true;
+
+  const texto = busca.toLowerCase();
+
+  return (
+    (l.descricao || "").toLowerCase().includes(texto) ||
+    (l.categoria_nome || "").toLowerCase().includes(texto) ||
+    (l.forma || "").toLowerCase().includes(texto) ||
+    (l.tipo || "").toLowerCase().includes(texto) ||
+       (l.tipo_evento || "").toLowerCase().includes(texto) ||
+    (l.origem || "").toLowerCase().includes(texto) ||
+    (l.classificacao || "").toLowerCase().includes(texto) ||
+    (l.valor || "").toString().toLowerCase().includes(texto)
+  );
+});
+
+ 
+async function carregarQtdVencidos() {
+  try {
+    if (!empresa_id) {
+      setQtdVencidos(0);
+      return;
+    }
+
+    const url = buildWebhookUrl("vencidos", {
+      id_empresa: empresa_id
+    });
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    const item = Array.isArray(data) ? data[0] : data;
+    setQtdVencidos(Number(item?.qtd_vencidos || 0));
+  } catch (e) {
+    setQtdVencidos(0);
+  }
+}
+ 
+useEffect(() => {
+  setPeriodo("mes");
+  aplicarPeriodo("mes");
+
+  if (empresa_id) {
+    carregarQtdVencidos();
+  }
+}, [empresa_id]);
 
 
-          </div>
+function RelatorioEscolhido(tipo) {
+ 
+    tipo = (tipo ?? "").trim();
+  switch (tipo) {
+    case "vencidos":
+      return "Vencidos"; 
+      case "vence_hoje":
+      return "Vence Hoje"; 
+    case "transacao":
+      return "À vista";
+    case "conta_pagar":
+      return "Contas a Pagar";
+    case "conta_receber":
+      return "Contas a Receber";
+    case "fatura_cartao":
+      return "Faturas no Cartão";
+         case "cartao_compra":
+      return "Compras no Cartão";
+      case "titulos_pagos":
+      return "Titulos Baixados";
+       case "vence_sete_dias":
+        return "Vence em sete dias.";
+        case "estorno":
+      return "Operações Estornadas";
+        case "todos":
+      return "Todos";
+    default:
+      return tipo || "Todos";
+  }
+}
+
+ function getUid(l) {
+  return `${l.tipo_operacao || tipoOperacao}:${l.id}`;
+}
+
+function toggleSelecionado(l) {
+  const uid = getUid(l);
+
+  setSelecionados((prev) =>
+    prev.includes(uid)
+      ? prev.filter((x) => x !== uid)
+      : [...prev, uid]
+  );
+}
+
+function toggleSelecionarTodos() {
+  const ids = listaFiltrada.map((l) => getUid(l));
+
+  const todosMarcados = ids.every((id) => selecionados.includes(id));
+
+  setSelecionados(todosMarcados ? [] : ids);
+}
+
+function executarSelecionados() {
+  const itens = listaFiltrada.filter((l) =>
+    selecionados.includes(getUid(l))
+  );
+
+  if (itens.length === 0) {
+    alert("Selecione ao menos um item.");
+    return;
+  }
+
+  const temFinanceiroOuPago = itens.some(
+    (l) =>
+      l.tipo_operacao === "transacao" ||
+      tipoOperacao === "titulos_pagos"
+  );
+
+  if (temFinanceiroOuPago) {
+    estornarSelecionados(itens);
+    return;
+  }
+
+  executarTitulos(itens, contaId);
+}
+
+
+async function estornarSelecionados(itens) {
+  if (!confirm(`Confirma estornar ${itens.length} lançamento(s)?`)) return;
+
+  try {
+    setLoading(true);
+
+    const ids = itens.map((l) => Number(l.id));
+
+    const resp = await fetch(buildWebhookUrl("estornar_lancamentos_lote"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        ids,
+      }),
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok || data?.ok === false) {
+      alert(data?.message || "Erro ao estornar selecionados.");
+      return;
+    }
+
+    alert("Estorno realizado com sucesso!");
+ 
+   mostrarMensagemTela(  "Operação excluída com sucesso. Quando o estorno é feito no mesmo dia, ele não gera movimentação financeira adicional.",10000);
+           
+
+    setSelecionados([]);
+    window.dispatchEvent(new Event("contabil-atualizado"));
+    pesquisar(tipoOperacao || "");
+  } catch (e) {
+    alert("Erro ao estornar selecionados.");
+  } finally {
+    setLoading(false);
+  }
+}
+
+ function labelBotaoSelecionados() {
+  const qtd = selecionados.length;
+  const sufixo = qtd > 0 ? ` (${qtd})` : "";
+
+  switch ((tipoOperacao || "").trim()) {
+    case "transacao":
+    case "titulos_pagos":
+      return `Estornar Selecionados${sufixo}`;
+
+    case "conta_pagar":
+      return `Pagar Seleção${sufixo}`;
+
+    case "conta_receber":
+      return `Receber Seleção${sufixo}`;
+
+    case "fatura_cartao":
+      return `Pagar Faturas${sufixo}`;
+
+    case "vencidos":
+    case "vence_hoje":
+    case "vence_sete_dias":
+      return `Baixar Selecionados${sufixo}`;
+
+    default:
+      return `Baixar Selecionados${sufixo}`;
+  }
+}
+
+
+function corBotaoSelecionado() {
+  switch ((tipoOperacao || "").trim()) {
+    case "transacao":
+      return "btn-yellow";
+
+    case "conta_receber":
+      return "btn-emerald";
+
+    case "conta_pagar":
+      return "btn-red";
+
+    case "fatura_cartao":
+      return "btn-blue";
+
+    case "vence_hoje":
+      return "btn-blue";
+
+    case "vencidos":
+      return "btn-red";
+
+    case "vence_sete_dias":
+      return "btn-gray";
+
+    case "estorno":
+      return "btn-red";
+
+    case "titulos_pagos":
+      return "btn-purple";
+
+    default:
+      return "btn-gray";
+  }
+}
+ 
+
+ function permiteSelecao() {
+  return tipoOperacao !== "estorno" && tipoOperacao !== "cartao_compra";
+}
+
+async function excluirPagar(id) {
+    if (!confirm("Confirmar exclusão?")) return;
+
+    try {
+      const url = buildWebhookUrl("exclui_conta_pagar"); // <<< trocar pelo webhook real
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, empresa_id }),
+      });
+
+      const texto = await resp.text();
+      let json = {};
+
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      if (texto.includes("foreign key") || texto.includes("violates")) {
+        alert("Não é possível excluir: esta conta possui vínculos.");
+        return;
+      }
+
+      alert(json?.message || "Excluído com sucesso!");
+ 
+      pesquisar(tipoOperacao || "");
+    } catch (e) {
+      console.log("ERRO EXCLUIR:", e);
+      alert("Erro ao excluir");
+    }
+  }
+
+
+  async function excluirReceber(id) {
+    if (!confirm("Confirmar exclusão?")) return;
+
+    try {
+      const url = buildWebhookUrl("exclui_conta_receber"); // <<< trocar pelo webhook real
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, empresa_id }),
+      });
+
+      const texto = await resp.text();
+      let json = {};
+
+      try {
+        json = JSON.parse(texto);
+      } catch {}
+
+      if (texto.includes("foreign key") || texto.includes("violates")) {
+        alert("Não é possível excluir: esta conta possui vínculos.");
+        return;
+      }
+
+      alert(json?.message || "Excluído com sucesso!");
+        pesquisar(tipoOperacao || "");
+    } catch (e) {
+      console.log("ERRO EXCLUIR:", e);
+      alert("Erro ao excluir");
+    }
+  }
+
+
+function labelBotaoPorTipo(tipo) {
+  switch ((tipo || "").trim()) {
+    case "transacao":
+    case "titulos_pagos":
+      return "Estornar Selecionados";
+
+    case "conta_pagar":
+      return "Pagar Seleção";
+
+    case "conta_receber":
+      return "Receber Seleção";
+
+    case "fatura_cartao":
+      return "Pagar Faturas";
+
+    case "vencidos":
+    case "vence_hoje":
+    case "vence_sete_dias":
+      return "Baixar Selecionados";
+
+    default:
+      return "Baixar Selecionados";
+  }
+}
+
+
+function excluir(id, tipo_operacao) {
+  if (tipo_operacao === "conta_pagar") {
+    return excluirPagar(id);
+  }
+
+  if (tipo_operacao === "conta_receber") {
+    return excluirReceber(id);
+  }
+
+  if (tipo_operacao === "cartao_compra") {
+    return excluirCompra(id);
+  }
+}
+ 
+
+return (
+  <div className="p-4 space-y-4">
+
+    {msgEstorno && (
+  <div className="mb-4 rounded-xl border border-amber-400 bg-amber-150 px-5 py-3 text-base font-bold text-amber-800 shadow-sm">
+    {msgEstorno}
+  </div>
+)}
+
+    {mostrarAlerta && (
+  <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-yellow-100 text-red px-6 py-3 rounded shadow-lg animate-bounce z-50">
+    ⚠️ Após finalizar todos lançamentos do dia, não esqueça de realizar o processamento contábil —{" "}
+    <a href="/processar-diario" className="underline font-bold">
+      Acesse aqui
+    </a>
+  </div>
+)}
+
+    {/* HEADER */}
+   <div className="flex justify-between items-start">
   
-          <button
-            onClick={pesquisar}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32 text-center"
-          >
-            {carregando ? "Carregando..." : "Pesquisar"}
-          </button>
+    <h1 className="text-xl font-bold text-blue-800">Transações Financeiras</h1>
+  <div>
 
-          <button
-            onClick={abrirNovoLancamento}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-sm w-32 text-center"
-          >
-            Novo
-          </button>
-        </div>
-      </div>
+  {/* BOTÃO HELP */}
+  <span
+    onClick={() => navigate("/pages/ajuda/lancamentos")}
+    className="cursor-pointer bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-blue-700"
+    title="Abrir ajuda"
+  >
+    ?
+  </span> 
+    <p className="text-sm text-gray-500">
+      Consulte entradas e saídas financeiras com poucos cliques.
+    </p>
+  </div>
 
-</div>
-      
-  
-       <div className="bg-gray-100 rounded-xl shadow p-4">
-  
-          {/* TOTAIS EM 3 COLUNAS */}
-          <div className="mb-4 grid grid-cols-1 sm:grid-cols-5 gap-4">
+  <div className="flex gap-4 text-base font-semibold">
+         <p className="text-sm text-gray-500 mt-30">
+          ℹ️ Transações já estornadas ou estornos não podem ser estornados novamente.
+        </p>
 
-                     {/* SALDO INICIAL */}
-                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-600">
-                  <div className="text-base font-bold text-gray-600">Saldo Inicial</div>
-                  <div className="text-2xl font-bold text-gray-800">
-                    {saldoInicial.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </div>
-                </div>
-
-            {/* ENTRADAS */}
-            <div className="bg-white shadow rounded-lg p-4 border-l-4 border-green-600">
-              <div className="text- base font-bold text-gray-600">Total Entradas</div>
-              <div className="text-2xl font-bold text-green-700">
-                {totalEntrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-              </div>
-            </div>
-
-            {/* SAÍDAS */}
-            <div className="bg-white shadow rounded-lg p-4 border-l-4 border-red-600">
-              <div className="text-base font-bold text-gray-600">Total Saídas</div>
-              <div className="text-2xl font-bold text-red-700">
-                {totalSaida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-              </div>
-            </div> 
-
-                  {/* RESULTADO LÍQUIDO */}
-              <div className={`bg-white shadow rounded-lg p-4 border-l-4
-                ${ (totalEntrada - totalSaida) >= 0 ? "border-green-600" : "border-red-600" }
-              `}>
-                <div className="text-sm font-semibold text-gray-600">Resultado Líquido</div>
-                <div className={`text-2xl font-bold 
-                  ${ (totalEntrada - totalSaida) >= 0 ? "text-green-700" : "text-red-700" }
-                `}>
-                  {(totalEntrada - totalSaida).toLocaleString("pt-BR", { 
-                    style: "currency", 
-                    currency: "BRL" 
-                  })}
-                </div>
-             </div>  
-
-
-
-             {/* SALDO FINAL */}
-                <div className="bg-white shadow rounded-lg p-4 border-l-4 border-gray-800">
-                  <div className="text- base font-bold text-gray-600">Saldo Atual</div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {saldoFinal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                  </div>
-                </div>
-
-               
-          </div> 
-
-
-  {/* TABELA */} 
-  <table className="w-full text-sm">
    
-    ...
-  </table>
-</div>
- 
+     <button
+      onClick={abrirNovoLancamento}
+       className="btn-pill btn-emerald"
+                    >
+      + Novo lançamento
+    </button>
 
-      {/* TABELA  
-      
-      <div className="bg-white rounded-xl shadow p-4">*/}
-          <div className="bg-gray-300 p-4 rounded-xl shadow">
-        {lista.length === 0 ? (
-          <p className="text-gray-600 text-sm">Nenhum lançamento encontrado.</p>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-blue-300 text-base">
-                <th className="text-left py-2 px-2 w-10">ID</th>
-                <th className="text-left py-2 px-2 w-64">Descrição</th>
-                <th className="text-left py-2 px-2 w-32">Categoria</th>
-                <th className="text-left py-2 px-2 w-32">Conta</th>
-                <th className="text-left py-2 px-2 w-20">Tipo</th>
-                <th className="text-left py-2 px-2 w-24">Data</th>
-                <th className="text-left py-2 px-2 w-24">Origem</th>
-
-                {/* Valor mais para esquerda */}
-                <th className="text-right py-2 px-1 w-20">Valor</th>
-
-                 {/* 👉 ADICIONE ESTA LINHA */}
-                 <th className="text-center py-2 px-2 w-24">Ação</th>
-   
-              </tr>
-
-              
-          
-
-            </thead>
-
-           <tbody>
-  {lista.map((l, i) => (
-    <tr
-      key={l.id}
-      className={i % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
+     {/*} <button
+      onClick={abrirNovaReceita}
+       className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800"
     >
+      💰 Nova receita
+     </button>*/}
 
-      {/* REMOVE COMPLETAMENTE A COLUNA DO ID */}
-     <td className="px-2">{l.id}</td>
-      <td className="px-2 font-semibold truncate max-w-xs">{l.descricao}</td>
-      <td className="px-2">{l.categoria_nome}</td>
-      <td className="px-2">{l.conta_nome}</td>
+    <a
+      href="#"
+      onClick={() => window.print()}
+              className="btn-pill btn-black"
+                    >
+      🖨️ Imprimir
+    </a>
+  </div>
+</div>
 
-      <td
-        className={
-          "px-2 font-bold " +
-          (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
-        }
-      >
-        {l.tipo}
-      </td>
 
-      <td className="px-2">{l.data}</td>
-      <td className="px-2">{l.origem}</td>
+    {/* CARDS SUPERIORES */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-      <td
-        className={
-          "px-1 text-right font-bold " +
-          (l.tipo === "Entrada" ? "text-green-600" : "text-red-600")
-        }
-      >
-        {l.valor}
-      </td>
+      {/* TOTAL DO PERÍODO */}
+      <div className="bg-white rounded-xl p-4 border-l-4 border-blue-600 shadow-sm">
+        <p className="text-sm text-gray-500">Resultado do período</p>
+        <p className="text-2xl font-bold text-gray-900">
+          {(totalEntrada - totalSaida).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}
+        </p>
+      </div>
+       
+       <div className="bg-white rounded-xl p-4 border-l-4 border-orange-400 shadow-sm">
+            <p className="text-base text-gray-700">Período</p>
 
-      {/* AÇÕES */}
-      <td className="px-2 py-1 text-center space-x-4">
+            {dataIni && dataFim ? (
+              <p className="font-bold text-gray-800">
+                Período de {calcularPeriodoDias(dataIni, dataFim)} dias
+              </p>
+            ) : (
+              <p className="font-bold text-blue-800">
+                Não selecionado
+              </p>
+            )}
+          </div>
+   
+ 
+      {/* CONTA BANCÁRIA */}
+      <div className="bg-white rounded-xl p-4 border-l-4 border-green-600 shadow-sm">
+        <p className="text-sm text-gray-500">Conta bancária</p>
 
-        {/* EDITAR */}
-        <button
-          onClick={() => editarLancamento(l.id)}
-          className="text-blue-600 underline font-bold"
-        >
-          Editar
-        </button>
-
-        {/* ESTORNAR */}
-        <button
-          onClick={() => Estornar(l.id)}
-          className="text-red-600 underline font-bold"
-        >
-          Estornar
-        </button>
-
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-          </table>
+        {dadosConta ? (
+          <>
+            <p className="font-semibold text-gray-900">{dadosConta.conta_nome}</p>
+            <p className="text-sm text-gray-600">
+              Banco: {dadosConta.nro_banco ?? "-"} • Ag: {dadosConta.agencia ?? "-"}
+            </p>
+            <p className="text-sm font-semibold text-green-700 mt-1">
+              Saldo:{" "}
+              {Number(dadosConta.saldo_final).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </p>
+          </>
+        ) : (
+          <p className="text-sm text-gray-400">Selecione uma conta</p>
         )}
       </div>
     </div>
-  );
+
+    {/* FILTROS */}
+    <div className="bg-white rounded-xl p-4 shadow-sm">
+      <div className="flex flex-wrap items-end gap-2">
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Data início</label>
+          <input
+            type="date"
+            value={dataIni}
+            max={hojeLocal()}
+            onChange={(e) => setDataIni(e.target.value)}
+            className="block border rounded-lg px-3 py-2 text-sm"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Data fim</label>
+          <input
+            type="date"
+            value={dataFim}
+           // max={hojeMaisDias(15)}
+            onChange={(e) => setDataFim(e.target.value)}
+            className="block border rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Conta Bancária</label>
+          <select
+            value={contaId}
+             ref={contaRef}
+            onChange={(e) => {
+                if (e.target.value === "__nova__") {
+                  setModalConta(true);
+                  return;
+                }
+
+                setContaId(e.target.value);
+              }} 
+            className="block border rounded-lg px-3 py-2 text-sm" >
+          <option value="">Selecione</option>
+
+          {contas.map((c) => (
+            <option key={c.id} value={String(c.id)}>
+              {c.nome}
+            </option>
+          ))}
+
+          <option value="__nova__">➕ Nova Conta Financeira</option>
+        </select>
+  
+        </div>
+        {/* BUSCA */}
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold text-gray-700  mt-4">
+              Busca
+            </label>
+
+            <input
+              type="text"
+              placeholder="🔎 Buscar transação..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value.toLowerCase())}
+              className="px-3 py-2 border rounded-lg w-64"
+            />
+          </div>
+        
+         {qtdVencidos > 0 && (
+            <div className="mt-3 ml-3 flex justify-center">
+              <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
+                <button onClick={() => pesquisar("vencidos")}>
+                  <span className="text-base text-red-600 font-semibold">
+                    Existem {qtdVencidos} título(s) vencido(s).
+                  </span>
+                </button>
+              </div>
+            </div>
+          )}
+         <div className="flex items-center gap-2 mt-3"> 
+            {tipoOperacao !== undefined && tipoOperacao !== null && ( 
+            <div className="mt-3 ml-3 flex justify-center">
+              <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm  ">
+                <span className="text-base text-slate-600">
+                Filtro de:{" "}
+                  <span className="font-bold text-blue-700">
+                    {RelatorioEscolhido(tipoOperacao)}
+                  </span>
+                  {" — Encontrados "}
+                  <span className="font-bold text-slate-700 text-blue-700">
+                    {qtdRegistros}
+                  </span>
+                  {" registros"}
+                      </span>
+                  </div> 
+              </div> 
+            )}      
+
+        <button
+          onClick={executarSelecionados}
+          disabled={!permiteSelecao() || selecionados.length === 0}
+          className={`
+            btn-pill ${corBotaoSelecionado()}
+            disabled:opacity-90 disabled:cursor-not-allowed
+            ${piscarBotaoAcao ? "animate-pulse ring-4 ring-yellow-300 scale-105" : ""}
+          `}
+        >
+          {tipoOperacao === "estorno"
+            ? "Somente consulta"
+            : labelBotaoSelecionados()}
+        </button>
+            
+
+       
+        </div>
+
+       <div className="flex items-center gap-10"> 
+
+                  
+                  
+                <div className="flex gap-6 text-sm font-semibold">
+                 
+                   {/*} <button
+                    
+                       onClick={() => {
+                              setTipoOperacao("todos");
+                              pesquisar("");
+                            }}
+                      className="btn-pill btn-blue"
+                    >
+                      🔎 Todos
+                    </button>*/}
+
+                    <button
+                      onClick={() => {
+                                const tipo = "transacao";
+                                setTipoOperacao("transacao");
+                                pesquisar("transacao"); 
+                                chamarAtencaoBotaoAcao()
+                                mostrarMensagemTela(  "Ação permitida, estorno. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                              }}
+                      className="btn-pill btn-yellow"
+                    >
+                      💰 À vista
+                    </button>
+
+                    <button
+                      onClick={() => {
+                          const tipo = "conta_receber";
+                        setTipoOperacao("conta_receber");
+                        pesquisar("conta_receber");
+                         chamarAtencaoBotaoAcao()
+                         mostrarMensagemTela(  "Ação permitida, baixar recebimentos. Selecione os registros e clique no botão " +   labelBotaoPorTipo(tipo) + ".",5000);
+                      }}
+                      className="btn-pill btn-green"
+                    >
+                      📥  A Receber
+                    </button>
+
+                    <button
+                       onClick={() => {
+                             const tipo = "conta_pagar";
+                            setTipoOperacao("conta_pagar");
+                            pesquisar("conta_pagar");
+                             chamarAtencaoBotaoAcao()
+                         mostrarMensagemTela(  "Ação permitida, baixar pagamentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                          }}
+                      className="btn-pill btn-red"
+                    >
+                      📤 A Pagar
+                    </button>
+
+                    <button
+                       onClick={() => {
+                              const tipo = "cartao_compra";
+                             setSelecionados([]);
+                            setTipoOperacao("cartao_compra");
+                            pesquisar("cartao_compra");
+                             chamarAtencaoBotaoAcao()
+                            mostrarMensagemTela(  "Ação permitida, excluir compras no cartão. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                          }}
+                      className="btn-pill btn-blue"
+                    >
+                      💳 Compras Cartão
+                    </button>
+          
+                    <button
+                       onClick={() => {
+                              const tipo = "fatura_cartao";
+                            setTipoOperacao("fatura_cartao");
+                            pesquisar("fatura_cartao");
+                             chamarAtencaoBotaoAcao()
+                             mostrarMensagemTela(  "Ação permitida, pagar faturas do cartão.  Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                          }}
+                      className="btn-pill btn-purple"
+                    >
+                      💳 Faturas
+                    </button>
+                 
+
+                    
+                     <button
+                       onClick={() => {
+                              const tipo = "vence_hoje";
+                            setTipoOperacao("vence_hoje");
+                            pesquisar("vence_hoje");
+                             chamarAtencaoBotaoAcao()
+                            mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                          }}
+                      className="btn-pill btn-blue"
+                    >
+                      ⏰ Vencimentos
+                    </button>
+                       
+                       <button
+                       onClick={() => {
+                             const tipo = "vencidos";
+                            setTipoOperacao("vencidos");
+                            pesquisar("vencidos");
+                             chamarAtencaoBotaoAcao()
+                               mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                          }}
+                      className="btn-pill btn-red"
+                    >
+                      💳 Vencidos
+                    </button>
+
+                    
+                     <button
+                       onClick={() => {
+                             const tipo = "vence_sete_dias";
+                            setTipoOperacao("vence_sete_dias");
+                            pesquisar("vence_sete_dias");
+                             chamarAtencaoBotaoAcao()
+                               mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                          }}
+                      className="btn-pill btn-gray"
+                    >
+                      📅 Vence 7 Dias
+                    </button>
+
+                         <button
+                       onClick={() => {
+                              const tipo = "estorno";
+                            setTipoOperacao("estorno");
+                            pesquisar("estorno");
+                             chamarAtencaoBotaoAcao()
+                               mostrarMensagemTela(  "Ação permitida, estornar operações financeiras. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
+                          }}
+                      className="btn-pill btn-red"
+                    >
+                      🔁 Estornados
+                    </button>
+                    
+
+                        <button
+                       onClick={() => {
+                             const tipo = "titulos_pagos";
+                            setTipoOperacao("titulos_pagos");
+                            pesquisar("titulos_pagos");
+                             chamarAtencaoBotaoAcao()
+                            mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",8000);
+                          }}
+                      className="btn-pill btn-purple"
+                    >
+                      ✅ Baixados
+                    </button>
+                    
+
+                </div>
+         
+        </div>
+                
+      </div>
+    </div>
+
+    
+
+    {/* TABELA */}
+    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+      {listaFiltrada.length === 0 ? (
+        <p className="p-4 text-sm text-gray-500">Nenhum lançamento encontrado.</p>
+      ) : (
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr>
+             {permiteSelecao() && ( <th className="px-3 py-2 text-center">
+                <input
+                  type="checkbox"
+                  checked={
+                    listaFiltrada.length > 0 &&
+                    listaFiltrada.every((l) => selecionados.includes(getUid(l)))
+                  }
+                  onChange={() => {
+                    toggleSelecionarTodos();
+                    chamarAtencaoBotaoAcao();
+                  }}
+                  
+                />
+              </th> )}
+               <th className="px-3 py-2 text-left">id</th>
+              <th className="px-3 py-2 text-left">Descrição</th>
+               <th className="px-3 py-2 text-center  font-bold ">Data Movimento</th>
+
+
+              {lista.some(l => l.tipo_operacao === "fatura_cartao") ? (
+                <>
+                  <th className="px-3 py-2 text-left">Nome</th>
+                  <th className="px-3 py-2 text-left">Número</th>
+                </>
+              ) : (
+                <>
+                  <th className="px-3 py-2 text-left">Categoria</th>
+                  <th className="px-3 py-2 text-left">Conta</th>
+                </>
+              )}
+              <th className="px-3 py-2 text-left">Tipo</th> 
+                {temTransacao && (
+                    <th className="px-3 py-2 text-left">Origem</th>
+                  )}
+
+                <th className="px-3 py-2 text-left">Classsificação</th>
+                  <th className="px-3 py-2 text-left">Forma Pagamento</th>
+                
+              
+                 {!temTransacao && (
+               <>   <th className="px-3 py-2 text-left">Parcela</th>
+                  <th className="px-3 py-2 text-left">Parcela Total</th> </> )}
+                <th className="px-3 py-2 text-left">Vencimento</th>
+              {!temTransacao && (
+               <>     <th className="px-3 py-2 text-left">Vencido</th>
+                 <th className="px-3 py-2 text-left">Status</th> </> )}
+              <th className="px-3 py-2 text-right">Valor</th>
+              {temTransacao && (
+                 <>  <th className="px-3 py-2 text-right"> Estorno</th> </> )}
+                <th className="px-3 py-2 text-left "> Tipo Evento</th>
+                 <th className="px-3 py-2 text-left "> Ação</th>
+              
+            </tr>
+          </thead>  
+
+          <tbody>
+
+            
+            {listaFiltrada.map((l, i) => (
+
+                 <tr
+                      key={getUid(l)}
+                      onDoubleClick={(e) => {
+                        if (e.target.closest("button") || e.target.closest("input")) return;
+                        editarLancamento(l);
+                      }}
+                      title="Clique duas vezes para editar"
+                      className="border-t hover:bg-blue-50 cursor-pointer"
+                    >
+                 {permiteSelecao() && ( <td className="px-3 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selecionados.includes(getUid(l))}
+                      onChange={() => toggleSelecionado(l)}
+
+                    />
+                  </td>)}
+                   
+                 <td className="px-3 py-2 text-left font-bold">{l.id}</td>
+                  <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]"> {l.descricao}</td>
+                  <td className="px-3 py-2 font-bold text-center ">{l.data}</td>
+                 {l.origem === "fatura_cartao" ? (
+                      <>
+                        <td className="px-3 py-2">{l.nome || "-"}</td>
+                        <td className="px-3 py-2">{l.numero || "-"}</td>
+                      </>
+                    ) : (
+                      <>
+                        <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
+                          {l.categoria_nome}
+                        </td>
+                          <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]"> {l.conta_nome}</td>
+                      </>
+                    )}
+                <td className={`px-3 py-2 font-semibold ${l.tipo === "Entrada" ? "text-green-600" : "text-red-600"}`}>
+                  {l.tipo}
+                </td>
+                    {temTransacao && (
+                <td className="px-3 py-2 text-left">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          l.origem === "conta_pagar"
+                            ? "bg-red-100 text-red-700"
+                            : l.origem === "conta_receber"
+                            ? "bg-green-100 text-green-700"
+                            : l.origem === "fatura_cartao"
+                            ? "bg-purple-100 text-purple-700"
+                            : l.origem === "estorno"
+                            ? "bg-gray-200 text-gray-700"
+                            : l.origem === "compra_cartao"
+                             ? "bg-blue-100 text-blue-700"
+                            : "bg-yellow-100 text-yellow-700"
+                          
+                        }`} 
+                      >
+                        {l.origem === "conta_pagar"
+                          ? "Pagar"
+                          : l.origem === "conta_receber"
+                          ? "Receber"
+                          : l.origem === "fatura_cartao"
+                          ? "Pagar Fatura "
+                          : l.origem === "estorno"
+                          ? "Estorno operação"
+                           : l.origem === "compra_cartao"
+                           ? "Cartão"
+                          : "Financeiro"}
+                      </span>
+                    </td> )}
+
+                 <td className="px-3 py-2 font-medium text-center ">{l.classificacao}</td>
+                   <td className="px-3 py-2 font-medium text-center">
+                        {formaLabel[l.forma] || l.forma}
+                      </td>
+               
+               {!temTransacao && (   
+                <td className="px-3 py-2  text-center">
+                    {Number(l.parcelas) > 0 ? l.parcelas : "-"}
+                  </td>)}
+
+                  {!temTransacao && (     <td className="px-3 py-2 text-center">
+                    {Number(l.parcela_total) > 0 ? l.parcela_total : "-"}
+                  </td>)}
+                   <td className="px-3 py-2 text-center">{formatarDataBR(l.vencimento)}</td>
+                       {!temTransacao && (<td className="px-3 py-2 text-left">
+                             <span
+                                  className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                    l.vencido === "sim"
+                                      ? "bg-red-100 text-red-700"
+                                      : l.vencido === "nao"
+                                      ? "bg-green-100 text-green-700" 
+                                      : "bg-yellow-100 text-yellow-700"
+                                    
+                                  }`}
+                                >
+                                  {l.vencido === "sim"
+                                    ? "Sim"
+                                    : l.vencido === "nao"
+                                    ? "Não" 
+                                    : ""}
+                                </span> 
+                      </td> )}
+
+                     {!temTransacao && (   <td className="px-3 py-2">
+                     <td className="px-3 py-2">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-semibold ${
+                            l.status === "paga" || l.status === "recebido"
+                              ? "bg-green-100 text-green-700"
+                              : l.status === "aberta" || l.status === "aberto"
+                              ? "bg-yellow-200 text-yellow-800"
+                              : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {l.status || "-"}
+                        </span>
+                      </td>
+                  </td>)}
+                <td className="px-3 py-2 text-right font-semibold">{l.valor}</td>
+                 {temTransacao && ( <td className="px-3 py-2 text-right font-bold">{l.origem_id}</td>)}
+                 <td className="px-3 py-2 text-left">
+                   
+                     <span
+                      className={`px-3 py-1 rounded-full text-xs font-bold  text-center ${
+                        l.tipo_operacao === "conta_pagar"
+                          ? "bg-red-100 text-red-700"
+                          : l.tipo_operacao === "conta_receber"
+                          ? "bg-green-100 text-green-700"
+                          : l.tipo_operacao === "cartao_compra"
+                          ? "bg-blue-100 text-blue-700"
+                          : l.tipo_operacao === "fatura_cartao"
+                          ? "bg-purple-100 text-purple-700"
+                          : "bg-yellow-200 text-yellow-800"
+                      }`}
+                    >
+                      {l.tipo_operacao === "conta_pagar"
+                        ? "A pagar"
+                        : l.tipo_operacao === "conta_receber"
+                        ? "A receber"
+                        : l.tipo_operacao === "cartao_compra"
+                        ? "Compra cartão"
+                        : l.tipo_operacao === "fatura_cartao"
+                        ? "Fatura cartão"
+                        : "Financeiro"}
+                    </span>
+                    </td>
+                  
+                <td className="px-3 py-2 text-center space-x-2">
+                  
+                {/*} {l.tipo_operacao === "transacao" && (
+                    <button
+                      onClick={() => l.origem_id == null && Estornar(l.id)}
+                      disabled={l.origem_id != null}
+                      title={l.origem_id != null ? "Esta transação já foi estornada." : ""}
+                      className={`font-semibold ${
+                        l.origem_id == null
+                          ? "text-red-600 hover:underline"
+                          : "text-gray-400 cursor-not-allowed"
+                      }`}
+
+                      
+                    >
+                      Estornar
+                    </button>
+                  )}*/}
+
+                 
+                    {/*{l.tipo_operacao !== "cartao_compra" && l.tipo_operacao !== "transacao" && (
+                          <button
+                            onClick={() => processarTitulo(l, contaId)}
+                            disabled={l.status !== "aberto" && l.status !== "aberta"}
+                            className={`font-semibold underline ${
+                              l.status !== "aberto" && l.status !== "aberta"
+                                ? "text-gray-600 cursor-not-allowed"
+                                : l.tipo_operacao === "conta_receber"
+                                ?  "bg-blue-100 text-blue-700"
+                                :  "bg-red-100 text-red-700"
+                            }`}
+                          >    
+                            {l.tipo_operacao === "conta_receber"
+                              ? l.status === "aberto" || l.status === "aberta"
+                                ? "Receber"
+                                : " Recebido"
+                              : l.tipo_operacao === "fatura_cartao"
+                              ? l.status === "aberto" || l.status === "aberta"
+                                ? "Aberto"
+                                : "Fatura paga"
+                              : l.status === "aberto" || l.status === "aberta"
+                              ? "Pagar"
+                              : "Pago"}
+                          </button>
+                        )}*/}
+        
+
+                    {["cartao_compra", "conta_pagar", "conta_receber"].includes(l.tipo_operacao) && (
+                      <button
+                      onClick={() => {
+                        if (
+                          (l.tipo_operacao === "conta_pagar" && l.status === "pago") ||
+                          (l.tipo_operacao === "conta_receber" && l.status === "recebido")
+                        ) return;
+
+                        excluir(l.id,l.tipo_operacao);
+                      }}
+                      disabled={
+                        (l.tipo_operacao === "conta_pagar" && l.status === "pago") ||
+                        (l.tipo_operacao === "conta_receber" && l.status === "recebido")
+                      }
+                      className={
+                        (l.tipo_operacao === "conta_pagar" && l.status === "pago") ||
+                        (l.tipo_operacao === "conta_receber" && l.status === "recebido")
+                          ? "text-gray-400 cursor-not-allowed font-semibold"
+                          : "text-red-600 hover:underline font-semibold"
+                      }
+                    >
+                      Excluir
+                    </button>
+                  )}
+
+
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+
+
+ <ModalBase
+            open={modalConta}
+            onClose={() => setModalConta(false)}
+            title="Nova Conta Financeira"
+          >
+            <FormConta
+              empresa_id={empresa_id}
+              onSuccess={(novaConta) => {
+                    console.log("RETORNO RAW:", novaConta);
+                    carregarContas()
+                    const conta = Array.isArray(novaConta)
+                      ? novaConta[0]
+                      : novaConta;
+
+                    console.log("CONTA TRATADA:", conta);
+
+                    setContas(prev => {
+                      console.log("ANTES:", prev);
+                      return [conta, ...prev];
+                    });
+
+                    setContaId(String(conta.id));
+
+                    setModalConta(false);
+                  }}
+              onCancel={() => setModalConta(false)}
+            />
+          </ModalBase>
+
+  </div>
+);
+
+  
 }

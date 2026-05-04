@@ -998,6 +998,83 @@ function excluir(id, tipo_operacao) {
   }
 }
  
+function escolherFiltro(tipo) {
+  const acoes = {
+    transacao: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, estorno."
+    },
+    conta_receber: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, baixar recebimentos."
+    },
+    conta_pagar: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, baixar pagamentos."
+    },
+    cartao_compra: {
+      limparSelecao: true,
+      tempo: 5000,
+      msg: "Ação permitida, excluir compras no cartão."
+    },
+    fatura_cartao: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, pagar faturas do cartão."
+    },
+    vence_hoje: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+    },
+    vencidos: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+    },
+    vence_sete_dias: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+    },
+    estorno: {
+      limparSelecao: false,
+      tempo: 5000,
+      msg: "Ação permitida, estornar operações financeiras."
+    },
+    titulos_pagos: {
+      limparSelecao: false,
+      tempo: 8000,
+      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+    }
+  };
+
+  const cfg = acoes[tipo];
+
+  if (!cfg) return;
+
+  if (cfg.limparSelecao) {
+    setSelecionados([]);
+  }
+
+  setTipoOperacao(tipo);
+  pesquisar(tipo);
+  chamarAtencaoBotaoAcao();
+
+  mostrarMensagemTela(
+    cfg.msg +
+      " Selecione os registros e clique no botão " +
+      labelBotaoPorTipo(tipo) +
+      ".",
+    cfg.tempo
+  );
+}
+
+
+ 
 
 return (
   <div className="p-4 space-y-4">
@@ -1190,7 +1267,7 @@ return (
          {qtdVencidos > 0 && (
             <div className="mt-3 ml-3 flex justify-center">
               <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
-                <button onClick={() => pesquisar("vencidos")}>
+                <button   onClick={() => escolherFiltro("vencidos")}>
                   <span className="text-base text-red-600 font-semibold">
                     Existem {qtdVencidos} título(s) vencido(s).
                   </span>
@@ -1217,180 +1294,51 @@ return (
               </div> 
             )}      
 
-        <button
-          onClick={executarSelecionados}
-          disabled={!permiteSelecao() || selecionados.length === 0}
-          className={`
-            btn-pill ${corBotaoSelecionado()}
-            disabled:opacity-90 disabled:cursor-not-allowed
-            ${piscarBotaoAcao ? "animate-pulse ring-4 ring-yellow-300 scale-105" : ""}
-          `}
-        >
-          {tipoOperacao === "estorno"
-            ? "Somente consulta"
-            : labelBotaoSelecionados()}
-        </button>
-            
+        
 
        
         </div>
 
-       <div className="flex items-center gap-10"> 
-
+      
                   
-                  
-                <div className="flex gap-6 text-sm font-semibold">
-                 
-                   {/*} <button
-                    
-                       onClick={() => {
-                              setTipoOperacao("todos");
-                              pesquisar("");
-                            }}
-                      className="btn-pill btn-blue"
+                <div className="flex gap-3 text-sm font-semibold"> 
+              
+                    <select
+                      value={tipoOperacao}
+                      onChange={(e) => escolherFiltro(e.target.value)}
+                      className="px-5 py-3 rounded-full border-2 border-blue-500 bg-white text-sm font-bold text-blue-700 shadow hover:bg-blue-250"
                     >
-                      🔎 Todos
-                    </button>*/}
-
-                    <button
-                      onClick={() => {
-                                const tipo = "transacao";
-                                setTipoOperacao("transacao");
-                                pesquisar("transacao"); 
-                                chamarAtencaoBotaoAcao()
-                                mostrarMensagemTela(  "Ação permitida, estorno. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                              }}
-                      className="btn-pill btn-yellow"
-                    >
-                      💰 À vista
-                    </button>
-
-                    <button
-                      onClick={() => {
-                          const tipo = "conta_receber";
-                        setTipoOperacao("conta_receber");
-                        pesquisar("conta_receber");
-                         chamarAtencaoBotaoAcao()
-                         mostrarMensagemTela(  "Ação permitida, baixar recebimentos. Selecione os registros e clique no botão " +   labelBotaoPorTipo(tipo) + ".",5000);
-                      }}
-                      className="btn-pill btn-green"
-                    >
-                      📥  A Receber
-                    </button>
-
-                    <button
-                       onClick={() => {
-                             const tipo = "conta_pagar";
-                            setTipoOperacao("conta_pagar");
-                            pesquisar("conta_pagar");
-                             chamarAtencaoBotaoAcao()
-                         mostrarMensagemTela(  "Ação permitida, baixar pagamentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                          }}
-                      className="btn-pill btn-red"
-                    >
-                      📤 A Pagar
-                    </button>
-
-                    <button
-                       onClick={() => {
-                              const tipo = "cartao_compra";
-                             setSelecionados([]);
-                            setTipoOperacao("cartao_compra");
-                            pesquisar("cartao_compra");
-                             chamarAtencaoBotaoAcao()
-                            mostrarMensagemTela(  "Ação permitida, excluir compras no cartão. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                          }}
-                      className="btn-pill btn-blue"
-                    >
-                      💳 Compras Cartão
-                    </button>
-          
-                    <button
-                       onClick={() => {
-                              const tipo = "fatura_cartao";
-                            setTipoOperacao("fatura_cartao");
-                            pesquisar("fatura_cartao");
-                             chamarAtencaoBotaoAcao()
-                             mostrarMensagemTela(  "Ação permitida, pagar faturas do cartão.  Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                          }}
-                      className="btn-pill btn-purple"
-                    >
-                      💳 Faturas
-                    </button>
-                 
-
-                    
-                     <button
-                       onClick={() => {
-                              const tipo = "vence_hoje";
-                            setTipoOperacao("vence_hoje");
-                            pesquisar("vence_hoje");
-                             chamarAtencaoBotaoAcao()
-                            mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                          }}
-                      className="btn-pill btn-blue"
-                    >
-                      ⏰ Vencimentos
-                    </button>
-                       
-                       <button
-                       onClick={() => {
-                             const tipo = "vencidos";
-                            setTipoOperacao("vencidos");
-                            pesquisar("vencidos");
-                             chamarAtencaoBotaoAcao()
-                               mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                          }}
-                      className="btn-pill btn-red"
-                    >
-                      💳 Vencidos
-                    </button>
-
-                    
-                     <button
-                       onClick={() => {
-                             const tipo = "vence_sete_dias";
-                            setTipoOperacao("vence_sete_dias");
-                            pesquisar("vence_sete_dias");
-                             chamarAtencaoBotaoAcao()
-                               mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                          }}
-                      className="btn-pill btn-gray"
-                    >
-                      📅 Vence 7 Dias
-                    </button>
-
-                         <button
-                       onClick={() => {
-                              const tipo = "estorno";
-                            setTipoOperacao("estorno");
-                            pesquisar("estorno");
-                             chamarAtencaoBotaoAcao()
-                               mostrarMensagemTela(  "Ação permitida, estornar operações financeiras. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",5000);
-                          }}
-                      className="btn-pill btn-red"
-                    >
-                      🔁 Estornados
-                    </button>
-                    
-
-                        <button
-                       onClick={() => {
-                             const tipo = "titulos_pagos";
-                            setTipoOperacao("titulos_pagos");
-                            pesquisar("titulos_pagos");
-                             chamarAtencaoBotaoAcao()
-                            mostrarMensagemTela(  "Ação permitida, baixar pagamentos ou recebimentos. Selecione os registros e clique no botão " +    labelBotaoPorTipo(tipo) + ".",8000);
-                          }}
-                      className="btn-pill btn-purple"
-                    >
-                      ✅ Baixados
-                    </button>
-                    
+                      <option value="">Escolha uma consulta</option>
+                      <option value="transacao">💰 À vista</option>
+                      <option value="conta_receber">📥 A receber</option>
+                      <option value="conta_pagar">📤 A pagar</option>
+                      <option value="cartao_compra">💳 Compras cartão</option>
+                      <option value="fatura_cartao">💳 Faturas</option>
+                      <option value="vence_hoje">⏰ Vencimentos</option>
+                      <option value="vencidos">🔴 Vencidos</option>
+                      <option value="vence_sete_dias">📅 Vence 7 dias</option>
+                      <option value="estorno">🔁 Estornados</option>
+                      <option value="titulos_pagos">✅ Baixados</option>
+                    </select>
 
                 </div>
+
+                 <button
+                  onClick={executarSelecionados}
+                  disabled={!permiteSelecao() || selecionados.length === 0}
+                  className={`
+                    btn-pill ${corBotaoSelecionado()}
+                    disabled:opacity-90 disabled:cursor-not-allowed
+                    ${piscarBotaoAcao ? "animate-pulse ring-4 ring-yellow-300 scale-105" : ""}
+                  `}
+                >
+                  {tipoOperacao === "estorno"
+                    ? "Somente consulta"
+                    : labelBotaoSelecionados()}
+                </button>
+            
          
-        </div>
+ 
                 
       </div>
     </div>
@@ -1398,12 +1346,12 @@ return (
     
 
     {/* TABELA */}
-    <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+    <div className="bg-gray-650 rounded-xl shadow-sm overflow-x-auto">
       {listaFiltrada.length === 0 ? (
         <p className="p-4 text-sm text-gray-500">Nenhum lançamento encontrado.</p>
       ) : (
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
+        <table className="w-full text-sm ">
+          <thead className="bg-gray-900 text-gray-600 text-white">
             <tr>
              {permiteSelecao() && ( <th className="px-3 py-2 text-center">
                 <input
@@ -1419,29 +1367,29 @@ return (
                   
                 />
               </th> )}
-               <th className="px-3 py-2 text-left">id</th>
-              <th className="px-3 py-2 text-left">Descrição</th>
-               <th className="px-3 py-2 text-center  font-bold ">Data Movimento</th>
+               <th className="px-3 py-2 text-left text-white">id</th>
+              <th className="px-3 py-2 text-left text-white">Descrição</th>
+               <th className="px-3 py-2 text-center  font-bold text-white">Data Movimento</th>
 
 
               {lista.some(l => l.tipo_operacao === "fatura_cartao") ? (
                 <>
-                  <th className="px-3 py-2 text-left">Nome</th>
-                  <th className="px-3 py-2 text-left">Número</th>
+                  <th className="px-3 py-2 text-left text-white">Nome</th>
+                  <th className="px-3 py-2 text-left text-white">Número</th>
                 </>
               ) : (
                 <>
-                  <th className="px-3 py-2 text-left">Categoria</th>
-                  <th className="px-3 py-2 text-left">Conta</th>
+                  <th className="px-3 py-2 text-left text-white">Categoria</th>
+                  <th className="px-3 py-2 text-left text-white">Conta</th>
                 </>
               )}
-              <th className="px-3 py-2 text-left">Tipo</th> 
+              <th className="px-3 py-2 text-left text-white">Tipo</th> 
                 {temTransacao && (
-                    <th className="px-3 py-2 text-left">Origem</th>
+                    <th className="px-3 py-2 text-left text-white">Origem</th>
                   )}
 
-                <th className="px-3 py-2 text-left">Classsificação</th>
-                  <th className="px-3 py-2 text-left">Forma Pagamento</th>
+                <th className="px-3 py-2 text-left text-white">Classsificação</th>
+                  <th className="px-3 py-2 text-left text-white">Forma Pagamento</th>
                 
               
                  {!temTransacao && (
