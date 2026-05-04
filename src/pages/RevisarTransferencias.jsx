@@ -64,10 +64,6 @@ const [contaDestinoId, setContaDestinoId] = useState("");
     carregar();
   }, []);
 
-  useEffect(() => {
-  carregar();
-  carregarContas();
-}, []);
 
   async function carregarContas() {
   const url = buildWebhookUrl("listacontas", { empresa_id });
@@ -79,51 +75,6 @@ const [contaDestinoId, setContaDestinoId] = useState("");
   setLinhaEditando(null);
 }
 
-async function confirmarTransferencia() {
- 
-  if (!linhaEditando) return;
-
-  if (!contaOrigemId || !contaDestinoId) {
-    alert("Informe conta origem e conta destino.");
-    return;
-  }
-
-  if (Number(contaOrigemId) === Number(contaDestinoId)) {
-    alert("Conta origem e destino não podem ser iguais.");
-    return;
-  }
-
-  const url = buildWebhookUrl("resolver_transferencia", {
-    empresa_id,
-    lote_id,
-  });
-
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      empresa_id: Number(empresa_id),
-      lote_id: Number(lote_id),
-      id: Number(linhaEditando.id),
-      conciliacao_id: Number(linhaEditando.conciliacao_id),
-      conta_origem_id: Number(contaOrigemId),
-      conta_destino_id: Number(contaDestinoId),
-    }),
-  });
-
-  setLinhas((prev) =>
-    prev.map((l) =>
-      Number(l.id) === Number(linhaEditando.id)
-        ? {
-            ...l,
-            status: "resolvido",
-            conta_origem_id: Number(contaOrigemId),
-            conta_destino_id: Number(contaDestinoId),
-          }
-        : l
-    )
-  );
-}
 
   return (
     <div className="min-h-screen bg-slate-100 p-4">

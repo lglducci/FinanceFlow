@@ -22,7 +22,12 @@ const [mostrarOperacoes, setMostrarOperacoes] = useState(false);
 const [loadingOperacoes, setLoadingOperacoes] = useState(false);
 
  
-
+ const [contas, setContas] = useState([]);
+const [linhaEditando, setLinhaEditando] = useState(null);
+const [contaOrigemId, setContaOrigemId] = useState("");
+const [contaDestinoId, setContaDestinoId] = useState("");
+ 
+const [importacaoId, setImportacaoId] = useState(0);
  const [filtroSituacao, setFiltroSituacao] = useState("todos");
 
 const linhasFiltradas =
@@ -44,6 +49,7 @@ const linhasFiltradas =
       const url = buildWebhookUrl("dados_importados", {
         empresa_id,
         conta_id,
+       lote_id:0 
       });
 
       const resp = await fetch(url, {
@@ -65,6 +71,12 @@ const linhasFiltradas =
           : [];
 
 setLinhas(lista);
+
+if (lista.length > 0) {
+  setImportacaoId(lista[0].lote_conciliacao_id || 0);
+} else {
+  setImportacaoId(0);
+}
 
 
     } catch (e) {
@@ -152,8 +164,8 @@ setLinhas(lista);
   );
 
   setSelecionados([]);
-  setMostrarPendentes(false);
-setMostrarRejeitados(false);
+  //setMostrarPendentes(false);
+//setMostrarRejeitados(false);
 }
 
  async function executarConciliacao() {
@@ -173,6 +185,7 @@ setMostrarRejeitados(false);
       body: JSON.stringify({
         empresa_id: Number(empresa_id),
         conta_id: Number(conta_id),
+        importacao_id:importacaoId
       }),
     });
 
@@ -398,7 +411,7 @@ const podeAceitar =
       body: JSON.stringify({
         empresa_id: Number(empresa_id),
         conta_id: Number(conta_id),
-        importacao_id: Number(importacao_id),
+        importacao_id: importacaoId,
       }),
     });
 
@@ -478,7 +491,7 @@ async function excluirImportacao() {
     alert("Erro ao excluir importação.");
   }
 }
-
+{/*}
 function resolverTransferencia(linha) {
   alert(
     "Esta linha precisa ser tratada como transferência.\n\n" +
@@ -488,8 +501,91 @@ function resolverTransferencia(linha) {
       style: "currency",
       currency: "BRL",
     })}`
-  );
+  ); 
+
+}*/}
+
+function resolverTransferencia(linha) {
+  setLinhaEditando(linha);
+  setContaOrigemId(linha.conta_origem_id || "");
+  setContaDestinoId(linha.conta_destino_id || "");
 }
+
+  useEffect(() => {
+   carregarDados();
+  carregarContas();
+}, []);
+
+
+  async function carregarContas() {
+  const url = buildWebhookUrl("listacontas", { empresa_id });
+
+  const resp = await fetch(url);
+  const data = await resp.json();
+
+  setContas(Array.isArray(data) ? data : []); 
+  setLinhaEditando(null);
+}
+
+ 
+async function confirmarTransferencia() {
+ 
+  if (!linhaEditando) return;
+
+  if (!contaOrigemId || !contaDestinoId) {
+    alert("Informe conta origem e conta destino.");
+    return;
+  }
+
+  if (Number(contaOrigemId) === Number(contaDestinoId)) {
+    alert("Conta origem e destino não podem ser iguais.");
+    return;
+  }
+
+  const url = buildWebhookUrl("resolver_transferencia", {
+    empresa_id,
+    lote_id,
+  });
+
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      empresa_id: Number(empresa_id),
+      lote_id: Number(lote_id),
+      id: Number(linhaEditando.id),
+      conciliacao_id: Number(linhaEditando.conciliacao_id),
+      conta_origem_id: Number(contaOrigemId),
+      conta_destino_id: Number(contaDestinoId),
+    }),
+  });
+
+ setLinhas((prev) =>
+  prev.map((l) =>
+    Number(l.id) === Number(linhaEditando.id)
+      ? {
+          ...l,
+          situacao: "ok",
+          status: "resolvido",
+          mensagem: "Transferência resolvida manualmente",
+          importar: false,
+          conta_origem_id: Number(contaOrigemId),
+          conta_destino_id: Number(contaDestinoId),
+        }
+      : l
+  )
+);
+
+setLinhaEditando(null);
+ 
+}
+
+const lote_id =
+  resultadoExecucao?.lote_conciliacao_id ||
+  resultadoExecucao?.importacao_id ||
+  resultadoExecucao?.lote_id ||
+  linhaEditando?.lote_conciliacao_id ||
+  0;
   return (
      <div className="min-h-screen bg-slate-100 px-2 pt-0 pb-2">
       <div className="mx-auto max-w-7xl">
@@ -983,6 +1079,22 @@ function resolverTransferencia(linha) {
                                     ">
                                    Transferir
                                   </button>
+
+                                   <div className="flex items-center justify-center gap-2 whitespace-nowrap">
+                                    
+                                    <button
+                                        onClick={() => {
+                                            setLinhaEditando(l);
+                                            setContaOrigemId(l.conta_financeira_id || "");
+                                            setContaDestinoId(l.destino_id || "");
+                                        }}
+                                        className="px-3 py-1 rounded-full bg-purple-700 text-white font-bold text-xs"
+                                        >
+                                        Resolver
+                                    </button>
+                                </div>
+
+                                  
                                 </>
                               ) : (
                                 <button
@@ -1011,6 +1123,64 @@ function resolverTransferencia(linha) {
         
         </div>
       </div>
+
+      {linhaEditando && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-3xl p-6 w-[520px] shadow-2xl">
+      <h2 className="text-xl font-black text-slate-800 mb-4">
+        Resolver Transferência
+      </h2>
+
+      <div className="mb-3 text-sm font-semibold text-slate-600">
+        {linhaEditando.historico}
+      </div>
+
+      <label className="block text-sm font-bold mb-1">Conta origem</label>
+      <select
+        value={contaOrigemId}
+        onChange={(e) => setContaOrigemId(e.target.value)}
+        className="w-full border rounded-xl px-3 py-2 mb-4"
+      >
+        <option value="">Selecione</option>
+        {contas.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.nome}
+          </option>
+        ))}
+      </select>
+
+      <label className="block text-sm font-bold mb-1">Conta destino</label>
+      <select
+        value={contaDestinoId}
+        onChange={(e) => setContaDestinoId(e.target.value)}
+        className="w-full border rounded-xl px-3 py-2 mb-5"
+      >
+        <option value="">Selecione</option>
+        {contas.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.nome}
+          </option>
+        ))}
+      </select>
+
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setLinhaEditando(null)}
+          className="px-5 py-2 rounded-full bg-gray-500 text-white font-bold"
+        >
+          Cancelar
+        </button>
+
+        <button
+          onClick={confirmarTransferencia}
+          className="px-5 py-2 rounded-full bg-purple-700 text-white font-bold"
+        >
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
