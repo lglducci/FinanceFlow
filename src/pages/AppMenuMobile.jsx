@@ -1,4 +1,4 @@
- import { useRouter } from "expo-router";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
  
@@ -14,7 +14,7 @@ export default function Home() {
   );
  
 
-  const router = useRouter();
+ const navigate = useNavigate();
 
    function ir(modo) {
   window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
@@ -133,7 +133,7 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
             onClick={() => {
                     localStorage.clear();
                     sessionStorage.clear();
-                    router.replace("/login");
+                     navigate("/app/login", { replace: true });
                   }}
             style={{
               width: 42,
@@ -202,7 +202,7 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
                 icone="⚙️"
                 titulo="Configurações"
                 subtitulo="Contas , Cartões Fornecedor, Categoria ...."
-            onClick={() => router.push("/configuracoes")}
+            onClick={() => navigate("/configuracoes")}
             />
             
         </div>
