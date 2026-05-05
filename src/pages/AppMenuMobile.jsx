@@ -2,16 +2,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function Home() {
  
-
-  if (typeof window !== "undefined") {
-    window.location.href = "https://contabil-flow.lglducci.com.br/app/login";
-  }
-
-  return (
-    <div style={{ padding: 20, fontFamily: "Arial" }}>
-      Abrindo FinanceFlow...
-    </div>
-  );
+ 
+ 
  
 
  const navigate = useNavigate();
