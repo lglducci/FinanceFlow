@@ -468,10 +468,8 @@ useEffect(() => {
   tipoRef.current?.focus();
 }, []);
  
-const [etapaAberta, setEtapaAberta] = useState(
-  modoInicial ? "valor" : "tipo"
-);
-
+setEtapaAberta(  modoInicial ? "valor" : "tipo");
+ 
 console.log("MODO INICIAL:", modoInicial);
 console.log("TIPO INICIAL:", tipoInicial);
 console.log("FORMA PAGAMENTO:", formaPagamentoInicial);
