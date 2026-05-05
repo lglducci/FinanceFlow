@@ -159,7 +159,7 @@ import  LancamentoRapido from "./pages/LancamentoRapido";
 import AppLancamento from "./pages/app/AppLancamento";
 import AppLogin from "./pages/app/AppLogin";
 import RevisarTransferencias from "./pages/RevisarTransferencias";
-
+import AppMenuMobile from "./pages/AppMenuMobile";
 
 
 export default function App() {
@@ -169,13 +169,7 @@ const [assinaturaAtiva, setAssinaturaAtiva] = useState(true); // FORÇADO PRA TE
 const [bloquearSistema, setBloquearSistema] = useState(null);
 
   
-
  
-
- 
- 
-
-
 
  useEffect(() => {
   async function checkAssinatura() {
@@ -212,12 +206,28 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
  
 const rotaAtual = window.location.pathname;
  
-if (rotaAtual.startsWith("/app")) {
+ if (rotaAtual.startsWith("/app")) {
   return (
     <Routes>
-      <Route path="/app/login" element={<Login onLogin={() => window.location.href = "/app/lancamento"} />} />
-      <Route path="/app/lancamento" element={<AppLancamento />} />
-      <Route path="*" element={<Login onLogin={() => window.location.href = "/app/lancamento"} />} />
+      <Route
+        path="/app/login"
+        element={<Login onLogin={() => window.location.href = "/app/menu"} />}
+      />
+
+      <Route
+        path="/app/menu"
+        element={<AppMenuMobile />}
+      />
+
+      <Route
+        path="/app/lancamento"
+        element={<AppLancamento />}
+      />
+
+      <Route
+        path="*"
+        element={<Login onLogin={() => window.location.href = "/app/menu"} />}
+      />
     </Routes>
   );
 }
