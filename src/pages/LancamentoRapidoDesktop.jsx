@@ -447,7 +447,7 @@ useEffect(() => {
   return (
     
   <div className="min-h-screen  bg-gradient-to-br from-slate-300 via-blue-50 to-purple-100 px-3 py-5">
-  <div className="mx-auto w-full max-w-[490px] rounded-[14px] bg-gradient-to-br from-slate-300 via-slate-600 to-purple-450 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
+  <div className="mx-auto w-full max-w-[790px] rounded-[20px] bg-gradient-to-br from-slate-100 via-slate-400 to-purple-250 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
