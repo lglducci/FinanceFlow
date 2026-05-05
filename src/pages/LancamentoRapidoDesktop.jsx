@@ -65,7 +65,7 @@ function BlocoEtapa({
 }
 export default function LancamentoRapidoDesktop() {
 
-  const params = new URLSearchParams(window.location.search);
+ {/*} const params = new URLSearchParams(window.location.search);
  const modoInicial = new URLSearchParams(window.location.search).get("modo") || "";
 
 const tipoInicial =
@@ -81,7 +81,24 @@ const formaPagamentoInicial =
 const formaRecebimentoInicial =
   modoInicial === "receber" ? "aprazo" :
   modoInicial === "entrada" ? "avista" :
+  "";*/}
+
+const tipoInicial =
+  modoInicial === "entrada" || modoInicial === "receber"
+    ? "entrada"
+    : "saida";
+
+const formaPagamentoInicial =
+  modoInicial === "pagar" ? "aprazo" :
+  modoInicial === "saida" ? "avista" :
+  modoInicial === "compra_cartao" ? "cartao_credito" :
   "";
+
+const formaRecebimentoInicial =
+  modoInicial === "receber" ? "aprazo" :
+  modoInicial === "entrada" ? "avista" :
+  "";
+  
 
   const navigate = useNavigate();
   const empresa_id =
