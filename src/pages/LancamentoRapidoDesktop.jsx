@@ -37,7 +37,7 @@ function BlocoEtapa({
       >
         <div>
          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-base shadow-md">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base shadow-md">
               {icone}
             </span>
             <span className="text-sm font-bold text-slate-800">{titulo}</span>
