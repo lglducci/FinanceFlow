@@ -13,6 +13,7 @@ import FormCartaoModal from "../components/forms/FormCartaoModal";
 function BlocoEtapa({
   id,
   titulo,
+    icone = "●",
   resumo,
   aberto,
   onAbrir,
@@ -22,7 +23,7 @@ function BlocoEtapa({
 }) {
   return (
     <div
-      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-200 to-slate-300  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-300 ${className}`}
+      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-200 to-slate-300  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-200 ${className}`}
     >
       <div
         onClick={() => {
@@ -35,7 +36,12 @@ function BlocoEtapa({
         className="flex w-full items-center justify-between px-5 py-4 text-left cursor-pointer"
       >
         <div>
-          <div className="text-sm font-bold text-slate-800">{titulo}</div>
+         <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-base shadow-md">
+              {icone}
+            </span>
+            <span className="text-sm font-bold text-slate-800">{titulo}</span>
+          </div>
 
           {resumo && !aberto && (
             <div className="mt-1 text-sm font-bold text-purple-600">
@@ -446,9 +452,12 @@ useEffect(() => {
 
   return (
     
-  <div className="min-h-screen  bg-gradient-to-br from-slate-300 via-blue-50 to-purple-100 px-3 py-5">
-  <div className="mx-auto w-full max-w-[790px] rounded-[20px] bg-gradient-to-br from-slate-100 via-slate-400 to-purple-250 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
-        <div className="mb-4 flex items-start justify-between">
+ // <div className="min-h-screen  bg-gradient-to-br from-slate-100 via-blue-50 to-purple-100 px-3 py-5">
+ // <div className="mx-auto w-full max-w-[790px] rounded-[20px] bg-gradient-to-br from-slate-100 via-slate-200 to-blue-250 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
+       
+       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-150 to-blue-100 px-3 py-5">
+  <div className="mx-auto w-full max-w-[790px] rounded-[20px] bg-gradient-to-br from-white via-indigo-50 to-blue-100 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.25)]">
+    <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
               ⚡ Lançamento Rápido
@@ -480,7 +489,7 @@ useEffect(() => {
        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
              <BlocoEtapa
             id="tipo"
-            titulo="1. Entrada ou Saída"
+            icone="↕️" titulo="Entrada ou Saída"
             resumo={form.tipo === "entrada" ? "Entrada" : form.tipo === "saida" ? "Saída" : ""}
             aberto={etapaAberta === "tipo"}
             onAbrir={setEtapaAberta}
@@ -514,7 +523,7 @@ useEffect(() => {
           {form.tipo && (
             <BlocoEtapa
               id="forma"
-              titulo="2. Forma"
+              icone="💳" titulo="Forma"
               resumo={formaSelecionada}
               aberto={etapaAberta === "forma"}
              onAbrir={setEtapaAberta}
@@ -552,7 +561,7 @@ useEffect(() => {
           {formaSelecionada && (
              <BlocoEtapa
             id="valor"
-            titulo="3. Valor"
+            icone="💰" titulo="Valor"
             resumo={form.valor ? `R$ ${form.valor}` : ""}
             aberto={etapaAberta === "valor"}
             onAbrir={setEtapaAberta}
@@ -606,7 +615,7 @@ useEffect(() => {
           )}
 
           {form.valor && (
-            <BlocoEtapa id="descricao" titulo="4. Descrição" 
+            <BlocoEtapa id="descricao"  icone="📝" titulo="Descrição"
              resumo={etapaAberta === "descricao" ? "" : form.descricao} 
              aberto={etapaAberta === "descricao"}
               onAbrir={setEtapaAberta}
@@ -697,7 +706,7 @@ useEffect(() => {
           {form.descricao && (
                <BlocoEtapa
                 id="categoria"
-                titulo="5. Categoria"
+                 icone="🏷️" titulo="Categoria"
                 resumo={nomeCategoria()}
                 aberto={etapaAberta === "categoria"}
                 onAbrir={setEtapaAberta}
@@ -768,7 +777,7 @@ useEffect(() => {
           {form.categoria_id && mostrarContaFinanceira && (
               <BlocoEtapa
                 id="conta"
-                titulo="6. Conta Financeira"
+                icone="🏦" titulo="Conta Financeira"
                 resumo={nomeConta()}
                 aberto={etapaAberta === "conta"}
                 onAbrir={setEtapaAberta}
@@ -815,7 +824,10 @@ useEffect(() => {
           )}
 
           {form.categoria_id && mostrarCartao && (
-            <BlocoEtapa id="cartao" titulo="6. Cartão" resumo={cartaoSelecionado} 
+            <BlocoEtapa id="cartao"
+              icone="💳"
+            titulo="Cartão" 
+             resumo={cartaoSelecionado} 
             aberto={etapaAberta === "cartao"}
              onAbrir={setEtapaAberta}>
                  
@@ -859,7 +871,7 @@ useEffect(() => {
           {form.categoria_id && precisaFornecedor && !mostrarCartao && (
             <BlocoEtapa
               id="fornecedor"
-              titulo="6. Fornecedor / Cliente"
+             icone="👤" titulo="Fornecedor / Cliente"
               resumo={nomeFornecedor()}
               aberto={etapaAberta === "fornecedor"}
               onAbrir={setEtapaAberta}
@@ -910,7 +922,7 @@ useEffect(() => {
           {form.categoria_id && ehAPrazo && (
             <BlocoEtapa
               id="prazo"
-              titulo="7. Vencimento / Parcelas"
+              icone="📅" titulo="Vencimento / Parcelas"
               resumo={`${form.vencimento} | ${form.parcelas} parcela(s)`}
              aberto={etapaAberta === "prazo"}
                onAbrir={setEtapaAberta} 
@@ -963,7 +975,7 @@ useEffect(() => {
             
             <BlocoEtapa
                 id="revisao"
-                titulo="Revisão"
+                icone="✅" titulo="Revisão"
                 resumo="Conferir e salvar"
                 aberto={etapaAberta === "revisao"}
                 onAbrir={setEtapaAberta}
