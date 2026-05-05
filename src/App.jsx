@@ -158,6 +158,9 @@ import ConciliacaoRevisao     from "./pages/ConciliacaoRevisao";
 import  LancamentoRapido from "./pages/LancamentoRapido";
 import AppLancamento from "./pages/app/AppLancamento";
 import AppLogin from "./pages/app/AppLogin";
+import RevisarTransferencias from "./pages/RevisarTransferencias";
+
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -470,6 +473,8 @@ if (rotaAtual.startsWith("/app")) {
  <Route path="/conciliacao-revisao" element={<ConciliacaoRevisao />} />
  
  <Route path="/lancamento-rapido" element={<LancamentoRapido />} />
+
+ <Route path="/revisar-transferencias" element={<RevisarTransferencias />} />
  
 </Routes>
 
