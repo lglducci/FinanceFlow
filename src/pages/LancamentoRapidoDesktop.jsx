@@ -487,7 +487,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
     <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
-              ⚡ Lançamento Rápido zzzz
+              ⚡ Lançamento Rápido  
             </h1>
 
             <div className="mt-2 inline-flex rounded-full bg-slate-900/40 px-3 py-1 text-[16px] font-medium text-slate-300">
@@ -500,7 +500,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
 
           <button
             type="button"
-            onClick={() => navigate("/transactions")}
+            onClick={() => navigate(-1)}
             className="rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600"
           >
             Voltar
