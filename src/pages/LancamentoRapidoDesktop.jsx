@@ -64,6 +64,25 @@ function BlocoEtapa({
   );
 }
 export default function LancamentoRapidoDesktop() {
+
+  const params = new URLSearchParams(window.location.search);
+ const modoInicial = new URLSearchParams(window.location.search).get("modo") || "";
+
+const tipoInicial =
+  modoInicial === "entrada" || modoInicial === "receber"
+    ? "entrada"
+    : "saida";
+
+const formaPagamentoInicial =
+  modoInicial === "pagar" ? "aprazo" :
+  modoInicial === "saida" ? "avista" :
+  "";
+
+const formaRecebimentoInicial =
+  modoInicial === "receber" ? "aprazo" :
+  modoInicial === "entrada" ? "avista" :
+  "";
+
   const navigate = useNavigate();
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -94,11 +113,11 @@ export default function LancamentoRapidoDesktop() {
     const [idxClassificacao, setIdxClassificacao] = useState(0);
  const contaRef = useRef(null);
   const fornecedorRef = useRef(null);
-  const [form, setForm] = useState({
-    empresa_id,
-    tipo: "",
-    forma_pagamento: "",
-    forma_recebimento: "",
+ const [form, setForm] = useState({
+  empresa_id,
+  tipo: tipoInicial,
+  forma_pagamento: formaPagamentoInicial,
+  forma_recebimento: formaRecebimentoInicial,
     valor: "",
     data: hojeLocal(),
     descricao: "",
@@ -460,7 +479,7 @@ useEffect(() => {
     <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
-              ⚡ Lançamento Rápido
+              ⚡ Lançamento Rápido zzzz
             </h1>
 
             <div className="mt-2 inline-flex rounded-full bg-slate-900/40 px-3 py-1 text-[16px] font-medium text-slate-300">
