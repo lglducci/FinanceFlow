@@ -12,7 +12,7 @@ export default function Home() {
       Abrindo FinanceFlow...
     </div>
   );
-}
+ 
 
   const router = useRouter();
 
@@ -209,4 +209,4 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
       </div>
     </div>
   );
- 
+}
