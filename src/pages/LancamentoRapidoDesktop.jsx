@@ -90,7 +90,9 @@ const formaRecebimentoInicial =
     "1";
   const classificacaoRef = useRef(null);
   const categoriaRef = useRef(null);
-  const [etapaAberta, setEtapaAberta] = useState("tipo");
+ const [etapaAberta, setEtapaAberta] = useState(
+  modoInicial ? "valor" : "tipo"
+);
   const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState("");
 
@@ -468,7 +470,7 @@ useEffect(() => {
   tipoRef.current?.focus();
 }, []);
  
-setEtapaAberta(  modoInicial ? "valor" : "tipo");
+
  
 console.log("MODO INICIAL:", modoInicial);
 console.log("TIPO INICIAL:", tipoInicial);
