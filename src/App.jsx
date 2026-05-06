@@ -161,6 +161,9 @@ import AppLogin from "./pages/app/AppLogin";
 import RevisarTransferencias from "./pages/RevisarTransferencias";
 import AppMenuMobile from "./pages/AppMenuMobile";
 import AppConfiguracoesMobile from "./pages/AppConfiguracoesMobile";
+import AppContasCartoes from "./pages/app/AppContasCartoes";
+
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -235,6 +238,11 @@ const rotaAtual = window.location.pathname;
         path="*"
         element={<Login onLogin={() => window.location.href = "/app/menu"} />}
       />
+
+      <Route
+          path="/app/contas-cartoes"
+          element={<AppContasCartoes />}
+        />
     </Routes>
   );
 }
