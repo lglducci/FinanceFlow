@@ -4,7 +4,7 @@ export default function AppConfiguracoesMobile() {
   const navigate = useNavigate();
 
   function abrir(path) {
-    window.location.href = `http://localhost:5173${path}`;
+    window.location.href = `https://contabil-flow.lglducci.com.br/app/${path}`;
   }
 
   const card = {

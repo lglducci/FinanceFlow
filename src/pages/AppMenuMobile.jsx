@@ -194,7 +194,7 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
                 icone="⚙️"
                 titulo="Configurações"
                 subtitulo="Contas , Cartões Fornecedor, Categoria ...."
-            onClick={() => navigate("/app-configuracoes")}
+                onClick={() => navigate("/app/configuracoes")}
             />
             
         </div>
