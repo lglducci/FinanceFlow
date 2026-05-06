@@ -160,7 +160,7 @@ import AppLancamento from "./pages/app/AppLancamento";
 import AppLogin from "./pages/app/AppLogin";
 import RevisarTransferencias from "./pages/RevisarTransferencias";
 import AppMenuMobile from "./pages/AppMenuMobile";
-
+import AppConfiguracoesMobile from "./pages/AppConfiguracoesMobile";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -487,7 +487,10 @@ const rotaAtual = window.location.pathname;
  <Route path="/lancamento-rapido" element={<LancamentoRapido />} />
 
  <Route path="/revisar-transferencias" element={<RevisarTransferencias />} />
- <Route path="/app-configuracoes" element={<AppConfiguracoesMobile />} />
+  <Route
+  path="/app/configuracoes"
+  element={<AppConfiguracoesMobile />}
+/>
 </Routes>
 
  
