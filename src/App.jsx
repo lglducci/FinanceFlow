@@ -222,6 +222,11 @@ const rotaAtual = window.location.pathname;
       />
 
       <Route
+        path="/app/configuracoes"
+        element={<AppConfiguracoesMobile />}
+      />
+
+      <Route
         path="/app/lancamento"
         element={<AppLancamento />}
       />
@@ -233,7 +238,6 @@ const rotaAtual = window.location.pathname;
     </Routes>
   );
 }
-
 
  if (!token) {
   return (
@@ -485,12 +489,7 @@ const rotaAtual = window.location.pathname;
  <Route path="/conciliacao-revisao" element={<ConciliacaoRevisao />} />
  
  <Route path="/lancamento-rapido" element={<LancamentoRapido />} />
-
- <Route path="/revisar-transferencias" element={<RevisarTransferencias />} />
-  <Route
-  path="/app/configuracoes"
-  element={<AppConfiguracoesMobile />}
-/>
+ 
 </Routes>
 
  
