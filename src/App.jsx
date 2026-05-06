@@ -205,6 +205,8 @@ const [bloquearSistema, setBloquearSistema] = useState(null);
 
  
 const rotaAtual = window.location.pathname;
+
+
  
  if (rotaAtual.startsWith("/app")) {
   return (
@@ -485,7 +487,7 @@ const rotaAtual = window.location.pathname;
  <Route path="/lancamento-rapido" element={<LancamentoRapido />} />
 
  <Route path="/revisar-transferencias" element={<RevisarTransferencias />} />
- 
+ <Route path="/app-configuracoes" element={<AppConfiguracoesMobile />} />
 </Routes>
 
  
