@@ -4,8 +4,8 @@
   const navigate = useNavigate();
 
   function abrir(path) {
-    //window.location.href = `https://contabil-flow.lglducci.com.br/app/${path}`;
-     window.location.href = `http://192.168.1.103:5173/app/${path}`;
+    window.location.href = `https://contabil-flow.lglducci.com.br/app/${path}`;
+     //window.location.href = `http://192.168.1.103:5173/app/${path}`;
     
   }
 
