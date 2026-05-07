@@ -24,7 +24,7 @@ export default function Login({ onLogin }) {
       return;
     }
 
-     console.log("CHAMEI onLogin");
+ 
 
     try {
     

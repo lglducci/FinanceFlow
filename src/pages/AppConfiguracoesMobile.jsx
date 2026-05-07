@@ -1,10 +1,12 @@
  import { useNavigate } from "react-router-dom";
 
-export default function AppConfiguracoesMobile() {
+ export default function AppConfiguracoesMobile() {
   const navigate = useNavigate();
 
   function abrir(path) {
-    window.location.href = `https://contabil-flow.lglducci.com.br/app/${path}`;
+    //window.location.href = `https://contabil-flow.lglducci.com.br/app/${path}`;
+     window.location.href = `http://192.168.1.103:5173/app/${path}`;
+    
   }
 
   const card = {
@@ -47,7 +49,7 @@ export default function AppConfiguracoesMobile() {
         <p style={{ color: "#64748b" }}>Cadastros e consultas rápidas.</p>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          <Card icon="💳" titulo="Cartões" subtitulo="Cadastro de cartões" path="/cartoes" bg="linear-gradient(135deg,#a78bfa,#7c3aed,#4c1d95)" />
+          <Card icon="💳" titulo="Cartões" subtitulo="Cadastro de cartões" path="contas-cartoes" bg="linear-gradient(135deg,#a78bfa,#7c3aed,#4c1d95)" />
          {/* <Card icon="🏦" titulo="Contas financeiras" subtitulo="Bancos e contas" path="/contas-financeiras" bg="linear-gradient(135deg,#67e8f9,#06b6d4,#0f766e)" />
           <Card icon="🧾" titulo="Faturas" subtitulo="Consultar e pagar" path="/faturas" bg="linear-gradient(135deg,#fdba74,#f97316,#b45309)" />*/}
           <Card icon="🏷️" titulo="Categorias" subtitulo="Receitas e despesas" path="/categorias" bg="linear-gradient(135deg,#86efac,#22c55e,#166534)" />
@@ -58,3 +60,5 @@ export default function AppConfiguracoesMobile() {
     </div>
   );
 }
+
+ 

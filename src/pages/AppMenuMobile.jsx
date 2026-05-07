@@ -1,4 +1,6 @@
+ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { buildWebhookUrl } from "../config/globals";
 
 export default function Home() {
  
@@ -9,8 +11,17 @@ export default function Home() {
  const navigate = useNavigate();
 
    function ir(modo) {
-  window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
+  //window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
+    window.location.href = `http://192.168.1.103:5173/app/lancamento?modo=${modo}`; 
 }
+
+const empresa_id =
+  localStorage.getItem("empresa_id") ||
+  localStorage.getItem("id_empresa");
+
+const [dash, setDash] = useState(null);
+const [loadingDash, setLoadingDash] = useState(false);
+
  const card = {
   border: "1px solid rgba(255,255,255,0.45)",
   borderRadius: 22,
@@ -31,8 +42,8 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
       style={{
         border: "1px solid rgba(148,163,184,0.25)",
         borderRadius: 24,
-        padding: 16,
-        minHeight: 108,
+        padding: 12,
+        minHeight: 86,
         background: "linear-gradient(135deg,#e2e8f0,#cbd5e1)",
         boxShadow: "0 8px 24px rgba(15,23,42,0.10)",
         textAlign: "left",
@@ -42,15 +53,16 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
          <span
             style={{
-              width: 36,
-              height: 36,
+              width: 32,
+              height: 32,
+              fontSize: 21,
               borderRadius: "50%",
               background: "linear-gradient(135deg,#2563eb,#1e3a8a)",
               color: "white",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 26,
+             
               boxShadow: "0 6px 16px rgba(13, 62, 168, 0.35)",
             }}
           >
@@ -69,7 +81,100 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
     </button>
   );
 }
+
+function moeda(v) {
+  return Number(v || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
+async function carregarDashboard() {
+  try {
+    setLoadingDash(true);
+
+    const r = await fetch(
+      buildWebhookUrl("dashboard_financeiro", { empresa_id })
+    );
+
+    const json = await r.json();
+    const payload = json?.[0]?.fn_dashboard_financeiro || null;
+
+    setDash(payload);
+  } catch (e) {
+    console.error("Erro dashboard mobile:", e);
+  } finally {
+    setLoadingDash(false);
+  }
+}
+
+useEffect(() => {
+  if (empresa_id) carregarDashboard();
+}, [empresa_id]);
+
+
+function MiniDashboard() {
   return (
+    <div
+      style={{
+        marginBottom: 14,
+        borderRadius: 22,
+        padding: 14,
+        background: "linear-gradient(135deg,#0f172a,#1e3a8a,#0284c7)",
+        color: "white",
+        boxShadow: "0 12px 28px rgba(15,23,42,0.22)",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+        <div>
+          <div style={{ fontSize: 12, opacity: 0.85, fontWeight: 800 }}>
+            Saldo atual
+          </div>
+          <div style={{ fontSize: 20, fontWeight: 950 }}>
+            {loadingDash ? "..." : moeda(dash?.saldo_atual)}
+          </div>
+        </div>
+
+        <button
+          onClick={() => navigate("/dashboardfinanceiro")}
+          style={{
+            border: "1px solid rgba(255,255,255,0.35)",
+            borderRadius: 999,
+            background: "rgba(255,255,255,0.16)",
+            color: "white",
+            fontWeight: 900,
+            padding: "7px 10px",
+            fontSize: 11,
+          }}
+        >
+          Mais informações
+        </button>
+      </div>
+
+      <div
+        style={{
+          marginTop: 12,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 8,
+          fontSize: 11,
+          fontWeight: 900,
+        }}
+      >
+        <div>A receber<br />{moeda(dash?.receber_aberto)}</div>
+        <div>A pagar<br />{moeda(dash?.pagar_aberto)}</div>
+        <div>Cartões<br />{moeda(dash?.faturas_aberto)}</div>
+        <div>Projetado 30d<br />{moeda(dash?.saldo_projetado_30_dias)}</div>
+      </div>
+    </div>
+  );
+}
+  return (
+
+    
+
+
+
     <div
       style={{
         minHeight: "40vh",
@@ -116,6 +221,8 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
               Menu principal
             </div>
 
+            
+
             <p style={{ marginTop: 8, color: "#64748b", fontSize: 13 }}>
               Escolha uma operação rápida.
             </p>
@@ -143,7 +250,10 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
             ×
           </button>
         </div>
+            
 
+        <MiniDashboard />
+      
         <div
           style={{
             display: "grid",
@@ -187,15 +297,22 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
                 subtitulo="Criar compras no Cartão "
             onClick={() => ir("compra_cartao")}
             />
-            
-
-
+             
               <BotaoMenu
+                icone="🔄"
+                titulo="Transferências Bancárias"
+                subtitulo="Transferencia entre conta corrente."
+                onClick={() => navigate("/app/transferencia")}
+            />
+ 
+            
+            <BotaoMenu
                 icone="⚙️"
                 titulo="Configurações"
                 subtitulo="Contas , Cartões Fornecedor, Categoria ...."
                 onClick={() => navigate("/app/configuracoes")}
             />
+            
             
         </div>
       </div>

@@ -411,7 +411,7 @@ const podeAceitar =
       body: JSON.stringify({
         empresa_id: Number(empresa_id),
         conta_id: Number(conta_id),
-        importacao_id: importacaoId,
+        importacao_id: Number(importacao_id),
       }),
     });
 
@@ -526,10 +526,7 @@ function resolverTransferencia(linha) {
   setContas(Array.isArray(data) ? data : []); 
   setLinhaEditando(null);
 }
-
- 
-async function confirmarTransferencia() {
- 
+ async function confirmarTransferencia() {
   if (!linhaEditando) return;
 
   if (!contaOrigemId || !contaDestinoId) {
@@ -547,7 +544,7 @@ async function confirmarTransferencia() {
     lote_id,
   });
 
-  await fetch(url, {
+  const resp = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -560,26 +557,53 @@ async function confirmarTransferencia() {
     }),
   });
 
- setLinhas((prev) =>
-  prev.map((l) =>
-    Number(l.id) === Number(linhaEditando.id)
-      ? {
-          ...l,
-          situacao: "ok",
-          status: "resolvido",
-          mensagem: "Transferência resolvida manualmente",
-          importar: false,
-          conta_origem_id: Number(contaOrigemId),
-          conta_destino_id: Number(contaDestinoId),
-        }
-      : l
-  )
-);
+  const json = await resp.json();
 
-setLinhaEditando(null);
- 
+  const retorno =
+    json?.[0]?.data?.[0]?.retorno ||
+    json?.data?.[0]?.retorno ||
+    json?.retorno ||
+    json;
+
+  if (!retorno?.ok) {
+    alert(retorno?.message || "Não foi possível resolver a transferência.");
+
+    setLinhas((prev) =>
+      prev.map((l) =>
+        Number(l.id) === Number(linhaEditando.id)
+          ? {
+              ...l,
+              situacao: "rejeitado",
+              status: "rejeitado",
+              mensagem: retorno?.message || "Transferência rejeitada.",
+              importar: false,
+            }
+          : l
+      )
+    );
+
+    setLinhaEditando(null);
+    return;
+  }
+
+  setLinhas((prev) =>
+    prev.map((l) =>
+      Number(l.id) === Number(linhaEditando.id)
+        ? {
+            ...l,
+            situacao: "ok",
+            status: "resolvido",
+            mensagem: retorno?.message || "Transferência resolvida manualmente",
+            importar: true,
+            conta_origem_id: Number(contaOrigemId),
+            conta_destino_id: Number(contaDestinoId),
+          }
+        : l
+    )
+  );
+
+  setLinhaEditando(null);
 }
-
 const lote_id =
   resultadoExecucao?.lote_conciliacao_id ||
   resultadoExecucao?.importacao_id ||
@@ -784,7 +808,7 @@ const lote_id =
       </button>
 
       <button
-          onClick={verOperacoesGeradas}
+            onClick={() => verOperacoesGeradas()}
         className="px-5 py-2 rounded-full bg-blue-700 text-white font-bold shadow hover:brightness-110"
       >
         Ver transações geradas
@@ -796,24 +820,7 @@ const lote_id =
       >
         Estornar lote
       </button>
-      <button
-          onClick={() => {
-            const lote_id =
-              resultadoExecucao?.lote_conciliacao_id ||
-              resultadoExecucao?.importacao_id ||
-              resultadoExecucao?.lote_id;
-
-            if (!lote_id) {
-              alert("Lote não encontrado.");
-              return;
-            }
-
-            navigate(`/revisar-transferencias?lote_id=${lote_id}`);
-          }}
-          className="px-5 py-2 rounded-full bg-slate-800 text-white font-bold shadow hover:brightness-110"
-        >
-          Revisar
-        </button>
+       
     </div>
   </div>
 )}
@@ -954,7 +961,9 @@ const lote_id =
     )}
   </div>
 )}
-  {loading ? (
+   
+   
+      {!resultadoExecucao && loading ? (
             <div className="p-10 text-center text-slate-500 font-bold">
               Carregando dados importados...
             </div>
