@@ -1,5 +1,4 @@
-
-  import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
  
@@ -176,27 +175,25 @@ function MiniDashboard() {
     </div>
   );
 }
-
+ 
 function parsePix(payload) {
   try {
     let valor = "";
     let descricao = "Pagamento PIX";
 
-    const matchValor = payload.match(/54(\d{2})(\d+(?:\.\d{2})?)/);
-
-if (matchValor) {
-  const tamanho = Number(matchValor[1]);
-  valor = payload.substring(matchValor.index + 4, matchValor.index + 4 + tamanho);
-}
-
+    const matchValor = payload.match(/54(\d{2})/);
     if (matchValor) {
-      valor = matchValor[2];
+      const tamanho = Number(matchValor[1]);
+      const inicio = matchValor.index + 4;
+      valor = payload.substring(inicio, inicio + tamanho);
     }
 
-    const matchNome = payload.match(/59(\d{2})([A-Z0-9\s]+)/i);
-
+    const matchNome = payload.match(/59(\d{2})/);
     if (matchNome) {
-      descricao = `PIX ${matchNome[2].trim()}`;
+      const tamanho = Number(matchNome[1]);
+      const inicio = matchNome.index + 4;
+      const nome = payload.substring(inicio, inicio + tamanho);
+      descricao = `PIX ${nome.trim()}`;
     }
 
     return {
@@ -209,7 +206,6 @@ if (matchValor) {
     return null;
   }
 }
-
 useEffect(() => {
   if (!abrirQR) return;
 
