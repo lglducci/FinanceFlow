@@ -1,14 +1,20 @@
  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+ 
+import { Html5QrcodeScanner } from "html5-qrcode";
+ 
+
 
 export default function Home() {
  
- 
- 
- 
+  
 
  const navigate = useNavigate();
+
+ const [abrirQR, setAbrirQR] = useState(false);
+ 
+
 
    function ir(modo) {
   //window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
@@ -169,6 +175,74 @@ function MiniDashboard() {
     </div>
   );
 }
+
+function parsePix(payload) {
+  try {
+    let valor = "";
+    let descricao = "Pagamento PIX";
+
+    const matchValor = payload.match(/54(\d{2})(\d+\.\d{2})/);
+
+    if (matchValor) {
+      valor = matchValor[2];
+    }
+
+    const matchNome = payload.match(/59(\d{2})([A-Z0-9\s]+)/i);
+
+    if (matchNome) {
+      descricao = `PIX ${matchNome[2].trim()}`;
+    }
+
+    return {
+      modo: "saida",
+      forma: "pix",
+      valor,
+      descricao,
+    };
+  } catch {
+    return null;
+  }
+}
+
+useEffect(() => {
+  if (!abrirQR) return;
+
+  const scanner = new Html5QrcodeScanner(
+    "reader",
+    {
+      fps: 10,
+      qrbox: 250,
+    },
+    false
+  );
+
+  scanner.render(
+    (decodedText) => {
+      scanner.clear().catch(() => {});
+
+      setAbrirQR(false);
+
+      const dados = parsePix(decodedText);
+      if (!dados) return;
+
+      const url =
+        `http://192.168.1.103:5173/app/lancamento` +
+        `?modo=${dados.modo}` +
+        `&forma=${dados.forma}` +
+        `&valor=${dados.valor}` +
+        `&descricao=${encodeURIComponent(dados.descricao)}`;
+
+      window.location.href = url;
+    },
+    () => {}
+  );
+
+  return () => {
+    scanner.clear().catch(() => {});
+  };
+}, [abrirQR]);
+ 
+
   return (
 
     
@@ -205,7 +279,23 @@ function MiniDashboard() {
             <h1 style={{ margin: 0, fontSize: 24, fontWeight: 900, color: "#0f172a" }}>
               💼 FinanceFlow Mobile  
             </h1>
+              
 
+              <button
+            onClick={() => setAbrirQR(true)}
+            style={{
+              marginTop: 12,
+              border: 0,
+              borderRadius: 999,
+              padding: "10px 16px",
+              background: "linear-gradient(135deg,#16a34a,#15803d)",
+              color: "white",
+              fontWeight: 900,
+              cursor: "pointer",
+            }}
+          >
+            📷 Ler QR Code
+          </button>
             <div
               style={{
                 marginTop: 10,
@@ -220,8 +310,8 @@ function MiniDashboard() {
             >
               Menu principal
             </div>
-
-            
+       
+             
 
             <p style={{ marginTop: 8, color: "#64748b", fontSize: 13 }}>
               Escolha uma operação rápida.
@@ -312,10 +402,43 @@ function MiniDashboard() {
                 subtitulo="Contas , Cartões Fornecedor, Categoria ...."
                 onClick={() => navigate("/app/configuracoes")}
             />
-            
+ 
             
         </div>
       </div>
+
+      {abrirQR && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      backgroundColor: "#000",
+      zIndex: 9999,
+      padding: 20,
+    }}
+  >
+    <div id="reader" style={{ background: "#fff", borderRadius: 16 }} />
+
+    <button
+      onClick={() => setAbrirQR(false)}
+      style={{
+        position: "absolute",
+        top: 20,
+        right: 20,
+        background: "#111827",
+        color: "#fff",
+        border: 0,
+        borderRadius: 999,
+        padding: "10px 14px",
+        fontWeight: "bold",
+        zIndex: 10000,
+      }}
+    >
+      Fechar
+    </button>
+  </div>
+)}
+ 
     </div>
   );
 }
