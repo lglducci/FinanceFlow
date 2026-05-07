@@ -3,11 +3,18 @@
  export default function AppConfiguracoesMobile() {
   const navigate = useNavigate();
 
-  function abrir(path) {
-    window.location.href = `https://contabil-flow.lglducci.com.br/app/${path}`;
-     //window.location.href = `http://192.168.1.103:5173/app/${path}`;
-    
+   function abrir(path, tipo = "app") {
+  const base = "https://contabil-flow.lglducci.com.br";
+
+  if (tipo === "app") {
+    window.location.href = `${base}/app/${path.replace(/^\/+/, "")}`;
+    return;
   }
+
+  if (tipo === "sistema") {
+    window.location.href = `${base}/${path.replace(/^\/+/, "")}`;
+  }
+}
 
   const card = {
     border: "1px solid rgba(255,255,255,0.45)",
@@ -24,9 +31,9 @@
     justifyContent: "space-between",
   };
 
-  function Card({ icon, titulo, subtitulo, path, bg }) {
-    return (
-      <button onClick={() => abrir(path)} style={{ ...card, background: bg }}>
+ function Card({ icon, titulo, subtitulo, path, tipo = "app", bg }) {
+  return (
+    <button onClick={() => abrir(path, tipo)} style={{ ...card, background: bg }}>
         <div style={{ fontSize: 30 }}>{icon}</div>
         <div>
           <div style={{ fontSize: 16 }}>{titulo}</div>
@@ -49,12 +56,12 @@
         <p style={{ color: "#64748b" }}>Cadastros e consultas rápidas.</p>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          <Card icon="💳" titulo="Cartões" subtitulo="Cadastro de cartões" path="contas-cartoes" bg="linear-gradient(135deg,#a78bfa,#7c3aed,#4c1d95)" />
+          <Card icon="💳" titulo="Cartões" subtitulo="Cadastro de cartões" path="contas-cartoes" tipo="app" bg="linear-gradient(135deg,#a78bfa,#7c3aed,#4c1d95)" />
          {/* <Card icon="🏦" titulo="Contas financeiras" subtitulo="Bancos e contas" path="/contas-financeiras" bg="linear-gradient(135deg,#67e8f9,#06b6d4,#0f766e)" />
           <Card icon="🧾" titulo="Faturas" subtitulo="Consultar e pagar" path="/faturas" bg="linear-gradient(135deg,#fdba74,#f97316,#b45309)" />*/}
-          <Card icon="🏷️" titulo="Categorias" subtitulo="Receitas e despesas" path="/categorias" bg="linear-gradient(135deg,#86efac,#22c55e,#166534)" />
-          <Card icon="👤" titulo="Fornecedores" subtitulo="Clientes e parceiros" path="/fornecedores" bg="linear-gradient(135deg,#cbd5e1,#64748b,#1e293b)" />
-           <Card icon="📊" titulo="Processamento" subtitulo="Resumo financeiro" path="https://contabil-flow.lglducci.com.br/processar-diario" bg="linear-gradient(135deg,#93c5fd,#3b82f6,#1d4ed8)" />
+          <Card icon="🏷️" titulo="Categorias" subtitulo="Receitas e despesas" path="/categorias" tipo="app" bg="linear-gradient(135deg,#86efac,#22c55e,#166534)" />
+          <Card icon="👤" titulo="Fornecedores" subtitulo="Clientes e parceiros" path="/fornecedores" tipo="app" bg="linear-gradient(135deg,#cbd5e1,#64748b,#1e293b)" />
+          <Card icon="📊" titulo="Processamento" subtitulo="Resumo financeiro" path="/processar-diario" tipo="sistema" bg="linear-gradient(135deg,#93c5fd,#3b82f6,#1d4ed8)" />
         </div>
       </div>
     </div>
