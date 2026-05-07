@@ -2,10 +2,8 @@
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
  
-import {
-  Html5QrcodeScanner,
-  Html5QrcodeSupportedFormats,
-} from "html5-qrcode";
+import { Html5QrcodeScanner } from "html5-qrcode";
+ 
 
 
 export default function Home() {
@@ -209,23 +207,14 @@ function parsePix(payload) {
   }
 }
 useEffect(() => {
-  if (!abrirQR) return; 
+  if (!abrirQR) return;
 
   const scanner = new Html5QrcodeScanner(
     "reader",
     {
-  fps: 10,
-  qrbox: {
-  width: 320,
-  height: 120,
-},
-  formatsToSupport: [
-    Html5QrcodeSupportedFormats.QR_CODE,
-    Html5QrcodeSupportedFormats.CODE_128,
-    Html5QrcodeSupportedFormats.EAN_13,
-    Html5QrcodeSupportedFormats.ITF,
-  ],
-},
+      fps: 10,
+      qrbox: 250,
+    },
     false
   );
 
@@ -235,9 +224,7 @@ useEffect(() => {
 
       setAbrirQR(false);
 
-     const dados = decodedText.includes("BR.GOV.BCB.PIX")
-          ? parsePix(decodedText)
-          : parseCodigoBarras(decodedText);
+      const dados = parsePix(decodedText);
       if (!dados) return;
 
       const url =
