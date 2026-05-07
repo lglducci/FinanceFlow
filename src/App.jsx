@@ -162,7 +162,7 @@ import RevisarTransferencias from "./pages/RevisarTransferencias";
 import AppMenuMobile from "./pages/AppMenuMobile";
 import AppConfiguracoesMobile from "./pages/AppConfiguracoesMobile";
 import AppContasCartoes from "./pages/app/AppContasCartoes";
-
+import AppTransferencia from "./pages/app/AppTransferencia";
 
 
 
@@ -234,16 +234,27 @@ const rotaAtual = window.location.pathname;
         path="/app/lancamento"
         element={<AppLancamento />}
       />
-
-      <Route
-        path="*"
-        element={<Login onLogin={() => window.location.href = "/app/menu"} />}
-      />
+     
 
       <Route
           path="/app/contas-cartoes"
           element={<AppContasCartoes />}
         />
+
+        
+      <Route
+          path="/app/transferencia"
+          element={<AppTransferencia />}
+        />
+
+         
+        
+      <Route
+        path="*"
+        element={<Login onLogin={() => window.location.href = "/app/menu"} />}
+      />
+
+      
     </Routes>
   );
 }
