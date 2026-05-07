@@ -248,7 +248,7 @@ const rotaAtual = window.location.pathname;
         />
 
          
-        
+         <Route path="/processar-diario" element={<ProcessarDiario />} />
       <Route
         path="*"
         element={<Login onLogin={() => window.location.href = "/app/menu"} />}
