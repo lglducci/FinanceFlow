@@ -65,26 +65,7 @@ function BlocoEtapa({
 }
 export default function LancamentoRapidoDesktop() {
 
- const params = new URLSearchParams(window.location.search);
-
-const valorQR = params.get("valor");
-const descricaoQR = params.get("descricao");
-const formaQR = params.get("forma");
-
-useEffect(() => {
-  if (valorQR) {
-    setValor(valorQR.replace(".", ","));
-  }
-
-  if (descricaoQR) {
-    setDescricao(decodeURIComponent(descricaoQR));
-  }
-
-  if (formaQR) {
-    setForma(formaQR);
-  }
-}, []);
-
+  
  const modoInicial = new URLSearchParams(window.location.search).get("modo") || "";
 
 {/*const tipoInicial =
@@ -169,6 +150,28 @@ const formaRecebimentoInicial =
     doc_ref: "",
     origem: "WebApp",
   });
+
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+
+  const valorParam = params.get("valor");
+  const descricaoParam = params.get("descricao");
+  const formaParam = params.get("forma");
+
+  if (!valorParam && !descricaoParam && !formaParam) return;
+
+  setForm((prev) => ({
+    ...prev,
+    valor: valorParam ? valorParam.replace(".", ",") : prev.valor,
+    descricao: descricaoParam ? decodeURIComponent(descricaoParam) : prev.descricao,
+    forma_pagamento:
+      prev.tipo === "saida" && formaParam ? formaParam : prev.forma_pagamento,
+    forma_recebimento:
+      prev.tipo === "entrada" && formaParam ? formaParam : prev.forma_recebimento,
+  }));
+
+  setEtapaAberta(descricaoParam ? "categoria" : "descricao");
+}, []);
 
   const modo = (() => {
     if (form.tipo === "entrada") {
