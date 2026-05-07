@@ -9,7 +9,7 @@ import { Html5QrcodeScanner } from "html5-qrcode";
 export default function Home() {
  
   
-
+ 
  const navigate = useNavigate();
 
  const [abrirQR, setAbrirQR] = useState(false);
