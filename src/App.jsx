@@ -247,9 +247,8 @@ const rotaAtual = window.location.pathname;
           element={<AppTransferencia />}
         />
 
-       <Route element={<Layout />}>
-  <Route path="/processar-diario" element={<ProcessarDiario />} />
-</Route>
+    <Route path="/processar-diario" element={<ProcessarDiario />} />
+<Route>
         path="*"
         element={<Login onLogin={() => window.location.href = "/app/menu"} />}
       />
