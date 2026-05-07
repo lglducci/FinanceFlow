@@ -522,7 +522,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
     <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
-              ⚡ Lançamento Rápido  
+              ⚡ Lançamento Rápido   TESTE PRA VER
             </h1>
 
             <div className="mt-2 inline-flex rounded-full bg-slate-900/40 px-3 py-1 text-[16px] font-medium text-slate-300">
