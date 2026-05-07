@@ -17,8 +17,8 @@ export default function Home() {
 
 
    function ir(modo) {
-  //window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
-    window.location.href = `http://192.168.1.103:5173/app/lancamento?modo=${modo}`; 
+  window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
+ //   window.location.href = `http://192.168.1.103:5173/app/lancamento?modo=${modo}`; 
 }
 
 const empresa_id =
@@ -181,7 +181,12 @@ function parsePix(payload) {
     let valor = "";
     let descricao = "Pagamento PIX";
 
-    const matchValor = payload.match(/54(\d{2})(\d+\.\d{2})/);
+    const matchValor = payload.match(/54(\d{2})(\d+(?:\.\d{2})?)/);
+
+if (matchValor) {
+  const tamanho = Number(matchValor[1]);
+  valor = payload.substring(matchValor.index + 4, matchValor.index + 4 + tamanho);
+}
 
     if (matchValor) {
       valor = matchValor[2];
@@ -226,7 +231,7 @@ useEffect(() => {
       if (!dados) return;
 
       const url =
-        `http://192.168.1.103:5173/app/lancamento` +
+        `https://contabil-flow.lglducci.com.br/app/lancamento` +
         `?modo=${dados.modo}` +
         `&forma=${dados.forma}` +
         `&valor=${dados.valor}` +
