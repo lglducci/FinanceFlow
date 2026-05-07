@@ -224,7 +224,9 @@ useEffect(() => {
 
       setAbrirQR(false);
 
-      const dados = parsePix(decodedText);
+       const dados = decodedText.includes("BR.GOV.BCB.PIX")
+  ? parsePix(decodedText)
+  : parseCodigoBarras(decodedText);
       if (!dados) return;
 
       const url =
