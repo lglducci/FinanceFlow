@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -65,7 +65,26 @@ function BlocoEtapa({
 }
 export default function LancamentoRapidoDesktop() {
 
-  const params = new URLSearchParams(window.location.search);
+ const params = new URLSearchParams(window.location.search);
+
+const valorQR = params.get("valor");
+const descricaoQR = params.get("descricao");
+const formaQR = params.get("forma");
+
+useEffect(() => {
+  if (valorQR) {
+    setValor(valorQR.replace(".", ","));
+  }
+
+  if (descricaoQR) {
+    setDescricao(decodeURIComponent(descricaoQR));
+  }
+
+  if (formaQR) {
+    setForma(formaQR);
+  }
+}, []);
+
  const modoInicial = new URLSearchParams(window.location.search).get("modo") || "";
 
 {/*const tipoInicial =
