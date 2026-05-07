@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -13,6 +13,7 @@ import FormCartaoModal from "../components/forms/FormCartaoModal";
 function BlocoEtapa({
   id,
   titulo,
+    icone = "●",
   resumo,
   aberto,
   onAbrir,
@@ -22,7 +23,7 @@ function BlocoEtapa({
 }) {
   return (
     <div
-      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-200 to-slate-300  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-300 ${className}`}
+      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-200 to-slate-300  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-200 ${className}`}
     >
       <div
         onClick={() => {
@@ -35,7 +36,12 @@ function BlocoEtapa({
         className="flex w-full items-center justify-between px-5 py-4 text-left cursor-pointer"
       >
         <div>
-          <div className="text-sm font-bold text-slate-800">{titulo}</div>
+         <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base shadow-md">
+              {icone}
+            </span>
+            <span className="text-sm font-bold text-slate-800">{titulo}</span>
+          </div>
 
           {resumo && !aberto && (
             <div className="mt-1 text-sm font-bold text-purple-600">
@@ -50,7 +56,7 @@ function BlocoEtapa({
       </div>
 
       {aberto && (
-        <div className="border-t border-slate-100 px-5 pb-5 pt-4">
+        <div className="border-t border-slate-100 px-2 p-2 pt-1">
           {children}
         </div>
       )}
@@ -58,6 +64,60 @@ function BlocoEtapa({
   );
 }
 export default function LancamentoRapidoDesktop() {
+
+ const params = new URLSearchParams(window.location.search);
+
+const valorQR = params.get("valor");
+const descricaoQR = params.get("descricao");
+const formaQR = params.get("forma");
+
+useEffect(() => {
+  if (valorQR) {
+    setValor(valorQR.replace(".", ","));
+  }
+
+  if (descricaoQR) {
+    setDescricao(decodeURIComponent(descricaoQR));
+  }
+
+  if (formaQR) {
+    setForma(formaQR);
+  }
+}, []);
+
+ const modoInicial = new URLSearchParams(window.location.search).get("modo") || "";
+
+{/*const tipoInicial =
+  modoInicial === "entrada" || modoInicial === "receber"
+    ? "entrada"
+    : "saida";
+
+const formaPagamentoInicial =
+  modoInicial === "pagar" ? "aprazo" :
+  modoInicial === "saida" ? "avista" :
+  "";
+
+const formaRecebimentoInicial =
+  modoInicial === "receber" ? "aprazo" :
+  modoInicial === "entrada" ? "avista" :
+  "";*/}
+
+  const tipoInicial =
+  modoInicial === "entrada" || modoInicial === "receber"
+    ? "entrada"
+    : "saida";
+
+const formaPagamentoInicial =
+  modoInicial === "pagar" ? "aprazo" :
+  modoInicial === "saida" ? "avista" :
+  modoInicial === "compra_cartao" ? "cartao_credito" :
+  "";
+
+const formaRecebimentoInicial =
+  modoInicial === "receber" ? "aprazo" :
+  modoInicial === "entrada" ? "avista" :
+  "";
+
   const navigate = useNavigate();
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -65,7 +125,9 @@ export default function LancamentoRapidoDesktop() {
     "1";
   const classificacaoRef = useRef(null);
   const categoriaRef = useRef(null);
-  const [etapaAberta, setEtapaAberta] = useState("tipo");
+ const [etapaAberta, setEtapaAberta] = useState(
+  modoInicial ? "valor" : "tipo"
+);
   const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState("");
 
@@ -88,11 +150,11 @@ export default function LancamentoRapidoDesktop() {
     const [idxClassificacao, setIdxClassificacao] = useState(0);
  const contaRef = useRef(null);
   const fornecedorRef = useRef(null);
-  const [form, setForm] = useState({
-    empresa_id,
-    tipo: "",
-    forma_pagamento: "",
-    forma_recebimento: "",
+ const [form, setForm] = useState({
+  empresa_id,
+  tipo: tipoInicial,
+  forma_pagamento: formaPagamentoInicial,
+  forma_recebimento: formaRecebimentoInicial,
     valor: "",
     data: hojeLocal(),
     descricao: "",
@@ -444,14 +506,23 @@ useEffect(() => {
 }, []);
  
 
+ 
+console.log("MODO INICIAL:", modoInicial);
+console.log("TIPO INICIAL:", tipoInicial);
+console.log("FORMA PAGAMENTO:", formaPagamentoInicial);
+console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
+
   return (
     
-  <div className="min-h-screen  bg-gradient-to-br from-slate-300 via-blue-50 to-purple-100 px-3 py-5">
-  <div className="mx-auto w-full max-w-[490px] rounded-[14px] bg-gradient-to-br from-slate-300 via-slate-600 to-purple-450 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
-        <div className="mb-4 flex items-start justify-between">
+ // <div className="min-h-screen  bg-gradient-to-br from-slate-100 via-blue-50 to-purple-100 px-3 py-5">
+ // <div className="mx-auto w-full max-w-[790px] rounded-[20px] bg-gradient-to-br from-slate-100 via-slate-200 to-blue-250 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
+       
+       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-150 to-blue-100 px-3 py-5">
+  <div className="mx-auto w-full max-w-[790px] rounded-[20px] bg-gradient-to-br from-white via-indigo-50 to-blue-100 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.25)]">
+    <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
-              ⚡ Lançamento Rápido
+              ⚡ Lançamento Rápido  
             </h1>
 
             <div className="mt-2 inline-flex rounded-full bg-slate-900/40 px-3 py-1 text-[16px] font-medium text-slate-300">
@@ -464,7 +535,7 @@ useEffect(() => {
 
           <button
             type="button"
-            onClick={() => navigate("/transactions")}
+            onClick={() => navigate(-1)}
             className="rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600"
           >
             Voltar
@@ -480,7 +551,7 @@ useEffect(() => {
        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
              <BlocoEtapa
             id="tipo"
-            titulo="1. Entrada ou Saída"
+            icone="↕️" titulo="Entrada ou Saída"
             resumo={form.tipo === "entrada" ? "Entrada" : form.tipo === "saida" ? "Saída" : ""}
             aberto={etapaAberta === "tipo"}
             onAbrir={setEtapaAberta}
@@ -514,7 +585,7 @@ useEffect(() => {
           {form.tipo && (
             <BlocoEtapa
               id="forma"
-              titulo="2. Forma"
+              icone="💳" titulo="Forma"
               resumo={formaSelecionada}
               aberto={etapaAberta === "forma"}
              onAbrir={setEtapaAberta}
@@ -552,7 +623,7 @@ useEffect(() => {
           {formaSelecionada && (
              <BlocoEtapa
             id="valor"
-            titulo="3. Valor"
+            icone="💰" titulo="Valor"
             resumo={form.valor ? `R$ ${form.valor}` : ""}
             aberto={etapaAberta === "valor"}
             onAbrir={setEtapaAberta}
@@ -606,7 +677,7 @@ useEffect(() => {
           )}
 
           {form.valor && (
-            <BlocoEtapa id="descricao" titulo="4. Descrição" 
+            <BlocoEtapa id="descricao"  icone="📝" titulo="Descrição"
              resumo={etapaAberta === "descricao" ? "" : form.descricao} 
              aberto={etapaAberta === "descricao"}
               onAbrir={setEtapaAberta}
@@ -697,7 +768,7 @@ useEffect(() => {
           {form.descricao && (
                <BlocoEtapa
                 id="categoria"
-                titulo="5. Categoria"
+                 icone="🏷️" titulo="Categoria"
                 resumo={nomeCategoria()}
                 aberto={etapaAberta === "categoria"}
                 onAbrir={setEtapaAberta}
@@ -768,7 +839,7 @@ useEffect(() => {
           {form.categoria_id && mostrarContaFinanceira && (
               <BlocoEtapa
                 id="conta"
-                titulo="6. Conta Financeira"
+                icone="🏦" titulo="Conta Financeira"
                 resumo={nomeConta()}
                 aberto={etapaAberta === "conta"}
                 onAbrir={setEtapaAberta}
@@ -815,7 +886,10 @@ useEffect(() => {
           )}
 
           {form.categoria_id && mostrarCartao && (
-            <BlocoEtapa id="cartao" titulo="6. Cartão" resumo={cartaoSelecionado} 
+            <BlocoEtapa id="cartao"
+              icone="💳"
+            titulo="Cartão" 
+             resumo={cartaoSelecionado} 
             aberto={etapaAberta === "cartao"}
              onAbrir={setEtapaAberta}>
                  
@@ -859,7 +933,7 @@ useEffect(() => {
           {form.categoria_id && precisaFornecedor && !mostrarCartao && (
             <BlocoEtapa
               id="fornecedor"
-              titulo="6. Fornecedor / Cliente"
+             icone="👤" titulo="Fornecedor / Cliente"
               resumo={nomeFornecedor()}
               aberto={etapaAberta === "fornecedor"}
               onAbrir={setEtapaAberta}
@@ -910,7 +984,7 @@ useEffect(() => {
           {form.categoria_id && ehAPrazo && (
             <BlocoEtapa
               id="prazo"
-              titulo="7. Vencimento / Parcelas"
+              icone="📅" titulo="Vencimento / Parcelas"
               resumo={`${form.vencimento} | ${form.parcelas} parcela(s)`}
              aberto={etapaAberta === "prazo"}
                onAbrir={setEtapaAberta} 
@@ -963,38 +1037,38 @@ useEffect(() => {
             
             <BlocoEtapa
                 id="revisao"
-                titulo="Revisão"
+                icone="✅" titulo="Revisão"
                 resumo="Conferir e salvar"
                 aberto={etapaAberta === "revisao"}
                 onAbrir={setEtapaAberta}
               >
                 <div className="rounded-2xl bg-slate-800/90 p-3 text-xs text-slate-100 shadow-inner">
                   <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                    <span className="text-slate-400">Tipo</span>
+                    <span className="text-slate-200">Tipo</span>
                     <span className="font-bold text-right">{form.tipo}</span>
 
-                    <span className="text-slate-400">Forma</span>
+                    <span className="text-slate-200">Forma</span>
                     <span className="font-bold text-right">{formaSelecionada}</span>
 
-                    <span className="text-slate-400">Valor</span>
+                    <span className="text-slate-200">Valor</span>
                     <span className="font-black text-right text-emerald-300">R$ {form.valor}</span>
 
-                    <span className="text-slate-400">Descrição</span>
+                    <span className="text-slate-200">Descrição</span>
                     <span className="font-bold text-right truncate">{form.descricao}</span>
 
-                    <span className="text-slate-400">Categoria</span>
+                    <span className="text-slate-200">Categoria</span>
                     <span className="font-bold text-right truncate">{nomeCategoria()}</span>
 
                     {form.conta_id && (
                       <>
-                        <span className="text-slate-400">Conta</span>
+                        <span className="text-slate-200">Conta</span>
                         <span className="font-bold text-right truncate">{nomeConta()}</span>
                       </>
                     )}
 
                     {cartaoSelecionado && (
                       <>
-                        <span className="text-slate-400">Cartão</span>
+                        <span className="text-slate-200">Cartão</span>
                         <span className="font-bold text-right truncate">{cartaoSelecionado}</span>
                       </>
                     )}
