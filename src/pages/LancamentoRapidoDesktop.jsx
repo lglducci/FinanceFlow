@@ -162,8 +162,13 @@ const formaRecebimentoInicial =
 
   setForm((prev) => ({
     ...prev,
-    valor: valorParam ? valorParam.replace(".", ",") : prev.valor,
-    descricao: descricaoParam ? decodeURIComponent(descricaoParam) : prev.descricao,
+    valor: valorParam
+  ? Number(String(valorParam).replace(",", ".")).toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  : prev.valor,
+   descricao: descricaoParam || prev.descricao,
     forma_pagamento:
       prev.tipo === "saida" && formaParam ? formaParam : prev.forma_pagamento,
     forma_recebimento:
