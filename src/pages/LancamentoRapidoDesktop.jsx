@@ -151,31 +151,34 @@ const formaRecebimentoInicial =
     origem: "WebApp",
   });
 
-  useEffect(() => {
+ useEffect(() => {
   const params = new URLSearchParams(window.location.search);
 
   const valorParam = params.get("valor");
   const descricaoParam = params.get("descricao");
   const formaParam = params.get("forma");
 
-  if (!valorParam && !descricaoParam && !formaParam) return;
-
   setForm((prev) => ({
     ...prev,
     valor: valorParam
-  ? Number(String(valorParam).replace(",", ".")).toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
-  : prev.valor,
-   descricao: descricaoParam || prev.descricao,
+      ? Number(String(valorParam).replace(",", ".")).toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : prev.valor,
+
+    descricao: descricaoParam || prev.descricao,
+
     forma_pagamento:
       prev.tipo === "saida" && formaParam ? formaParam : prev.forma_pagamento,
+
     forma_recebimento:
       prev.tipo === "entrada" && formaParam ? formaParam : prev.forma_recebimento,
   }));
 
-  setEtapaAberta(descricaoParam ? "categoria" : "descricao");
+  if (valorParam || descricaoParam || formaParam) {
+    setEtapaAberta("categoria");
+  }
 }, []);
 
   const modo = (() => {

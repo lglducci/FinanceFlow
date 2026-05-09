@@ -200,26 +200,23 @@ function MiniDashboard() {
       </div>
     </div>
   );
-}
- 
+} 
+
 function parsePix(payload) {
   try {
+    let i = 0;
     let valor = "";
     let descricao = "Pagamento PIX";
 
-    const matchValor = payload.match(/54(\d{2})/);
-    if (matchValor) {
-      const tamanho = Number(matchValor[1]);
-      const inicio = matchValor.index + 4;
-      valor = payload.substring(inicio, inicio + tamanho);
-    }
+    while (i < payload.length) {
+      const tag = payload.substring(i, i + 2);
+      const len = Number(payload.substring(i + 2, i + 4));
+      const value = payload.substring(i + 4, i + 4 + len);
 
-    const matchNome = payload.match(/59(\d{2})/);
-    if (matchNome) {
-      const tamanho = Number(matchNome[1]);
-      const inicio = matchNome.index + 4;
-      const nome = payload.substring(inicio, inicio + tamanho);
-      descricao = `PIX ${nome.trim()}`;
+      if (tag === "54") valor = value;
+      if (tag === "59") descricao = `PIX ${value.trim()}`;
+
+      i = i + 4 + len;
     }
 
     return {
@@ -229,9 +226,16 @@ function parsePix(payload) {
       descricao,
     };
   } catch {
-    return null;
+    return {
+      modo: "saida",
+      forma: "pix",
+      valor: "",
+      descricao: "Pagamento PIX",
+    };
   }
 }
+
+
 useEffect(() => {
   if (!abrirQR) return;
 
