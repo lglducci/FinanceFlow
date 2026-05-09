@@ -20,8 +20,8 @@ const [alertaContabil, setAlertaContabil] = useState(null);
 
 
    function ir(modo) {
- // window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
-  window.location.href = `${window.location.origin}/app/lancamento?modo=${modo}`;
+ window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
+ // window.location.href = `http://192.168.1.103:5173/app/lancamento?modo=${modo}`; 
 }
 
 const empresa_id =
@@ -253,21 +253,15 @@ useEffect(() => {
       const dados = parsePix(decodedText);
       if (!dados) return;
 
-     {/*} const url =
-        `http://192.168.1.103:5173/app/lancamento` +
+      const url =
+       // `http://192.168.1.103:5173/app/lancamento` +
+        `https://contabil-flow.lglducci.com.br/app/lancamento` +
         `?modo=${dados.modo}` +
         `&forma=${dados.forma}` +
         `&valor=${dados.valor}` +
         `&descricao=${encodeURIComponent(dados.descricao)}`;
 
-      window.location.href = url;*/}
-
-      const url =
-  `${window.location.origin}/app/lancamento` +
-  `?modo=${dados.modo}` +
-  `&forma=${dados.forma}` +
-  `&valor=${dados.valor}` +
-  `&descricao=${encodeURIComponent(dados.descricao)}`;
+      window.location.href = url;
     },
     () => {}
   );
