@@ -164,7 +164,17 @@ import AppConfiguracoesMobile from "./pages/AppConfiguracoesMobile";
 import AppContasCartoes from "./pages/app/AppContasCartoes";
 import AppTransferencia from "./pages/app/AppTransferencia";
 
+import AppLancamentosConsulta from "./pages/app/AppLancamentosConsulta";
 
+import AppTitulosVencidos from "./pages/app/AppTitulosVencidos";
+import AppProcessaContabil from "./pages/app/AppProcessaContabil";
+
+import AppRelatoriosMobile from "./pages/app/AppRelatoriosMobile";
+import  AppDreMobile from "./pages/app/AppDreMobile";
+import AppFluxoCaixaRealizado from "./pages/app/AppFluxoCaixaRealizado"; 
+import AppFluxoCaixaProjetado from "./pages/app/AppFluxoCaixaProjetado";
+import AppRazaoConta from "./pages/app/AppRazaoConta";
+import AppSaldoPorConta from "./pages/app/AppSaldoPorConta";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -172,7 +182,6 @@ const navigate = useNavigate();
 const [assinaturaAtiva, setAssinaturaAtiva] = useState(true); // FORÇADO PRA TESTE
 const [bloquearSistema, setBloquearSistema] = useState(null);
 
-  
  
 
  useEffect(() => {
@@ -247,12 +256,63 @@ const rotaAtual = window.location.pathname;
           element={<AppTransferencia />}
         />
 
- 
-<Route>
+         <Route
+          path="/app/processar-diario"
+          element={<AppProcessaContabil />}
+        />
+
+                
+        <Route
+          path="/app/lancamentos"
+          element={<AppLancamentosConsulta />}
+        />
+       
+
+        <Route
+          path="/app/titulosvencidos"
+          element={<AppTitulosVencidos />}
+        />
+        
+
+        <Route
+          path="/app/relatorios"
+          element={<AppRelatoriosMobile />}
+        />
+
+
+        <Route
+        path="/app/dre"
+        element={<AppDreMobile />}
+
+      />
+
+
+      <Route
+        path="/app/fluxo-realizado"
+        element={<AppFluxoCaixaRealizado />}
+      />
+        
+        <Route
+          path="/app/fluxo-projetado"
+          element={<AppFluxoCaixaProjetado />}
+        />
+
+         <Route
+          path="/app/razao"
+          element={<AppRazaoConta />}
+        />
+
+        
+      <Route
         path="*"
         element={<Login onLogin={() => window.location.href = "/app/menu"} />}
       />
 
+
+     <Route
+      path="/app/saldo-conta"
+      element={<AppSaldoPorConta />}
+    />
       
     </Routes>
   );
