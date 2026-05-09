@@ -1,6 +1,7 @@
   import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { buildWebhookUrl } from "../config/globals";
+ import { buildWebhookUrl } from "../config/globals";
+import { hojeLocal } from "../utils/dataLocal";
  
 import { Html5QrcodeScanner } from "html5-qrcode";
  
@@ -15,10 +16,12 @@ export default function Home() {
  const [abrirQR, setAbrirQR] = useState(false);
  
 
+const [alertaContabil, setAlertaContabil] = useState(null);
+
 
    function ir(modo) {
-  window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
- //   window.location.href = `http://192.168.1.103:5173/app/lancamento?modo=${modo}`; 
+ window.location.href = `https://contabil-flow.lglducci.com.br/app/lancamento?modo=${modo}`;
+ // window.location.href = `http://192.168.1.103:5173/app/lancamento?modo=${modo}`; 
 }
 
 const empresa_id =
@@ -27,6 +30,8 @@ const empresa_id =
 
 const [dash, setDash] = useState(null);
 const [loadingDash, setLoadingDash] = useState(false);
+const [qtdVencidos, setQtdVencidos] = useState(0);
+
 
  const card = {
   border: "1px solid rgba(255,255,255,0.45)",
@@ -39,6 +44,27 @@ const [loadingDash, setLoadingDash] = useState(false);
   boxShadow: "0 10px 24px rgba(15,23,42,0.18)",
   cursor: "pointer",
 };
+
+
+async function carregarQtdVencidos() {
+  try {
+    const url = buildWebhookUrl("vencidos", {
+      id_empresa: empresa_id,
+    });
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    const item = Array.isArray(data) ? data[0] : data;
+    setQtdVencidos(Number(item?.qtd_vencidos || 0));
+  } catch {
+    setQtdVencidos(0);
+  }
+}
+
+useEffect(() => {
+  if (empresa_id) carregarQtdVencidos();
+}, [empresa_id]);
 
 
 function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
@@ -228,6 +254,7 @@ useEffect(() => {
       if (!dados) return;
 
       const url =
+       // `http://192.168.1.103:5173/app/lancamento` +
         `https://contabil-flow.lglducci.com.br/app/lancamento` +
         `?modo=${dados.modo}` +
         `&forma=${dados.forma}` +
@@ -244,6 +271,59 @@ useEffect(() => {
   };
 }, [abrirQR]);
  
+ async function carregarAlertaContabil() {
+  try {
+    const empresa_id =
+      localStorage.getItem("empresa_id") ||
+      localStorage.getItem("id_empresa") ||
+      "0";
+
+    const resp = await fetch(
+      buildWebhookUrl("ultimo_processamento", { empresa_id })
+    );
+
+    const data = await resp.json();
+    const item = Array.isArray(data) ? data[0] : data;
+
+    const hoje = hojeLocal();
+
+     
+
+    const ultimoProcessado = item?.ultimo_dia_processado
+      ? item.ultimo_dia_processado.slice(0, 10)
+      : null;
+
+
+      const temAlerta =
+  item?.data_reprocessar_de ||
+  (ultimoProcessado && ultimoProcessado < hoje);
+
+      if (temAlerta) {
+  setAlertaContabil(item);
+} else {
+  setAlertaContabil(null);
+} 
+  } catch (e) {
+    console.log("Erro alerta contábil mobile:", e);
+    setAlertaContabil(null);
+  }
+}
+
+useEffect(() => {
+  if (empresa_id) carregarAlertaContabil();
+}, [empresa_id]);
+
+useEffect(() => {
+  function atualizar() {
+    carregarAlertaContabil();
+  }
+
+  window.addEventListener("contabil-atualizado", atualizar);
+
+  return () => {
+    window.removeEventListener("contabil-atualizado", atualizar);
+  };
+}, []);
 
   return (
 
@@ -275,7 +355,19 @@ useEffect(() => {
           width: "100%",
            overflow: "hidden",
         }}
-      >
+      > 
+      <style>
+        {`
+          @keyframes sinoMexendo {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(-18deg); }
+            40% { transform: rotate(18deg); }
+            60% { transform: rotate(-12deg); }
+            80% { transform: rotate(12deg); }
+            100% { transform: rotate(0deg); }
+          }
+        `}
+      </style>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
           <div>
             <h1 style={{ margin: 0, fontSize: 24, fontWeight: 900, color: "#0f172a" }}>
@@ -396,16 +488,65 @@ useEffect(() => {
                 subtitulo="Transferencia entre conta corrente."
                 onClick={() => navigate("/app/transferencia")}
             />
- 
-            
+             
+               <BotaoMenu
+                icone="📊"
+                titulo="Lançamentos "
+                subtitulo=" Contulta  de  Contas , lançamentos e pagamentos ...."
+                onClick={() => navigate("/app/lancamentos")}
+            />
+
+            <BotaoMenu
+                  icone={
+                    <span
+                      style={{
+                        display: "inline-block",
+                        animation: qtdVencidos > 0 ? "sinoMexendo 0.8s infinite" : "none",
+                      }}
+                    >
+                      🔔
+                    </span>
+                  }
+                  titulo={qtdVencidos > 0 ? `${qtdVencidos} pendência(s)` : "Sem pendências"}
+                  subtitulo={qtdVencidos > 0 ? "Toque para baixar vencidos" : "Tudo em dia"}
+                  onClick={() => navigate("/app/titulosvencidos")}
+                />
+                 <BotaoMenu
+                  icone={
+                    <span
+                      style={{
+                        display: "inline-block",
+                        animation: alertaContabil ? "sinoMexendo 0.8s infinite" : "none",
+                      }}
+                    >
+                      🔔
+                    </span>
+                  }
+                  titulo={alertaContabil ? "Processar contábil" : "Contábil em dia"}
+                  subtitulo={
+                    alertaContabil
+                      ? "Existem lançamentos não processados"
+                      : "Nenhum processamento pendente"
+                  }
+                  onClick={() => navigate("/app/processar-diario")}
+                />
+
+                 <BotaoMenu
+                icone="📊"
+                titulo="Relatórios"
+                subtitulo="Fluxo, DRE e razão"
+                onClick={() => navigate("/app/relatorios")}
+              />
+
             <BotaoMenu
                 icone="⚙️"
                 titulo="Configurações"
                 subtitulo="Contas , Cartões Fornecedor, Categoria ...."
                 onClick={() => navigate("/app/configuracoes")}
             />
- 
-            
+  
+
+
         </div>
       </div>
 

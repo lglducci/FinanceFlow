@@ -6,6 +6,8 @@
    function abrir(path, tipo = "app") {
   const base = "https://contabil-flow.lglducci.com.br";
 
+  //const base = "http://192.168.1.103:5173";
+
   if (tipo === "app") {
     window.location.href = `${base}/app/${path.replace(/^\/+/, "")}`;
     return;
@@ -61,7 +63,10 @@
           <Card icon="🧾" titulo="Faturas" subtitulo="Consultar e pagar" path="/faturas" bg="linear-gradient(135deg,#fdba74,#f97316,#b45309)" />*/}
           <Card icon="🏷️" titulo="Categorias" subtitulo="Receitas e despesas" path="/categorias" tipo="app" bg="linear-gradient(135deg,#86efac,#22c55e,#166534)" />
           <Card icon="👤" titulo="Fornecedores" subtitulo="Clientes e parceiros" path="/fornecedores" tipo="app" bg="linear-gradient(135deg,#cbd5e1,#64748b,#1e293b)" />
-          <Card icon="📊" titulo="Processamento" subtitulo="Resumo financeiro" path="processar-diario" tipo="sistema" bg="linear-gradient(135deg,#93c5fd,#3b82f6,#1d4ed8)" />
+           <Card icon="📊" titulo="Processamento" subtitulo="Resumo financeiro" path="processar-diario" tipo="app" bg="linear-gradient(135deg,#93c5fd,#3b82f6,#1d4ed8)" />
+  
+       
+
         </div>
       </div>
     </div>
