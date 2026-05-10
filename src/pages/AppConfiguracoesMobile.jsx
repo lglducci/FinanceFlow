@@ -3,10 +3,8 @@
  export default function AppConfiguracoesMobile() {
   const navigate = useNavigate();
 
-   function abrir(path, tipo = "app") {
-  const base = "https://contabil-flow.lglducci.com.br";
-
-  //const base = "http://192.168.1.103:5173";
+ function abrir(path, tipo = "app") {
+  const base = window.location.origin;
 
   if (tipo === "app") {
     window.location.href = `${base}/app/${path.replace(/^\/+/, "")}`;
