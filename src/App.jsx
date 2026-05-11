@@ -313,6 +313,11 @@ const rotaAtual = window.location.pathname;
       path="/app/saldo-conta"
       element={<AppSaldoPorConta />}
     />
+
+    <Route path="/app/new-card" element={<NovoCartao />} />
+
+    
+    <Route path="/app/nova-conta" element={<NovaConta />} />
       
     </Routes>
   );
