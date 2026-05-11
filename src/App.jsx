@@ -176,6 +176,8 @@ import AppFluxoCaixaProjetado from "./pages/app/AppFluxoCaixaProjetado";
 import AppRazaoConta from "./pages/app/AppRazaoConta";
 import AppSaldoPorConta from "./pages/app/AppSaldoPorConta";
 
+import AppCategorias     from "./pages/app/AppCategorias"
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -313,6 +315,18 @@ const rotaAtual = window.location.pathname;
       path="/app/saldo-conta"
       element={<AppSaldoPorConta />}
     />
+
+    
+     <Route
+      path="/app/categorias"
+      element={<AppCategorias />}
+    />
+
+     <Route
+        path="/app/categorias/novo"
+      element={<ContasGerenciaisNovo />}
+    />
+
 
     <Route path="/app/new-card" element={<NovoCartao />} />
 
