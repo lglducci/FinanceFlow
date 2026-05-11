@@ -166,7 +166,7 @@ function MiniDashboard() {
         </div>
 
         <button
-          onClick={() => navigate("/dashboardfinanceiro")}
+          onClick={() => navigate("/app/dashboard")}
           style={{
             border: "1px solid rgba(255,255,255,0.35)",
             borderRadius: 999,

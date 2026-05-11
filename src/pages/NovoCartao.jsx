@@ -122,66 +122,87 @@ async function salvar() {
     alert("Erro ao criar cartão.");
   }
 }
+return (
+  <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
+    <div className="w-full max-w-lg mx-auto">
 
- return (
-  <div className="min-h-screen bg-gradient-to-br from-slate-150 via-blue-150 to-slate-100 px-3 py-4 flex items-start justify-center">
-    <div className="w-full max-w-md rounded-[30px] bg-white/95 shadow-2xl border border-white/40 overflow-hidden">
-
-      {/* TOPO */}
-      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 px-5 py-5 text-white">
+      <div className="bg-gradient-to-br from-[#2744b8] to-[#08748f] rounded-t-[28px] shadow-lg px-5 py-4">
         <button
-          onClick={() => navigate("/app/configuracoes")}
-          className="mb-3 rounded-full bg-white/15 px-4 py-2 text-sm font-bold hover:bg-white/25"
+          type="button"
+          onClick={() => navigate(-1)}
+          className="bg-white/15 text-white px-4 py-2 rounded-full text-sm font-black mb-4"
         >
           ← Voltar
         </button>
 
-        <h1 className="text-2xl font-black">💳 Novo Cartão</h1>
-        <p className="text-sm text-blue-100 mt-1">
+        <h1 className="text-2xl font-black text-white flex items-center gap-2">
+          💳 Novo Cartão
+        </h1>
+
+        <p className="text-blue-100 text-sm font-semibold mt-1">
           Cadastre um cartão para controle financeiro.
         </p>
       </div>
 
-      {/* FORM */}
-      <div className="p-5 space-y-3">
+      <div className="bg-white rounded-b-[28px] shadow-xl border border-slate-200 p-4 space-y-4">
 
-        <div>
-          <label className="text-xs font-black text-slate-700">Nome</label>
-          <input
-            name="nome"
-            value={form.nome}
-            onChange={handleChange}
-            className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Ex: Nubank, Itaú, Bradesco"
-          />
-        </div>
+        <div className="rounded-3xl bg-slate-50 border border-slate-200 p-4 space-y-3">
+          <div className="text-sm font-black text-blue-800">Dados do cartão</div>
 
-        <div>
-          <label className="text-xs font-black text-slate-700">Bandeira</label>
-          <input
-            name="bandeira"
-            value={form.bandeira}
-            onChange={handleChange}
-            className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Visa, Mastercard, Elo..."
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-black text-slate-700">Limite Total</label>
-          <input
-            type="number"
-            name="limite_total"
-            value={form.limite_total}
-            onChange={handleChange}
-            className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="0,00"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="text-xs font-black text-slate-700">Fechamento</label>
+            <label className="block text-[#0b1744] font-black text-sm mb-1">Nome</label>
+            <input
+              name="nome"
+              value={form.nome}
+              onChange={handleChange}
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
+              placeholder="Ex: Nubank, Itaú, Bradesco"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[#0b1744] font-black text-sm mb-1">Bandeira</label>
+              <input
+                name="bandeira"
+                value={form.bandeira}
+                onChange={handleChange}
+                className="w-full  h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
+                placeholder="Visa"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[#0b1744] font-black text-sm mb-1">Status</label>
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+                className="w-full  h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
+              >
+                <option value="ativo">Ativo</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[#0b1744] font-black text-sm mb-1">Limite Total</label>
+            <input
+              type="number"
+              name="limite_total"
+              value={form.limite_total}
+              onChange={handleChange}
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
+              placeholder="0,00"
+            />
+          </div>
+        </div>
+
+        <div className="rounded-3xl bg-slate-50 border border-slate-200 p-4 space-y-3">
+          <div className="text-sm font-black text-blue-800">Datas e vencimento</div>
+
+          <div className="grid grid-cols-3 gap-3">
             <input
               type="number"
               name="fechamento_dia"
@@ -189,13 +210,10 @@ async function salvar() {
               max="31"
               value={form.fechamento_dia}
               onChange={handleChange}
-              className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Dia"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
+              placeholder="Fecha"
             />
-          </div>
 
-          <div>
-            <label className="text-xs font-black text-slate-700">Vencimento</label>
             <input
               type="number"
               name="vencimento_dia"
@@ -203,79 +221,61 @@ async function salvar() {
               max="31"
               value={form.vencimento_dia}
               onChange={handleChange}
-              className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Dia"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
+              placeholder="Vence"
             />
-          </div>
 
-          <div>
-            <label className="text-xs font-black text-slate-700">Validade</label>
             <input
               name="vencimento"
               value={form.vencimento}
               onChange={handleChange}
-              className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
               placeholder="MM/AA"
             />
           </div>
         </div>
 
-        <div>
-          <label className="text-xs font-black text-slate-700">Número do Cartão</label>
+        <div className="rounded-3xl bg-slate-50 border border-slate-200 p-4 space-y-3">
+          <div className="text-sm font-black text-blue-800">Identificação - Número e Nome no Cartão</div>
+
           <input
             name="numero"
             value={form.numero}
             onChange={handleChange}
-            className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full h-10 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
             placeholder="Final ou número do cartão"
           />
-        </div>
 
-        <div>
-          <label className="text-xs font-black text-slate-700">Nome no Cartão</label>
           <input
             name="nomecartao"
             value={form.nomecartao}
             onChange={handleChange}
-            className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full h-10 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700"
             placeholder="Nome impresso no cartão"
           />
         </div>
 
-        <div>
-          <label className="text-xs font-black text-slate-700">Status</label>
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="w-full mt-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="ativo">Ativo</option>
-            <option value="cancelado">Cancelado</option>
-          </select>
-        </div>
-
-        {/* BOTÕES */}
-        <div className="grid grid-cols-2 gap-3 pt-4">
+        <div className="flex gap-3 pt-2">
           <button
+            type="button"
             onClick={salvar}
-            className="rounded-2xl bg-gradient-to-br from-blue-700 to-cyan-600 text-white px-4 py-3 font-black shadow-lg active:scale-95"
+            className="flex-1 h-12 rounded-full bg-gradient-to-r from-[#2563eb] to-[#1e40af] text-white font-black shadow-lg"
           >
             Salvar
           </button>
 
           <button
+            type="button"
             onClick={() => navigate(-1)}
-            className="rounded-2xl bg-slate-200 text-slate-700 px-4 py-3 font-black active:scale-95"
+            className="flex-1 h-12 rounded-full bg-slate-300 text-slate-700 font-black"
           >
-            Sair
+            Cancelar
           </button>
         </div>
-
       </div>
     </div>
   </div>
 );
-
+ 
  
 }

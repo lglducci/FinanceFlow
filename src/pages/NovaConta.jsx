@@ -150,7 +150,7 @@ return (
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() => navigate("/app/contas-cartoes")}
+            onClick={() => navigate(-1)}
            className="text-3xl font-black text-white"
           >
             ←

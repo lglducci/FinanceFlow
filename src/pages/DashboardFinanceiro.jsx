@@ -189,7 +189,7 @@ const passivoAberto = pagarAberto + faturasAberto;
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-3xl font-extrabold text-black">
-            Dashboard Financeiro
+            Dashboard Financeiro  
           </h1>
           <p className="text-sm text-slate-600 mt-1">
             Visão geral de aberto, vencidos, projeção e tendência

@@ -79,7 +79,7 @@ const THEME = {
 
       if (!dado || !dado.id) {
         alert("Registro não encontrado.");
-        navigate("/providers-clients");
+        navigate(-1);
         return;
       }
 
@@ -357,7 +357,7 @@ return (
           />
         </div>
 
-        <div className="flex gap-3 pt-5">
+        <div className="flex gap-3 pt-2">
           <button
             type="button"
             onClick={salvar}
