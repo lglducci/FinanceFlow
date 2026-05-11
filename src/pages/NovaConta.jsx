@@ -142,28 +142,28 @@ const THEME = {
   };
   const fieldFocus = { boxShadow: `0 0 0 2px ${THEME.focusRing}55` };
 return (
-  <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
-    <div className="w-full max-w-md mx-auto">
+   <div className="min-h-screen bg-gradient-to-br from-slate-150 via-blue-150 to-slate-100 px-3 py-4 flex items-start justify-center">
+    <div className="w-full max-w-md rounded-[30px] bg-white/95 shadow-2xl border border-white/40 overflow-hidden">
 
-      {/* TOPO */}
-      <div className="bg-white rounded-b-[34px] shadow-lg px-5 py-5 -mx-4 -mt-5 mb-6">
+       {/* TOPO */}
+      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 px-5 py-5 text-white">
         <div className="flex items-center justify-between">
           <button
             type="button"
             onClick={() => navigate("/app/contas-cartoes")}
-            className="text-3xl font-black text-slate-800"
+           className="text-3xl font-black text-white"
           >
             ←
           </button>
 
-          <h1 className="text-xl font-black text-[#1e1b4b]">
+          <h1 className="text-xl font-black text-white">
             Nova Conta
           </h1>
 
           <div className="w-10" />
         </div>
 
-        <p className="text-center text-slate-500 font-bold mt-4">
+        <p  className="text-center text-blue-100 font-bold mt-4">
           Cadastro de conta financeira
         </p>
       </div>
@@ -319,12 +319,12 @@ return (
           </label>
         </div>
 
-        <div className="flex gap-3 pt-5">
+           <div className="grid grid-cols-2 gap-3 pt-4">
           <button
             type="button"
             onClick={salvar}
             disabled={loading}
-            className="flex-1 h-12 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#4c1d95] text-white font-black shadow-lg disabled:opacity-60"
+             className="rounded-2xl bg-gradient-to-br from-blue-700 to-cyan-600 text-white px-4 py-3 font-black shadow-lg active:scale-95"
           >
             {loading ? "Salvando..." : "Salvar"}
           </button>
@@ -332,7 +332,7 @@ return (
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex-1 h-12 rounded-full bg-slate-300 text-slate-700 font-black"
+            className="rounded-2xl bg-slate-200 text-slate-700 px-4 py-3 font-black active:scale-95"
           >
             Sair
           </button>
