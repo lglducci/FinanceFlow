@@ -179,6 +179,7 @@ import AppSaldoPorConta from "./pages/app/AppSaldoPorConta";
 import AppCategorias     from "./pages/app/AppCategorias"
 
 import AppFornecedor  from "./pages/app/AppFornecedor"
+import AppDashboard  from "./pages/app/AppDashboard"
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -306,12 +307,7 @@ const rotaAtual = window.location.pathname;
           element={<AppRazaoConta />}
         />
 
-        
-      <Route
-        path="*"
-        element={<Login onLogin={() => window.location.href = "/app/menu"} />}
-      />
-
+ 
 
      <Route
       path="/app/saldo-conta"
@@ -344,6 +340,16 @@ const rotaAtual = window.location.pathname;
         path="/app/categorias/novo"
       element={<ContasGerenciaisNovo />}
     />
+
+    
+             
+     <Route path="/app/dashboard" element={<AppDashboard />} />
+
+<Route
+  path="*"
+  element={<Login onLogin={() => window.location.href = "/app/menu"} />}
+/>
+
       
     </Routes>
   );
