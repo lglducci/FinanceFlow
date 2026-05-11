@@ -308,22 +308,7 @@ export default function AppContasCartoes() {
               </div>
             </div>
 
-            <button
-              onClick={() => window.location.href = "/cards"}
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                border: "2px solid #14b8a6",
-                background: "#fff",
-                color: "#14b8a6",
-                fontSize: 26,
-                lineHeight: "26px",
-                fontWeight: 300,
-              }}
-            >
-              +
-            </button>
+            
           </div>
         ))}
 
