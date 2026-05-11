@@ -109,13 +109,13 @@ export default function AppContasCartoes() {
     border: "1px solid rgba(148,163,184,0.25)",
   };
 
-  const linha = {
-    display: "grid",
-    gridTemplateColumns: "48px 1fr 34px",
-    gap: 14,
-    alignItems: "center",
-    padding: "14px 0",
-  };
+ const linhaSemAcao = {
+  display: "grid",
+  gridTemplateColumns: "48px 1fr",
+  gap: 14,
+  alignItems: "center",
+  padding: "14px 0",
+};
 
   const icone = {
     width: 42,
@@ -183,12 +183,33 @@ export default function AppContasCartoes() {
           </div>
         </div>
       </div>
+      
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+  <div style={secaoTitulo}>Contas</div>
 
-      <div style={secaoTitulo}>Contas</div>
+  <button
+    onClick={() => navigate("/app/nova-conta")}
+    title="Nova conta"
+    style={{
+      width: 38,
+      height: 38,
+      borderRadius: "50%",
+      border: 0,
+      background: "linear-gradient(135deg,#7c3aed,#4c1d95)",
+      color: "#fff",
+      fontSize: 26,
+      lineHeight: "30px",
+      fontWeight: 300,
+      boxShadow: "0 8px 18px rgba(124,58,237,0.35)",
+    }}
+  >
+    +
+  </button>
+</div>
 
       <div style={card}>
         {contas.slice(0, 4).map((c, idx) => (
-          <div key={idx} style={linha}>
+          <div key={idx} style={linhaSemAcao}>
             <div style={icone}>🏦</div>
 
             <div>
@@ -200,18 +221,7 @@ export default function AppContasCartoes() {
               </div>
             </div>
 
-            <button
-              onClick={() => window.location.href = "/saldos"}
-              style={{
-                border: 0,
-                background: "transparent",
-                color: "#7c3aed",
-                fontSize: 32,
-                fontWeight: 300,
-              }}
-            >
-              +
-            </button>
+            
           </div>
         ))}
 
@@ -232,38 +242,56 @@ export default function AppContasCartoes() {
       <div style={secaoTitulo}>Cartões de crédito</div>
 
       <div style={card}>
-        <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-          <button
-            style={{
-              border: 0,
-              borderRadius: 999,
-              padding: "10px 18px",
-              background: "#14b8a6",
-              color: "#fff",
-              fontWeight: 900,
-              fontSize: 14,
-            }}
-          >
-            Cartões ativos
-          </button>
+       <div style={{ display: "flex", gap: 10, marginBottom: 14, alignItems: "center" }}>
+  <button
+    style={{
+      border: 0,
+      borderRadius: 999,
+      padding: "10px 18px",
+      background: "#14b8a6",
+      color: "#fff",
+      fontWeight: 900,
+      fontSize: 14,
+    }}
+  >
+    Cartões ativos
+  </button>
 
-          <button
-            style={{
-              border: 0,
-              borderRadius: 999,
-              padding: "10px 18px",
-              background: "#e5e7eb",
-              color: "#475569",
-              fontWeight: 900,
-              fontSize: 14,
-            }}
-          >
-            Faturas
-          </button>
-        </div>
+  <button
+    style={{
+      border: 0,
+      borderRadius: 999,
+      padding: "10px 18px",
+      background: "#e5e7eb",
+      color: "#475569",
+      fontWeight: 900,
+      fontSize: 14,
+    }}
+  >
+    Faturas
+  </button>
 
+  <button
+    onClick={() => navigate("/app/new-card")}
+    title="Novo cartão"
+    style={{
+      width: 38,
+      height: 38,
+      borderRadius: "50%",
+      border: 0,
+      background: "linear-gradient(135deg,#14b8a6,#0f766e)",
+      color: "#fff",
+      fontSize: 26,
+      lineHeight: "30px",
+      fontWeight: 300,
+      boxShadow: "0 8px 18px rgba(20,184,166,0.35)",
+    }}
+  >
+    +
+  </button>
+</div>
         {cartoes.slice(0, 4).map((c) => (
-          <div key={c.id} style={linha}>
+          <div key={c.id} style={linhaSemAcao}>
             <div style={{ ...icone, background: "#f8fafc" }}>
               {String(c.bandeira || "").toLowerCase().includes("visa") ? "💳" : "💳"}
             </div>
