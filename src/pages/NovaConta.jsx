@@ -141,89 +141,115 @@ const THEME = {
     boxShadow: "none",
   };
   const fieldFocus = { boxShadow: `0 0 0 2px ${THEME.focusRing}55` };
+return (
+  <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
+    <div className="w-full max-w-md mx-auto">
 
-  return (
-        <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
-      <h1
-       
-         className="text-2xl md:text-3xl font-bold mb-6 text-center"
-        style={{ color: THEME.title }}
-      >
-        ✏️ Nova Conta Financeira
-      </h1>
-      <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
+      {/* TOPO */}
+      <div className="bg-white rounded-b-[34px] shadow-lg px-5 py-5 -mx-4 -mt-5 mb-6">
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => navigate("/app/contas-cartoes")}
+            className="text-3xl font-black text-slate-800"
+          >
+            ←
+          </button>
 
-        {/* Nome */}
+          <h1 className="text-xl font-black text-[#1e1b4b]">
+            Nova Conta
+          </h1>
+
+          <div className="w-10" />
+        </div>
+
+        <p className="text-center text-slate-500 font-bold mt-4">
+          Cadastro de conta financeira
+        </p>
+      </div>
+
+      {/* CARD */}
+      <div className="bg-white rounded-[28px] shadow-xl border border-slate-200 p-5 space-y-4">
+
         <div>
-          <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Nome da Conta</label>
+          <label className="block font-black text-[#1e1b4b] mb-1">
+            Nome da Conta
+          </label>
           <input
-            name="nome" 
+            name="nome"
             value={form.nome}
             onChange={handleChange}
-             className="input-base w-full h-10"
-             placeholder="Nome da sua conta para identificação"
+            className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+            placeholder="Ex: Bradesco, Itaú, Caixa"
           />
         </div>
 
-        {/* Banco + Número do Banco */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Banco</label>
+            <label className="block font-black text-[#1e1b4b] mb-1">
+              Banco
+            </label>
             <input
               name="banco"
-              className="input-base w-64 h-10"
               value={form.banco}
               onChange={handleChange}
-                 placeholder="Nome do Banco"
+              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              placeholder="Banco"
             />
           </div>
 
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Número do Banco</label>
+            <label className="block font-black text-[#1e1b4b] mb-1">
+              Nº Banco
+            </label>
             <input
               name="nro_banco"
-                 className="input-base w-64 h-10"
               value={form.nro_banco}
               onChange={handleChange}
-                 placeholder="0341"
+              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              placeholder="341"
             />
           </div>
         </div>
 
-        {/* Conta + Agência + Número Conta */}
-       
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className=" label label-required block font-bold mb-1 text-[#061f4aff]">Agência</label>
+            <label className="block font-black text-[#1e1b4b] mb-1">
+              Agência
+            </label>
             <input
               name="agencia"
-               className="input-base w-48 h-10"
               value={form.agencia}
               onChange={handleChange}
-               placeholder="0001"
+              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              placeholder="0001"
             />
           </div>
 
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Número da Conta</label>
+            <label className="block font-black text-[#1e1b4b] mb-1">
+              Conta
+            </label>
             <input
               name="conta"
-               className="input-base w-48 h-10"
               value={form.conta}
               onChange={handleChange}
-                placeholder="00458-8"
+              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              placeholder="00458-8"
             />
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#061f4aff]">Tipo</label>
+            <label className="block font-black text-[#1e1b4b] mb-1">
+              Tipo
+            </label>
             <select
               name="tipo"
               value={form.tipo}
               onChange={handleChange}
-              className="input-base w-48 h-10 border rounded px-2 font-bold text-gray-700"
+              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold text-slate-700"
             >
               <option value="">Selecione...</option>
               <option value="corrente">Corrente</option>
@@ -233,25 +259,35 @@ const THEME = {
             </select>
           </div>
 
-        </div>
-
-        {/* Tipo + Saldo Inicial */}
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-6"> 
           <div>
-            <label className="label label-required block font-bold mb-1 text-[#1e40af]">Saldo Inicial</label>
+            <label className="block font-black text-[#1e1b4b] mb-1">
+              Saldo Inicial
+            </label>
             <input
-                 type="number"
+              type="number"
               name="saldo_inicial"
-              className="input-base w-72 h-10"
               value={form.saldo_inicial}
               onChange={handleChange}
+              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
               placeholder="0,00"
             />
           </div>
-        </div></div>
+        </div>
 
-        {/* Checkboxes */}
-        <div className=" label label-required font-bold grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 text-[#1e40af]">
+        <div>
+          <label className="block font-black text-[#1e1b4b] mb-1">
+            Conta Contábil
+          </label>
+          <input
+            name="conta_contabil"
+            value={form.conta_contabil}
+            onChange={handleChange}
+            className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+            placeholder="Ex: 1.1.1.23"
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 pt-2 text-sm font-black text-[#1e1b4b]">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -280,83 +316,31 @@ const THEME = {
               onChange={handleChange}
             />
             Padrão
-          </label> 
+          </label>
         </div>
-       
 
-        <div>
-              <label className="font-bold text-[#1e40af] flex items-center gap-2">
-                Conta Contábil *
-                <span className="relative group cursor-pointer">
-                  <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs">
-                    ?
-                  </span>
-
-                  {/* Tooltip */}
-                  <div className="absolute left-6 top-0 z-50 hidden group-hover:block 
-                                  bg-gray-900 text-white text-xs rounded-lg p-3 w-80 shadow-lg">
-                   
-                    <strong>O que é este campo?</strong>
-
-                    <p className="mt-1">
-                      Esta conta representa <b>onde o dinheiro realmente entra ou sai</b>.
-                    </p>
-
-                    <p className="mt-1">
-                      Exemplo: Bradesco, Itaú, Caixa, Dinheiro em Caixa.
-                    </p>
-
-                    <p className="mt-1">
-                      Cada conta financeira possui uma <b>conta contábil equivalente</b>,
-                      que registra o saldo no balanço.
-                    </p>
-
-                    <p className="mt-1 text-yellow-300">
-                      Exemplo: Bradesco Agência X → Conta contábil <b>1.1.1.23</b>
-                    </p>
-
-                    <p className="mt-1 text-yellow-300">
-                      ⚠ O sistema cuida da ligação entre financeiro e contábil automaticamente.
-                    </p>
- 
-                  </div>
-                </span>
-              </label>
-
-          <input
-            name="conta_contabil" 
-            value={form.conta_contabil}
-            onChange={handleChange}
-             className="input-base w-full h-10"
-             placeholder="Nome da sua conta contábil (exemplo) 1.1.1.231"
-          />
-        </div>
-       
-       
-      
-
-      <div className="flex gap-6 pt-8 pb-8 pl-1">
-
-        {/* Botão */}
-        <button
-          onClick={salvar}
-          disabled={loading}
-          className="flex-1 bg-[#061f4aff] text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
-        >
-          {loading ? "Salvando..." : "Salvar"}
-        </button>
-         <button
+        <div className="flex gap-3 pt-5">
+          <button
             type="button"
-            onClick={() => navigate("/saldos")}
-            className="flex-1 bg-gray-400 text-white px-6 py-3 rounded-xl text-lg mt-6 disabled:opacity-60"
+            onClick={salvar}
+            disabled={loading}
+            className="flex-1 h-12 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#4c1d95] text-white font-black shadow-lg disabled:opacity-60"
           >
-            Cancelar
+            {loading ? "Salvando..." : "Salvar"}
           </button>
-       </div>
-       </div>
+
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="flex-1 h-12 rounded-full bg-slate-300 text-slate-700 font-black"
+          >
+            Sair
+          </button>
+        </div>
       </div>
     </div>
-   
+  </div>
 );
+ 
 
 }
