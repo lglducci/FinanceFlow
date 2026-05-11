@@ -82,28 +82,52 @@ export default function AppCategorias() {
     }
   }
 
+   const topoCard = {
+    borderRadius: "0 0 34px 34px",
+    background: "#ffffff",
+    padding: "24px 20px 28px",
+    boxShadow: "0 8px 22px rgba(15,23,42,0.12)",
+    margin: "-16px -16px 28px",
+  };
+
+  
+  const tela = {
+    minHeight: "100vh",
+    background: "linear-gradient(180deg,#eef5fb,#e8f1fa)",
+    padding: 16,
+    fontFamily: "Arial, sans-serif",
+    boxSizing: "border-box",
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
-      <div className="w-full max-w-lg mx-auto">
-
+    
+    <div style={tela}> 
+     <div style={topoCard}> 
         {/* TOPO */}
-        <div className="bg-gradient-to-br from-[#2744b8] to-[#08748f] rounded-t-[28px] shadow-lg px-5 py-4">
-          <button
-            type="button"
-            onClick={() => navigate("/app/configuracoes")}
-            className="bg-white/15 text-white px-4 py-2 rounded-full text-sm font-black mb-5"
-          >
-            ← Voltar
-          </button>
+         {/* TOPO */}
+            <div style={{ position: "relative", textAlign: "center", paddingTop: 4 }}>
+              <button
+                type="button"
+                onClick={() => navigate("/app/configuracoes")}
+                className="bg-white/15 text-black px-4 py-2 rounded-full text-sm font-black"
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                }}
+              >
+                ← Voltar
+              </button>
 
-          <h1 className="text-2xl font-black text-white flex items-center gap-2">
-            🏷️ Categorias
-          </h1>
+              <h1 className="text-2xl font-black text-black flex items-center justify-center gap-2">
+                🏷️ Categorias
+              </h1>
 
-          <p className="text-blue-100 text-sm font-semibold mt-2">
-            Organize categorias de entrada e saída.
-          </p>
-        </div>
+              <p className="text-blue-900 text-sm font-semibold mt-2">
+                Organize categorias de entrada e saída.
+              </p>
+            </div>
+      
 
         {/* FILTROS */}
         <div className="bg-white rounded-b-[28px] shadow-xl border border-slate-200 p-5 space-y-4">
