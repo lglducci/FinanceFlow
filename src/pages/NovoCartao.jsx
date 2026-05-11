@@ -116,7 +116,7 @@ async function salvar() {
 
   if (ok) {
     alert("Cartão criado com sucesso!");
-    navigate("/cards");
+    navigate(-1);
   } else {
     console.log("RETORNO INVALIDO:", json);
     alert("Erro ao criar cartão.");
