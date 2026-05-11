@@ -179,7 +179,7 @@ return (
             name="nome"
             value={form.nome}
             onChange={handleChange}
-            className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+            className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
             placeholder="Ex: Bradesco, Itaú, Caixa"
           />
         </div>
@@ -193,7 +193,7 @@ return (
               name="banco"
               value={form.banco}
               onChange={handleChange}
-              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
               placeholder="Banco"
             />
           </div>
@@ -206,7 +206,7 @@ return (
               name="nro_banco"
               value={form.nro_banco}
               onChange={handleChange}
-              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
               placeholder="341"
             />
           </div>
@@ -221,7 +221,7 @@ return (
               name="agencia"
               value={form.agencia}
               onChange={handleChange}
-              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
               placeholder="0001"
             />
           </div>
@@ -234,7 +234,7 @@ return (
               name="conta"
               value={form.conta}
               onChange={handleChange}
-              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
               placeholder="00458-8"
             />
           </div>
@@ -249,7 +249,7 @@ return (
               name="tipo"
               value={form.tipo}
               onChange={handleChange}
-              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold text-slate-700"
+              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold text-slate-700"
             >
               <option value="">Selecione...</option>
               <option value="corrente">Corrente</option>
@@ -268,7 +268,7 @@ return (
               name="saldo_inicial"
               value={form.saldo_inicial}
               onChange={handleChange}
-              className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
               placeholder="0,00"
             />
           </div>
@@ -282,7 +282,7 @@ return (
             name="conta_contabil"
             value={form.conta_contabil}
             onChange={handleChange}
-            className="w-full h-11 rounded-xl border border-slate-300 px-3 font-bold"
+            className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
             placeholder="Ex: 1.1.1.23"
           />
         </div>

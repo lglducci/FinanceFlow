@@ -106,7 +106,7 @@ const THEME = {
 
       if (sucesso) {
         alert("Registro criado com sucesso!");
-        navigate("/providers-clients");
+        navigate(-1);
         return;
       }
 
@@ -135,30 +135,38 @@ function maskTelefone(value) {
 
   return v;
 }
+return (
+  <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
+    <div className="w-full max-w-lg mx-auto">
 
+      {/* TOPO */}
+      <div className="bg-gradient-to-br from-[#2744b8] to-[#08748f] rounded-t-[28px] shadow-lg px-5 py-4">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="bg-white/15 text-white px-4 py-2 rounded-full text-sm font-black mb-5"
+        >
+          ← Voltar
+        </button>
 
-  return (
-        <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-       
-       <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
+        <h1 className="text-2xl font-black text-white flex items-center gap-2">
+          👥 Novo Fornecedor
+        </h1>
 
-        <h1
-          className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center"
-        style={{ color: THEME.title }}
-      >
-        ✏️ Novo Fornecedor / Cliente
-      </h1>
+        <p className="text-blue-100 text-sm font-semibold mt-2">
+          Cadastre fornecedor, cliente ou ambos.
+        </p>
+      </div>
 
-      <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-4">
-
+      {/* FORM */}
+      <div className="bg-white rounded-b-[28px] shadow-xl border border-slate-200 p-5 space-y-4">
         <div>
-          <label className="font-bold text-[#1e40af]">Tipo</label>
+          <label className="block text-[#0b1744] font-black mb-1">Tipo</label>
           <select
             name="tipo"
             value={form.tipo}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="tipo"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           >
             <option value="fornecedor">Fornecedor</option>
             <option value="cliente">Cliente</option>
@@ -167,187 +175,213 @@ function maskTelefone(value) {
         </div>
 
         <div>
-          <label className="label label-required font-bold text-[#1e40af]">Nome</label>
+          <label className="block text-[#0b1744] font-black mb-1">Nome *</label>
           <input
             name="nome"
             value={form.nome}
             onChange={handleChange}
-            className="input-premium"
-              placeholder="nome"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            placeholder="Nome ou razão social"
           />
         </div>
 
         <div>
-          <label className="label label-required font-bold text-[#1e40af]">CPF / CNPJ</label>
+          <label className="block text-[#0b1744] font-black mb-1">CPF / CNPJ *</label>
           <input
             name="cpf_cnpj"
             value={form.cpf_cnpj}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="CPF / CNPJ"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            placeholder="CPF ou CNPJ"
           />
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">RG / Inscrição Estadual</label>
+          <label className="block text-[#0b1744] font-black mb-1">RG / Inscrição Estadual</label>
           <input
             name="rg_ie"
             value={form.rg_ie}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="RG / Inscrição Estadual"
-         />
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            placeholder="RG / IE"
+          />
         </div>
 
-        <div className="flex gap-4">
-          <div className="w-1/2">
-            <label className="label label-required font-bold text-[#1e40af]">Telefone</label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">Telefone *</label>
             <input
               name="telefone"
               value={form.telefone}
               onChange={(e) =>
-            setForm({
-              ...form,
-              telefone: maskTelefone(e.target.value)
-            })
-          }
-      
-              className="input-premium"
+                setForm({
+                  ...form,
+                  telefone: maskTelefone(e.target.value),
+                })
+              }
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="Telefone"
             />
           </div>
 
-          <div className="w-1/2">
-            <label className="label label-required font-bold text-[#1e40af]">WhatsApp</label>
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">WhatsApp *</label>
             <input
               name="whatsapp"
               value={form.whatsapp}
               onChange={(e) =>
-            setForm({
-              ...form,
-              whatsapp: maskTelefone(e.target.value)
-            })
-          }
-        
-              className="input-premium"
-              placeholder="whatsApp"
+                setForm({
+                  ...form,
+                  whatsapp: maskTelefone(e.target.value),
+                })
+              }
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="WhatsApp"
             />
           </div>
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Email</label>
+          <label className="block text-[#0b1744] font-black mb-1">Email</label>
           <input
             name="email"
             value={form.email}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="email"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            placeholder="email@exemplo.com"
           />
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Endereço</label>
+          <label className="block text-[#0b1744] font-black mb-1">Endereço</label>
           <input
             name="endereco"
             value={form.endereco}
             onChange={handleChange}
-            className="input-premium"
-             placeholder="endereço"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            placeholder="Rua, número"
           />
         </div>
 
-        <div className="flex gap-4">
-          <div className="w-1/3">
-            <label className="font-bold text-[#1e40af]">Bairro</label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">Bairro</label>
             <input
               name="bairro"
               value={form.bairro}
               onChange={handleChange}
-              className="input-premium"
-              placeholder="bairro"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="Bairro"
             />
           </div>
 
-          <div className="w-1/3">
-            <label className="font-bold text-[#1e40af]">Cidade</label>
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">Cidade</label>
             <input
               name="cidade"
               value={form.cidade}
               onChange={handleChange}
-              className="input-premium"
-              placeholder="cidade"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="Cidade"
             />
           </div>
 
-          <div className="w-1/3">
-            <label className="font-bold text-[#1e40af]">Estado</label>
-            <input
-              name="estado"
-              value={form.estado}
-              onChange={handleChange}
-              className="input-premium"
-               placeholder="estado"
-            />
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">UF</label>
+              <select
+                name="estado"
+                value={form.estado}
+                onChange={handleChange}
+                className="w-full h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700 uppercase"
+              >
+                <option value="">UF</option>
+                <option value="AC">AC</option>
+                <option value="AL">AL</option>
+                <option value="AP">AP</option>
+                <option value="AM">AM</option>
+                <option value="BA">BA</option>
+                <option value="CE">CE</option>
+                <option value="DF">DF</option>
+                <option value="ES">ES</option>
+                <option value="GO">GO</option>
+                <option value="MA">MA</option>
+                <option value="MT">MT</option>
+                <option value="MS">MS</option>
+                <option value="MG">MG</option>
+                <option value="PA">PA</option>
+                <option value="PB">PB</option>
+                <option value="PR">PR</option>
+                <option value="PE">PE</option>
+                <option value="PI">PI</option>
+                <option value="RJ">RJ</option>
+                <option value="RN">RN</option>
+                <option value="RS">RS</option>
+                <option value="RO">RO</option>
+                <option value="RR">RR</option>
+                <option value="SC">SC</option>
+                <option value="SP">SP</option>
+                <option value="SE">SE</option>
+                <option value="TO">TO</option>
+              </select>
           </div>
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">CEP</label>
+          <label className="block text-[#0b1744] font-black mb-1">CEP</label>
           <input
             name="cep"
             value={form.cep}
             onChange={handleChange}
-            className="input-premium"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
             placeholder="14540-000"
           />
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Observações</label>
+          <label className="block text-[#0b1744] font-black mb-1">Observações</label>
           <textarea
             name="obs"
             value={form.obs}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="observações"
-            rows={3}
+            className="w-full min-h-[90px] rounded-2xl border border-slate-300 px-4 py-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            placeholder="Observações"
           />
-        </div> 
-         
+        </div>
 
-         <div className="flex gap-6 pt-8 pb-8 pl-1">
+        <div className="flex gap-3 pt-5">
           <button
+            type="button"
             onClick={salvar}
-            className="flex-1 bg-[#061f4aff] text-white px-5 py-2 rounded font-semibold"
+            className="flex-1  h-12 rounded-full bg-gradient-to-r from-[#2563eb] to-[#1e40af] text-white font-black shadow-lg"
           >
             Salvar
           </button>
-         
-           <button
-           
-            onClick={() => navigate("/providers-clients")}
-            className="flex-1 bg-gray-500 text-white px-5 py-2 rounded font-semibold"
+
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="flex-1  h-12 rounded-full bg-slate-300 text-slate-700 font-black"
           >
             Cancelar
           </button>
-          </div>
         </div>
       </div>
-       
+
       <FormCategoria
         open={modalCategoria}
         onClose={() => setModalCategoria(false)}
         empresa_id={empresa_id}
         tipo={form.tipo}
         onCategoriaCriada={(nova) => {
-          setCategorias(prev => [nova, ...prev]);
-          setForm(prev => ({
+          setCategorias((prev) => [nova, ...prev]);
+          setForm((prev) => ({
             ...prev,
-            categoria_id: nova.id
+            categoria_id: nova.id,
           }));
         }}
       />
     </div>
-  );
+  </div>
+);
+ 
 }

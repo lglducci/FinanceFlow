@@ -141,135 +141,161 @@ if (sucesso) {
   if (loading) {
     return <div className="p-6">Carregando...</div>;
   }
-
  return (
-     
-    <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff] text-white mt-1 mb-1" >
+  <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
+    <div className="w-full max-w-lg mx-auto">
 
-        <h1
-          className="text-2xl md:text-2xl font-bold p-2 mb-3 text-center"
-        style={{ color: THEME.title }}
-      >
-        ✏️ Editar Cartão
-      </h1>
+      {/* TOPO */}
+      <div className="bg-gradient-to-br from-[#2744b8] to-[#08748f] rounded-t-[28px] shadow-lg px-5 py-4">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="bg-white/15 text-white px-4 py-2 rounded-full text-sm font-black mb-5"
+        >
+          ← Voltar
+        </button>
 
-      <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4">
+        <h1 className="text-2xl font-black text-white flex items-center gap-2">
+          💳 Editar Cartão
+        </h1>
 
+        <p className="text-blue-100 text-sm font-semibold mt-2">
+          Atualize os dados do cartão de crédito.
+        </p>
+      </div>
+
+      {/* FORM */}
+      <div className="bg-white rounded-b-[28px] shadow-xl border border-slate-200 p-5 space-y-4">
         <div>
-          <label   className="label label-required font-bold text-[#1e40af]">Nome</label>
+          <label className="block text-[#0b1744] font-black mb-1">Nome</label>
           <input
             name="nome"
             value={form.nome}
             onChange={handleChange}
-              className="input-premium"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
 
         <div>
-          <label  className="label label-required font-bold text-[#1e40af]" >Bandeira</label>
+          <label className="block text-[#0b1744] font-black mb-1">Bandeira</label>
           <input
             name="bandeira"
             value={form.bandeira}
             onChange={handleChange}
-             className="input-premium"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
 
         <div>
-          <label  className="label label-required font-bold text-[#1e40af]">Limite Total</label>
+          <label className="block text-[#0b1744] font-black mb-1">Limite Total</label>
           <input
             type="number"
             name="limite_total"
             value={form.limite_total}
             onChange={handleChange}
-             className="input-premium"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
 
-        <div className="flex gap-4">
-          <div className="w-1/3">
-            <label   className="label label-required font-bold text-[#1e40af]" >Fechamento dia</label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">
+              Fechamento
+            </label>
             <input
               type="number"
               name="fechamento_dia"
               value={form.fechamento_dia}
               onChange={handleChange}
-               className="input-premium"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="Dia"
             />
           </div>
 
-          <div className="w-1/3">
-            <label  className="label label-required font-bold text-[#1e40af]" >vencimento dia</label>
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">
+              Venc. dia
+            </label>
             <input
               type="number"
               name="vencimento_dia"
               value={form.vencimento_dia}
               onChange={handleChange}
-               className="input-premium"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="Dia"
             />
           </div>
 
-          <div className="w-1/3">
-            <label   className="label label-required font-bold text-[#1e40af]">Vencimento (MM/AA)</label>
+          <div>
+            <label className="block text-[#0b1744] font-black mb-1">
+              MM/AA
+            </label>
             <input
               name="vencimento"
               value={form.vencimento}
               onChange={handleChange}
-              className="input-premium"
+              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              placeholder="MM/AA"
             />
           </div>
         </div>
 
         <div>
-          <label   className="label label-required font-bold text-[#1e40af]" >Número do Cartão</label>
+          <label className="block text-[#0b1744] font-black mb-1">
+            Número do Cartão
+          </label>
           <input
             name="numero"
             value={form.numero}
             onChange={handleChange}
-          className="input-premium"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
 
         <div>
-          <label   className="label label-required font-bold text-[#1e40af]" >Nome no Cartão</label>
+          <label className="block text-[#0b1744] font-black mb-1">
+            Nome no Cartão
+          </label>
           <input
-            name="NomeCartao"
+            name="nomecartao"
             value={form.nomecartao}
             onChange={handleChange}
-            className="input-premium"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
 
         <div>
-          <label className="font-bold text-[#1e40af]">Status</label>
+          <label className="block text-[#0b1744] font-black mb-1">Status</label>
           <select
             name="status"
             value={form.status}
             onChange={handleChange}
-            className="input-premium"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           >
             <option value="ativo">Ativo</option>
             <option value="cancelado">Cancelado</option>
           </select>
         </div>
-            <div className="flex gap-6 pt-8 pb-8 pl-1">
+
+        <div className="flex gap-3 pt-5">
           <button
+            type="button"
             onClick={salvar}
-            className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
+            className="flex-1  h-12 rounded-full bg-gradient-to-r from-[#2563eb] to-[#1e40af] text-white font-black shadow-lg"
           >
             Salvar
           </button>
 
           <button
-            onClick={() => navigate("/cards")}
-            className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-semibold"
+            type="button"
+            onClick={() => navigate(-1)}
+            className="flex-1 h-12 rounded-full bg-slate-300 text-slate-700 font-black"
           >
             Cancelar
           </button>
         </div>
       </div>
-      </div>
     </div>
-  );
+  </div>
+);
 }

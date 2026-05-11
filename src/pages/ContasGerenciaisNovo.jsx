@@ -106,7 +106,7 @@ return (
           </label>
 
           <input
-            className="w-full h-12 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
             value={form.nome}
             placeholder="Ex: Vendas Delivery"
             onChange={(e) => setForm({ ...form, nome: e.target.value })}
@@ -119,7 +119,7 @@ return (
           </label>
 
           <select
-            className="w-full h-12 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
             value={form.tipo}
             onChange={(e) => setForm({ ...form, tipo: e.target.value })}
           >
@@ -132,7 +132,7 @@ return (
           <button
             type="button"
             onClick={salvar}
-            className="flex-1 h-12 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#4c1d95] text-white font-black shadow-lg"
+            className="flex-1  h-12 rounded-full bg-gradient-to-r from-[#7c3aed] to-[#4c1d95] text-white font-black shadow-lg"
           >
             Salvar
           </button>
@@ -140,7 +140,7 @@ return (
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex-1 h-12 rounded-full bg-slate-300 text-slate-700 font-black"
+            className="flex-1  h-12 rounded-full bg-slate-300 text-slate-700 font-black"
           >
             Cancelar
           </button>

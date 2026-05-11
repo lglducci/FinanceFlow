@@ -181,7 +181,7 @@ return (
             name="tipo"
             value={form.tipo}
             onChange={handleChange}
-            className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
           >
             <option value="fornecedor">Fornecedor/Cliente</option>
             <option value="cliente">Cliente</option>
@@ -195,7 +195,7 @@ return (
             name="nome"
             value={form.nome}
             onChange={handleChange}
-            className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
             placeholder="nome"
           />
         </div>
@@ -207,7 +207,7 @@ return (
               name="cpf_cnpj"
               value={form.cpf_cnpj}
               onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="CPF/CNPJ"
             />
           </div>
@@ -218,7 +218,7 @@ return (
               name="rg_ie"
               value={form.rg_ie}
               onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="RG / IE"
             />
           </div>
@@ -231,7 +231,7 @@ return (
               name="telefone"
               value={form.telefone}
               onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="Telefone"
             />
           </div>
@@ -242,7 +242,7 @@ return (
               name="whatsapp"
               value={form.whatsapp}
               onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="whatsapp"
             />
           </div>
@@ -254,7 +254,7 @@ return (
             name="email"
             value={form.email}
             onChange={handleChange}
-            className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
             placeholder="email"
           />
         </div>
@@ -265,7 +265,7 @@ return (
             name="endereco"
             value={form.endereco}
             onChange={handleChange}
-            className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
             placeholder="endereço"
           />
         </div>
@@ -277,7 +277,7 @@ return (
               name="bairro"
               value={form.bairro}
               onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="bairro"
             />
           </div>
@@ -288,7 +288,7 @@ return (
               name="cidade"
               value={form.cidade}
               onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="cidade"
             />
           </div>
@@ -297,14 +297,41 @@ return (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className="block text-[#0b1744] font-black mb-1">Estado</label>
-            <input
-              name="estado"
-              value={form.estado}
-              maxLength={2}
-              onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 uppercase outline-none focus:ring-2 focus:ring-blue-300"
-              placeholder="UF"
-            />
+             <select
+                name="estado"
+                value={form.estado}
+                onChange={handleChange}
+                className="w-full h-8 rounded-2xl border border-slate-300 px-3 font-bold text-slate-700 uppercase"
+              >
+                <option value="">UF</option>
+                <option value="AC">AC</option>
+                <option value="AL">AL</option>
+                <option value="AP">AP</option>
+                <option value="AM">AM</option>
+                <option value="BA">BA</option>
+                <option value="CE">CE</option>
+                <option value="DF">DF</option>
+                <option value="ES">ES</option>
+                <option value="GO">GO</option>
+                <option value="MA">MA</option>
+                <option value="MT">MT</option>
+                <option value="MS">MS</option>
+                <option value="MG">MG</option>
+                <option value="PA">PA</option>
+                <option value="PB">PB</option>
+                <option value="PR">PR</option>
+                <option value="PE">PE</option>
+                <option value="PI">PI</option>
+                <option value="RJ">RJ</option>
+                <option value="RN">RN</option>
+                <option value="RS">RS</option>
+                <option value="RO">RO</option>
+                <option value="RR">RR</option>
+                <option value="SC">SC</option>
+                <option value="SP">SP</option>
+                <option value="SE">SE</option>
+                <option value="TO">TO</option>
+              </select>
           </div>
 
           <div className="sm:col-span-2">
@@ -313,7 +340,7 @@ return (
               name="cep"
               value={form.cep}
               onChange={handleChange}
-              className="w-full  h-6 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full   h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
               placeholder="cep"
             />
           </div>
