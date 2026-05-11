@@ -103,7 +103,7 @@ export default function ContasGerenciais() {
           Contas Gerenciais
         </h1>
         <p className="text-sm text-gray-500">
-          Organize categorias de entrada e saída para controle gerencial.
+          Organize categorias de entrada e saída para controle gerencial .
         </p>
       </div>
 
