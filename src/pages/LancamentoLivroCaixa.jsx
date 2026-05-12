@@ -451,80 +451,88 @@ function normalizarCodigoConta(txt) {
   return String(txt || "").trim().replace(/\s+/g, "");
 }
 
+
+
  function extrairColunasLinha(linha) {
-  const txt = String(linha || "").trim();
+  const txt = String(linha || "");
 
-  // Excel / Google Sheets
   if (txt.includes("\t")) {
-    return txt.split("\t").map(v => v.trim());
+    return txt.split("\t").map(v => String(v || "").trim());
   }
 
-  // CSV com ;
   if (txt.includes(";")) {
-    return txt.split(";").map(v => v.trim());
+    return txt.split(";").map(v => String(v || "").trim());
   }
 
-  // fallback: data + historico + codigo conta + valor
-  const m = txt.match(
-    /^(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+(\d+(?:\.\d+)+)\s+(-?[\d.,]+)$/
-  );
-
-  if (m) {
-    return [m[1], m[2], m[3], m[4]];
-  }
-
-  return [];
+  return txt.split(/\s{2,}/).map(v => String(v || "").trim());
 }
+  
 
- function parseTextoParaLinhas(texto) {
+
+function parseTextoParaLinhas(texto) {
   const linhasTexto = String(texto || "")
     .replace(/\r/g, "")
     .split("\n")
-    .map(l => l.trim())
-    .filter(Boolean);
-
-  if (!linhasTexto.length) return [];
-
-  const primeira = linhasTexto[0].toLowerCase();
-  const temCabecalho =
-    primeira.includes("data") &&
-    primeira.includes("hist") &&
-    primeira.includes("conta");
-
-  const origem = temCabecalho ? linhasTexto.slice(1) : linhasTexto;
+    .filter(l => String(l || "").trim() !== "");
 
   const resultado = [];
+  let atual = null;
 
-  for (let i = 0; i < origem.length; i++) {
-    const colunas = extrairColunasLinha(origem[i]);
+  for (const linhaOriginal of linhasTexto) {
+    const linha = String(linhaOriginal || "");
+    const lower = linha.toLowerCase();
 
-    // agora o layout certo é: data, historico, conta, valor
-    if (colunas.length < 4) continue;
+    if (lower.includes("data") && lower.includes("hist")) continue;
 
-    // se vier lixo extra, ignora depois da 4a coluna
-    const [data, historico, codigoConta, valorTexto] = colunas.slice(0, 4);
+    const colunas = extrairColunasLinha(linha);
 
-    const valorNumero = parseNumeroBR(valorTexto);
+    const data = String(colunas[0] || "").trim();
+    const historico = String(colunas[1] || "").trim();
+    const codigoConta = String(colunas[2] || "").trim();
+    const valorTexto = String(colunas[3] || "").trim();
 
-    if (!data || !historico || !codigoConta || !valorTexto) continue;
+    const temData = /^\d{2}\/\d{2}\/\d{4}$/.test(data);
+    const temValor = valorTexto !== "";
 
-    const contaEncontrada = resolverContaPorCodigo(codigoConta);
+    // nova linha válida
+    if (temData && temValor) {
+      const valorNumero = parseNumeroBR(valorTexto);
+      const contaEncontrada = resolverContaPorCodigo(codigoConta);
 
-    resultado.push({
-      _id: gerarLinhaId(),
-      data: dataBRparaISO(data),
-      historico: String(historico).trim(),
-      tipo: valorNumero >= 0 ? "entrada" : "saida",
-      valor: Math.abs(valorNumero).toFixed(2).replace(".", ","),
-      contra: contaEncontrada
-        ? `${contaEncontrada.codigo} - ${contaEncontrada.nome}`
-        : String(codigoConta).trim(),
-      conta_id: contaEncontrada ? Number(contaEncontrada.id) : null
-    });
+      atual = {
+        _id: gerarLinhaId(),
+        data: dataBRparaISO(data),
+        historico: historico,
+        tipo: valorNumero >= 0 ? "entrada" : "saida",
+        valor: Math.abs(valorNumero).toFixed(2).replace(".", ","),
+        contra: contaEncontrada
+          ? `${contaEncontrada.codigo} - ${contaEncontrada.nome}`
+          : codigoConta,
+        conta_id: contaEncontrada ? Number(contaEncontrada.id) : null
+      };
+
+      resultado.push(atual);
+      continue;
+    }
+
+    // continuação do histórico quebrado pelo banco
+    if (!temData && !temValor && atual) {
+      const textoExtra = colunas
+        .map(c => String(c || "").trim())
+        .filter(Boolean)
+        .join(" ");
+
+      if (textoExtra) {
+        atual.historico = `${atual.historico} ${textoExtra}`
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+    }
   }
 
   return resultado;
 }
+
 
 function codigoContaChave(txt) {
   return String(txt || "")
@@ -676,7 +684,7 @@ return (
        <div className="bg-gray-600 border-b rounded-t-xl p-4">  
         {/* TÍTULO */}
         <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
-          ⚡ Lançamento Contábil Inteligente
+          ⚡ Lançamento Contábil Inteligente  
         </h2>
 
         {/* CONTA + SALDO */}
@@ -813,7 +821,7 @@ return (
                  
                 <div className="mt-4 max-h-[680px] overflow-y-auto rounded-xl border border-gray-200 bg-white"> 
                 
-               <div className="sticky top-0 z-20 grid grid-cols-[120px_400px_120px_120px_320px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 bg-white">     
+               <div className="sticky top-0 z-20 grid grid-cols-[120px_500px_120px_120px_320px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 bg-white">     
                 <div>Data</div>
                 <div>Histórico</div>
                 
@@ -838,7 +846,7 @@ return (
                   {linhas.map((l) => (
                   <div
                     key={l._id}
-                    className="grid grid-cols-[120px_400px_120px_120px_320px_120px_90px] gap-2 text-sm border-b py-1"
+                    className="grid grid-cols-[120px_500px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
                   >
                     <div>
                       {String(l.data || "").includes("-")
@@ -913,7 +921,7 @@ return (
           {/* NOVA LINHA */}
           
             {mostrarNovaLinha && (
-         <div className="sticky bottom-0 z-20 grid grid-cols-[120px_400px_120px_120px_320px_120px_60px] gap-2 border-t bg-white p-2">
+         <div className="sticky bottom-0 z-20 grid grid-cols-[120px_500px_120px_120px_320px_120px_60px] gap-2 border-t bg-white p-2">
          
                  <input
                         ref={dataRef}

@@ -157,136 +157,172 @@ const THEME = {
       setLoading(false);
     }
   };
+ 
 
   if (carregandoDados) {
-    return <div className="p-6 text-gray-600">Carregando dados...</div>;
-  }
-
   return (
-       <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
-      <h1
-        className="text-2xl md:text-3xl font-bold mb-8 text-center"
-        style={{ color: THEME.title }}
-      >
-        ✏️ Editar Conta
-      </h1>
-    <div className="bg-gray-100 p-5 rounded-xl shadow flex flex-col gap-4"> 
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-100">
+      <div className="text-blue-900 font-black">Carregando dados...</div>
+    </div>
+  );
+}
 
-       
-        <div> 
-         <label className="block text-base font-bold mb-1 text-[#1e40af]">Nome da Conta</label> 
-        <input name="nome" placeholder="Nome da Conta"
-          className="input-base w-full h-10"
-          value={form.nome}
-          onChange={handleChange}
-        />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div> 
-        <label className="block text-base font-bold mb-1 text-[#1e40af]">Banco</label> 
-        <input name="banco" placeholder="Banco"
-            className="input-base w-64 h-10"
-          value={form.banco}
-          onChange={handleChange}
-        />
-        </div>
+return (
+   <div className="bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-100 px-4 py-5 flex justify-center">
+    <div className="w-full max-w-md rounded-[30px] bg-white/95 shadow-2xl border border-white/40 overflow-hidden">
 
-         <div> 
-         <label className="block text-base font-bold mb-1 text-[#1e40af]">Número do Banco</label> 
-        <input name="nro_banco" placeholder="Número do Banco"
-            className="input-base w-64 h-10"
-          value={form.nro_banco}
-          onChange={handleChange}
-        />
-        </div>
+      {/* TOPO */}
+      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 px-5 py-5 text-white">
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="text-3xl font-black text-white"
+          >
+            ←
+          </button>
+
+          <h1 className="text-xl font-black text-white">
+            Editar Conta
+          </h1>
+
+          <div className="w-10" />
         </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div> 
-       <label className="block text-base font-bold mb-1 text-[#1e40af]">Agência</label> 
-        <input name="agencia" placeholder="Agência"
-          className="input-base w-48 h-10"
-          value={form.agencia}
-          onChange={handleChange}
-        />
-        </div>
+        <p className="text-center text-blue-100 font-bold mt-4">
+          Alteração de conta financeira
+        </p>
+      </div>
+
+      {/* FORM */}
+      <div className="p-5 space-y-4">
+
         <div>
-         <label className="block text-base font-bold mb-1 text-[#1e40af]">Número Conta</label> 
-        <input name="conta" placeholder="Número da Conta"
-         className="input-base w-48 h-10"
-          value={form.conta}
-          onChange={handleChange}
-        />
-        </div>
-        </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-      <div>
-         <label className="block text-base font-bold mb-1 text-[#1e40af]">Tipo</label> 
-        <input name="tipo" placeholder="Tipo"
-            className="input-base w-48 h-10"
-          value={form.tipo}
-          onChange={handleChange}
-        /> </div>
-           <div> 
-          
-
-         <label className="block text-base font-bold mb-1 text-[#1e40af]">Saldo Inicial</label> 
-        <input name="saldo_inicial" placeholder="Saldo inicial"
-          className="input-base w-72 h-10"
-          value={form.saldo_inicial}
-          onChange={handleChange}
-        /> </div>
+          <label className="block text-sm font-black text-blue-900 mb-1">
+            Nome da Conta
+          </label>
+          <input
+            name="nome"
+            value={form.nome}
+            onChange={handleChange}
+            className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+          />
         </div>
 
-        <label className="flex items-center gap-2 text-[#1e40af]">
-          <input type="checkbox" name="conjunta"
-            checked={form.conjunta}
-            onChange={handleChange}
-          />
-          Conjunta
-        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-black text-blue-900 mb-1">
+              Banco
+            </label>
+            <input
+              name="banco"
+              value={form.banco}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
 
-        <label className="flex items-center gap-2 text-[#1e40af]">
-          <input type="checkbox" name="juridica"
-            checked={form.juridica}
-            onChange={handleChange}
-          />
-          Jurídica
-        </label>
+          <div>
+            <label className="block text-sm font-black text-blue-900 mb-1">
+              Nº Banco
+            </label>
+            <input
+              name="nro_banco"
+              value={form.nro_banco}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+        </div>
 
-        <label className="flex items-center gap-2 text-[#1e40af]">
-          <input type="checkbox" name="padrao"
-            checked={form.padrao}
-            onChange={handleChange}
-          />
-          Conta padrão?
-        </label>
-            
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-black text-blue-900 mb-1">
+              Agência
+            </label>
+            <input
+              name="agencia"
+              value={form.agencia}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
 
-        <div className="flex gap-6 pt-8 pb-8 pl-1">
+          <div>
+            <label className="block text-sm font-black text-blue-900 mb-1">
+              Conta
+            </label>
+            <input
+              name="conta"
+              value={form.conta}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+        </div>
 
-        <button
-          onClick={salvar}
-          disabled={loading} 
-          className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded font-bold"
-        >
-          {loading ? "Salvando..." : "Salvar"}
-        </button>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-black text-blue-900 mb-1">
+              Tipo
+            </label>
+            <input
+              name="tipo"
+              value={form.tipo}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
 
-           <button
-            onClick={() => navigate("/saldos")}
-            className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-bold"
+          <div>
+            <label className="block text-sm font-black text-blue-900 mb-1">
+              Saldo Inicial
+            </label>
+            <input
+              name="saldo_inicial"
+              value={form.saldo_inicial}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+        </div>
+
+        <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3">
+          <label className="flex items-center gap-3 text-blue-900 font-black">
+            <input type="checkbox" name="conjunta" checked={form.conjunta} onChange={handleChange} />
+            Conta conjunta
+          </label>
+
+          <label className="flex items-center gap-3 text-blue-900 font-black">
+            <input type="checkbox" name="juridica" checked={form.juridica} onChange={handleChange} />
+            Conta jurídica
+          </label>
+
+          <label className="flex items-center gap-3 text-blue-900 font-black">
+            <input type="checkbox" name="padrao" checked={form.padrao} onChange={handleChange} />
+            Conta padrão
+          </label>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 pt-3">
+          <button
+            onClick={salvar}
+            disabled={loading}
+            className="rounded-2xl bg-gradient-to-br from-blue-900 to-cyan-700 text-white py-4 font-black shadow-lg disabled:opacity-60"
+          >
+            {loading ? "Salvando..." : "Salvar"}
+          </button>
+
+          <button
+            onClick={() => navigate(-1)}
+            className="rounded-2xl bg-slate-200 text-slate-700 py-4 font-black"
           >
             Cancelar
           </button>
         </div>
-
       </div>
     </div>
-    </div>
-  );
+  </div>
+);
 }
 
