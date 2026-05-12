@@ -407,7 +407,7 @@ useEffect(() => {
 
       return {
         modo: "pagar",
-        forma: "boleto",
+        forma: "aprazo",
         valor,
         vencimento,
         descricao: "Conta de consumo",
@@ -439,7 +439,7 @@ useEffect(() => {
 
     return {
       modo: "pagar",
-      forma: "boleto",
+      forma: "aprazo",
       valor,
       vencimento,
       descricao: "Boleto bancário",
