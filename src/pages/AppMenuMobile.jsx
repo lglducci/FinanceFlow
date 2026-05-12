@@ -218,7 +218,19 @@ function MiniDashboard() {
     return parsePix(limpo);
   }
 
-  // BOLETO
+  // NF-e / DANFE
+  if (numeros.length === 44 && numeros.startsWith("35")) {
+    return {
+      modo: "saida",
+      forma: "avista",
+      valor: "",
+      vencimento: hojeLocal(),
+      descricao: "Nota Fiscal Eletrônica",
+      codigo: numeros,
+    };
+  }
+
+  // BOLETO / ARRECADAÇÃO
   if (numeros.length >= 44) {
     return parseBoleto(numeros);
   }
