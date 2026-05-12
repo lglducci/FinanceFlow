@@ -272,6 +272,7 @@ useEffect(() => {
           formatsToSupport: [
             Html5QrcodeSupportedFormats.ITF,
             Html5QrcodeSupportedFormats.CODE_128,
+             Html5QrcodeSupportedFormats.ITF_14,
             Html5QrcodeSupportedFormats.CODE_39,
             Html5QrcodeSupportedFormats.EAN_13,
           ],
