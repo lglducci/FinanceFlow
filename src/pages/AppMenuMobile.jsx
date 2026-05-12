@@ -284,7 +284,7 @@ useEffect(() => {
           ],
         };
 
-        
+
  const scanner = new Html5QrcodeScanner(
   "reader",
   configScanner,
@@ -296,6 +296,9 @@ useEffect(() => {
       scanner.clear().catch(() => {});
 
       setAbrirQR(false);
+
+      alert(decodedText);
+console.log("CODIGO LIDO:", decodedText);
 
      const dados = tratarCodigoLido(decodedText);
       if (!dados) return;
