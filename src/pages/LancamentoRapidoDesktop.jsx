@@ -1,4 +1,4 @@
- import { useEffect, useState, useRef } from "react";
+  import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -630,9 +630,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
               icone="💳" titulo="Forma"
               resumo={formaSelecionada}
               aberto={etapaAberta === "forma"}
-              onAbrir={() => {
-                if (!formaSelecionada) setEtapaAberta("forma");
-              }}
+               onAbrir={setEtapaAberta}
             >
               <div className="grid grid-cols-2 gap-2 ">
                 {formas.map((f) => (
