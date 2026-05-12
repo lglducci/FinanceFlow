@@ -2,10 +2,12 @@
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../../config/globals";
 import { hojeLocal } from "../../utils/dataLocal";
+import { useSearchParams } from "react-router-dom";
 
 export default function AppContasCartoes() {
   const navigate = useNavigate();
-
+ const [searchParams] = useSearchParams();
+const id = searchParams.get("id");
   const empresa_id =
     localStorage.getItem("empresa_id") ||
     localStorage.getItem("id_empresa") ||
@@ -95,7 +97,7 @@ export default function AppContasCartoes() {
   };
 
   const secaoTitulo = {
-    fontSize: 26,
+    fontSize: 22,
     color: "#4b5563",
     fontWeight: 800,
     margin: "26px 0 12px",
@@ -128,6 +130,23 @@ export default function AppContasCartoes() {
     background: "#eef2ff",
   };
 
+  const botaoEditarPequeno = {
+  marginTop: 6,
+  border: 0,
+  borderRadius: 999,
+  padding: "5px 12px",
+  background: "#e0f2fe",
+  color: "#0369a1",
+  fontWeight: 900,
+  fontSize: 12,
+};
+
+useEffect(() => {
+  if (id) {
+    carregarCartao(id);
+  }
+}, [id]);
+
   return (
     <div style={tela}>
       <div style={topoCard}>
@@ -137,7 +156,7 @@ export default function AppContasCartoes() {
             style={{
               border: 0,
               background: "transparent",
-              fontSize: 28,
+              fontSize: 24,
               fontWeight: 900,
               color: "#1e293b",
             }}
@@ -145,7 +164,7 @@ export default function AppContasCartoes() {
             ←
           </button>
 
-          <div style={{ fontSize: 24, fontWeight: 900, color: "#1e1b4b" }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: "#1e1b4b" }}>
             Contas e Cartões
           </div>
 
@@ -158,7 +177,7 @@ export default function AppContasCartoes() {
               borderRadius: "50%",
               background: "linear-gradient(135deg,#7c3aed,#4c1d95)",
               color: "#fff",
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: 900,
             }}
           >
@@ -197,7 +216,7 @@ export default function AppContasCartoes() {
       border: 0,
       background: "linear-gradient(135deg,#7c3aed,#4c1d95)",
       color: "#fff",
-      fontSize: 26,
+      fontSize: 22,
       lineHeight: "30px",
       fontWeight: 300,
       boxShadow: "0 8px 18px rgba(124,58,237,0.35)",
@@ -213,12 +232,26 @@ export default function AppContasCartoes() {
             <div style={icone}>🏦</div>
 
             <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#1e1b4b" }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#1e1b4b" }}>
                 {c.conta_nome}
               </div>
-              <div style={{ marginTop: 4, fontSize: 17, fontWeight: 900, color: valorCor(c.saldo_final) }}>
+              <div style={{ marginTop: 4, fontSize: 13, fontWeight: 900, color: valorCor(c.saldo_final) }}>
                 {fmt.format(Number(c.saldo_final || 0))}
               </div>
+              <button
+                  onClick={() =>
+                    navigate("/app/editar-conta", {
+                      state: {
+                        ...c,
+                        id: c.id ?? c.conta_id ?? c.id_conta,
+                        empresa_id: c.empresa_id ?? empresa_id,
+                      },
+                    })
+                  }
+                  style={botaoEditarPequeno}
+                >
+                  ✏️ Editar
+                </button>
             </div>
 
             
@@ -232,8 +265,8 @@ export default function AppContasCartoes() {
         )}
 
         <div style={{ borderTop: "1px solid #e5e7eb", marginTop: 10, paddingTop: 18, display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 22, fontWeight: 800, color: "#1e1b4b" }}>Total</span>
-          <span style={{ fontSize: 22, fontWeight: 900, color: valorCor(totalContas) }}>
+          <span style={{ fontSize: 18, fontWeight: 800, color: "#1e1b4b" }}>Total</span>
+          <span style={{ fontSize: 18, fontWeight: 900, color: valorCor(totalContas) }}>
             {fmt.format(totalContas)}
           </span>
         </div>
@@ -251,7 +284,7 @@ export default function AppContasCartoes() {
       background: "#14b8a6",
       color: "#fff",
       fontWeight: 900,
-      fontSize: 14,
+      fontSize: 12,
     }}
   >
     Cartões ativos
@@ -265,7 +298,7 @@ export default function AppContasCartoes() {
       background: "#e5e7eb",
       color: "#475569",
       fontWeight: 900,
-      fontSize: 14,
+      fontSize: 12,
     }}
   >
     Faturas
@@ -281,7 +314,7 @@ export default function AppContasCartoes() {
       border: 0,
       background: "linear-gradient(135deg,#14b8a6,#0f766e)",
       color: "#fff",
-      fontSize: 26,
+      fontSize: 22,
       lineHeight: "30px",
       fontWeight: 300,
       boxShadow: "0 8px 18px rgba(20,184,166,0.35)",
@@ -297,15 +330,22 @@ export default function AppContasCartoes() {
             </div>
 
             <div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: "#1e1b4b" }}>
+              <div style={{ fontSize: 12, fontWeight: 800, color: "#1e1b4b" }}>
                 {c.nome}
               </div>
-              <div style={{ marginTop: 4, fontSize: 14, color: "#94a3b8", fontWeight: 800 }}>
+              <div style={{ marginTop: 4, fontSize: 12, color: "#94a3b8", fontWeight: 800 }}>
                 {c.bandeira || "Cartão"} • vence dia {c.vencimento_dia || "-"}
               </div>
-              <div style={{ marginTop: 4, fontSize: 16, fontWeight: 900, color: "#ef4444" }}>
+              <div style={{ marginTop: 4, fontSize: 14, fontWeight: 900, color: "#ef4444" }}>
                 Limite {fmt.format(Number(c.limite_total || 0))}
               </div>
+
+               <button
+               onClick={() => navigate(`/app/edit-card/${c.id}`)}
+                style={botaoEditarPequeno}
+              >
+                ✏️ Editar
+              </button>
             </div>
 
             
@@ -319,8 +359,8 @@ export default function AppContasCartoes() {
         )}
 
         <div style={{ borderTop: "1px solid #e5e7eb", marginTop: 10, paddingTop: 18, display: "flex", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 20, fontWeight: 800, color: "#1e1b4b" }}>Limite total</span>
-          <span style={{ fontSize: 20, fontWeight: 900, color: "#1e1b4b" }}>
+          <span style={{ fontSize: 16, fontWeight: 800, color: "#1e1b4b" }}>Limite total</span>
+          <span style={{ fontSize: 16, fontWeight: 900, color: "#1e1b4b" }}>
             {fmt.format(totalLimiteCartoes)}
           </span>
         </div>
