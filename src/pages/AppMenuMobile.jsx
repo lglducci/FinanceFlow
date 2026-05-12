@@ -355,41 +355,55 @@ useEffect(() => {
   };
 }, []);
 
-function parseBoleto(codigo) {
-  try {
-    const numeros = codigo.replace(/\D/g, "");
+const valorStr = numeros.substring(9, 19);
 
-    if (numeros.length < 44) return null;
+ function parseBoleto(codigo) {
+  const numeros = String(codigo || "").replace(/\D/g, "");
 
-    // valor
-    const valorStr = numeros.substring(9, 19);
-    const valor = (Number(valorStr) / 100).toFixed(2);
+  if (numeros.length < 44) return null;
 
-    // vencimento
-    const fator = Number(numeros.substring(5, 9));
+  const primeiroDigito = numeros.substring(0, 1);
 
+  // Arrecadação / contas de consumo começa normalmente com 8
+  if (primeiroDigito === "8") {
+    return {
+      modo: "pagar",
+      forma: "boleto",
+      valor: "",
+      vencimento: hojeLocal(),
+      descricao: "Conta de consumo / arrecadação",
+      codigo: numeros,
+    };
+  }
+
+  // Boleto bancário comum
+  const valorStr = numeros.substring(9, 19);
+  const valorNum = Number(valorStr) / 100;
+
+  const fator = Number(numeros.substring(5, 9));
+
+  let vencimento = hojeLocal();
+
+  if (fator > 0) {
     const base = new Date(1997, 9, 7);
-
     base.setDate(base.getDate() + fator);
 
-    const vencimento =
+    vencimento =
       base.getFullYear() +
       "-" +
       String(base.getMonth() + 1).padStart(2, "0") +
       "-" +
       String(base.getDate()).padStart(2, "0");
-
-    return {
-      modo: "pagar",
-      forma: "boleto",
-      valor,
-      vencimento,
-      descricao: "Boleto bancário",
-      codigo: numeros,
-    };
-  } catch {
-    return null;
   }
+
+  return {
+    modo: "pagar",
+    forma: "boleto",
+    valor: valorNum > 0 && valorNum < 999999 ? valorNum.toFixed(2) : "",
+    vencimento,
+    descricao: "Boleto bancário",
+    codigo: numeros,
+  };
 }
 
   return (
