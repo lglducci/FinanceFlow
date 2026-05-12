@@ -441,7 +441,7 @@ useEffect(() => {
 
     return {
       modo: "pagar",
-      forma: "prazo",
+      forma: "aprazo",
       valor,
       vencimento,
       descricao: "Boleto bancário",
