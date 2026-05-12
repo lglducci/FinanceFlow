@@ -3,8 +3,13 @@ import { useNavigate } from "react-router-dom";
  import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
  
-import { Html5QrcodeScanner } from "html5-qrcode";
+//import { Html5QrcodeScanner } from "html5-qrcode";
  
+
+import {
+  Html5QrcodeScanner,
+  Html5QrcodeSupportedFormats,
+} from "html5-qrcode";
 
 
 export default function Home() {
@@ -72,8 +77,8 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
       style={{
         border: "1px solid rgba(148,163,184,0.25)",
         borderRadius: 14,
-        padding: 12,
-        minHeight: 26,
+        padding: 10,
+        minHeight: 36,
         background: "linear-gradient(135deg,#e2e8f0,#cbd5e1)",
         boxShadow: "0 8px 24px rgba(15,23,42,0.10)",
         textAlign: "left",
@@ -200,6 +205,30 @@ function MiniDashboard() {
   );
 } 
 
+
+function tratarCodigoLido(decodedText) {
+  const limpo = String(decodedText || "").trim();
+  const numeros = limpo.replace(/\D/g, "");
+
+  // PIX
+  if (limpo.startsWith("000201") || limpo.includes("BR.GOV.BCB.PIX")) {
+    return parsePix(limpo);
+  }
+
+  // Boleto / código de barras / linha digitável
+  if (numeros.length >= 44) {
+    return {
+      modo: "pagar",
+      forma: "boleto",
+      valor: "",
+      descricao: "Boleto / conta lida",
+      codigo: numeros,
+    };
+  }
+
+  return null;
+}
+
 function parsePix(payload) {
   try {
     let i = 0;
@@ -237,14 +266,21 @@ function parsePix(payload) {
 useEffect(() => {
   if (!abrirQR) return;
 
-  const scanner = new Html5QrcodeScanner(
-    "reader",
-    {
-      fps: 10,
-      qrbox: 250,
-    },
-    false
-  );
+ const scanner = new Html5QrcodeScanner(
+  "reader",
+  {
+    fps: 10,
+    qrbox: { width: 320, height: 180 },
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.QR_CODE,
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.CODE_39,
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.ITF,
+    ],
+  },
+  false
+);
 
   scanner.render(
     (decodedText) => {
@@ -252,14 +288,14 @@ useEffect(() => {
 
       setAbrirQR(false);
 
-      const dados = parsePix(decodedText);
+     const dados = tratarCodigoLido(decodedText);
       if (!dados) return;
-
     navigate(
   `/app/lancamento?modo=${dados.modo}` +
   `&forma=${dados.forma}` +
-  `&valor=${dados.valor}` +
-  `&descricao=${encodeURIComponent(dados.descricao)}`
+  `&valor=${dados.valor || ""}` +
+  `&descricao=${encodeURIComponent(dados.descricao || "")}` +
+  `&codigo=${encodeURIComponent(dados.codigo || decodedText)}`
 );
     },
     () => {}
@@ -446,52 +482,54 @@ useEffect(() => {
         >
           <BotaoMenu
                 icone="📥"
-                titulo="Vendas"
-              //  subtitulo="Dinheiro recebido"
+                titulo="Receitas"
+                subtitulo="A Vista"
                 onClick={() => ir("entrada")}
               />
 
              <BotaoMenu
                 icone="📤"
-                titulo="Compras"
-              //  subtitulo="Despesa Paga"
-                onClick={() => ir("saida")}
+                titulo="Despesas"
+                subtitulo=" A Vista"
+                onClick={() => ir("saida")} 
               />
+
+              <BotaoMenu
+                icone="💰"
+                titulo="Receber a Prazo"
+              //  subtitulo="Receber "
+            onClick={() => ir("receber")} 
+             />
 
              <BotaoMenu
                 icone="📆"
-                titulo="Vencimentos"
-                //subtitulo="Criar Vencimentos "
+                titulo="Despesas a Prazo"
+             //   subtitulo="Despesas a Prazo "
             onClick={() => ir("pagar")}
             />
            
            
-             <BotaoMenu
-                icone="💰"
-                titulo="Recebimentos"
-                //subtitulo="Criar Recebimentos "
-            onClick={() => ir("receber")} 
-             />
+              
             
 
              <BotaoMenu
                 icone="💳"
                 titulo="Compras no Cartão"
-               // subtitulo="Criar compras no Cartão "
+                //subtitulo="Criar compras no Cartão "
             onClick={() => ir("compra_cartao")}
             />
              
               <BotaoMenu
                 icone="🔄"
                 titulo="Transferências Bancárias"
-              // subtitulo="Transferencia entre conta corrente."
+                //subtitulo="Transferencia entre conta corrente."
                 onClick={() => navigate("/app/transferencia")}
             />
              
                <BotaoMenu
                 icone="📊"
-                titulo="Lançamentos Consultas "
-               // subtitulo=" Contulta  de  Contas , lançamentos e pagamentos ...."
+                titulo="Lançamentos "
+                //subtitulo=" Contulta  de  Contas , lançamentos e pagamentos ...."
                 onClick={() => navigate("/app/lancamentos")}
             />
 
@@ -506,7 +544,7 @@ useEffect(() => {
                       🔔
                     </span>
                   }
-                  titulo={qtdVencidos > 0 ? `${qtdVencidos} pendência(s)` : "Sem pendências (Títulos)"}
+                  titulo={qtdVencidos > 0 ? `${qtdVencidos} pendência(s)` : "Sem pendências"}
                   subtitulo={qtdVencidos > 0 ? "Toque para baixar vencidos" : "Tudo em dia"}
                   onClick={() => navigate("/app/titulosvencidos")}
                 />
@@ -540,7 +578,7 @@ useEffect(() => {
             <BotaoMenu
                 icone="⚙️"
                 titulo="Configurações"
-               // subtitulo="Contas , Cartões Fornecedor, Categoria ...."
+                //subtitulo="Contas , Cartões Fornecedor, Categoria ...."
                 onClick={() => navigate("/app/configuracoes")}
             />
   
