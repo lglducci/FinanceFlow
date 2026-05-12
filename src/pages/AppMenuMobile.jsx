@@ -206,7 +206,7 @@ function MiniDashboard() {
 } 
 
 
-function tratarCodigoLido(decodedText) {
+ function tratarCodigoLido(decodedText) {
   const limpo = String(decodedText || "").trim();
   const numeros = limpo.replace(/\D/g, "");
 
@@ -215,15 +215,9 @@ function tratarCodigoLido(decodedText) {
     return parsePix(limpo);
   }
 
-  // Boleto / código de barras / linha digitável
+  // BOLETO
   if (numeros.length >= 44) {
-    return {
-      modo: "pagar",
-      forma: "boleto",
-      valor: "",
-      descricao: "Boleto / conta lida",
-      codigo: numeros,
-    };
+    return parseBoleto(numeros);
   }
 
   return null;
@@ -290,10 +284,11 @@ useEffect(() => {
 
      const dados = tratarCodigoLido(decodedText);
       if (!dados) return;
-    navigate(
+     navigate(
   `/app/lancamento?modo=${dados.modo}` +
   `&forma=${dados.forma}` +
   `&valor=${dados.valor || ""}` +
+  `&vencimento=${dados.vencimento || ""}` +
   `&descricao=${encodeURIComponent(dados.descricao || "")}` +
   `&codigo=${encodeURIComponent(dados.codigo || decodedText)}`
 );
@@ -359,6 +354,43 @@ useEffect(() => {
     window.removeEventListener("contabil-atualizado", atualizar);
   };
 }, []);
+
+function parseBoleto(codigo) {
+  try {
+    const numeros = codigo.replace(/\D/g, "");
+
+    if (numeros.length < 44) return null;
+
+    // valor
+    const valorStr = numeros.substring(9, 19);
+    const valor = (Number(valorStr) / 100).toFixed(2);
+
+    // vencimento
+    const fator = Number(numeros.substring(5, 9));
+
+    const base = new Date(1997, 9, 7);
+
+    base.setDate(base.getDate() + fator);
+
+    const vencimento =
+      base.getFullYear() +
+      "-" +
+      String(base.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(base.getDate()).padStart(2, "0");
+
+    return {
+      modo: "pagar",
+      forma: "boleto",
+      valor,
+      vencimento,
+      descricao: "Boleto bancário",
+      codigo: numeros,
+    };
+  } catch {
+    return null;
+  }
+}
 
   return (
 

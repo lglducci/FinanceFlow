@@ -83,10 +83,12 @@ const formaRecebimentoInicial =
   modoInicial === "entrada" ? "avista" :
   "";*/}
 
-  const tipoInicial =
+ const tipoInicial =
   modoInicial === "entrada" || modoInicial === "receber"
     ? "entrada"
-    : "saida";
+    : modoInicial === "saida" || modoInicial === "pagar" || modoInicial === "compra_cartao"
+    ? "saida"
+    : "";
 
 const formaPagamentoInicial =
   modoInicial === "pagar" ? "aprazo" :
@@ -99,6 +101,7 @@ const formaRecebimentoInicial =
   modoInicial === "entrada" ? "avista" :
   "";
 
+   const vencimentoParam = params.get("vencimento");
   const navigate = useNavigate();
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -143,7 +146,8 @@ const formaRecebimentoInicial =
     categoria_id: "",
     conta_id: "",
     fornecedor_id: "",
-    vencimento: hojeMaisDias(1),
+   // vencimento: hojeMaisDias(1),
+    vencimento: vencimentoParam || prev.vencimento,
     parcelas: 1,
     parcela_num: 1,
     status: "aberto",
@@ -561,36 +565,54 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
 
        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
              <BlocoEtapa
-            id="tipo"
-            icone="↕️" titulo="Entrada ou Saída"
-            resumo={form.tipo === "entrada" ? "Entrada" : form.tipo === "saida" ? "Saída" : ""}
-            aberto={etapaAberta === "tipo"}
-            onAbrir={setEtapaAberta}
-            >
-            <div className="flex gap-4 justify-center">
-               <button
-                type="button"
-                 ref={tipoRef}
-                onClick={() => selecionarTipo("entrada")}
-                className="flex flex-col items-center gap-2"
-                >
-                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(16,185,129,0.4)] active:scale-90 transition">
-                    ↑
-                </div>
-                <span className="text-sm font-bold text-slate-200">Entrada</span>
-                </button>
+                  id="tipo"
+                  icone="↕️" titulo="Receita ou Despesa"
+                  resumo={form.tipo === "entrada" ? "Receita" : form.tipo === "saida" ? "Despesa" : ""}
+                  aberto={etapaAberta === "tipo"}
+                   onAbrir={() => {
+                    if (!form.tipo) setEtapaAberta("tipo");
+                  }}
+                  >
+                  <div className="flex gap-4 justify-center">
+                      {!form.tipo && (
+                        <>
+                          <button
+                            type="button"
+                            ref={tipoRef}
+                            onClick={() => selecionarTipo("entrada")}
+                            className="flex flex-col items-center gap-2"
+                          >
+                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(16,185,129,0.4)] active:scale-90 transition">
+                              ↑
+                            </div>
+                            <span className="text-sm font-bold text-slate-200">Receita</span>
+                          </button>
 
-              <button
-                    type="button"
-                    onClick={() => selecionarTipo("saida")}
-                    className="flex flex-col items-center gap-2"
-                    >
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(239,68,68,0.4)] active:scale-90 transition">
-                        ↓
+                          <button
+                            type="button"
+                            onClick={() => selecionarTipo("saida")}
+                            className="flex flex-col items-center gap-2"
+                          >
+                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-red-400 to-red-600 text-white flex items-center justify-center text-3xl shadow-[0_10px_30px_rgba(239,68,68,0.4)] active:scale-90 transition">
+                              ↓
+                            </div>
+                            <span className="text-sm font-bold text-slate-200">Despesa</span>
+                          </button>
+                        </>
+                      )}
+
+                      {form.tipo === "entrada" && (
+                        <div className="w-full rounded-full bg-emerald-500/15 border border-emerald-400/40 px-3 py-1 text-center">
+                          <span className="text-xs font-black text-emerald-700">Receita</span>
+                        </div>
+                      )}
+
+                      {form.tipo === "saida" && (
+                        <div className="w-full rounded-full bg-red-500/15 border border-red-400/40 px-3 py-1 text-center">
+                          <span className="text-xs font-black text-red-700">Despesa</span>
+                        </div>
+                      )}
                     </div>
-                    <span className="text-sm font-bold text-slate-200">Saída</span>
-                    </button>
-            </div>
           </BlocoEtapa>
 
           {form.tipo && (
@@ -599,7 +621,9 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
               icone="💳" titulo="Forma"
               resumo={formaSelecionada}
               aberto={etapaAberta === "forma"}
-             onAbrir={setEtapaAberta}
+              onAbrir={() => {
+                if (!formaSelecionada) setEtapaAberta("forma");
+              }}
             >
               <div className="grid grid-cols-2 gap-2 ">
                 {formas.map((f) => (
