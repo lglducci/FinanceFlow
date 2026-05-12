@@ -69,7 +69,14 @@ export default function LancamentoRapidoDesktop() {
  const modoInicial = new URLSearchParams(window.location.search).get("modo") || "";
 
  const paramsIniciais = new URLSearchParams(window.location.search);
-const vencimentoParam = paramsIniciais.get("vencimento");
+ const vencimentoParamRaw = paramsIniciais.get("vencimento");
+
+const vencimentoParam =
+  vencimentoParamRaw && /^\d{4}-\d{2}-\d{2}$/.test(vencimentoParamRaw)
+    ? vencimentoParamRaw
+    : hojeLocal();
+
+
 
 {/*const tipoInicial =
   modoInicial === "entrada" || modoInicial === "receber"
@@ -149,7 +156,7 @@ const formaRecebimentoInicial =
     categoria_id: "",
     conta_id: "",
     fornecedor_id: "",
-    vencimento: vencimentoParam || hojeLocal(),
+    vencimento: vencimentoParam,
     parcelas: 1,
     parcela_num: 1,
     status: "aberto",
@@ -196,7 +203,7 @@ const formaRecebimentoInicial =
 
     if (form.tipo === "saida") {
       if (form.forma_pagamento === "cartao_credito") return "cartao_compra";
-      if (form.forma_pagamento === "aprazo") return "pagar";
+      if (["aprazo", "boleto"].includes(form.forma_pagamento)) return "pagar";
       return "financeiro";
     }
 
