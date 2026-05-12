@@ -1,4 +1,4 @@
-  import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
  import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
@@ -263,27 +263,25 @@ function parsePix(payload) {
 useEffect(() => {
   if (!abrirQR) return;
 
-
-    const configScanner =
-    tipoLeitor === "barra"
-      ? {
-          fps: 15,
-          qrbox: { width: 600, height: 330 },
-          formatsToSupport: [
-            Html5QrcodeSupportedFormats.ITF,
-            Html5QrcodeSupportedFormats.CODE_128,
-             Html5QrcodeSupportedFormats.ITF_14,
-            Html5QrcodeSupportedFormats.CODE_39,
-            Html5QrcodeSupportedFormats.EAN_13,
-          ],
-        }
-      : {
-          fps: 10,
-          qrbox: 250,
-          formatsToSupport: [
-            Html5QrcodeSupportedFormats.QR_CODE,
-          ],
-        };
+ const configScanner =
+  tipoLeitor === "barra"
+    ? {
+        fps: 15,
+        qrbox: { width: 620, height: 280 },
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.ITF,
+          Html5QrcodeSupportedFormats.ITF_14,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.CODE_39,
+        ],
+      }
+    : {
+        fps: 10,
+        qrbox: 250,
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.QR_CODE,
+        ],
+      };
 
 
  const scanner = new Html5QrcodeScanner(
@@ -374,29 +372,70 @@ useEffect(() => {
   };
 }, []);
 
-function parseBoleto(codigo) {
+ function parseBoleto(codigo) {
   try {
-    const numeros = codigo.replace(/\D/g, "");
+    const numeros = String(codigo || "").replace(/\D/g, "");
 
     if (numeros.length < 44) return null;
 
-    // valor
+    // ==============================
+    // ARRECADAÇÃO / CONTA DE CONSUMO
+    // Ex: Claro, água, luz, telefone
+    // ==============================
+    if (numeros.startsWith("8")) {
+      // Para o código da Claro lido:
+      // 848900000000459401622026021917006956002511988
+
+      const valorCentavos = Number(numeros.substring(11, 15));
+
+      const valor =
+        valorCentavos > 0
+          ? (valorCentavos / 100).toFixed(2)
+          : "";
+
+      const venc = numeros.substring(21, 27);
+
+      let vencimento = hojeLocal();
+
+      if (/^\d{6}$/.test(venc)) {
+        const dia = venc.substring(0, 2);
+        const mes = venc.substring(2, 4);
+        const ano = "20" + venc.substring(4, 6);
+
+        vencimento = `${ano}-${mes}-${dia}`;
+      }
+
+      return {
+        modo: "pagar",
+        forma: "boleto",
+        valor,
+        vencimento,
+        descricao: "Conta de consumo",
+        codigo: numeros,
+      };
+    }
+
+    // ==============================
+    // BOLETO BANCÁRIO COMUM
+    // ==============================
     const valorStr = numeros.substring(9, 19);
     const valor = (Number(valorStr) / 100).toFixed(2);
 
-    // vencimento
     const fator = Number(numeros.substring(5, 9));
 
-    const base = new Date(1997, 9, 7);
+    let vencimento = hojeLocal();
 
-    base.setDate(base.getDate() + fator);
+    if (fator > 0) {
+      const base = new Date(1997, 9, 7);
+      base.setDate(base.getDate() + fator);
 
-    const vencimento =
-      base.getFullYear() +
-      "-" +
-      String(base.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(base.getDate()).padStart(2, "0");
+      vencimento =
+        base.getFullYear() +
+        "-" +
+        String(base.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(base.getDate()).padStart(2, "0");
+    }
 
     return {
       modo: "pagar",
