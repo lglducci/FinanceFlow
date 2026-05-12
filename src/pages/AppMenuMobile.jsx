@@ -5,12 +5,10 @@ import { hojeLocal } from "../utils/dataLocal";
  
 //import { Html5QrcodeScanner } from "html5-qrcode";
  
-
-import {
+ import {
   Html5QrcodeScanner,
   Html5QrcodeSupportedFormats,
 } from "html5-qrcode";
-
 
 export default function Home() {
  
@@ -19,7 +17,7 @@ export default function Home() {
  const navigate = useNavigate();
 
  const [abrirQR, setAbrirQR] = useState(false);
- 
+ const [tipoLeitor, setTipoLeitor] = useState(null);
 
 const [alertaContabil, setAlertaContabil] = useState(null);
  
@@ -48,6 +46,11 @@ const [qtdVencidos, setQtdVencidos] = useState(0);
   cursor: "pointer",
 };
 
+
+function abrirLeitor(tipo) {
+  setTipoLeitor(tipo);
+  setAbrirQR(true);
+}
 
 async function carregarQtdVencidos() {
   try {
@@ -260,19 +263,31 @@ function parsePix(payload) {
 useEffect(() => {
   if (!abrirQR) return;
 
+
+    const configScanner =
+    tipoLeitor === "barra"
+      ? {
+          fps: 10,
+          qrbox: { width: 380, height: 130 },
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.ITF,
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.CODE_39,
+            Html5QrcodeSupportedFormats.EAN_13,
+          ],
+        }
+      : {
+          fps: 10,
+          qrbox: 250,
+          formatsToSupport: [
+            Html5QrcodeSupportedFormats.QR_CODE,
+          ],
+        };
+
+        
  const scanner = new Html5QrcodeScanner(
   "reader",
-  {
-    fps: 10,
-    qrbox: { width: 320, height: 180 },
-    formatsToSupport: [
-      Html5QrcodeSupportedFormats.QR_CODE,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39,
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.ITF,
-    ],
-  },
+  configScanner,
   false
 );
 
@@ -441,22 +456,13 @@ function parseBoleto(codigo) {
               💼 FinanceFlow Mobile  
             </h1>
               
+              <button onClick={() => abrirLeitor("qrcode")}>
+                      📷 Ler QR Code / Pix
+                    </button>
 
-              <button
-            onClick={() => setAbrirQR(true)}
-            style={{
-              marginTop: 12,
-              border: 0,
-              borderRadius: 999,
-              padding: "10px 16px",
-              background: "linear-gradient(135deg,#16a34a,#15803d)",
-              color: "white",
-              fontWeight: 900,
-              cursor: "pointer",
-            }}
-          >
-            📷 Ler QR Code
-          </button>
+                    <button onClick={() => abrirLeitor("barra")}>
+                      ▦ Ler Código de Barras
+                    </button>
             <div
               style={{
                 marginTop: 10,
@@ -632,7 +638,10 @@ function parseBoleto(codigo) {
     <div id="reader" style={{ background: "#fff", borderRadius: 16 }} />
 
     <button
-      onClick={() => setAbrirQR(false)}
+       onClick={() => {
+  setAbrirQR(false);
+  setTipoLeitor(null);
+}}
       style={{
         position: "absolute",
         top: 20,
