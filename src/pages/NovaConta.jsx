@@ -8,7 +8,7 @@ export default function NovaConta() {
     empresa_id: localStorage.getItem("id_empresa") || "",
     nome: "",
     banco: "",
-    tipo: "",
+    tipo: "corrente",
     saldo_inicial: "",
     nro_banco: "",
     agencia: "",

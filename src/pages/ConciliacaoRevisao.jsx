@@ -814,12 +814,12 @@ const lote_id =
         Ver transações geradas
       </button>
   
-      <button
+     {/*} <button
         onClick={excluirImportacao}
         className="px-5 py-2 rounded-full bg-red-700 text-white font-bold shadow hover:brightness-110"
       >
         Estornar lote
-      </button>
+      </button>*/}
        
     </div>
   </div>

@@ -148,7 +148,7 @@ const THEME = {
       }
 
       alert("Conta atualizada com sucesso!");
-      navigate("/saldos");
+      navigate(-1);
 
     } catch (e) {
       console.log(e);
@@ -317,7 +317,7 @@ return (
             onClick={() => navigate(-1)}
             className="rounded-2xl bg-slate-200 text-slate-700 py-4 font-black"
           >
-            Cancelar
+            Sair
           </button>
         </div>
       </div>

@@ -130,7 +130,7 @@ const sucesso =
 
 if (sucesso) {
   alert("Cartão atualizado com sucesso!");
-  navigate("/cards");
+  navigate(-1);
 } else {
   console.log("DEBUG JSON:", json);
   alert("Erro ao atualizar cartão.");
@@ -291,7 +291,7 @@ if (sucesso) {
             onClick={() => navigate(-1)}
             className="flex-1 h-12 rounded-full bg-slate-300 text-slate-700 font-black"
           >
-            Cancelar
+            Sair
           </button>
         </div>
       </div>
