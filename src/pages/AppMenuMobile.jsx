@@ -446,14 +446,14 @@ useEffect(() => {
         >
           <BotaoMenu
                 icone="📥"
-                titulo="Entrada rápida"
+                titulo="Vendas"
                 subtitulo="Dinheiro recebido"
                 onClick={() => ir("entrada")}
               />
 
              <BotaoMenu
                 icone="📤"
-                titulo="Saída rápida"
+                titulo="Compras"
                 subtitulo="Despesa Paga"
                 onClick={() => ir("saida")}
               />
