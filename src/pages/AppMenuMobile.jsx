@@ -267,8 +267,8 @@ useEffect(() => {
     const configScanner =
     tipoLeitor === "barra"
       ? {
-          fps: 10,
-          qrbox: { width: 380, height: 130 },
+          fps: 15,
+          qrbox: { width: 600, height: 130 },
           formatsToSupport: [
             Html5QrcodeSupportedFormats.ITF,
             Html5QrcodeSupportedFormats.CODE_128,
