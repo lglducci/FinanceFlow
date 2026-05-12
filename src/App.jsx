@@ -327,7 +327,7 @@ const rotaAtual = window.location.pathname;
 
 
     <Route path="/app/new-card" element={<NovoCartao />} />
-
+   <Route path="/app/edit-card/:id" element={<EditarCartao />} />
     
     <Route path="/app/nova-conta" element={<NovaConta />} />
 
@@ -335,13 +335,12 @@ const rotaAtual = window.location.pathname;
     <Route path="/app/fornecedores/novo" element={<NovoFornecedorCliente />} />
       <Route path="/app/fornecedores/editar/:id" element={<EditarFornecedorCliente />} />
 
-
+          
         <Route
         path="/app/categorias/novo"
       element={<ContasGerenciaisNovo />}
     />
-
-    
+     <Route path="/app/editar-conta" element={<EditarConta />} />
              
      <Route path="/app/dashboard" element={<AppDashboard />} />
 
