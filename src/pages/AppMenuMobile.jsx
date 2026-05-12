@@ -71,9 +71,9 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
       onClick={onClick}
       style={{
         border: "1px solid rgba(148,163,184,0.25)",
-        borderRadius: 24,
+        borderRadius: 14,
         padding: 12,
-        minHeight: 86,
+        minHeight: 26,
         background: "linear-gradient(135deg,#e2e8f0,#cbd5e1)",
         boxShadow: "0 8px 24px rgba(15,23,42,0.10)",
         textAlign: "left",
@@ -447,29 +447,29 @@ useEffect(() => {
           <BotaoMenu
                 icone="📥"
                 titulo="Vendas"
-                subtitulo="Dinheiro recebido"
+              //  subtitulo="Dinheiro recebido"
                 onClick={() => ir("entrada")}
               />
 
              <BotaoMenu
                 icone="📤"
                 titulo="Compras"
-                subtitulo="Despesa Paga"
+              //  subtitulo="Despesa Paga"
                 onClick={() => ir("saida")}
               />
 
              <BotaoMenu
                 icone="📆"
-                titulo="Contas a Pagar"
-                subtitulo="Criar Vencimentos "
+                titulo="Vencimentos"
+                //subtitulo="Criar Vencimentos "
             onClick={() => ir("pagar")}
             />
            
            
              <BotaoMenu
                 icone="💰"
-                titulo="Contas a Receber"
-                subtitulo="Criar Recebimentos "
+                titulo="Recebimentos"
+                //subtitulo="Criar Recebimentos "
             onClick={() => ir("receber")} 
              />
             
@@ -477,21 +477,21 @@ useEffect(() => {
              <BotaoMenu
                 icone="💳"
                 titulo="Compras no Cartão"
-                subtitulo="Criar compras no Cartão "
+               // subtitulo="Criar compras no Cartão "
             onClick={() => ir("compra_cartao")}
             />
              
               <BotaoMenu
                 icone="🔄"
                 titulo="Transferências Bancárias"
-                subtitulo="Transferencia entre conta corrente."
+              // subtitulo="Transferencia entre conta corrente."
                 onClick={() => navigate("/app/transferencia")}
             />
              
                <BotaoMenu
                 icone="📊"
-                titulo="Lançamentos "
-                subtitulo=" Contulta  de  Contas , lançamentos e pagamentos ...."
+                titulo="Lançamentos Consultas "
+               // subtitulo=" Contulta  de  Contas , lançamentos e pagamentos ...."
                 onClick={() => navigate("/app/lancamentos")}
             />
 
@@ -506,7 +506,7 @@ useEffect(() => {
                       🔔
                     </span>
                   }
-                  titulo={qtdVencidos > 0 ? `${qtdVencidos} pendência(s)` : "Sem pendências"}
+                  titulo={qtdVencidos > 0 ? `${qtdVencidos} pendência(s)` : "Sem pendências (Títulos)"}
                   subtitulo={qtdVencidos > 0 ? "Toque para baixar vencidos" : "Tudo em dia"}
                   onClick={() => navigate("/app/titulosvencidos")}
                 />
@@ -533,14 +533,14 @@ useEffect(() => {
                  <BotaoMenu
                 icone="📊"
                 titulo="Relatórios"
-                subtitulo="Fluxo, DRE e razão"
+               // subtitulo="Fluxo, DRE e razão"
                 onClick={() => navigate("/app/relatorios")}
               />
 
             <BotaoMenu
                 icone="⚙️"
                 titulo="Configurações"
-                subtitulo="Contas , Cartões Fornecedor, Categoria ...."
+               // subtitulo="Contas , Cartões Fornecedor, Categoria ...."
                 onClick={() => navigate("/app/configuracoes")}
             />
   
