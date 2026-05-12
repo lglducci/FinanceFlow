@@ -398,9 +398,11 @@ useEffect(() => {
       let vencimento = hojeLocal();
 
       if (/^\d{6}$/.test(venc)) {
-        const dia = venc.substring(0, 2);
+       const ano = "20" + venc.substring(0, 2);
         const mes = venc.substring(2, 4);
-        const ano = "20" + venc.substring(4, 6);
+        const dia = venc.substring(4, 6);
+
+        vencimento = `${ano}-${mes}-${dia}`;
 
         vencimento = `${ano}-${mes}-${dia}`;
       }
@@ -439,7 +441,7 @@ useEffect(() => {
 
     return {
       modo: "pagar",
-      forma: "aprazo",
+      forma: "prazo",
       valor,
       vencimento,
       descricao: "Boleto bancário",
