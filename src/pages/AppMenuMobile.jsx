@@ -682,31 +682,17 @@ useEffect(() => {
         </div>
       </div>
 
-     {abrirQR && (
+      {abrirQR && (
   <div
     style={{
       position: "fixed",
       inset: 0,
       backgroundColor: "#000",
       zIndex: 9999,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 12,
-      boxSizing: "border-box",
+      padding: 20,
     }}
   >
-    <div
-      style={{
-        width: "100%",
-        maxWidth: 560,
-        background: "#fff",
-        borderRadius: 16,
-        overflow: "hidden",
-      }}
-    >
-      <div id="reader" style={{ width: "100%" }} />
-    </div>
+    <div id="reader" style={{ background: "#fff", borderRadius: 16 }} />
 
     <button
        onClick={() => {
@@ -714,7 +700,7 @@ useEffect(() => {
   setTipoLeitor(null);
 }}
       style={{
-        position: "fixed",
+        position: "absolute",
         top: 20,
         right: 20,
         background: "#111827",
