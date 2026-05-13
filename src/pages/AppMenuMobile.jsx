@@ -279,7 +279,7 @@ useEffect(() => {
   tipoLeitor === "barra"
     ? {
         fps: 15,
-        qrbox: { width: 320, height: 120 },
+        qrbox: { width: 620, height: 280 },
         formatsToSupport: [
           Html5QrcodeSupportedFormats.ITF,
           Html5QrcodeSupportedFormats.ITF_14,
