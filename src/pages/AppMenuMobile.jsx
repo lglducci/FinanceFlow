@@ -1,4 +1,4 @@
-  import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
  import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
@@ -682,17 +682,31 @@ useEffect(() => {
         </div>
       </div>
 
-      {abrirQR && (
+     {abrirQR && (
   <div
     style={{
       position: "fixed",
       inset: 0,
       backgroundColor: "#000",
       zIndex: 9999,
-      padding: 20,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 12,
+      boxSizing: "border-box",
     }}
   >
-    <div id="reader" style={{ background: "#fff", borderRadius: 16 }} />
+    <div
+      style={{
+        width: "100%",
+        maxWidth: 560,
+        background: "#fff",
+        borderRadius: 16,
+        overflow: "hidden",
+      }}
+    >
+      <div id="reader" style={{ width: "100%" }} />
+    </div>
 
     <button
        onClick={() => {
@@ -700,7 +714,7 @@ useEffect(() => {
   setTipoLeitor(null);
 }}
       style={{
-        position: "absolute",
+        position: "fixed",
         top: 20,
         right: 20,
         background: "#111827",
