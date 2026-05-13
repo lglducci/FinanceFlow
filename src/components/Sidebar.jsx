@@ -94,7 +94,7 @@ function podeVer(menuKey) {
          >  
 
            
-           <SubItem icon={<IconDoc />} label="Lançamentos rápidos" onClick={() => navigate("/lancamento-rapido")}  />
+          {/*} <SubItem icon={<IconDoc />} label="Lançamentos rápidos" onClick={() => navigate("/lancamento-rapido")}  />*/}
            <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
              <SubItem icon={<IconDoc />} label="Importação Bancária" onClick={() => navigate("/importacao-bancaria")}  />
               <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
@@ -143,9 +143,9 @@ function podeVer(menuKey) {
             
                 {podeVer("visao_geral")  && ( <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />)}
                
-           <SubItem icon={<IconDoc />} label="Lanctos Ctb - Saldo"
+        {/*}   <SubItem icon={<IconDoc />} label="Lanctos Ctb - Saldo"
              onClick={() => navigate("/lancamentos-contabeis")}
-           />  
+           /> */} 
              
             <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
              onClick={() => navigate("/relatorios/diario")}
@@ -186,7 +186,7 @@ function podeVer(menuKey) {
          >
                 {podeVer("visao_geral") &&  (<SubItem icon={<IconUsers />} label="Fornecedores/Clientes" onClick={() => navigate("/providers-clients")} />)}
 
-                 {podeVer("visao_geral") &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)}
+               {/*}  {podeVer("visao_geral") &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)}*/}
                  {podeVer("visao_geral") &&   (<SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
                  {podeVer("visao_geral")  &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)}
               <SubItem icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
