@@ -89,6 +89,10 @@ import  RelatoriosBalancoNiveis from "./pages/RelatoriosBalancoNiveis";
  
  
  import RelatorioGerencial from "./pages/RelatorioGerencial";
+
+import  RelatorioFornecedor from "./pages/RelatorioFornecedor";
+
+
 import MapContabilImpacto from "./pages/MapContabilImpacto";
 
 
@@ -180,6 +184,8 @@ import AppCategorias     from "./pages/app/AppCategorias"
 
 import AppFornecedor  from "./pages/app/AppFornecedor"
 import AppDashboard  from "./pages/app/AppDashboard"
+import RelatorioReceberPessoa from "./pages/RelatorioReceberPessoa";
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -604,6 +610,10 @@ const rotaAtual = window.location.pathname;
  <Route path="/conciliacao-revisao" element={<ConciliacaoRevisao />} />
  
  <Route path="/lancamento-rapido" element={<LancamentoRapido />} />
+
+  <Route path="/rel-fornecedor" element={<RelatorioFornecedor />} />
+
+  <Route path="/relatorio-receber-pessoa" element={<RelatorioReceberPessoa />} />
  
 </Routes>
 
