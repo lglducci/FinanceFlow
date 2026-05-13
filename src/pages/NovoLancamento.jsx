@@ -192,10 +192,10 @@ const [contasCredito, setContasCredito] = useState([]);
     }
   }
 
- // useEffect(() => {
- //     carregarFornecedores();
- //   carregarCategorias();
- // }, [form.tipo, empresa_id]);
+ useEffect(() => {
+     carregarFornecedores();
+    
+ }, [form.tipo, empresa_id]);
 
   useEffect(() => {
     carregarContas();
@@ -818,7 +818,7 @@ const descricao = (() => {
                   </div>
             </div>
             </div>  )}
-         <div className="grid grid-cols-2 gap-6">
+         <div className="grid grid-cols-2 gap-3">
 
                   {/* Tipo */}
                   <div>
@@ -922,7 +922,7 @@ const descricao = (() => {
 
 
           {/* GRID IGUAL AO EDITAR */}
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-3">
 
            {mostrarContaFinanceira && ( 
             <div>
@@ -967,7 +967,7 @@ const descricao = (() => {
 
           </div>
          
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label label-required font-bold block text-[#1e40af]">Data</label>
               <input
@@ -1018,8 +1018,9 @@ const descricao = (() => {
           /> 
 
           {/* Numero documento ou nota fiscal  */}
-          {ehAPrazo && (    <div className="grid grid-cols-1 md:grid-cols-1 gap-4">  <div>
-            {!mostrarCartao && ( <div className="w-2/3">
+          {ehAPrazo && (    <div className="grid grid-cols-1 md:grid-cols-1 gap-3">   
+          {/*}  {!mostrarCartao && ( 
+              <div className="w-2/3">
               <label className="label label-required font-bold text-[#1e40af]">Documento</label>
               <input
                 name="doc_ref"
@@ -1028,9 +1029,9 @@ const descricao = (() => {
                 className="input-premium w-64"
                 placeholder="Nro Documento"
               />
-            </div>)}
-          </div> 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> 
+            </div>)}*/}
+           
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-3"> 
                   {/* FORNECEDOR */}
                {!mostrarCartao && (    <div>
                                           <label className="label label-required font-bold text-[#1e40af]">
@@ -1081,7 +1082,7 @@ const descricao = (() => {
                 </div>
           
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3"> 
             {/* PARCELAS */}
                 <div className="w-2/4">
                   <label className="label label-required font-bold text-[#1e40af]">

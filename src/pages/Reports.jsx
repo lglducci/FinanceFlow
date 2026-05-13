@@ -171,8 +171,22 @@ export default function Reports() {
       path: "/reldregerencial",
       icon: <IconReport />,
     },
+   
 
+    {
+      title: "Relatório Fornecedores",
+      desc: "Relatório de Endividamento",
+      path: "/rel-fornecedor",
+      icon: <IconReport />,
+    },
     
+     
+    {
+      title: "Relatório de Recebimentos",
+      desc: "Relatório de Recebimentos",
+      path: "/relatorio-receber-pessoa" ,
+      icon: <IconReport />,
+    },
     
 
       
