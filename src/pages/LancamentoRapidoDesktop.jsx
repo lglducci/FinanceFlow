@@ -1,4 +1,4 @@
-  import { useEffect, useState, useRef } from "react";
+ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -111,7 +111,7 @@ const formaRecebimentoInicial =
   modoInicial === "entrada" ? "avista" :
   "";
 
-  
+  const mostrarCategoria = false;
   const navigate = useNavigate();
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -403,6 +403,8 @@ function selecionarForma(forma) {
     return "revisao";
   }
 
+  
+
   function validarFormulario() {
     const erros = [];
 
@@ -411,7 +413,7 @@ function selecionarForma(forma) {
     if (!form.valor || Number(form.valor) <= 0) erros.push("Informe um valor válido.");
     if (!form.descricao?.trim()) erros.push("Informe a descrição.");
    // if (!form.classificacao) erros.push("Escolha a classificação.");
-    if (!form.categoria_id) erros.push("Escolha a categoria.");
+    //if (!form.categoria_id) erros.push("Escolha a categoria.");
 
     if (mostrarContaFinanceira && !form.conta_id) erros.push("Escolha a conta financeira.");
     if (mostrarCartao && !cartaoSelecionado) erros.push("Escolha o cartão.");
@@ -535,6 +537,8 @@ console.log("MODO INICIAL:", modoInicial);
 console.log("TIPO INICIAL:", tipoInicial);
 console.log("FORMA PAGAMENTO:", formaPagamentoInicial);
 console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
+
+const podeAvancarSemCategoria = mostrarCategoria ? form.categoria_id : form.descricao;
 
   return (
     
@@ -735,8 +739,10 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
                     if (e.key === "Enter") {
                       e.preventDefault();
                       if (!form.descricao?.trim()) return;
-                      irPara("categoria");
-                      setTimeout(() => categoriaRef.current?.focus(), 150);
+                     // irPara("categoria");
+                     // setTimeout(() => categoriaRef.current?.focus(), 150);
+
+                      irPara(proximaDepoisCategoria());
                       
                     }
                   }}
@@ -807,7 +813,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
         </BlocoEtapa>
         )}*/}
 
-          {form.descricao && (
+           {mostrarCategoria && form.descricao && (
                <BlocoEtapa
                 id="categoria"
                  icone="🏷️" titulo="Categoria"
@@ -877,8 +883,8 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
               </div>
             </BlocoEtapa>
           )} 
-
-          {form.categoria_id && mostrarContaFinanceira && (
+          {(mostrarCategoria ? form.categoria_id : form.descricao) && mostrarContaFinanceira && (
+          
               <BlocoEtapa
                 id="conta"
                 icone="🏦" titulo="Conta Financeira"
@@ -927,7 +933,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
             </BlocoEtapa>
           )}
 
-          {form.categoria_id && mostrarCartao && (
+           {podeAvancarSemCategoria && mostrarCartao && (
             <BlocoEtapa id="cartao"
               icone="💳"
             titulo="Cartão" 
@@ -972,7 +978,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
             </BlocoEtapa>
           )}
 
-          {form.categoria_id && precisaFornecedor && !mostrarCartao && (
+          {podeAvancarSemCategoria && precisaFornecedor && !mostrarCartao && (
             <BlocoEtapa
               id="fornecedor"
              icone="👤" titulo="Fornecedor / Cliente"
@@ -1023,7 +1029,7 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
             </BlocoEtapa>
           )}
 
-          {form.categoria_id && ehAPrazo && (
+           {podeAvancarSemCategoria && ehAPrazo && (
             <BlocoEtapa
               id="prazo"
               icone="📅" titulo="Vencimento / Parcelas"
@@ -1098,8 +1104,8 @@ console.log("FORMA RECEBIMENTO:", formaRecebimentoInicial);
                     <span className="text-slate-200">Descrição</span>
                     <span className="font-bold text-right truncate">{form.descricao}</span>
 
-                    <span className="text-slate-200">Categoria</span>
-                    <span className="font-bold text-right truncate">{nomeCategoria()}</span>
+                  {/*}  <span className="text-slate-200">Categoria</span>
+                    <span className="font-bold text-right truncate">{nomeCategoria()}</span>*/}
 
                     {form.conta_id && (
                       <>

@@ -91,7 +91,7 @@
           <Card icon="💳" titulo="Cartões e Contas" subtitulo="Cadastro de cartões e conta corrente" path="contas-cartoes" tipo="app"  />
          {/* <Card icon="🏦" titulo="Contas financeiras" subtitulo="Bancos e contas" path="/contas-financeiras" bg="linear-gradient(135deg,#67e8f9,#06b6d4,#0f766e)" />
           <Card icon="🧾" titulo="Faturas" subtitulo="Consultar e pagar" path="/faturas" bg="linear-gradient(135deg,#fdba74,#f97316,#b45309)" />*/}
-          <Card icon="🏷️" titulo="Categorias" subtitulo="Receitas e despesas" path="categorias" tipo="app"   />
+           {/*<Card icon="🏷️" titulo="Categorias" subtitulo="Receitas e despesas" path="categorias" tipo="app"   />*/}
           <Card icon="👤" titulo="Fornecedores" subtitulo="Clientes e parceiros" path="/fornecedores" tipo="app"   />
            <Card icon="📊" titulo="Processamento" subtitulo="Resumo financeiro" path="processar-diario" tipo="app"  />
   
