@@ -30,16 +30,18 @@ export default function AppLancamentosConsulta() {
   }
 
   function labelTipo(tipo) {
-    const labels = {
-      transacao: "À vista",
-      conta_pagar: "Contas a pagar",
-      conta_receber: "Contas a receber",
-      cartao_compra: "Compras cartão",
-      fatura_cartao: "Faturas",
-      vencidos: "Vencidos",
-      vence_hoje: "Vence hoje",
-      vence_sete_dias: "Vence 7 dias",
-    };
+     const labels = {
+  transacao: "À vista",
+  conta_pagar: "Contas a pagar",
+  conta_receber: "Contas a receber",
+  cartao_compra: "Compras cartão",
+  fatura_cartao: "Faturas",
+  vencidos: "Vencidos",
+  vence_hoje: "Vence hoje",
+  vence_sete_dias: "Vence 7 dias",
+  estorno: "Estornados",
+  titulos_pagos: "Baixados",
+};
 
     return labels[tipo] || "Consulta";
   }
@@ -80,6 +82,18 @@ export default function AppLancamentosConsulta() {
       if (tipoOperacao === "transacao") {
         origem = "transacao";
       }
+
+      if (tipoOperacao === "estorno") {
+          tipoOperacaoLocal = "transacao";
+          origem = "estorno";
+        }
+
+        if (tipoOperacao === "titulos_pagos") {
+          dataIniLocal = "2020-01-01";
+          dataFimLocal = hojeLocal();
+          tipoOperacaoLocal = "transacao";
+          origem = "titulos_pagos";
+        }
 
       const url = buildWebhookUrl("listalancamentos", {
         empresa_id,
@@ -226,14 +240,16 @@ export default function AppLancamentosConsulta() {
                 <div style={campo}>
                     <label style={label}>Tipo</label>
                     <select value={tipoOperacao} onChange={(e) => setTipoOperacao(e.target.value)} style={input}>
-                    <option value="transacao">À vista</option>
-                    <option value="conta_pagar">Contas a pagar</option>
-                    <option value="conta_receber">Contas a receber</option>
-                    <option value="cartao_compra">Compras cartão</option>
-                    <option value="fatura_cartao">Faturas</option>
-                    <option value="vencidos">Vencidos</option>
-                    <option value="vence_hoje">Vence hoje</option>
-                    <option value="vence_sete_dias">Vence 7 dias</option>
+                    <option value="transacao">💰 À vista</option>
+                    <option value="conta_pagar"> 📤 A pagar</option>
+                    <option value="conta_receber"> 📥 A receber</option>
+                    <option value="cartao_compra">💳 Compras cartão</option>
+                    <option value="fatura_cartao">💳 Faturas</option>
+                    <option value="vencidos">🔴 Vencidos</option>
+                    <option value="vence_hoje">⏰ Vencimentos</option>
+                    <option value="vence_sete_dias">📅 Vence 7 dias</option>
+                    <option value="estorno">🔁 Estornados</option>
+                     <option value="titulos_pagos">✅ Baixados</option>
                     </select>
                 </div>
 
