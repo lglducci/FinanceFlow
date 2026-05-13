@@ -613,11 +613,11 @@ function executarSelecionados() {
 }
  
 
-useEffect(() => {
-  if (dataIni && dataFim) {
-    pesquisar("transacao");
-  }
-}, [dataIni, dataFim]);
+//useEffect(() => {
+// if (dataIni && dataFim) {
+ //   pesquisar("transacao");
+ // }
+//}, [dataIni, dataFim]);
 
  async function excluirCompra(compra_id) {
   if (!window.confirm("Excluir compra do cartão?")) return;
@@ -664,7 +664,7 @@ const listaFiltrada = lista.filter((l) => {
 
   return (
     (l.descricao || "").toLowerCase().includes(texto) ||
-    (l.categoria_nome || "").toLowerCase().includes(texto) ||
+    //(l.categoria_nome || "").toLowerCase().includes(texto) ||
     (l.forma || "").toLowerCase().includes(texto) ||
     (l.tipo || "").toLowerCase().includes(texto) ||
        (l.tipo_evento || "").toLowerCase().includes(texto) ||
@@ -1061,7 +1061,7 @@ function escolherFiltro(tipo) {
   }
 
   setTipoOperacao(tipo);
-  pesquisar(tipo);
+  //pesquisar(tipo);
   chamarAtencaoBotaoAcao();
 
   mostrarMensagemTela(
@@ -1263,7 +1263,7 @@ return (
               className="px-3 py-2 border rounded-lg w-64"
             />
           </div>
-        
+         
          {qtdVencidos > 0 && (
             <div className="mt-3 ml-3 flex justify-center">
               <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
@@ -1324,6 +1324,13 @@ return (
                 </div>
 
                  <button
+                  onClick={() => pesquisar(tipoOperacao || "")}
+                  className="btn-pill btn-blue"
+                >
+                  🔎 Consultar
+                </button>
+
+                 <button
                   onClick={executarSelecionados}
                   disabled={!permiteSelecao() || selecionados.length === 0}
                   className={`
@@ -1337,7 +1344,7 @@ return (
                     : labelBotaoSelecionados()}
                 </button>
             
-         
+               
  
                 
       </div>
@@ -1379,7 +1386,7 @@ return (
                 </>
               ) : (
                 <>
-                  <th className="px-3 py-2 text-left text-white">Categoria</th>
+                {/*}  <th className="px-3 py-2 text-left text-white">Categoria</th>*/}
                   <th className="px-3 py-2 text-left text-white">Conta</th>
                 </>
               )}
@@ -1441,9 +1448,9 @@ return (
                       </>
                     ) : (
                       <>
-                        <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
+                        {/*<td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
                           {l.categoria_nome}
-                        </td>
+                        </td>*/}
                           <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]"> {l.conta_nome}</td>
                       </>
                     )}

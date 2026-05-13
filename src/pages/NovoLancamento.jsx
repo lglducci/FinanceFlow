@@ -128,8 +128,8 @@ const [contasCredito, setContasCredito] = useState([]);
    const validarFormulario = () => {
   const erros = [];
 
-  if (!form.categoria_id || Number(form.categoria_id) <= 0)
-    erros.push("Categoria é obrigatória.");
+  //if (!form.categoria_id || Number(form.categoria_id) <= 0)
+  //  erros.push("Categoria é obrigatória.");
 
   if (!form.valor || Number(form.valor) <= 0)
     erros.push("Valor inválido.");
@@ -192,23 +192,23 @@ const [contasCredito, setContasCredito] = useState([]);
     }
   }
 
-  useEffect(() => {
-      carregarFornecedores();
-    carregarCategorias();
-  }, [form.tipo, empresa_id]);
+ // useEffect(() => {
+ //     carregarFornecedores();
+ //   carregarCategorias();
+ // }, [form.tipo, empresa_id]);
 
   useEffect(() => {
     carregarContas();
   }, [empresa_id]);
 
-  async function carregarCategorias() {
+  {/*async function carregarCategorias() {
     try {
       const url = buildWebhookUrl("listacategorias", { empresa_id, tipo: form.tipo });
       const resp = await fetch(url);
       const data = await resp.json();
       setCategorias(data);
     } catch (error) {}
-  }
+  }*/}
  
  async function carregarContasContabeis() {
 
@@ -823,7 +823,7 @@ const descricao = (() => {
                   {/* Tipo */}
                   <div>
                     <label className="label label-required font-bold text-[#1e40af]">
-                      Tipo
+                     Operação
                     </label>
 
                     <select
@@ -833,12 +833,12 @@ const descricao = (() => {
                       onChange={handleChange}
                       className="input-premium w-full"
                     >
-                      <option value="entrada">Entrada</option>
-                      <option value="saida">Saída</option>
+                      <option value="entrada">Venda</option>
+                      <option value="saida">Compra</option>
                     </select>
                   </div>
 
-                  {/* Categoria */}
+                  {/* Categoria  
                   <div>
                     <label className="label label-required font-bold text-[#1e40af]">
                       Categoria
@@ -866,11 +866,9 @@ const descricao = (() => {
 
                       <option value="__nova__">➕ Nova Categoria</option>
                     </select>
-                  </div>
+                  </div>*/}
 
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 
 
                   {/* ENTRADA */}
                   {form.tipo === "entrada" && (
