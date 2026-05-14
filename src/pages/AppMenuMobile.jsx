@@ -279,7 +279,7 @@ useEffect(() => {
   tipoLeitor === "barra"
     ? {
         fps: 15,
-        qrbox: { width: 620, height: 280 },
+        qrbox: { width: 340, height: 110 },
         formatsToSupport: [
           Html5QrcodeSupportedFormats.ITF,
           Html5QrcodeSupportedFormats.ITF_14,
@@ -328,7 +328,7 @@ console.log("CODIGO LIDO:", decodedText);
   return () => {
     scanner.clear().catch(() => {});
   };
-}, [abrirQR]);
+ }, [abrirQR, tipoLeitor]);
  
  async function carregarAlertaContabil() {
   try {
@@ -695,9 +695,9 @@ useEffect(() => {
     <div id="reader" style={{ background: "#fff", borderRadius: 16 }} />
 
     <button
-       onClick={() => {
+        onClick={() => {
   setAbrirQR(false);
-  setTipoLeitor(null);
+  setTimeout(() => setTipoLeitor(null), 300);
 }}
       style={{
         position: "absolute",
