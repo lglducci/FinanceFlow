@@ -185,8 +185,11 @@ import AppCategorias     from "./pages/app/AppCategorias"
 import AppFornecedor  from "./pages/app/AppFornecedor"
 import AppDashboard  from "./pages/app/AppDashboard"
 import RelatorioReceberPessoa from "./pages/RelatorioReceberPessoa";
+import ContasCartoes from "./pages/ContasCartoes";
 
-
+import AppFaturasCartao from "./pages/app/AppFaturasCartao";
+import AppFaturaTransacoes from "./pages/app/AppFaturaTransacoes";
+ 
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -349,6 +352,9 @@ const rotaAtual = window.location.pathname;
      <Route path="/app/editar-conta" element={<EditarConta />} />
              
      <Route path="/app/dashboard" element={<AppDashboard />} />
+
+     <Route path="/app/faturas-cartao" element={<AppFaturasCartao />} />
+<Route path="/app/fatura-transacoes" element={<AppFaturaTransacoes />} />
 
 <Route
   path="*"
@@ -614,6 +620,8 @@ const rotaAtual = window.location.pathname;
   <Route path="/rel-fornecedor" element={<RelatorioFornecedor />} />
 
   <Route path="/relatorio-receber-pessoa" element={<RelatorioReceberPessoa />} />
+
+  <Route path="/contas-cartoes" element={<ContasCartoes />} />
  
 </Routes>
 
