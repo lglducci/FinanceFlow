@@ -96,7 +96,7 @@ function podeVer(menuKey) {
            
           {/*} <SubItem icon={<IconDoc />} label="Lançamentos rápidos" onClick={() => navigate("/lancamento-rapido")}  />*/}
            <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
-             <SubItem icon={<IconDoc />} label="Importação Bancária" onClick={() => navigate("/importacao-bancaria")}  />
+            
               <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
            <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
            <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
@@ -120,15 +120,19 @@ function podeVer(menuKey) {
          {podeVer("visao_geral") && (
          <MenuGroup
            icon={<IconMoney />}
-           label="Cartões"
-           open={open === "cartoes"}
-           onClick={() => toggle("cartoes")}
+           label="Importações"
+           open={open === "importacao"}
+           onClick={() => toggle("importacao")}
          > 
-           <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
-           <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
-           <SubItem icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />
+          {/*} <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
+             <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
+           <SubItem icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />*/}
+               <SubItem icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/importacao-bancaria")}  />
+               <SubItem icon={<IconDoc />} label="Contábil" onClick={() => navigate("/livro-caixa")}  />
+               
+            
          </MenuGroup>
-         )}
+         )} 
          
 
          
@@ -186,9 +190,10 @@ function podeVer(menuKey) {
          >
                 {podeVer("visao_geral") &&  (<SubItem icon={<IconUsers />} label="Fornecedores/Clientes" onClick={() => navigate("/providers-clients")} />)}
 
-               {/*}  {podeVer("visao_geral") &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)}*/}
+               {/*}  {podeVer("visao_geral") &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)} 
                  {podeVer("visao_geral") &&   (<SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
-                 {podeVer("visao_geral")  &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)}
+                 {podeVer("visao_geral")  &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)} */}
+                   <SubItem icon={<IconCardTransaction />} label="Contas e Cartões" onClick={() => navigate("/contas-cartoes")} />
               <SubItem icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
               <SubItem icon={<IconMap />} label="Modelos Prontos" onClick={() => navigate("/mapeamento-contabil")} />
          </MenuGroup>
