@@ -823,7 +823,7 @@ const descricao = (() => {
                   {/* Tipo */}
                   <div>
                     <label className="label label-required font-bold text-[#1e40af]">
-                     Operação
+                     Tipo Movimento
                     </label>
 
                     <select
@@ -833,8 +833,8 @@ const descricao = (() => {
                       onChange={handleChange}
                       className="input-premium w-full"
                     >
-                      <option value="entrada">Venda</option>
-                      <option value="saida">Compra</option>
+                      <option value="entrada">Pagamento</option>
+                      <option value="saida">Recebimento</option>
                     </select>
                   </div>
 

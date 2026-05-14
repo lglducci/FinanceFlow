@@ -45,18 +45,25 @@ const btnPadrao =
   }, []);
 
   // ------------------- PESQUISAR FATURAS -------------------
-  async function pesquisar() {
-    const url = buildWebhookUrl("listasfaturas", {
-      empresa_id,
-      id: cartao_id,
-      status,
-      mes_referencia: mes + "-01",
-    });
+ async function pesquisar() {
+  const url = buildWebhookUrl("historicofaturas", {
+    empresa_id,
+    id: 0,
+    status: "aberta",
+    mes_referencia: "",
+  });
 
-    const resp = await fetch(url);
-    const json = await resp.json().catch(() => []);
-    setLista(json);
-  }
+  const resp = await fetch(url);
+  const json = await resp.json().catch(() => []);
+
+  setLista(Array.isArray(json) ? json : []);
+}
+  
+useEffect(() => {
+  pesquisar();
+}, []);
+
+
 
   // ------------------- CHECKBOX -------------------
   function toggleSelecionada(id) {
@@ -144,81 +151,14 @@ const btnPadrao =
 
         <div className="grid grid-cols-3 gap-2">
 
-            {/* CARTÃO */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Cartão
-              </label>
-              <select
-                value={cartao_id}
-                onChange={(e) => setCartaoId(Number(e.target.value))}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              >
-                <option value={0}>Todos</option>
-                {cartoes.map(c => (
-                  <option key={c.id} value={c.id}>{c.nome}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* STATUS */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              >
-                <option value="aberta">Aberta</option>
-                <option value="paga">Paga</option>
-                <option value="">Todas</option>
-              </select>
-            </div>
-
-            {/* CONTA */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                Conta bancária
-              </label>
-              <select
-                value={conta_id}
-                onChange={(e) => {
-                  const id = Number(e.target.value);
-                  setContaId(id);
-                  if (id === 0) setDadosConta(null);
-                  else carregarSaldoConta(id);
-                }}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              >
-                <option value={0}>Selecione...</option>
-                {contas.map(ct => (
-                  <option key={ct.id} value={ct.id}>{ct.nome}</option>
-                ))}
-              </select>
-            </div>
+         
+            
+            
 
           </div>
         {/* AÇÕES */}
         <div className="flex flex-wrap gap-3 pt-2">
-          <button
-            onClick={pesquisar}
-           className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-            Pesquisar
-          </button>
-
+     
           <button
             onClick={fecharFaturas}
            className="

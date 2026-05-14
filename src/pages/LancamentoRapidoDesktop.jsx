@@ -550,7 +550,7 @@ const podeAvancarSemCategoria = mostrarCategoria ? form.categoria_id : form.desc
     <div className="mb-4 flex items-start justify-between">
           <div>
             <h1 className="text-xl font-black text-slate-900">
-              ⚡ Lançamento Rápido  
+              ⚡ Lançamentos  
             </h1>
 
             <div className="mt-2 inline-flex rounded-full bg-slate-900/40 px-3 py-1 text-[16px] font-medium text-slate-300">
@@ -579,8 +579,8 @@ const podeAvancarSemCategoria = mostrarCategoria ? form.categoria_id : form.desc
        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
              <BlocoEtapa
                   id="tipo"
-                  icone="↕️" titulo="Receita ou Despesa"
-                  resumo={form.tipo === "entrada" ? "Receita" : form.tipo === "saida" ? "Despesa" : ""}
+                  icone="↕️" titulo="Tipo Movimento"
+                  resumo={form.tipo === "entrada" ? "Recebimento" : form.tipo === "saida" ? "Pagamento" : ""}
                   aberto={etapaAberta === "tipo"}
                    onAbrir={() => {
                     if (!form.tipo) setEtapaAberta("tipo");

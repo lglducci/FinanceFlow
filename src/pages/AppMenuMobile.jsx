@@ -1,4 +1,4 @@
-   import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
  import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
@@ -577,19 +577,19 @@ useEffect(() => {
         >
           <BotaoMenu
                 icone="📥"
-                titulo="Receitas"
-                subtitulo="A Vista"
+                titulo="Rcebimentos"
+                subtitulo="Receita e Entradas"
                 onClick={() => ir("entrada")}
               />
 
              <BotaoMenu
                 icone="📤"
-                titulo="Despesas"
-                subtitulo=" A Vista"
+                titulo="Pagamentos"
+                subtitulo=" Compras e consumo"
                 onClick={() => ir("saida")} 
               />
 
-              <BotaoMenu
+           {/*   <BotaoMenu
                 icone="💰"
                 titulo="Receber a Prazo"
               //  subtitulo="Receber "
@@ -601,7 +601,7 @@ useEffect(() => {
                 titulo="Despesas a Prazo"
              //   subtitulo="Despesas a Prazo "
             onClick={() => ir("pagar")}
-            />
+            />*/}
            
            
               
