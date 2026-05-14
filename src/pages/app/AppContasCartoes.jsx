@@ -17,12 +17,36 @@ const id = searchParams.get("id");
 
   const [contas, setContas] = useState([]);
   const [cartoes, setCartoes] = useState([]);
+
+  const [abaCartao, setAbaCartao] = useState("cartoes");
+const [faturas, setFaturas] = useState([]);
+
   const [carregando, setCarregando] = useState(true);
+
+ const [cartaoHistoricoId, setCartaoHistoricoId] = useState("");
+const [faturasHistorico, setFaturasHistorico] = useState([]);
+const [faturaHistoricoId, setFaturaHistoricoId] = useState("");
+const [comprasFatura, setComprasFatura] = useState([]);
+ 
 
   const fmt = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
+
+  async function carregarFaturas() {
+  const url = buildWebhookUrl("listasfaturas", {
+    empresa_id,
+    id: 0,
+    status: "aberta",
+    mes_referencia: "",
+  });
+
+  const resp = await fetch(url);
+  const json = await resp.json().catch(() => []);
+
+  setFaturas(Array.isArray(json) ? json : []);
+}
 
   async function carregarContas() {
     const url = buildWebhookUrl("consultasaldo", {
@@ -146,6 +170,39 @@ useEffect(() => {
     carregarCartao(id);
   }
 }, [id]);
+
+
+async function carregarHistoricoFaturas(cartaoId) {
+  setCartaoHistoricoId(cartaoId);
+  setFaturaHistoricoId("");
+  setComprasFatura([]);
+
+  const url = buildWebhookUrl("historicofaturas", {
+    empresa_id,
+    id: cartaoId || 0,
+    status: "",
+    mes_referencia: "",
+  });
+
+  const resp = await fetch(url);
+  const json = await resp.json().catch(() => []);
+
+  setFaturasHistorico(Array.isArray(json) ? json : []);
+}
+
+async function carregarComprasFatura(faturaId) {
+  setFaturaHistoricoId(faturaId);
+
+  const url = buildWebhookUrl("transacoes_fatura", {
+    empresa_id,
+    fatura_id: faturaId,
+  });
+
+  const resp = await fetch(url);
+  const json = await resp.json().catch(() => []);
+
+  setComprasFatura(Array.isArray(json) ? json : []);
+}
 
   return (
     <div style={tela}>
@@ -277,32 +334,56 @@ useEffect(() => {
       <div style={card}>
        <div style={{ display: "flex", gap: 10, marginBottom: 14, alignItems: "center" }}>
   <button
+
+  onClick={() => setAbaCartao("cartoes")}
     style={{
       border: 0,
       borderRadius: 999,
       padding: "10px 18px",
-      background: "#14b8a6",
-      color: "#fff",
+      background: abaCartao === "cartoes" ? "#14b8a6" : "#e5e7eb",
+       color: abaCartao === "cartoes" ? "#fff" : "#475569",
       fontWeight: 900,
       fontSize: 12,
     }}
   >
-    Cartões ativos
+    Cartões Ativos
   </button>
 
   <button
+
+   onClick={() => {
+    setAbaCartao("faturas");
+    carregarFaturas();
+  }}
+ 
     style={{
       border: 0,
       borderRadius: 999,
       padding: "10px 18px",
-      background: "#e5e7eb",
-      color: "#475569",
+      background: abaCartao === "faturas" ? "#14b8a6" : "#e5e7eb",
+        color: abaCartao === "faturas" ? "#fff" : "#475569",
       fontWeight: 900,
       fontSize: 12,
     }}
   >
-    Faturas
+    Faturas Abertas
   </button>
+
+     <button
+                  onClick={() => setAbaCartao("historico")}
+                  style={{
+                    border: 0,
+                    borderRadius: 999,
+                    padding: "10px 18px",
+                    background: abaCartao === "historico" ? "#14b8a6" : "#e5e7eb",
+                    color: abaCartao === "historico" ? "#fff" : "#475569",
+                    fontWeight: 900,
+                    fontSize: 12,
+                  }}
+                >
+                  🕘 Histórico  
+                </button>
+
 
   <button
     onClick={() => navigate("/app/new-card")}
@@ -322,9 +403,12 @@ useEffect(() => {
   >
     +
   </button>
-</div>
-        {cartoes.slice(0, 4).map((c) => (
-          <div key={c.id} style={linhaSemAcao}>
+</div>   
+{abaCartao === "cartoes" && (
+  <>
+    {cartoes.slice(0, 4).map((c) => (
+      <div key={c.id} style={linhaSemAcao}> 
+        
             <div style={{ ...icone, background: "#f8fafc" }}>
               {String(c.bandeira || "").toLowerCase().includes("visa") ? "💳" : "💳"}
             </div>
@@ -339,18 +423,160 @@ useEffect(() => {
               <div style={{ marginTop: 4, fontSize: 14, fontWeight: 900, color: "#ef4444" }}>
                 Limite {fmt.format(Number(c.limite_total || 0))}
               </div>
+             <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                <button
+                  onClick={() => navigate(`/app/edit-card/${c.id}`)}
+                  style={botaoEditarPequeno}
+                >
+                  ✏️ Editar
+                </button>
 
-               <button
-               onClick={() => navigate(`/app/edit-card/${c.id}`)}
-                style={botaoEditarPequeno}
-              >
-                ✏️ Editar
-              </button>
+               {/*} <button
+                  onClick={() =>  navigate(`/app/faturas-cartao?id=${c.id}`)}
+                  style={{
+                    ...botaoEditarPequeno,
+                    background: "#ebebeb",
+                    color: "#141414",
+                  }}
+                >
+                  🕘 Acessar Faturas
+                </button>*/}
+
+              
+              </div>
             </div>
+               </div>
+          
+    ))}
+  </>
+)}
 
-            
-          </div>
-        ))}
+
+        {abaCartao === "faturas" && (
+          <>
+            {faturas.length === 0 && (
+              <div style={{ color: "#64748b", fontWeight: 700 }}>
+                Nenhuma fatura aberta encontrada.
+              </div>
+            )}
+
+            {faturas.map((f) => (
+              <div key={f.id} style={linhaSemAcao}>
+                <div style={{ ...icone, background: "#fff7ed" }}>💳</div>
+
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 900, color: "#1e1b4b" }}>
+                    {f.nome}
+                  </div>
+
+                  <div style={{ marginTop: 4, fontSize: 12, color: "#94a3b8", fontWeight: 800 }}>
+                    {f.bandeira || "Cartão"} • {f.status}
+                  </div>
+
+                  <div style={{ marginTop: 4, fontSize: 14, fontWeight: 900, color: "#ef4444" }}>
+                    {fmt.format(Number(f.valor_total || 0))}
+                  </div>
+
+               {/*}   <button
+                    //onClick={() => navigate(`/fatura-transacoes?id=${f.id}&empresa=${empresa_id}`)}
+
+                    onClick={() => navigate(`/app/fatura-transacoes?id=${id}&empresa=${empresa_id}`) }
+                    style={botaoEditarPequeno}
+                  >
+                    👁️ Visualizar
+                  </button>*/}
+
+                
+
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
+
+          {abaCartao === "historico" && (
+            <div style={{ display: "grid", gap: 12 }}>
+              <select
+                value={cartaoHistoricoId}
+                onChange={(e) => carregarHistoricoFaturas(e.target.value)}
+                style={{
+                  width: "100%",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: 14,
+                  padding: "10px 12px",
+                  fontWeight: 800,
+                }}
+              >
+                <option value="">Escolha o cartão</option>
+                {cartoes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={faturaHistoricoId}
+                onChange={(e) => carregarComprasFatura(e.target.value)}
+                disabled={!cartaoHistoricoId}
+                style={{
+                  width: "100%",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: 14,
+                  padding: "10px 12px",
+                  fontWeight: 800,
+                }}
+              >
+                <option value="">Escolha a fatura</option>
+                  {faturasHistorico
+                        .filter((f) => f && f.id)
+                        .map((f) => {
+                          const dataRef = f.mes_referencia
+                            ? new Date(f.mes_referencia).toLocaleDateString("pt-BR", {
+                                month: "long",
+                                year: "numeric",
+                              })
+                            : "";
+
+                          const valor =
+                            Number(f.valor_total || 0) > 0
+                              ? ` - ${fmt.format(Number(f.valor_total || 0))}`
+                              : "";
+
+                          const status = f.status ? ` - ${f.status}` : "";
+
+                          return (
+                            <option key={f.id} value={f.id}>
+                              {dataRef}{status}{valor}
+                            </option>
+                          );
+                        })}
+              </select>
+
+              {comprasFatura.map((t) => (
+                <div key={t.id} style={linhaSemAcao}>
+                  <div style={{ ...icone, background: "#eef2ff" }}>🧾</div>
+
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 900, color: "#1e1b4b" }}>
+                      {t.descricao}
+                    </div>
+
+                    <div style={{ marginTop: 4, fontSize: 12, color: "#64748b", fontWeight: 800 }}>
+                      {new Date(t.data_parcela).toLocaleDateString("pt-BR")} • Parcela{" "}
+                      {t.parcela_num}/{t.parcela_total}
+                    </div>
+
+                    <div style={{ marginTop: 4, fontSize: 14, fontWeight: 900, color: "#ef4444" }}>
+                      {fmt.format(Number(t.valor || 0))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
 
         {cartoes.length === 0 && (
           <div style={{ color: "#64748b", fontWeight: 700 }}>
