@@ -510,7 +510,7 @@ useEffect(() => {
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
           <div>
             <h1 style={{ margin: 0, fontSize: 24, fontWeight: 900, color: "#0f172a" }}>
-              💼 FinanceFlow Mobile  
+              📊 FinanceFlow Mobile  
             </h1>
               
               <button onClick={() => abrirLeitor("qrcode")}>
