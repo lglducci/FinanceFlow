@@ -25,7 +25,7 @@ const [indiceContaObs, setIndiceContaObs] = useState(-1);
 const [importacao, setImportacao] = useState(0);
 const [saldoBase, setSaldoBase] = useState(0); 
 const [editandoId, setEditandoId] = useState(null);
- const dataMin = hojeMaisDias(-7);
+ const dataMin = hojeMaisDias(-180);
 const [resumoImportacao, setResumoImportacao] = useState(null);
 
 
