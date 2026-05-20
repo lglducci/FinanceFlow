@@ -189,7 +189,11 @@ import ContasCartoes from "./pages/ContasCartoes";
 
 import AppFaturasCartao from "./pages/app/AppFaturasCartao";
 import AppFaturaTransacoes from "./pages/app/AppFaturaTransacoes";
- 
+ import ImportacaoCartaoCredito from "./pages/ImportacaoCartaoCredito";
+import AppDashboardFinanceiroCartao from "./pages/app/AppDashboardFinanceiroCartao";
+import DashboardFinanceiroCartao from "./pages/DashboardFinanceiroCartao";
+
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -355,6 +359,7 @@ const rotaAtual = window.location.pathname;
 
      <Route path="/app/faturas-cartao" element={<AppFaturasCartao />} />
 <Route path="/app/fatura-transacoes" element={<AppFaturaTransacoes />} />
+ <Route path="/app/dashboard-financeiro" element={<AppDashboardFinanceiroCartao />} />
 
 <Route
   path="*"
@@ -622,6 +627,9 @@ const rotaAtual = window.location.pathname;
   <Route path="/relatorio-receber-pessoa" element={<RelatorioReceberPessoa />} />
 
   <Route path="/contas-cartoes" element={<ContasCartoes />} />
+
+  <Route path="/importacao-cartao" element={<ImportacaoCartaoCredito />} />
+  <Route path="/dashboard-financeiro" element={<DashboardFinanceiroCartao />} />
  
 </Routes>
 
