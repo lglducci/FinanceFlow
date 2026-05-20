@@ -78,12 +78,16 @@ function podeVer(menuKey) {
  
         {podeVer("visao_geral") && (
            <MenuItem icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboardfinanceiro")} />
+              
+             
            
         )}
-         
+         <MenuItem icon={<IconHome />} label="DashBoard Financeiro 2" onClick={() => navigate("/dashboard-financeiro")} />
 
           
           <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
+
+          
           
           {podeVer("visao_geral") && (
          <MenuGroup
@@ -129,6 +133,7 @@ function podeVer(menuKey) {
            <SubItem icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />*/}
                <SubItem icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/importacao-bancaria")}  />
                <SubItem icon={<IconDoc />} label="Contábil" onClick={() => navigate("/livro-caixa")}  />
+                <SubItem icon={<IconDoc />} label="Extrato Cartões" onClick={() => navigate("/importacao-cartao")}  />
                
             
          </MenuGroup>
