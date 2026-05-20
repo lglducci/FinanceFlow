@@ -17,6 +17,14 @@ export default function AppTitulosVencidos() {
   const [carregando, setCarregando] = useState(false);
   const [busca, setBusca] = useState("");
 
+
+    function moeda(v) {
+    return Number(v || 0).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  }
+
   const fmt = new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -39,11 +47,42 @@ export default function AppTitulosVencidos() {
     return "#ef4444";
   }
 
-  async function carregarContas() {
+ {/*} async function carregarContas() {
     const r = await fetch(buildWebhookUrl("listacontas", { empresa_id }));
     const j = await r.json();
     setContas(Array.isArray(j) ? j : []);
+  }*/}
+
+
+   async function carregarContas() {
+  try {
+    const url = buildWebhookUrl("consultasaldo", {
+      empresa_id,
+      inicio: "2021-01-01",
+      fim: hojeLocal(),
+      conta_id: 0,
+    });
+
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    const lista = Array.isArray(data) ? data : [];
+
+    setContas(
+      lista.map((c) => ({
+        id: c.conta_id,
+        nome: c.conta_nome,
+        nro_banco: c.nro_banco,
+        agencia: c.agencia,
+        conta: c.conta,
+        saldo: c.saldo_final,
+      }))
+    );
+  } catch (error) {
+    console.error("Erro ao carregar contas:", error);
+    setMensagem("Erro ao carregar contas.");
   }
+}
 
   async function pesquisar() {
     try {
@@ -179,7 +218,8 @@ export default function AppTitulosVencidos() {
             <option value="">Selecione uma conta...</option>
             {contas.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.nome}
+                 🏦 {c.apelido || c.nome} — {moeda(c.saldo)}  
+         
               </option>
             ))}
           </select>
