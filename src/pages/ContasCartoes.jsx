@@ -135,24 +135,24 @@
      border: "1px solid rgba(148,163,184,0.25)",
    };
  
-  const linhaSemAcao = {
-   display: "grid",
-   gridTemplateColumns: "48px 1fr",
-   gap: 14,
-   alignItems: "center",
-   padding: "14px 0",
- };
+ const linhaSemAcao = {
+  display: "grid",
+  gridTemplateColumns: "34px 1fr",
+  gap: 2,
+  alignItems: "center",
+  padding: "4px 0",
+};
  
-   const icone = {
-     width: 42,
-     height: 42,
-     borderRadius: 14,
-     display: "flex",
-     alignItems: "center",
-     justifyContent: "center",
-     fontSize: 22,
-     background: "#eef2ff",
-   };
+ const icone = {
+  width: 20,
+  height: 20,
+  borderRadius: 10,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 16,
+  background: "#eef2ff",
+};
  
    const botaoEditarPequeno = {
    marginTop: 6,
@@ -406,7 +406,7 @@
  </div>   
  {abaCartao === "cartoes" && (
    <>
-     {cartoes.slice(0, 4).map((c) => (
+     { cartoes.map((c) => (
        <div key={c.id} style={linhaSemAcao}> 
          
              <div style={{ ...icone, background: "#f8fafc" }}>

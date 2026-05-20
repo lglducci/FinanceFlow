@@ -833,8 +833,8 @@ const descricao = (() => {
                       onChange={handleChange}
                       className="input-premium w-full"
                     >
-                      <option value="entrada">Pagamento</option>
-                      <option value="saida">Recebimento</option>
+                      <option value="entrada">Entrada (Receber)</option>
+                      <option value="saida">Saída (Gasto)</option>
                     </select>
                   </div>
 
@@ -884,12 +884,12 @@ const descricao = (() => {
                         className="input-premium w-full"
                       >
                         <option value="">Selecione</option>
-                        <option value="avista">À vista</option>
-                        <option value="pix">Pix</option>
-                        <option value="cartao_debito">Cartão Débito</option>
-                        <option value="cartao_credito">Cartão Crédito</option>
-                        <option value="boleto">Boleto</option>
-                          <option value="aprazo">A prazo</option>
+                        <option value="avista">💵 À vista</option>
+                        <option value="pix">⚡ Pix</option>
+                        <option value="cartao_debito">💳 Cartão Débito</option>
+                        <option value="cartao_credito"> 💳 Cartão Crédito</option>
+                        <option value="boleto">📄 Boleto</option>
+                          <option value="aprazo">📆 A prazo</option>
                       </select>
                     </div>
                   )}
@@ -908,11 +908,11 @@ const descricao = (() => {
                         className="input-premium w-full"
                       >
                         <option value="">Selecione</option>
-                        <option value="avista">À vista</option>
-                        <option value="pix">Pix</option>
-                        <option value="cartao_credito">Cartão Crédito</option>
-                        <option value="boleto">Boleto</option>
-                        <option value="aprazo">A prazo</option>
+                        <option value="avista">💵 À vista</option>
+                        <option value="pix"> ⚡ Pix</option>
+                        <option value="cartao_credito">💳 Cartão Crédito</option>
+                        <option value="boleto">📄 Boleto</option>
+                        <option value="aprazo">📆 A prazo</option>
                       </select>
                     </div>
                   )}
