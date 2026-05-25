@@ -206,26 +206,23 @@ if (lista.length > 0) {
 
     const retorno = await resp.json();
 
-const bruto = Array.isArray(retorno) ? retorno[0] : retorno;
+    const resultado =
+      retorno?.[0]?.data?.[0]?.fn_executar_conciliacao ||
+      retorno?.data?.[0]?.fn_executar_conciliacao ||
+      retorno?.[0]?.fn_executar_conciliacao ||
+      retorno?.fn_executar_conciliacao ||
+      retorno;
 
-if (!resp.ok || bruto?.ok === false || Number(bruto?.responseCode || 0) >= 400) {
-  throw new Error(
-    bruto?.message ||
-    bruto?.details ||
-    "Erro ao executar conciliação."
-  );
-}
+      const loteId =
+          resultado?.lote_conciliacao_id ||
+          resultado?.importacao_id ||
+          resultado?.lote_id ||
+          resultado?.data?.lote_conciliacao_id;
 
-const resultado =
-  bruto?.data?.[0]?.fn_executar_conciliacao ||
-  bruto?.data?.fn_executar_conciliacao ||
-  bruto?.fn_executar_conciliacao ||
-  bruto?.data ||
-  bruto;
-
-if (resultado?.ok === false) {
-  throw new Error(resultado.message || "Erro ao executar conciliação.");
-}
+    if (resultado?.ok === false) {
+      alert(resultado.message || "Erro ao executar conciliação.");
+      return;
+    }
 
     
 
@@ -234,10 +231,10 @@ if (resultado?.ok === false) {
     setSelecionados([]);
       await verOperacoesGeradas(resultado.lote_conciliacao_id);
 
-   } catch (e) {
-  console.error(e);
-  alert(e.message || "Erro ao executar conciliação.");
-}
+  } catch (e) {
+    console.error(e);
+    alert("Erro ao executar conciliação.");
+  }
 }
 
 function aceitarTodosCheckbox() {
@@ -624,21 +621,11 @@ const lote_id =
 
 
 
-{/*}
+
 async function carregarContas() {
   const r = await fetch(buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id }));
   const j = await r.json();
   setContas(Array.isArray(j) ? j : []);
-}*/}
-
-  async function carregarContas() {
-  const url = buildWebhookUrl("listacontas", { empresa_id });
-
-  const resp = await fetch(url);
-  const data = await resp.json();
-
-  setContas(Array.isArray(data) ? data : []); 
-  setLinhaEditando(null);
 }
 
 
@@ -1096,7 +1083,7 @@ async function criarRegraDaLinha(l) {
                     <th className="p-3 text-left">Histórico</th>
                     <th className="p-3 text-right">Valor</th>
                     <th className="p-3 text-center">Situação</th>
-                  {/*}   <th className="p-3 text-left">Conta Contábil</th>*/}
+                     <th className="p-3 text-left">Conta Contábil</th>
                     <th className="p-3 text-left">Mensagem</th>
                     <th className="p-3 text-center">Tipo Evento</th> 
                     <th className="p-3 text-center">Ação</th>
@@ -1149,7 +1136,81 @@ async function criarRegraDaLinha(l) {
                       </span>
                     </td>
 
-        
+
+                {  /*drop down da conta contabil contabil_id*/}
+                      <div className="relative min-w-[360px]">
+                        <input
+                          className={`border rounded-lg px-3 py-2 text-xs w-full ${
+                            !l.conta_id ? "bg-red-50 border-red-300" : "bg-white"
+                          }`}
+                          placeholder="Pesquisar conta contábil..."
+                          value={
+                            textoContaBusca[l.id] ??
+                            l.conta_descricao ??
+                            l.conta_contabil ??
+                            ""
+                          }
+                          onFocus={() => {
+                            setLinhaContaDropdown(l.id);
+                            filtrarContasContabeis(textoContaBusca[l.id] || "");
+                          }}
+                          onChange={(e) => {
+                            const v = e.target.value;
+
+                            setTextoContaBusca((prev) => ({
+                              ...prev,
+                              [l.id]: v,
+                            }));
+
+                            setLinhas((prev) =>
+                              prev.map((x) =>
+                                x.id === l.id ? { ...x, conta_id: null } : x
+                              )
+                            );
+
+                            setLinhaContaDropdown(l.id);
+                            filtrarContasContabeis(v);
+                          }}
+                        />
+
+                        {linhaContaDropdown === l.id && contasFiltradasContabil.length > 0 && (
+                          <div className="absolute z-[9999] mt-1 w-full bg-white border rounded-xl shadow-xl max-h-72 overflow-y-auto">
+                            {contasFiltradasContabil.map((c) => (
+                              <div
+                                key={c.id}
+                                onClick={() => selecionarContaContabilLinha(l, c)}
+                                className="px-3 py-2 cursor-pointer hover:bg-blue-100 text-xs font-bold"
+                              >
+                                {c.codigo} - {c.nome}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex gap-2 mt-1">
+                           {!l.tem_regra && ( <button
+                              type="button"
+                              onClick={() => criarRegraDaLinha(l)}
+                              disabled={!l.conta_id || l.regra_criada}
+                              className="text-xs font-bold text-emerald-700 disabled:text-gray-400"
+                            >
+                              💾 Criar regra
+                            </button>)}
+
+                          {!l.tem_regra && (  <button
+                              type="button"
+                              onClick={() => {
+                                setLinhaContaNova(l);
+                                setModalContaAberto(true);
+                              }}
+                              className="text-xs font-bold text-blue-700"
+                            >
+                              + Conta
+                            </button>)}
+                          </div>
+                     {  /*drop down da conta contabil contabil_id*/}
+
 
 
                     <td className="p-3 text-slate-600 font-semibold">

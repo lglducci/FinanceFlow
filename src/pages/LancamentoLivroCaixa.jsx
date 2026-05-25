@@ -6,6 +6,7 @@ import { fetchSeguro } from "../utils/apiSafe";
 import ModalBase from "../components/ModalBase";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import FormContaContabilModal from "../components/forms/FormContaContabilModal";
+import * as XLSX from "xlsx";
  
 export default function LancamentoLivroCaixa() {
   const [contasFiltradasContra, setContasFiltradasContra] = useState([]);
@@ -27,8 +28,9 @@ const [saldoBase, setSaldoBase] = useState(0);
 const [editandoId, setEditandoId] = useState(null);
  const dataMin = hojeMaisDias(-180);
 const [resumoImportacao, setResumoImportacao] = useState(null);
-
-
+//nova conta modelo inteligente 
+const [linhaContaNova, setLinhaContaNova] = useState(null);
+const [linhaDropdownAberta, setLinhaDropdownAberta] = useState(null);
 
  const botaoBase = `
   px-5 py-2 rounded-full
@@ -186,6 +188,15 @@ async function salvarLancamentos() {
   if (editandoId !== null && nova._id === editandoId) {
   alert("Confirme a edição da linha antes de salvar.");
   return;
+
+  const contaIgual = linhasParaSalvar.findIndex(
+  (l) => Number(l.conta_id) === Number(contaId)
+);
+
+if (contaIgual !== -1) {
+  alert(`Linha ${contaIgual + 1}: a conta contra não pode ser igual à conta observada.`);
+  return;
+}
 }
 
   if (!contaId) {
@@ -284,6 +295,60 @@ historicoRef.current?.focus();
 
   }
 }
+
+
+
+async function classificarLinhasPorRegras(lista) {
+  if (!lista.length) return lista;
+
+  try {
+    const resp = await fetch(buildWebhookUrl("classificar_historicos_lote"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id,
+        linhas: lista.map((l) => ({
+          _id: l._id,
+          historico: l.historico,
+          tipo: l.tipo,
+        })),
+      }),
+    });
+
+    const json = await resp.json();
+    const bruto = Array.isArray(json) ? json[0] : json;
+
+    const resultado =
+      bruto?.data?.resultado ||
+      bruto?.resultado ||
+      bruto?.data?.ff_classificar_historicos_lote ||
+      bruto?.ff_classificar_historicos_lote ||
+      bruto?.data ||
+      bruto;
+
+    const classificadas = resultado?.linhas || [];
+
+    return lista.map((linha) => {
+      const achada = classificadas.find((x) => x._id === linha._id);
+
+      if (!achada?.encontrado) return linha;
+
+      return {
+        ...linha,
+        contra: `${achada.conta_codigo} - ${achada.conta_nome}`,
+        conta_id: Number(achada.conta_id),
+        regra_id: achada.regra_id,
+      };
+    });
+  } catch (e) {
+    console.error("Erro ao classificar linhas:", e);
+    return lista;
+  }
+}
+
+
+
+
   
 // fim da rotina salvar  
 
@@ -606,6 +671,90 @@ function resolverContaPorCodigo(codigoImportado) {
 }
   
 
+async function importarArquivoExcel(e) {
+ 
+     const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  if (!contaId) {
+    alert("Informe a conta observada antes de importar.");
+    e.target.value = "";
+    return;
+  }
+
+  try {
+    const nome = file.name || "";
+    const ext = nome.split(".").pop().toLowerCase();
+    const buffer = await file.arrayBuffer();
+
+    let texto = "";
+
+    if (["xlsx", "xls"].includes(ext)) {
+      const workbook = XLSX.read(buffer, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+
+      const linhasArray = XLSX.utils.sheet_to_json(sheet, {
+        header: 1,
+        defval: "",
+        raw: false,
+      });
+
+      texto = linhasArray
+        .map((linha) => linha.map((c) => String(c || "").trim()).join("\t"))
+        .join("\n");
+    } else {
+      texto = new TextDecoder("utf-8").decode(buffer);
+    }
+
+    const novasLinhas = parseTextoParaLinhas(texto);
+
+    if (!novasLinhas.length) {
+      console.log("ARQUIVO IMPORTADO:", texto);
+      alert("Nenhuma linha válida encontrada no arquivo.");
+      return;
+    }
+
+    let totalEntrada = 0;
+    let totalSaida = 0;
+
+    novasLinhas.forEach((l) => {
+      const v = Math.abs(parseNumeroBR(l.valor));
+
+      if (l.tipo === "entrada") totalEntrada += v;
+      else totalSaida += v;
+    });
+
+    setResumoImportacao({
+      qtd: novasLinhas.length,
+      entrada: totalEntrada,
+      saida: totalSaida,
+    });
+
+    const novasClassificadas = await classificarLinhasPorRegras(novasLinhas);
+
+    recalcularLinhas([...linhas, ...novasClassificadas]);
+
+
+    setImportacao(1);
+
+  
+   const semConta = novasClassificadas.filter((l) => !l.conta_id).length;
+
+    if (semConta > 0) {
+      alert(
+        `Importadas ${novasLinhas.length} linhas. ${semConta} ficaram sem conta contra e precisam de ajuste.`
+      );
+    }
+
+    e.target.value = "";
+  } catch (erro) {
+    console.error("Erro ao importar arquivo:", erro);
+    alert("Erro ao importar arquivo.");
+  }
+}
+
 async function colarLancamentos() {
   try {
     const texto = await navigator.clipboard.readText();
@@ -674,6 +823,10 @@ function limparEdicao() {
   }, 0);
 }
 
+function abrirNovaContaParaLinha(linha) {
+  setLinhaContaNova(linha);
+  setModalContaAberto(true);
+}
 
 return (
       <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
@@ -704,6 +857,7 @@ return (
                     className="w-full border rounded-lg p-1"
                     placeholder="Digite conta (ex: banco, caixa, 1.1...)"
                     value={conta}
+                    disabled={linhas.length > 0}
                     onChange={(e)=>{
                         const v = e.target.value;
                         setConta(v);
@@ -749,6 +903,8 @@ return (
                           }
                         }}
                          />
+                         
+ 
                     {contasFiltradas.length > 0 && (
                     <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-30 overflow-y-auto z-50">
 
@@ -881,7 +1037,77 @@ return (
                         })}
                     </div>
 
-                    <div className="text-left font-semibold ml-3">{l.contra}</div>
+                    <div className="relative">
+                        <input
+                          className={`border rounded p-1 w-full text-sm ${
+                            !l.conta_id ? "bg-red-50 border-red-400" : "bg-white"
+                          }`}
+                          value={l.contra || ""}
+                          placeholder="Conta contra"
+                          onChange={(e) => {
+                            const v = e.target.value;
+
+                            setLinhas((prev) =>
+                              prev.map((x) =>
+                                x._id === l._id
+                                  ? {
+                                      ...x,
+                                      contra: v,
+                                      conta_id: null,
+                                    }
+                                  : x
+                              )
+                            );
+
+                            filtrarContasContra(v);
+                            setIndiceSelecionado(-1);
+                            setEditandoId(l._id);
+                          }}
+                          onFocus={() => {
+                            setLinhaDropdownAberta(l._id);
+                            filtrarContasContra(l.contra || "");
+                          }}
+                        />
+
+                      {/*  {!l.conta_id && (
+                          <button
+                            type="button"
+                            onClick={() => abrirNovaContaParaLinha(l)}
+                            className="mt-1 text-xs font-bold text-blue-600 hover:text-blue-800"
+                          >
+                            ➕ Conta não existe? Cadastrar
+                          </button>
+                        )}*/}
+
+
+                        {linhaDropdownAberta === l._id && contasFiltradasContra.length > 0 && (
+                          <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-64 overflow-y-auto z-[9999]">
+                            {contasFiltradasContra.map((c) => (
+                              <div
+                                key={c.id}
+                                className="p-2 cursor-pointer hover:bg-blue-100"
+                                onClick={() => {
+                                  const listaAtualizada = linhas.map((x) =>
+                                    x._id === l._id
+                                      ? {
+                                          ...x,
+                                          contra: `${c.codigo} - ${c.nome}`,
+                                          conta_id: c.id,
+                                        }
+                                      : x
+                                  );
+
+                                  recalcularLinhas(listaAtualizada);
+                                  setContasFiltradasContra([]);
+                                  setLinhaDropdownAberta(null);
+                                }}
+                              >
+                                {c.codigo} - {c.nome}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
                     <div
                       className={`border rounded p-2 text-right font-semibold ${
@@ -994,6 +1220,7 @@ return (
                     value={nova.contra}
                     onChange={(e)=>{
                         const v = e.target.value;
+                        setLinhaDropdownAberta("nova");
                          setNova(prev => ({ ...prev, contra: v }));
                          filtrarContasContra(v);
                         setIndiceSelecionado(-1);
@@ -1044,7 +1271,7 @@ return (
                   }
                 }}
                     />
-                    {contasFiltradasContra.length > 0 && (
+                   {linhaDropdownAberta === "nova" && contasFiltradasContra.length > 0 && (
                          
                             <div className="absolute bottom-full left-0 w-full bg-white border rounded shadow max-h-64 overflow-y-auto z-[9999]">
                             {contasFiltradasContra.map((c, i) => (
@@ -1056,6 +1283,10 @@ return (
                                     : "hover:bg-gray-200"
                                 }`}
                                 onClick={() => {
+                                  if (Number(c.id) === Number(contaId)) {
+                                          alert("A conta contra não pode ser igual à conta observada.");
+                                          return;
+}
                                    setNova(prev => ({ ...prev, contra: c.nome, conta_id: c.id }));
                                   setContasFiltradasContra([]);
                                   setIndiceSelecionado(-1);
@@ -1111,21 +1342,24 @@ return (
                       💾 Salvar
                   </button>
  
-                 <button
+                {/*} <button
                 onClick={() => setModalContaAberto(true)}
                  
                 className="btn-pill btn-emerald"
                         >
                 ➕ Nova Conta
-              </button>
+              </button>*/}
+ 
 
-                <button
-                onClick={colarLancamentos}
-                
-                className="btn-pill btn-green"
-                 >
-                📋 Colar
-              </button>
+                <label className="btn-pill btn-green cursor-pointer">
+                  📥 Importar Excel
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls,.csv,.txt"
+                    onChange={importarArquivoExcel}
+                    className="hidden"
+                  />
+                </label>
 
               <button
                     onClick={limparEdicao}
@@ -1150,18 +1384,44 @@ return (
  
   <ModalBase
   open={modalContaAberto}
-  onClose={() => setModalContaAberto(false)}
+  onClose={() => {
+    setModalContaAberto(false);
+    setLinhaContaNova(null);
+  }}
   title="Nova Conta Contábil"
 >
-    <FormContaContabilModal
-      empresa_id={empresa_id}
-      onSuccess={() => {
-        setModalContaAberto(false);
-        carregarContas();
-      }}
-      onCancel={() => setModalContaAberto(false)}
-    />
-  </ModalBase>
+  <FormContaContabilModal
+    empresa_id={empresa_id}
+    contas={contas}
+    nomeInicial={linhaContaNova?.historico || ""}
+    historicoRegra={linhaContaNova?.historico || ""}
+    tipoMovimento={linhaContaNova?.tipo || ""}
+    onSuccess={(contaCriada) => {
+      setModalContaAberto(false);
+
+      if (linhaContaNova && contaCriada?.id) {
+        const listaAtualizada = linhas.map((x) =>
+          x._id === linhaContaNova._id
+            ? {
+                ...x,
+                contra: `${contaCriada.codigo} - ${contaCriada.nome}`,
+                conta_id: Number(contaCriada.id),
+              }
+            : x
+        );
+
+        recalcularLinhas(listaAtualizada);
+      }
+
+      setLinhaContaNova(null);
+      carregarContas();
+    }}
+    onCancel={() => {
+      setModalContaAberto(false);
+      setLinhaContaNova(null);
+    }}
+  />
+</ModalBase>
  
     </div>
   );

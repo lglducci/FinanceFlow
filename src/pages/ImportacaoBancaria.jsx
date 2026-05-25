@@ -1060,12 +1060,12 @@ return (
                   <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
 
 
-                <button
+               {/*} <button
                 onClick={colarLancamentos}
                 className={`${botaoBase} text-white bg-gradient-to-b from-cyan-500 via-teal-600 to-teal-800`}
-              >
-                📋 Colar
-              </button>
+                >
+                  📋 Colar
+                </button>*/}
 
               
 
