@@ -1105,7 +1105,11 @@ async function criarRegraDaLinha(l) {
                 </thead>
 
               <tbody>
-                 {linhasFiltradas.map((l) => (
+                  {linhasFiltradas.map((l) => {
+  const resolvido = !!l.destino_id;
+
+  return (
+                  
                   <tr
                     key={l.id}
                     className="border-b border-slate-100 hover:bg-blue-50/60"
@@ -1216,42 +1220,58 @@ async function criarRegraDaLinha(l) {
                                    Transferir
                                   </button>*/}
 
-                                   <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                                    
-                                    <button
-                                         title="Resolve esta linha como transferência entre contas"
-                                        onClick={() => {
-                                            setLinhaEditando(l);
-                                            setContaOrigemId(l.conta_financeira_id || "");
-                                            setContaDestinoId(l.destino_id || "");
-                                        }}
-                                        className="px-3 py-1 rounded-full bg-purple-700 text-white font-bold text-xs"
-                                        >
-                                        Resolver
-                                    </button>
+                                     
+
+                                <div className="flex items-center justify-center gap-2 whitespace-nowrap">
+                                  <button
+                                    title={
+                                      resolvido
+                                        ? "Linha já resolvida como transferência"
+                                        : "Resolve esta linha como transferência entre contas"
+                                    }
+                                    disabled={resolvido}
+                                    onClick={() => {
+                                      if (resolvido) return;
+
+                                      setLinhaEditando(l);
+                                      setContaOrigemId(l.conta_financeira_id || "");
+                                      setContaDestinoId(l.destino_id || "");
+                                    }}
+                                    className={`px-3 py-1 rounded-full font-bold text-xs ${
+                                      resolvido
+                                        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                        : "bg-purple-700 text-white hover:bg-purple-800"
+                                    }`}
+                                  >
+                                    {resolvido ? "Resolvido" : "Resolver"}
+                                  </button>
                                 </div>
 
                                   
                                 </>
                               ) : (
                                 <button
-                                  title="Confirmar este lançamento. Use quando estiver correto (pagamento, recebimento, etc.)"
+                                  title={
+                                    l.situacao === "ok" || l.situacao === "executado"
+                                      ? "Lançamento já aceito"
+                                      : "Confirmar este lançamento. Use quando estiver correto"
+                                  }
                                   onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
                                   disabled={l.situacao === "ok" || l.situacao === "executado"}
-                                    className="
-                                          px-2 py-1 rounded-full border
-                                          text-[10px] leading-none font-bold
-                                          bg-emerald-500 text-white border-emerald-600
-                                          hover:bg-emerald-600
-                                        "
-                                      > 
-                                  Aceitar
+                                  className={`px-2 py-1 rounded-full border text-[10px] leading-none font-bold ${
+                                    l.situacao === "ok" || l.situacao === "executado"
+                                      ? "bg-gray-300 text-gray-600 border-gray-300 cursor-not-allowed"
+                                      : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600"
+                                  }`}
+                                >
+                                  {l.situacao === "ok" || l.situacao === "executado" ? "Aceito" : "Aceitar"}
                                 </button>
                               )}
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  );
+})}
               </tbody>
             </table>
               </div>

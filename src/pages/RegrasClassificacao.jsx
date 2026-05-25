@@ -12,6 +12,8 @@ export default function RegrasClassificacao() {
   const [filtro, setFiltro] = useState("");
   const [editando, setEditando] = useState(null);
   const [salvando, setSalvando] = useState(false);
+ 
+  const [somenteNaoClassificados, setSomenteNaoClassificados] = useState(false);
 
   useEffect(() => {
     carregarTudo();
@@ -93,15 +95,23 @@ export default function RegrasClassificacao() {
     await carregarRegras();
   }
 
-  const filtradas = regras.filter((r) => {
-    const t = filtro.toLowerCase();
-    return (
-      String(r.texto_busca || "").toLowerCase().includes(t) ||
-      String(r.conta_descricao || "").toLowerCase().includes(t) ||
-      String(r.tipo_movimento || "").toLowerCase().includes(t)
-    );
-  });
+   const filtradas = regras.filter((r) => {
+  const t = filtro.toLowerCase();
 
+  const passouPesquisa =
+    String(r.texto_busca || "").toLowerCase().includes(t) ||
+    String(r.conta_descricao || "").toLowerCase().includes(t) ||
+    String(r.tipo_movimento || "").toLowerCase().includes(t);
+
+  const naoClassificado =
+    r.conta_id == null ||
+    r.conta_id === "" ||
+    String(r.conta_descricao || "").toLowerCase() === "pendente de conta";
+
+  return passouPesquisa && (!somenteNaoClassificados || naoClassificado);
+});
+
+ 
   return (
     <div className="min-h-screen bg-slate-100 p-4">
       <div className="max-w-8xl mx-auto bg-white rounded-3xl shadow-xl border p-5">
@@ -114,18 +124,35 @@ export default function RegrasClassificacao() {
               Históricos automáticos usados no Livro Caixa, Extrato e Cartões
             </p>
           </div>
+           
+           <div className="mr-4 max-w-xl rounded-2xl bg-blue-50 border border-blue-200 px-4 py-3 text-xs font-bold text-blue-800">
+              Esta tela permite configurar regras automáticas de classificação contábil.
+              O sistema usa o histórico importado para sugerir ou aplicar contas contábeis nas próximas conciliações.
+            </div>
 
           <button onClick={() => navigate(-1)} className="btn-pill btn-black">
             ↩ Sair
           </button>
         </div>
 
-        <input
-          value={filtro}
-          onChange={(e) => setFiltro(e.target.value)}
-          placeholder="Pesquisar por histórico, conta ou tipo..."
-          className="w-full border rounded-xl px-4 py-3 mb-4 font-semibold"
-        />
+        <div className="mb-4 flex items-center gap-3">
+          <input
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            placeholder="Pesquisar por histórico, conta ou tipo..."
+            className="w-[420px] border rounded-xl px-4 py-3 font-semibold"
+          />
+
+          <label className="flex items-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={somenteNaoClassificados}
+              onChange={(e) => setSomenteNaoClassificados(e.target.checked)}
+              className="w-4 h-4"
+            />
+            Não classificados
+          </label>
+        </div>
 
         <div className="overflow-auto border rounded-2xl">
           <div className="grid grid-cols-[80px_1.6fr_140px_2fr_100px_100px_150px] gap-2 bg-slate-900 text-white font-bold text-sm p-2 sticky top-0">
