@@ -31,6 +31,9 @@ const [resumoImportacao, setResumoImportacao] = useState(null);
 //nova conta modelo inteligente 
 const [linhaContaNova, setLinhaContaNova] = useState(null);
 const [linhaDropdownAberta, setLinhaDropdownAberta] = useState(null);
+ 
+ const [modoImportacao, setModoImportacao] = useState("contabil");
+const modoCartao = modoImportacao === "cartao";
 
  const botaoBase = `
   px-5 py-2 rounded-full
@@ -307,11 +310,13 @@ async function classificarLinhasPorRegras(lista) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         empresa_id,
-        linhas: lista.map((l) => ({
-          _id: l._id,
-          historico: l.historico,
-          tipo: l.tipo,
-        })),
+       linhas: lista.map((l) => ({
+        _id: l._id,
+        historico: l.historico,
+        //tipo: modoCartao ? "entrada" : l.tipo,
+       tipo: modoCartao ? "entrada" : l.tipo,
+        
+      })),
       }),
     });
 
@@ -533,6 +538,14 @@ function normalizarCodigoConta(txt) {
 }
   
 
+function tipoPorModo(valorOriginal) {
+  if (modoCartao) {
+    return valorOriginal >= 0 ? "saida" : "entrada";
+  }
+
+  return valorOriginal >= 0 ? "entrada" : "saida";
+}
+
 
 function parseTextoParaLinhas(texto) {
   const linhasTexto = String(texto || "")
@@ -561,15 +574,15 @@ function parseTextoParaLinhas(texto) {
 
     // nova linha válida
     if (temData && temValor) {
-      const valorNumero = parseNumeroBR(valorTexto);
-      const contaEncontrada = resolverContaPorCodigo(codigoConta);
+     const valorOriginal = parseNumeroBR(valorTexto);
+const contaEncontrada = resolverContaPorCodigo(codigoConta);
 
       atual = {
         _id: gerarLinhaId(),
         data: dataBRparaISO(data),
         historico: historico,
-        tipo: valorNumero >= 0 ? "entrada" : "saida",
-        valor: Math.abs(valorNumero).toFixed(2).replace(".", ","),
+       tipo: tipoPorModo(valorOriginal),
+valor: Math.abs(valorOriginal).toFixed(2).replace(".", ","),
         contra: contaEncontrada
           ? `${contaEncontrada.codigo} - ${contaEncontrada.nome}`
           : codigoConta,
@@ -708,7 +721,11 @@ async function importarArquivoExcel(e) {
       texto = new TextDecoder("utf-8").decode(buffer);
     }
 
-    const novasLinhas = parseTextoParaLinhas(texto);
+     let novasLinhas = parseTextoParaLinhas(texto).map((l) => ({
+  ...l,
+  tipo: l.tipo,
+  valor: Math.abs(parseNumeroBR(l.valor)).toFixed(2).replace(".", ","),
+}));
 
     if (!novasLinhas.length) {
       console.log("ARQUIVO IMPORTADO:", texto);
@@ -732,10 +749,12 @@ async function importarArquivoExcel(e) {
       saida: totalSaida,
     });
 
-    const novasClassificadas = await classificarLinhasPorRegras(novasLinhas);
+   const novasClassificadas = (await classificarLinhasPorRegras(novasLinhas)).map((l) => ({
+  ...l,
+   tipo: l.tipo
+}));
 
-    recalcularLinhas([...linhas, ...novasClassificadas]);
-
+recalcularLinhas([...linhas, ...novasClassificadas]);
 
     setImportacao(1);
 
@@ -763,10 +782,14 @@ async function colarLancamentos() {
       alert("A área de transferência está vazia.");
       return;
     }
-
-    const novasLinhas = parseTextoParaLinhas(texto);
-
  
+ const novasLinhas = parseTextoParaLinhas(texto).map((l) => ({
+  ...l,
+  tipo: tipoPorModo(parseNumeroBR(l.valor)),
+  valor: Math.abs(parseNumeroBR(l.valor)).toFixed(2).replace(".", ","),
+}));
+
+
  let totalEntrada = 0;
 let totalSaida = 0;
 
@@ -828,16 +851,24 @@ function abrirNovaContaParaLinha(linha) {
   setModalContaAberto(true);
 }
 
+ function tipoPorModo(valorNumero) {
+  if (modoCartao) {
+    return valorNumero >= 0 ? "saida" : "entrada";
+  }
+
+  return valorNumero >= 0 ? "entrada" : "saida";
+}
+
 return (
       <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
 
       <div className="bg-white rounded-2xl border border-gray-300 w-[1400px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
         <div className="bg-gray-650 rounded-lg p-3"> 
-        <div className="bg-gray-600 border-b rounded-t-xl p-4"> 
+        <div className="bg-gray-600 border-b rounded-t-xl p-2"> 
        <div className="bg-gray-600 border-b rounded-t-xl p-4">  
         {/* TÍTULO */}
         <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
-          ⚡ Lançamento Contábil Inteligente  
+          📘 Lançamento Contábil Inteligente  
         </h2>
 
         {/* CONTA + SALDO */}
@@ -935,7 +966,16 @@ return (
              </div>
 
     </div>
-
+    
+    <select
+  value={modoImportacao}
+  onChange={(e) => setModoImportacao(e.target.value)}
+  disabled={linhas.length > 0}
+  className="border rounded-lg px-3 py-2 font-bold"
+>
+  <option value="contabil">📘 Contábil normal</option>
+  <option value="cartao">💳 Fatura cartão</option>
+</select>
     {/* SALDO */}
     <div className="text-right">
 

@@ -444,11 +444,40 @@ function cancelarNovaLinha() {
   setContasFiltradasContra([]);
   setIndiceSelecionado(-1);
 }
- 
- function dataBRparaISO(data) {
+  
+
+
+function dataBRparaISO(data) {
   const txt = String(data || "").trim();
-  const m = txt.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-  if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+
+  if (!txt) return "";
+
+  // ISO: 2026-05-21
+  if (/^\d{4}-\d{2}-\d{2}$/.test(txt)) return txt;
+
+  // Data BR: 21/05/2026 ou 21/05/26
+  const br = txt.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
+  if (br) {
+    let dia = br[1].padStart(2, "0");
+    let mes = br[2].padStart(2, "0");
+    let ano = br[3];
+
+    if (ano.length === 2) {
+      ano = Number(ano) >= 70 ? `19${ano}` : `20${ano}`;
+    }
+
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  // Serial Excel: 46163
+  if (/^\d{5}$/.test(txt)) {
+    const serial = Number(txt);
+    const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+    excelEpoch.setUTCDate(excelEpoch.getUTCDate() + serial);
+
+    return excelEpoch.toISOString().slice(0, 10);
+  }
+
   return txt;
 }
 
@@ -471,7 +500,7 @@ function extrairColunasLinha(linha) {
   }
 
   // 3) fallback por regex: data + historico + valor
-  const m = txt.match(/^(\d{2}\/\d{2}\/\d{4})\s+(.+?)\s+(-?[\d.,]+)$/);
+   const m = txt.match(/^(\d{1,2}\/\d{1,2}\/(?:\d{2}|\d{4}))\s+(.+?)\s+(-?[\d.,]+)$/);
   if (m) {
     return [m[1], m[2], m[3]];
   }
@@ -754,15 +783,15 @@ function receberTextoImportadorSicoob(textoPronto) {
   setImportacao(1);
 }
 return (
-       <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
+           <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
 
-       <div className="bg-white rounded-2xl border border-gray-300 w-[1400px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
-        <div className="bg-gray-650 rounded-lg p-8"> 
+      <div className="bg-white rounded-2xl border border-gray-300 w-[1400px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
+        <div className="bg-gray-650 rounded-lg p-3"> 
         <div className="bg-gray-600 border-b rounded-t-xl p-2"> 
-       <div className="bg-gray-600 border-b rounded-t-xl p-2">  
+       <div className="bg-gray-600 border-b rounded-t-xl p-4">
         {/* TÍTULO */}
         <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
-          ⚡ Importação de Extratos Bancários
+          🏦 Importação de Extratos Bancários
         </h2>
 
         {/* CONTA + SALDO */}

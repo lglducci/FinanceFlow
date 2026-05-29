@@ -11,10 +11,16 @@ export default function RegrasClassificacao() {
   const [contas, setContas] = useState([]);
   const [filtro, setFiltro] = useState("");
   const [editando, setEditando] = useState(null);
-  const [salvando, setSalvando] = useState(false);
+ const [salvando, setSalvando] = useState(false);
+
+ const [buscaContaPorLinha, setBuscaContaPorLinha] = useState({});
+const [dropdownContaAberto, setDropdownContaAberto] = useState(null);
  
   const [somenteNaoClassificados, setSomenteNaoClassificados] = useState(false);
+const [mensagemSucesso, setMensagemSucesso] = useState("");
 
+
+ 
   useEffect(() => {
     carregarTudo();
   }, []);
@@ -52,10 +58,10 @@ export default function RegrasClassificacao() {
       return;
     }
 
-    if (!r.conta_id) {
-      alert("Conta obrigatória.");
-      return;
-    }
+     if (!r.conta_id) {
+  alert(`Conta obrigatória na regra ID ${r.id}.`);
+  return;
+}
 
     try {
       setSalvando(true);
@@ -73,8 +79,19 @@ export default function RegrasClassificacao() {
           prioridade: Number(r.prioridade || 100),
         }),
       });
+     
+     const contaSalva = contas.find((c) => Number(c.id) === Number(r.conta_id));
 
-      setEditando(null);
+        setMensagemSucesso(
+          `✅ Conta ${contaSalva?.codigo || ""} ${contaSalva?.nome || ""} salva com sucesso na regra ID ${r.id}`
+        );
+        
+   window.dispatchEvent(new Event("contabil-atualizado"));
+        setTimeout(() => setMensagemSucesso(""), 5000);
+
+
+
+
       await carregarRegras();
     } catch (e) {
       alert(e.message || "Erro ao salvar regra.");
@@ -111,6 +128,51 @@ export default function RegrasClassificacao() {
   return passouPesquisa && (!somenteNaoClassificados || naoClassificado);
 });
 
+function textoConta(c) {
+  return `${c.codigo || ""} - ${c.nome || ""}`;
+}
+
+function buscarContasProfundo(texto) {
+  const t = String(texto || "").toLowerCase().trim();
+
+  return contas
+    .filter((c) => {
+      const alvo = [
+        c.codigo,
+        c.nome,
+        c.apelido,
+        c.tipo,
+        c.natureza,
+        c.classificacao,
+        c.grupo
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return alvo.includes(t);
+    })
+    .slice(0, 20);
+}
+
+async function aprenderHistoricos() {
+  if (!confirm("Buscar novos históricos e criar regras pendentes?")) return;
+
+  try {
+    await fetchSeguro(buildWebhookUrl("aprender_historicos"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+      }),
+    });
+
+    alert("Históricos aprendidos com sucesso.");
+    await carregarRegras();
+  } catch (e) {
+    alert(e.message || "Erro ao aprender históricos.");
+  }
+}
  
   return (
     <div className="min-h-screen bg-slate-100 p-4">
@@ -125,10 +187,19 @@ export default function RegrasClassificacao() {
             </p>
           </div>
            
-           <div className="mr-4 max-w-xl rounded-2xl bg-blue-50 border border-blue-200 px-4 py-3 text-xs font-bold text-blue-800">
+           <div className="mr-4 max-w-xl rounded-2xl bg-blue-150 border border-blue-200 px-4 py-3 text-sm font-bold text-blue-800">
               Esta tela permite configurar regras automáticas de classificação contábil.
               O sistema usa o histórico importado para sugerir ou aplicar contas contábeis nas próximas conciliações.
             </div>
+               
+
+
+          <button
+            onClick={aprenderHistoricos}
+            className="px-4 py-3 rounded-xl bg-purple-700 text-white text-sm font-black shadow hover:bg-purple-800"
+          >
+            🧠 Aprender novos históricos
+          </button>
 
           <button onClick={() => navigate(-1)} className="btn-pill btn-black">
             ↩ Sair
@@ -141,17 +212,26 @@ export default function RegrasClassificacao() {
             onChange={(e) => setFiltro(e.target.value)}
             placeholder="Pesquisar por histórico, conta ou tipo..."
             className="w-[420px] border rounded-xl px-4 py-3 font-semibold"
-          />
+          /> 
+        
+         <div className="flex items-center gap-12">
+              <label className="flex items-center gap-12 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={somenteNaoClassificados}
+                  onChange={(e) => setSomenteNaoClassificados(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                Não classificados
+              </label>
 
-          <label className="flex items-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={somenteNaoClassificados}
-              onChange={(e) => setSomenteNaoClassificados(e.target.checked)}
-              className="w-4 h-4"
-            />
-            Não classificados
-          </label>
+              {mensagemSucesso && (
+                <div className="text-green-500 font-bold italic text-sm">
+                  {mensagemSucesso}
+                </div>
+              )}
+            </div>
+
         </div>
 
         <div className="overflow-auto border rounded-2xl">
@@ -166,7 +246,7 @@ export default function RegrasClassificacao() {
           </div>
 
           {filtradas.map((r) => {
-            const emEdicao = editando === r.id;
+          //  const emEdicao = editando === r.id;
 
             return (
               <div
@@ -176,14 +256,14 @@ export default function RegrasClassificacao() {
                 <div className="font-bold">{r.id}</div>
 
                 <input
-                  disabled={!emEdicao}
+                  disabled={false}
                   value={r.texto_busca || ""}
                   onChange={(e) => alterarCampo(r.id, "texto_busca", e.target.value)}
                   className="border rounded-lg px-2 py-1 disabled:bg-transparent"
                 />
 
                 <select
-                  disabled={!emEdicao}
+                  disabled={false}
                   value={r.tipo_movimento || ""}
                   onChange={(e) => alterarCampo(r.id, "tipo_movimento", e.target.value)}
                   className="border rounded-lg px-2 py-1 disabled:bg-transparent"
@@ -193,19 +273,67 @@ export default function RegrasClassificacao() {
                   <option value="saida">Saída</option>
                 </select>
 
-                <select
-                  disabled={!emEdicao}
-                  value={r.conta_id || ""}
-                  onChange={(e) => alterarCampo(r.id, "conta_id", e.target.value)}
-                  className="border rounded-lg px-2 py-1 disabled:bg-transparent"
-                >
-                  <option value="">Selecione</option>
-                  {contas.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.codigo} - {c.nome}
-                    </option>
-                  ))}
-                </select>
+                   <div  className="w-full min-w-[420px] border rounded-lg px-3 py-2 text-sm font-semibold">
+                      <input
+                         value={
+                            buscaContaPorLinha[r.id] ??
+                            (r.conta_id ? r.conta_descricao : "")
+                          }
+                        onChange={(e) => {
+                          const valor = e.target.value;
+
+                          setBuscaContaPorLinha((prev) => ({
+                            ...prev,
+                            [r.id]: valor,
+                          }));
+
+                          alterarCampo(r.id, "conta_id", "");
+                          setDropdownContaAberto(r.id);
+                        }}
+                        onFocus={() => setDropdownContaAberto(r.id)}
+                        placeholder="Pesquisar conta... Ex: Despesa"
+                        className="w-full border rounded-lg px-2 py-1"
+                      />
+
+                      {dropdownContaAberto === r.id && (
+                        <div className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border bg-white shadow-xl">
+                          {buscarContasProfundo(buscaContaPorLinha[r.id] ?? r.conta_descricao ?? "").map((c) => (
+                            <button
+                              key={c.id}
+                              type="button"
+                               onClick={async () => {
+                                        const regraAtualizada = {
+                                          ...r,
+                                          conta_id: c.id,
+                                          ativo: true,
+                                        };
+
+                                        alterarCampo(r.id, "conta_id", c.id);
+                                        alterarCampo(r.id, "ativo", true);
+
+                                        setBuscaContaPorLinha((prev) => ({
+                                          ...prev,
+                                          [r.id]: textoConta(c),
+                                        }));
+
+                                        setDropdownContaAberto(null);
+
+                                        await salvarRegra(regraAtualizada);
+                                      }} 
+                              className="block w-full px-3 py-2 text-left text-sm font-semibold hover:bg-blue-50"
+                            >
+                              {textoConta(c)}
+                            </button>
+                          ))}
+
+                          {buscarContasProfundo(buscaContaPorLinha[r.id] ?? r.conta_descricao ?? "").length === 0 && (
+                            <div className="px-3 py-2 text-sm font-bold text-slate-400">
+                              Nenhuma conta encontrada
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
                { /*<input
                   disabled={!emEdicao}
@@ -216,38 +344,33 @@ export default function RegrasClassificacao() {
                 />*/}
 
                 <input
-                  disabled={!emEdicao}
+                  disabled={false}
                   type="checkbox"
                   checked={!!r.ativo}
                   onChange={(e) => alterarCampo(r.id, "ativo", e.target.checked)}
                   className="w-5 h-5"
                 />
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          title="Salvar regra"
+                          onClick={() => salvarRegra(r)}
+                          disabled={salvando}
+                          className="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-black flex items-center justify-center shadow transition"
+                        >
+                          ✓
+                        </button>
 
-                <div className="flex gap-2">
-                  {emEdicao ? (
-                    <button
-                      onClick={() => salvarRegra(r)}
-                      disabled={salvando}
-                      className="px-3 py-1 rounded-lg bg-green-600 text-white font-bold"
-                    >
-                      Salvar
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setEditando(r.id)}
-                      className="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold"
-                    >
-                      Editar
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => excluirRegra(r.id)}
-                    className="px-3 py-1 rounded-lg bg-red-600 text-white font-bold"
-                  >
-                    Excluir
-                  </button>
-                </div>
+                        <button
+                          type="button"
+                          title="Excluir regra"
+                          onClick={() => excluirRegra(r.id)}
+                          className="w-8 h-8 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow transition"
+                        >
+                          🗑
+                        </button>
+                      </div>
+                
               </div>
             );
           })}
