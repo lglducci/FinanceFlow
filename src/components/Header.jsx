@@ -8,40 +8,31 @@ export default function Header() {
   const { empresa, usuario, documento, tipo, email, loading, perfil } = useApp();
   const [alertaContabil, setAlertaContabil] = useState(null);
   const navigate = useNavigate();
+  const [alertaReclassificacao, setAlertaReclassificacao] = useState(null);
    
-  const carregarStatus = useCallback(async () => {
-    try {
-      const empresa_id =
-        localStorage.getItem("empresa_id") ||
-        localStorage.getItem("id_empresa") ||
-        "0";
-       
-      const resp = await fetch(
-        buildWebhookUrl("ultimo_processamento", { empresa_id })
-      );
+ const carregarStatus = useCallback(async () => {
+  const empresa_id =
+    localStorage.getItem("empresa_id") ||
+    localStorage.getItem("id_empresa") ||
+    "0";
 
-      const data = await resp.json();
-      const item = Array.isArray(data) ? data[0] : data;
+  // ALERTA PROCESSAMENTO CONTÁBIL
+  try {
+    const resp = await fetch(
+      buildWebhookUrl("ultimo_processamento", { empresa_id })
+    );
 
-      const hoje =  hojeLocal();
+    const data = await resp.json();
+    const item = Array.isArray(data) ? data[0] : data;
 
-      const ultimoProcessado = item?.ultimo_dia_processado
+    const hoje = hojeLocal();
+
+    const ultimoProcessado = item?.ultimo_dia_processado
       ? item.ultimo_dia_processado.slice(0, 10)
       : null;
 
-      const data_reprocessamento  = item?.reprocessar
-      ? item.reprocessar.slice(0, 10)
-      : null;
-
-
-
-    if (perfil === "CONTABIL") {
-      setAlertaContabil(null);
-      return;
-    }
-
     if (
-      item?.data_reprocessar_de  ||
+      item?.data_reprocessar_de ||
       (ultimoProcessado && ultimoProcessado < hoje)
     ) {
       setAlertaContabil(item);
@@ -51,6 +42,25 @@ export default function Header() {
   } catch (err) {
     console.error("Erro ao carregar status contábil:", err);
     setAlertaContabil(null);
+  }
+
+  // ALERTA RECLASSIFICAÇÃO
+  try {
+    const respRegras = await fetch(
+      buildWebhookUrl("status_reclassificacao", { empresa_id })
+    );
+
+    const dataRegras = await respRegras.json();
+    const itemRegras = Array.isArray(dataRegras) ? dataRegras[0] : dataRegras;
+
+    if (Number(itemRegras?.qtd || 0) > 0) {
+      setAlertaReclassificacao(itemRegras);
+    } else {
+      setAlertaReclassificacao(null);
+    }
+  } catch (err) {
+    console.error("Erro ao carregar alerta de reclassificação:", err);
+    setAlertaReclassificacao(null);
   }
 }, [perfil]);
 
@@ -78,6 +88,8 @@ export default function Header() {
 
   if (loading) return null;
 
+ 
+
   return (
     <>
       {alertaContabil && (
@@ -97,6 +109,21 @@ export default function Header() {
           </button>
         </div>
       )}
+
+
+      {alertaReclassificacao && (
+  <div className="bg-orange-100 text-orange-800 font-bold text-center py-2 px-4">
+    ⚠️ ATENÇÃO: Existem {alertaReclassificacao.qtd} histórico(s) sem classificação contábil.
+    {" "}Reclassifique para evitar lançamentos em conta genérica.
+
+    <button
+      onClick={() => navigate("/regras-classificacao?nao_classificados=1")}
+      className="ml-4 underline text-blue-900"
+    >
+      Reclassificar agora
+    </button>
+  </div>
+)}
 
       <header className="h-22 border-b bg-[#061f4a] px-5 flex items-center justify-between">
         <div className="flex gap-8">
