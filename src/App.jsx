@@ -186,6 +186,7 @@ import AppFornecedor  from "./pages/app/AppFornecedor"
 import AppDashboard  from "./pages/app/AppDashboard"
 import RelatorioReceberPessoa from "./pages/RelatorioReceberPessoa";
 import ContasCartoes from "./pages/ContasCartoes";
+import ContaCorrente from "./pages/ContaCorrente";
 
 import AppFaturasCartao from "./pages/app/AppFaturasCartao";
 import AppFaturaTransacoes from "./pages/app/AppFaturaTransacoes";
@@ -438,7 +439,7 @@ const rotaAtual = window.location.pathname;
   <Route path="/editar-conta" element={<EditarConta />} />
   <Route path="/new-payable" element={<NovoPagarReceber tipoInicial="pagar" />} />
   <Route path="/new-receivable" element={<NovoPagarReceber tipoInicial="receber" />} />
-  <Route path="/cards" element={<Cartoes />} />
+  <Route path="/cartoes" element={<Cartoes />} />
   <Route path="/editar-lancamento" element={<EditarLancamento />} />
  <Route path="/edit-card-transaction" element={<EditCardTransaction />} />
  <Route path="/new-card-transaction" element={<NovoCardTransaction />} />
@@ -452,6 +453,8 @@ const rotaAtual = window.location.pathname;
 <Route path="/edit-conta-pagar/:id" element={<EditarContaPagar />} />
 <Route path="/contascontabeis" element={<ContasContabeis />} />
 {/* Contas a receber */}
+
+<Route path="/contacorrente" element={<ContaCorrente />} /> 
 
 <Route path="/contas-receber" element={<ContasReceber />} /> 
 <Route path="/nova-conta-receber" element={<NovaContaReceber />} />
