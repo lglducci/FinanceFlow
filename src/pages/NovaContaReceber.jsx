@@ -16,8 +16,8 @@ export default function NovaContaReceber() {
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
-     data: hojeMaisDias(1),
-    vencimento: hojeMaisDias(1),
+     data: hojeMaisDias(0),
+    vencimento: hojeMaisDias(0),
     categoria_id: "",
     fornecedor_id: "",
     parcelas: 1,
@@ -112,27 +112,12 @@ const THEME = {
   // =======================================================
   //     CARREGAR CATEGORIAS (já existe webhook em outra janela)
   // =======================================================
-  async function carregarCategorias() {
-    try {
-      const url = buildWebhookUrl("listacategorias", { empresa_id , tipo:'entrada'});
-      const resp = await fetch(url);
-      const txt = await resp.text();
-
-      let lista = [];
-      try {
-        lista = JSON.parse(txt);
-      } catch {}
-
-      setCategorias(Array.isArray(lista) ? lista : []);
-    } catch (e) {
-      console.log("ERRO ao carregar categorias:", e);
-    }
-  }
+   
 
   // =======================================================
   useEffect(() => {
     carregarFornecedores();
-    carregarCategorias();
+   // carregarCategorias();
   }, []);
 
   // =======================================================
@@ -155,20 +140,14 @@ const THEME = {
             return;
           }
 
-          if (!Number.isFinite(Number(form.categoria_id)) || Number(form.categoria_id) <= 0) {
-            alert("Categoria é obrigatória.");
-            return;
-          }
+           
 
           if (!form.fornecedor_id) { 
             alert("Fornecedor é obrigatório.");
             return;
           }
 
-          if (!form.doc_ref.trim()) {
-            alert("Documento é obrigatório.");
-            return;
-          }
+          
 
           if (!form.parcelas || Number(form.parcelas) < 1) {
             alert("Número de parcelas inválido.");
@@ -177,11 +156,7 @@ const THEME = {
 
           // vencimento já tratado, mas reforçando
           
-          if (form.vencimento <= hoje) {
-            alert("Vencimento deve ser maior que hoje.");
-            return;
-          }
-
+          
           
           
     const url = buildWebhookUrl("novacontareceber");
@@ -311,8 +286,12 @@ useEffect(() => {
 
   return (
  
-  <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >  
+     
+ <div className="min-h-screen py-6 px-4 bg-bgSoft">
+  <div
+    className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-slate-200 mt-1 mb-1"
+    style={{ borderTop: "6px solid #16a34a" }}
+  >
 
         <h1
         className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -320,6 +299,10 @@ useEffect(() => {
       >
         ✏️ Nova Conta a Receber
       </h1>
+
+      <p className="text-sm text-gray-500 text-center">
+          Registre uma receita futura da empresa
+        </p>
 
       <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-4"> 
 
@@ -375,7 +358,7 @@ useEffect(() => {
                       className="input-premium w-24"
                       placeholder="data"
                     />
-        </div>
+                </div>
               <div>
                 <label className="label label-required font-bold text-[#1e40af]">
                   Forma de Recebimento
@@ -395,36 +378,7 @@ useEffect(() => {
           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">  
         {/* CATEGORIA */}
-        <div>
-            <div className="w-2/3"> 
-          <label   className="label label-required" >Categoria</label>
-          
-                  <select
-                    name="categoria_id"
-                    value={form.categoria_id}
-                    onChange={(e) => {
-                      if (e.target.value === "__nova__") {
-                        setModalCategoria(true);
-                        return;
-                      }
-                      handleChange(e);
-                    }}
-                    className="input-premium"
-                  >
-                    <option value="">Selecione</option>
-
-                    {categorias.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.nome}
-                      </option>
-                    ))}
-
-                    <option value="__nova__">
-                      ➕ Nova Categoria
-                    </option>
-                  </select>
-        </div>
-         </div>
+         
           
         {/* FORNECEDOR */}
         <div>
@@ -481,7 +435,7 @@ useEffect(() => {
               <label   className="label label-required">Vencimento</label>
               <input
                 type="date"
-                min={hojeMaisDias(1)}
+                min={hojeMaisDias(-7)}
                 name="vencimento"
                 value={form.vencimento}
                 onChange={handleChange}
@@ -515,6 +469,7 @@ useEffect(() => {
           <select
             name="status"
             value={form.status}
+            disabled
             onChange={handleChange}
             className="input-premium w-24"
             placeholder="status"
@@ -534,18 +489,7 @@ useEffect(() => {
 
         
             {/* Numero documento ou nota fiscal  */}
-        <div>
-          <div className="w-2/3"> 
-                  <label  className="label label-required">Documento</label>
-                  <input
-                  name="doc_ref"
-                  value={form.doc_ref}
-                  onChange={handleChange}
-                  className="input-premium w-64"
-                  placeholder="Nro Documento"
-                />
-            </div> 
-         </div> 
+          
         </div>
             
 
@@ -684,14 +628,14 @@ useEffect(() => {
                 <button
                   onClick={salvar}
                   disabled={salvando}
-                  className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
+                   className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded-2xl font-bold shadow-md hover:scale-[1.02] transition"
                 >
                   {salvando ? "Salvando..." : "Salvar"}
                 </button>
 
                 <button
                   onClick={() => navigate("/contas-receber")}
-                  className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-semibold"
+                    className="flex-1 bg-gray-500 text-white px-4 py-3 rounded-2xl font-bold shadow-md hover:scale-[1.02] transition"
                 >
                   Cancelar
                 </button>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { fetchSeguro } from "../utils/apiSafe";
 
@@ -13,13 +13,23 @@ export default function RegrasClassificacao() {
   const [editando, setEditando] = useState(null);
  const [salvando, setSalvando] = useState(false);
 
+ const [mostrarAjudaReclassificacao, setMostrarAjudaReclassificacao] = useState(false);
+
  const [buscaContaPorLinha, setBuscaContaPorLinha] = useState({});
 const [dropdownContaAberto, setDropdownContaAberto] = useState(null);
  
   const [somenteNaoClassificados, setSomenteNaoClassificados] = useState(false);
 const [mensagemSucesso, setMensagemSucesso] = useState("");
 
+const [searchParams] = useSearchParams();
 
+useEffect(() => {
+  const naoClassificados = searchParams.get("nao_classificados");
+
+  if (naoClassificados === "1") {
+    setSomenteNaoClassificados(true);
+  }
+}, [searchParams]);
  
   useEffect(() => {
     carregarTudo();
@@ -224,6 +234,51 @@ async function aprenderHistoricos() {
                 />
                 Não classificados
               </label>
+                
+
+                <button
+                      type="button"
+                      onClick={() => setMostrarAjudaReclassificacao(true)}
+                      className="text-sm font-black text-blue-700 underline"
+                    >
+                      ❔ O que acontece se eu não reclassificar?
+                    </button>
+
+                {mostrarAjudaReclassificacao && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                        <div className="w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl border">
+                          <h2 className="text-xl font-black text-blue-900 mb-3">
+                            ❔ O que acontece se eu não reclassificar?
+                          </h2>
+
+                          <p className="text-sm font-black text-red-700">
+                            O sistema não trava. Ele usa uma conta contábil padrão de segurança para
+                            classificar temporariamente o lançamento.
+                          </p>
+
+                          <div className="mt-4 rounded-2xl   bg-orange-100  border p-4 text-sm font-bold text-slate-700">
+                           
+                            <div>• Despesas: conta genérica 6.1.x</div>
+                            <div>• Receitas: conta genérica 4.1.1.x</div>
+                            <div>• Custos: conta genérica 5.1.x</div>
+                          </div>
+
+                          <p className="mt-4 text-sm font-bold text-slate-900">
+                            Isso mantém o sistema funcionando, mas os relatórios podem ficar menos
+                            precisos até você reclassificar.
+                          </p>
+
+                          <div className="mt-5 flex justify-end">
+                            <button
+                              onClick={() => setMostrarAjudaReclassificacao(false)}
+                              className="rounded-full bg-orange-600 px-5 py-2 text-white font-black"
+                            >
+                              Entendi
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
               {mensagemSucesso && (
                 <div className="text-green-500 font-bold italic text-sm">
@@ -235,7 +290,7 @@ async function aprenderHistoricos() {
         </div>
 
         <div className="overflow-auto border rounded-2xl">
-          <div className="grid grid-cols-[80px_1.6fr_140px_2fr_100px_100px_150px] gap-2 bg-slate-900 text-white font-bold text-sm p-2 sticky top-0">
+          <div className="grid grid-cols-[80px_1.6fr_140px_2fr_100px_100px_150px] gap-1 bg-slate-900 text-white font-bold text-sm p-2 sticky top-0">
             <div>ID</div>
             <div>Texto da regra</div>
             <div>Tipo</div>
@@ -251,7 +306,7 @@ async function aprenderHistoricos() {
             return (
               <div
                 key={r.id}
-                className="grid grid-cols-[80px_1.6fr_140px_2fr_100px_100px_150px] gap-2 p-2 border-b text-sm items-center hover:bg-slate-50"
+                className="grid grid-cols-[80px_1.6fr_140px_2fr_100px_100px_150px] gap-1 p-1 border-b text-sm items-center hover:bg-slate-350"
               >
                 <div className="font-bold">{r.id}</div>
 

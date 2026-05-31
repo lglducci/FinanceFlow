@@ -40,7 +40,7 @@ const [fornecedorId, setFornecedorId] = useState("");
 const [categorias, setCategorias] = useState([]);
 const [fornecedores, setFornecedores] = useState([]);
   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
-const [tipoOperacao, setTipoOperacao] = useState("");
+const [tipoOperacao, setTipoOperacao] = useState("transacao");
 const [busca, setBusca] = useState("");
 const [msgEstorno, setMsgEstorno] = useState("");
 const [piscarBotaoAcao, setPiscarBotaoAcao] = useState(false);
@@ -189,10 +189,10 @@ useEffect(() => {
   }
 }, [contaId]);
 
-  useEffect(() => {
-    setPeriodo("mes");
-    aplicarPeriodo("mes");
-  }, []);
+  //useEffect(() => {
+   // setPeriodo("mes");
+    //aplicarPeriodo("mes");
+  //}, []);
 
  async function pesquisar(tipo = "") {
 
@@ -1061,7 +1061,7 @@ function escolherFiltro(tipo) {
   }
 
   setTipoOperacao(tipo);
-  //pesquisar(tipo);
+  pesquisar(tipo);
   chamarAtencaoBotaoAcao();
 
   mostrarMensagemTela(

@@ -17,8 +17,8 @@ export default function NovaContaPagar() {
   const [form, setForm] = useState({
     descricao: "",
     valor: "",
-     data: hojeMaisDias(1),
-    vencimento: hojeMaisDias(1), // amanhã (BR)
+     data: hojeMaisDias(0),
+    vencimento: hojeMaisDias(0), // amanhã (BR)
     categoria_id: "",
     fornecedor_id: "",
     parcelas: 1,
@@ -101,7 +101,7 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
   // =======================================================
   //     CARREGAR CATEGORIAS (já existe webhook em outra janela)
   // =======================================================
-  async function carregarCategorias() {
+  {/*async function carregarCategorias() {
     try {
       const url = buildWebhookUrl("listacategorias", { empresa_id, tipo: 'saida' });
       const resp = await fetch(url);
@@ -117,12 +117,12 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
       console.log("ERRO ao carregar categorias:", e);
     }
   }
-
+*/}
   // =======================================================
   useEffect(() => {
     carregarFornecedores();
-    carregarCategorias();
-  }, []);
+    
+  }, []); 
 
   // =======================================================
   //                  SALVAR NOVA CONTA
@@ -144,20 +144,20 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
         return;
       }
 
-      if (!form.categoria_id) {
-        alert("Categoria é obrigatória.");
-        return;
-      }
+     // if (!form.categoria_id) {
+      //  alert("Categoria é obrigatória.");
+      //  return;
+     // }
 
       if (!form.fornecedor_id) {
         alert("Fornecedor é obrigatório.");
         return;
       }
 
-      if (!form.doc_ref.trim()) {
-        alert("Documento é obrigatório.");
-        return;
-      }
+     // if (!form.doc_ref.trim()) {
+       // alert("Documento é obrigatório.");
+      //  return;
+      //}
 
       if (!form.parcelas || Number(form.parcelas) < 1) {
         alert("Número de parcelas inválido.");
@@ -166,8 +166,8 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
 
       // vencimento já tratado, mas reforçando
 
-      if (form.vencimento <= hoje) {
-        alert("Vencimento deve ser maior que hoje.");
+      if (form.vencimento < form.data) {
+        alert("Vencimento deve ser maior que data de cadastro.");
         return;
       }
 
@@ -307,10 +307,14 @@ useEffect(() => {
 
  
   return (
+ 
 
-
-    <div className="min-h-screen py-6 px-4 bg-bgSoft">
-      <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
+ 
+ <div className="min-h-screen py-6 px-4 bg-bgSoft">
+  <div
+    className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-slate-200 mt-1 mb-1"
+    style={{ borderTop: "6px solid #ae1111" }}
+  >
 
         <h1
           className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -318,6 +322,8 @@ useEffect(() => {
         >
           ✏️ Nova Conta a Pagar
         </h1>
+
+        
 
         <p className="text-sm text-gray-500 text-center">
           Registre uma despesa futura da empresa
@@ -385,38 +391,7 @@ useEffect(() => {
           
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
           {/* CATEGORIA */}
-              <div>
-                <div className="w-3/3">
-                  <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
-
-                  <select
-                    name="categoria_id"
-                    value={String(form.categoria_id || "")}
-                    onChange={(e) => {
-                      const v = e.target.value;
-
-                      if (v === "__nova__") {
-                        setModalCategoria(true);
-                        return;
-                      }
-
-                      setForm(prev => ({ ...prev, categoria_id: v }));
-                    }}
-                    className="input-premium"
-                  >
-                    <option value="">Selecione</option>
-
-                    {categorias.map((c) => (
-                      <option key={c.id} value={String(c.id)}>
-                        {c.nome}
-                      </option>
-                    ))}
-
-                    <option value="__nova__">➕ Nova Categoria</option>
-                  </select>
-
-                </div>
-              </div>
+              
 
               {/* FORNECEDOR */}
               <div>
@@ -506,13 +481,14 @@ useEffect(() => {
           {/* STATUS */}
           <div>
             <div className="w-2/4">
-              <label className="label label-required font-bold text-[#1e40af]">Status</label>
-              <select
+              <label className="label  font-bold text-[#1e40af]">Status</label>
+               <select
                 name="status"
-                value={form.status}
-                onChange={handleChange}
-                className="input-premium w-full"
-                placeholder="status"
+                value={form.status || "aberto"}
+                disabled
+                readOnly
+                onChange={() => {}}
+                className="input-premium w-full bg-slate-100 text-slate-500 cursor-not-allowed opacity-70 pointer-events-none"
               >
                 <option value="aberto">Aberto</option>
                 <option value="pago">Pago</option>
@@ -521,7 +497,7 @@ useEffect(() => {
           </div>
            </div>
           
-          {/* Numero documento ou nota fiscal  */}
+          {/* Numero documento ou nota fiscal  
           <div>
             <div className="w-2/3">
               <label className="label label-required font-bold text-[#1e40af]">Documento</label>
@@ -533,7 +509,7 @@ useEffect(() => {
                 placeholder="Nro Documento"
               />
             </div>
-          </div>
+          </div> */}
 
           <div> 
 
@@ -679,21 +655,21 @@ useEffect(() => {
 
           <div className="flex gap-6 pt-8 pb-8 pl-1">
 
-            <button
+           <button
               onClick={salvar}
               disabled={salvando}
-              className="flex-1  bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
+              className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded-2xl font-bold shadow-md hover:scale-[1.02] transition"
             >
               {salvando ? "Salvando..." : "Salvar"}
             </button>
 
             <button
               onClick={() => navigate("/contas-pagar")}
-              className="flex-1 bg-gray-500 text-white px-4 py-3 rounded font-semibold"
+               className="flex-1 bg-gray-500 text-white px-4 py-3 rounded-2xl font-bold shadow-md hover:scale-[1.02] transition"
             >
               Cancelar
             </button>
-          </div>
+         </div>
         </div>
       </div>
 
