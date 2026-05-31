@@ -92,36 +92,71 @@ export default function Header() {
 
   return (
     <>
-      {alertaContabil && (
-        <div className="bg-yellow-100 text-red-600 font-bold text-center py-2 px-4">
-          ⚠️ ATENÇÃO: Existem lançamentos não processados até{" "}
-          {formatarDataBR(
-            alertaContabil.data_reprocessar_de ||
-              alertaContabil.ultimo_dia_processado
-          )}.
-          {" "}Os relatórios podem estar incorretos.
-
-          <button
-            onClick={() => navigate("/processar-diario")}
-            className="ml-4 underline text-blue-900"
-          >
-            Processar agora
-          </button>
+      
+ {alertaContabil && (
+  <div className="px-4 pt-3  bg-[#061f4a]">
+    <div className="mx-auto max-w-7xl rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-yellow-50 px-5 py-3 shadow-sm flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-xl">
+          ⚠️
         </div>
-      )}
 
+        <div className="text-sm">
+          <div className="font-black text-red-700">
+            Lançamentos contábeis pendentes
+          </div>
+          <div className="font-semibold text-slate-700">
+            Existem lançamentos não processados até{" "}
+            <span className="font-black text-red-700">
+              {formatarDataBR(
+                alertaContabil.data_reprocessar_de ||
+                  alertaContabil.ultimo_dia_processado
+              )}
+            </span>
+            . Os relatórios podem estar incorretos.
+          </div>
+        </div>
+      </div>
 
-      {alertaReclassificacao && (
-  <div className="bg-orange-100 text-orange-800 font-bold text-center py-2 px-4">
-    ⚠️ ATENÇÃO: Existem {alertaReclassificacao.qtd} histórico(s) sem classificação contábil.
-    {" "}Reclassifique para evitar lançamentos em conta genérica.
+      <button
+        onClick={() => navigate("/processar-diario")}
+        className="shrink-0 rounded-full bg-red-600 px-5 py-2 text-sm font-black text-white shadow hover:bg-red-700 transition"
+      >
+        Processar agora
+      </button>
+    </div>
+  </div>
+)}
 
-    <button
-      onClick={() => navigate("/regras-classificacao?nao_classificados=1")}
-      className="ml-4 underline text-blue-900"
-    >
-      Reclassificar agora
-    </button>
+{alertaReclassificacao && (
+  <div className="px-4 pt-3 bg-[#061f4a]">
+    <div className="mx-auto max-w-7xl rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-5 py-3 shadow-sm flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-xl">
+          🧭
+        </div>
+
+        <div className="text-sm">
+          <div className="font-black text-orange-700">
+            Históricos sem classificação contábil
+          </div>
+          <div className="font-semibold text-slate-700">
+            Existem{" "}
+            <span className="font-black text-orange-700">
+              {alertaReclassificacao.qtd}
+            </span>{" "}
+            histórico(s) sem classificação. Reclassifique para evitar lançamentos em conta genérica.
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={() => navigate("/regras-classificacao?nao_classificados=1")}
+        className="shrink-0 rounded-full bg-orange-500 px-5 py-2 text-sm font-black text-white shadow hover:bg-orange-600 transition"
+      >
+        Reclassificar agora
+      </button>
+    </div>
   </div>
 )}
 

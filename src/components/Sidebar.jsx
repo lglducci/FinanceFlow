@@ -104,6 +104,8 @@ function podeVer(menuKey) {
               <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
            <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
            <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
+            <SubItem icon={<IconCardTransaction />} label="Cartões" onClick={() => navigate("/cartoes")} />
+                   <SubItem icon={<IconCardTransaction />} label="Contas" onClick={() => navigate("/contacorrente")} />
          </MenuGroup>
          )}
 
