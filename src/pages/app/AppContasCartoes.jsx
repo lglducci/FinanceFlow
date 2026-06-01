@@ -209,7 +209,7 @@ async function carregarComprasFatura(faturaId) {
       <div style={topoCard}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <button
-            onClick={() => navigate("/app/configuracoes")}
+            onClick={() => navigate(-1)}
             style={{
               border: 0,
               background: "transparent",

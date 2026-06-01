@@ -1,4 +1,5 @@
  import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../../config/globals";
 import { hojeLocal } from "../../utils/dataLocal";
 
@@ -13,7 +14,7 @@ export default function AppTransferencia() {
   const [mensagem, setMensagem] = useState("");
   const [salvando, setSalvando] = useState(false);
 
- 
+ const navigate = useNavigate();
 
   const url = buildWebhookUrl("consultasaldo", {
   empresa_id,
@@ -124,10 +125,23 @@ useEffect(() => {
     }
   }
 
+
+function dadosBancarios(c) {
+  const partes = [];
+
+  if (c.nro_banco) partes.push(`Banco ${c.nro_banco}`);
+  if (c.agencia) partes.push(`Ag ${c.agencia}`);
+  if (c.conta) partes.push(`Conta ${c.conta}`);
+
+  return partes.length ? partes.join(" • ") : "Dados bancários não informados";
+}
+
+
+
   return (
     <div style={page}>
       <div style={card}>
-        <button onClick={() => window.location.href = "/app/menu"} style={backBtn}>
+         <button onClick={() => navigate(-1)} style={backBtn}>
           ← Voltar
         </button>
 
@@ -143,15 +157,39 @@ useEffect(() => {
 
         <div style={{ marginTop: 24, display: "grid", gap: 14 }}>
           <div>
-            <label style={label}>🏦 Conta origem</label>
-            <select value={origemId} onChange={(e) => setOrigemId(e.target.value)} style={input}>
-              <option value="">Selecione a origem...</option>
-              {contas.map((c) => (
-                <option key={c.id} value={c.id}>
-                  🏦 {c.apelido || c.nome} — {moeda(c.saldo)}
-                </option>
-              ))}
-            </select>
+            <label style={label}>🏦 Conta origem </label>
+             
+               <select value={origemId} onChange={(e) => setOrigemId(e.target.value)} style={input}>
+                <option value="">Selecione a origem...</option>
+                {contas.map((c) => (
+                  <option key={c.id} value={c.id}>
+                      🏦 {c.nome} — {moeda(c.saldo)}
+                      {c.agencia || c.conta ? ` — Ag: ${c.agencia || "-"} Cc: ${c.conta || "-"}` : ""}
+                    </option>
+                ))}
+              </select>
+               {contaOrigem && (
+                <div style={infoContaLinha}>
+                  <span style={{ fontWeight: 950 }}>
+                    {contaOrigem.nome}
+                  </span>
+
+                  <span>
+                    {contaOrigem.agencia || contaOrigem.conta
+                      ? `Ag: ${contaOrigem.agencia || "-"} • Cc: ${contaOrigem.conta || "-"}`
+                      : "Dados não informados"}
+                  </span>
+
+                  <span
+                    style={{
+                      fontWeight: 950,
+                      color: Number(contaOrigem.saldo || 0) < 0 ? "#dc2626" : "#16a34a",
+                    }}
+                  >
+                    Saldo: {moeda(contaOrigem.saldo)}
+                  </span>
+                </div>
+              )}
           </div>
 
           <div style={{ textAlign: "center", fontSize: 28, fontWeight: 950, color: "#2563eb" }}>
@@ -166,10 +204,34 @@ useEffect(() => {
                 .filter((c) => String(c.id) !== String(origemId))
                 .map((c) => (
                   <option key={c.id} value={c.id}>
-                    🏦 {c.apelido || c.nome} — {moeda(c.saldo)}
+                    🏦 {c.nome} — {moeda(c.saldo)}
+                    {c.agencia || c.conta ? ` — Ag: ${c.agencia || "-"} Cc: ${c.conta || "-"}` : ""}
                   </option>
                 ))}
             </select>
+
+            {contaDestino && (
+                <div style={infoContaLinha}>
+                  <span style={{ fontWeight: 950 }}>
+                    {contaDestino.nome}
+                  </span>
+
+                  <span>
+                    {contaDestino.agencia || contaDestino.conta
+                      ? `Ag: ${contaDestino.agencia || "-"} • Cc: ${contaDestino.conta || "-"}`
+                      : "Dados não informados"}
+                  </span>
+
+                  <span
+                    style={{
+                      fontWeight: 950,
+                      color: Number(contaDestino.saldo || 0) < 0 ? "#dc2626" : "#16a34a",
+                    }}
+                  >
+                    Saldo: {moeda(contaDestino.saldo)}
+                  </span>
+                </div>
+              )}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -266,6 +328,33 @@ const resumo = {
   color: "#1e3a8a",
   fontWeight: 900,
   fontSize: 13,
+};
+
+
+const infoConta = {
+  marginTop: 6,
+  fontSize: 14,
+  fontWeight: 800,
+  color: "#475569",
+  background: "#f8fafc",
+  border: "1px solid #e2e8f0",
+  borderRadius: 14,
+  padding: "8px 10px",
+};
+
+const infoContaLinha = {
+  marginTop: 6,
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  flexWrap: "wrap",
+  fontSize: 12,
+  fontWeight: 800,
+  color: "#475569",
+  background: "#f8fafc",
+  border: "1px solid #e2e8f0",
+  borderRadius: 14,
+  padding: "8px 10px",
 };
 
 const salvarBtn = (salvando) => ({

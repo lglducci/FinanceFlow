@@ -145,7 +145,7 @@ export default function AppDashboard() {
         <div  className="bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#0284c7] rounded-t-[28px] shadow-lg px-5 py-5 mb-0 text-white">
           <div className="flex justify-between items-center">
             <button
-              onClick={() => navigate("/app/menu")}
+              onClick={() => navigate(-1)}
               className="bg-white/15 px-4 py-2 rounded-full text-sm font-black"
             >
               ← Voltar
