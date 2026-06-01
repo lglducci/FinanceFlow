@@ -728,6 +728,24 @@ const descricao = (() => {
   return "";
 })();
 
+
+
+const cartaoInfo = listaCartoes.find(
+  (c) => String(c.nome) === String(cartaoSelecionado)
+);
+
+const formatarMoeda = (valor) =>
+  Number(valor || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+const formatarDataBR = (data) => {
+  if (!data) return "-";
+  const [ano, mes, dia] = data.substring(0, 10).split("-");
+  return `${dia}/${mes}/${ano}`;
+};
+
   return (
           
 
@@ -817,7 +835,31 @@ const descricao = (() => {
                       </div>
                   </div>
             </div>
-            </div>  )}
+             
+                {cartaoInfo && (
+                  <div className="mt-2 w-[680px] rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] font-bold text-slate-700 shadow-sm">
+                    <span>Melhor dia: <b className="text-slate-950">{cartaoInfo.fechamento_dia || "-"}</b></span>
+                    <span className="mx-2 text-slate-300">|</span>
+
+                    <span>Venc.: <b className="text-slate-950">{cartaoInfo.vencimento_dia || "-"}</b></span>
+                    <span className="mx-2 text-slate-300">|</span>
+
+                    <span>Limite: <b className="text-emerald-700">{formatarMoeda(cartaoInfo.limite_total)}</b></span>
+                    <span className="mx-2 text-slate-300">|</span>
+
+                    <span>Aberto: <b className="text-amber-700">{formatarMoeda(cartaoInfo.total_em_aberto)}</b></span>
+                    <span className="mx-2 text-slate-300">|</span>
+
+                  <span>Disp: <b className="text-blue-800">{formatarMoeda(cartaoInfo.limite_disponivel)}</b></span>
+                  </div>
+                )}
+              
+              
+            </div>  
+
+            
+          
+           )}
          <div className="grid grid-cols-2 gap-3">
 
                   {/* Tipo */}
