@@ -9,6 +9,9 @@
    const [open, setOpen] = useState(null);
   const [perfil, setPerfil] = useState(null);
 
+  const [openSub, setOpenSub] = useState(null);
+const toggleSub = (m) => setOpenSub(openSub === m ? null : m);
+
    const toggle = (m) => setOpen(open === m ? null : m);
  
    const logout = () => {
@@ -75,6 +78,7 @@ function podeVer(menuKey) {
        </div>
  
        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold">
+        
  
         {podeVer("visao_geral") && (
            <MenuItem icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboardfinanceiro")} />
@@ -84,7 +88,8 @@ function podeVer(menuKey) {
         )}
          <MenuItem icon={<IconHome />} label="DashBoard Financeiro 2" onClick={() => navigate("/dashboard-financeiro")} />
 
-          
+           {/*} <MenuItem icon={<IconHome />} label="DashBoard Financeiro 3" onClick={() => navigate("/app/dashboard")} />*/}
+            
           <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
 
           
@@ -101,11 +106,74 @@ function podeVer(menuKey) {
           {/*} <SubItem icon={<IconDoc />} label="Lançamentos rápidos" onClick={() => navigate("/lancamento-rapido")}  />*/}
            <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
             
-              <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
-           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
+              
+           
+
+
+           <div className="ml-2">
+                <button
+                  onClick={() => toggleSub("contas")}
+                  className="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-blue-300 text-blue-900 text-sm font-bold"
+                >
+                  <span className="flex items-center gap-3">
+                    <IconMoney />
+                    <span>Contas</span>
+                  </span>
+
+                  <span className="text-xs opacity-50">
+                    {openSub === "contas" ? "▲" : "▼"}
+                  </span>
+                </button>
+
+                {openSub === "contas" && (
+                  <div className="ml-6 space-y-1">
+                     <SubItem icon={<IconArrowUp />} label="A Pagar" onClick={() => navigate("/contas-pagar")} />
+           <SubItem icon={<IconArrowDown />} label="A Receber" onClick={() => navigate("/contas-receber")} /> 
+                  </div>
+                )}
+              </div> 
+           
+            
            <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
-            <SubItem icon={<IconCardTransaction />} label="Cartões" onClick={() => navigate("/cartoes")} />
-                   <SubItem icon={<IconCardTransaction />} label="Contas" onClick={() => navigate("/contacorrente")} />
+
+           <div className="ml-2">
+                <button
+                  onClick={() => toggleSub("dinheiro")}
+                  className="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-blue-300 text-blue-900 text-sm font-bold"
+                >
+                  <span className="flex items-center gap-3">
+                    <IconMoney />
+                    <span>Dinheiro</span>
+                  </span>
+
+                  <span className="text-xs opacity-50">
+                    {openSub === "dinheiro" ? "▲" : "▼"}
+                  </span>
+                </button>
+
+                {openSub === "dinheiro" && (
+                  <div className="ml-6 space-y-1">
+                    <SubItem
+                      icon={<IconCardTransaction />}
+                      label="Cartões"
+                      onClick={() => navigate("/cartoes")}
+                    />
+
+                    <SubItem
+                      icon={<IconCardTransaction />}
+                      label="Contas"
+                      onClick={() => navigate("/contacorrente")}
+                    />
+
+                    <SubItem
+                      icon={<IconRefresh />}
+                      label="Transferência"
+                      onClick={() => navigate("/app/transferencia")}
+                    />
+                  </div>
+                )}
+              </div>
+
          </MenuGroup>
          )}
 
@@ -200,7 +268,7 @@ function podeVer(menuKey) {
                {/*}  {podeVer("visao_geral") &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)} 
                  {podeVer("visao_geral") &&   (<SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
                  {podeVer("visao_geral")  &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)} */}
-                   <SubItem icon={<IconCardTransaction />} label="Contas e Cartões" onClick={() => navigate("/contas-cartoes")} />
+   
               <SubItem icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
               <SubItem icon={<IconMap />} label="Modelos Prontos" onClick={() => navigate("/mapeamento-contabil")} />
          </MenuGroup>
@@ -223,12 +291,18 @@ function podeVer(menuKey) {
 
            </MenuGroup> )}
        </nav>
- 
-       <div className="px-4 py-3 border 12px  border-blue-800/40  text-blue-600 font-bold ">
-         <button onClick={logout} className="flex items-center gap-2 text-base text-red-200 hover:text-red-800 font-bold  ">
-           <IconLogout /> Sair
-         </button>
-       </div>
+      
+
+       <div className="px-4 py-3 border-t border-[#d4af37]/30 bg-white">
+  <button
+    onClick={logout}
+    className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-300 font-bold"
+  >
+    <IconLogout /> Sair
+  </button>
+</div>
+
+
      </aside>
    );
  }
