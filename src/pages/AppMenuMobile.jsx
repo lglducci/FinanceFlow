@@ -95,13 +95,12 @@ function BotaoMenu({ icone, titulo, subtitulo, onClick }) {
               height: 32,
               fontSize: 21,
               borderRadius: "50%",
-              background: "linear-gradient(135deg,#2563eb,#1e3a8a)",
-              color: "white",
+              background: "linear-gradient(135deg,#e2e8f0,#cbd5e1)",
+              color: "#030e1d", 
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-             
-              boxShadow: "0 6px 16px rgba(13, 62, 168, 0.35)",
+              justifyContent: "center", 
+              boxShadow: "0 6px 16px rgba(123, 148, 198, 0.35)",
             }}
           >
             {icone}
