@@ -9,7 +9,21 @@ import FormCategoria from "../components/forms/FormCategoria";
 import FormConta from "../components/forms/FormConta";
 import FormFornecedorModal from "../components/forms/FormFornecedorModal";
 import FormCartaoModal from "../components/forms/FormCartaoModal";
- 
+import {
+  ArrowUpDown,
+  CreditCard,
+  Wallet,
+  FileText,
+  CalendarDays,
+  Landmark,
+  User,
+  CheckCircle,
+  Tags,
+  ReceiptText,
+} from "lucide-react";
+
+
+
 function BlocoEtapa({
   id,
   titulo,
@@ -23,7 +37,7 @@ function BlocoEtapa({
 }) {
   return (
     <div
-      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-200 to-slate-300  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-200 ${className}`}
+      className={`overflow-hidden rounded-[28px] bg-gradient-to-br from-slate-100 to-slate-200  shadow-[0_8px_24px_rgba(15,23,42,0.08)] border border-slate-200 ${className}`}
     >
       <div
         onClick={() => {
@@ -37,20 +51,22 @@ function BlocoEtapa({
       >
         <div>
          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-base shadow-md">
-              {icone}
-            </span>
+           
+
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-indigo-200  text-indigo-500">
+  {icone}
+</span>
             <span className="text-sm font-bold text-slate-800">{titulo}</span>
           </div>
 
           {resumo && !aberto && (
-            <div className="mt-1 text-sm font-bold text-purple-600">
+            <div className="mt-1 text-sm font-bold text-indigo-600">
               {resumo}
             </div>
           )}
         </div>
 
-        <span className="text-lg font-bold text-purple-600">
+        <span className="text-lg font-bold text-indigo-600">
           {aberto ? "⌃" : "⌄"}
         </span>
       </div>
@@ -599,7 +615,9 @@ const formatarDataBR = (data) => {
        <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2">
              <BlocoEtapa
                   id="tipo"
-                  icone="↕️" titulo="Tipo Movimento"
+                   icone={<ArrowUpDown size={17} strokeWidth={2.5} />}
+                   
+                   titulo="Tipo Movimento"
                   resumo={form.tipo === "entrada" ? "Recebimento" : form.tipo === "saida" ? "Pagamento" : ""}
                   aberto={etapaAberta === "tipo"}
                    onAbrir={() => {
@@ -651,7 +669,9 @@ const formatarDataBR = (data) => {
           {form.tipo && (
             <BlocoEtapa
               id="forma"
-              icone="💳" titulo="Forma"
+                icone={<CreditCard size={17} strokeWidth={2.5} />}
+                    
+               titulo="Forma"
               resumo={formaSelecionada}
               aberto={etapaAberta === "forma"}
                onAbrir={setEtapaAberta}
@@ -673,7 +693,7 @@ const formatarDataBR = (data) => {
                             border
 
                             ${formaSelecionada === f.value
-                                ? "bg-gradient-to-b from-purple-500 to-purple-600 text-white border-purple-500 shadow-[0_6px_18px_rgba(124,58,237,0.35)] scale-[1.04]"
+                                ? "bg-gradient-to-b from-indigo-500 to-indigo-600 text-white border-indigo-500 shadow-[0_6px_18px_rgba(124,58,237,0.35)] scale-[1.04]"
                                 : "bg-white text-slate-800 border-slate-200 hover:bg-purple-50"
                             }
                             `}
@@ -689,7 +709,8 @@ const formatarDataBR = (data) => {
           {formaSelecionada && (
              <BlocoEtapa
             id="valor"
-            icone="💰" titulo="Valor"
+            icone={<Wallet size={17} strokeWidth={2.5} />}
+            titulo="Valor"
             resumo={form.valor ? `R$ ${form.valor}` : ""}
             aberto={etapaAberta === "valor"}
             onAbrir={setEtapaAberta}
@@ -736,14 +757,17 @@ const formatarDataBR = (data) => {
                 }
               }}
               placeholder="0,00"
-              className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-right text-xl font-bold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+              className="w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-right text-xl font-bold text-slate-800 shadow-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
             />
              
             </BlocoEtapa>
           )}
 
           {form.valor && (
-            <BlocoEtapa id="descricao"  icone="📝" titulo="Descrição"
+            <BlocoEtapa id="descricao"  
+             
+              icone={<FileText size={17} strokeWidth={2.5} />}
+            titulo="Descrição"
              resumo={etapaAberta === "descricao" ? "" : form.descricao} 
              aberto={etapaAberta === "descricao"}
               onAbrir={setEtapaAberta}
@@ -767,7 +791,7 @@ const formatarDataBR = (data) => {
                     }
                   }}
                   placeholder="Ex: mercado, venda, aluguel..."
-                   className="w-full rounded-[10px] border border-slate-200 bg-white px-1 py-1 text-lg font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
+                   className="w-full rounded-[10px] border border-slate-200 bg-white px-1 py-1 text-lg font-semibold text-slate-800 shadow-sm outline-none focus:border-purple-500 focus:ring-4 focus:ring-indigo-100"
                 />
  
             </BlocoEtapa>
@@ -907,7 +931,11 @@ const formatarDataBR = (data) => {
           
               <BlocoEtapa
                 id="conta"
-                icone="🏦" titulo="Conta Financeira"
+                icone="🏦" 
+                
+                 icone={<Landmark size={17} strokeWidth={2.5} />}
+                 
+                titulo="Conta Financeira"
                 resumo={nomeConta()}
                 aberto={etapaAberta === "conta"}
                 onAbrir={setEtapaAberta}
@@ -955,7 +983,7 @@ const formatarDataBR = (data) => {
 
            {podeAvancarSemCategoria && mostrarCartao && (
             <BlocoEtapa id="cartao"
-              icone="💳"
+            icone={<CreditCard size={20} strokeWidth={2.5} />}
             titulo="Cartão" 
             resumo={
                 cartaoInfo
@@ -1001,7 +1029,7 @@ const formatarDataBR = (data) => {
               </div>
                  
                 {cartaoInfo && (
-                  <div className="mt-2 w-full rounded-xl border border-slate-300 bg-gradient-to-br from-slate-200 to-slate-300 px-3 py-2 text-[13px] font-bold text-slate-800 shadow-sm">
+                  <div className="mt-2 w-full rounded-xl border border-slate-300 bg-gradient-to-br from-slate-100 to-slate-200 px-3 py-2 text-[13px] font-bold text-slate-800 shadow-sm">
                     <span>Melhor dia: <b className="text-slate-950">{cartaoInfo.fechamento_dia || "-"}</b></span>
                     <span className="mx-2 text-slate-300">|</span>
 
@@ -1024,7 +1052,9 @@ const formatarDataBR = (data) => {
           {podeAvancarSemCategoria && precisaFornecedor && !mostrarCartao && (
             <BlocoEtapa
               id="fornecedor"
-             icone="👤" titulo="Fornecedor / Cliente"
+             
+              icone={<User size={20} strokeWidth={2.5} />}
+             titulo="Fornecedor / Cliente"
               resumo={nomeFornecedor()}
               aberto={etapaAberta === "fornecedor"}
               onAbrir={setEtapaAberta}
@@ -1075,7 +1105,11 @@ const formatarDataBR = (data) => {
            {podeAvancarSemCategoria && ehAPrazo && (
             <BlocoEtapa
               id="prazo"
-              icone="📅" titulo="Vencimento / Parcelas"
+              icone="📅" 
+                icone={<CalendarDays size={17} strokeWidth={2.5} />}
+               
+              
+              titulo="Vencimento / Parcelas"
               resumo={`${form.vencimento} | ${form.parcelas} parcela(s)`}
              aberto={etapaAberta === "prazo"}
                onAbrir={setEtapaAberta} 
@@ -1128,7 +1162,12 @@ const formatarDataBR = (data) => {
             
             <BlocoEtapa
                 id="revisao"
-                icone="✅" titulo="Revisão"
+           
+                
+                 icone={<CheckCircle size={20} strokeWidth={2.5} />}
+                titulo="Revisão"
+
+                 
                 resumo="Conferir e salvar"
                 aberto={etapaAberta === "revisao"}
                 onAbrir={setEtapaAberta}
