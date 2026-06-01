@@ -203,8 +203,9 @@ const iconeBox = {
   height: 32,
   fontSize: 20,
   borderRadius: "50%",
-  background: "linear-gradient(135deg,#2563eb,#1e3a8a)",
-  color: "white",
+  background: "linear-gradient(135deg,#e2e8f0,#cbd5e1)",
+ color: "#030e1d",
+ 
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
