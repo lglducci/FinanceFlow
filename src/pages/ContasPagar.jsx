@@ -1,4 +1,5 @@
- import { useEffect, useState } from "react";
+ 
+ import { useEffect, useState, useRef } from "react";
  import { buildWebhookUrl } from "../config/globals";
  import { useNavigate } from "react-router-dom";
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -12,6 +13,11 @@ export default function ContasPagar() {
   const empresa_id = Number(localStorage.getItem("empresa_id") || 1);
   const [somenteVencidas, setSomenteVencidas] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
+ 
+ const [idsOcultos, setIdsOcultos] = useState([]);
+const lotesOcultosRef = useRef(new Set());
+const idsOcultosRef = useRef(new Set());
+
 
   function formatarDataBR(data) {
   if (!data) return "";
@@ -36,8 +42,14 @@ export default function ContasPagar() {
   const [saldoConta, setSaldoConta] = useState(0);
 
   const [periodo, setPeriodo] = useState("hoje");
+  {/*}
   const [dataIni, setDataIni] = useState("");
-  const [dataFim, setDataFim] = useState("");
+  const [dataFim, setDataFim] = useState("");*/}
+
+const [dataIni, setDataIni] = useState(hojeMaisDias(-1));
+const [dataFim, setDataFim] = useState(hojeMaisDias(7));
+
+  
   const [loading, setLoading] = useState(false);
  const [totalPeriodo, setTotalPeriodo] = useState(0);
  const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false);
@@ -183,7 +195,7 @@ async function pagarSelecionadas() {
   //------------------------------------------------------------------
   // 3) PESQUISAR
   //------------------------------------------------------------------
-  async function pesquisar() {
+ async function pesquisar(loteRemover = null) {
     try {
       setLoading(true);
 
@@ -193,7 +205,8 @@ async function pagarSelecionadas() {
         data_ini: dataIni,
         data_fim: dataFim,
         fornecedor_id,
-        somente_vencidas:somenteVencidas
+        somente_vencidas: somenteVencidas,
+_t: Date.now()
       });
 
       const resp = await fetch(url);
@@ -204,11 +217,26 @@ async function pagarSelecionadas() {
         json = JSON.parse(texto);
       } catch {}
 
-      setLista(json); 
+   let listaFinal = Array.isArray(json) ? json : [];
 
-    // calcular total do período
-    const soma = json.reduce((acc, item) => acc + Number(item.valor || 0), 0);
-    setTotalPeriodo(soma);
+if (loteRemover) {
+  listaFinal = listaFinal.filter(
+    (item) => String(item.lote_id) !== String(loteRemover)
+  );
+}
+
+listaFinal = listaFinal.filter((x) => {
+  const id = String(x.id);
+  const lote = String(x.lote_id || "");
+
+  return !idsOcultosRef.current.has(id) &&
+         !lotesOcultosRef.current.has(lote);
+});
+
+setLista(listaFinal);
+
+const soma = listaFinal.reduce((acc, item) => acc + Number(item.valor || 0), 0);
+setTotalPeriodo(soma);
 
     } catch (e) {
       console.log("ERRO PESQUISA:", e);
@@ -263,8 +291,49 @@ async function pagarSelecionadas() {
    useEffect(() => {
     pesquisar();
      
-  }, []);
+  }, []); 
 
+
+async function excluirParcelamento(c) {
+  if (!confirm("Excluir TODAS as parcelas deste parcelamento?")) return;
+
+  const lote = String(c.lote_id || "");
+  const id = String(c.id);
+
+  lotesOcultosRef.current.add(lote);
+  idsOcultosRef.current.add(id);
+
+  setLista((prev) =>
+    prev.filter((x) =>
+      String(x.id) !== id &&
+      String(x.lote_id || "") !== lote
+    )
+  );
+
+  setSelecionadas([]);
+
+  try {
+    await fetch(buildWebhookUrl("excluirparcelaspagar"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id,
+        lote_id: c.lote_id,
+      }),
+    });
+
+    alert("Parcelamento excluído com sucesso!");
+  } catch (e) {
+    alert("Erro ao excluir parcelamento.");
+  }
+}
+
+
+
+
+ const listaVisivel = lista.filter(
+  (c) => !idsOcultos.includes(Number(c.id))
+);
 
 
   //------------------------------------------------------------------
@@ -296,7 +365,7 @@ return (
     🖨️ Imprimir
   </button>
 
-  <button
+{/*}  <button
     onClick={() => navigate("/excluir-parcelamento-pagar")}
      className="
                         px-5 py-2 rounded-full
@@ -312,7 +381,7 @@ return (
                       "> 
 
     Excluir parcelamento
-  </button>
+  </button>*/}
 </div>
 
     </div>
@@ -439,6 +508,8 @@ return (
       </select>
     </div>
 
+    
+
     <div className="xl:col-span-3">
       <label className="mb-1 block text-xs font-semibold text-slate-600">
         Conta bancária
@@ -512,83 +583,125 @@ return (
   </div>
 </details>
 
-    {/* TABELA */}
-     <div className="max-h-[720px] overflow-y-auto overflow-x-auto"> 
-      <table className="w-full text-base"> 
-       <thead className="sticky top-0 z-20 bg-slate-800 text-white"> 
-          <tr>
-            <th className="px-3 py-3">Sel.</th>
-            <th className="px-3 py-3 text-left">ID</th>
-            <th className="px-3 py-3 text-left">Descrição</th>
-            <th className="px-3 py-3 text-left">Vencimento</th>
-            <th className="px-3 py-3 text-left">Fornecedor</th>
-            <th className="px-3 py-3 text-right">Valor</th>
-            <th className="px-3 py-3 text-left">Status</th>
-            <th className="px-3 py-3 text-right">Ações</th>
+     
+     {/* TABELA */}
+<div className="max-h-[720px] overflow-y-auto overflow-x-auto rounded-xl border border-slate-200">
+  <table className="min-w-[1180px] w-full table-fixed text-sm"> 
+   
+    <thead className="sticky top-0 z-20 bg-slate-800 text-white">
+      <tr>
+       <th className="w-[45px] px-2 py-3 text-center">Sel.</th>
+      <th className="w-[60px] px-2 py-3 text-left">ID</th>
+      <th className="w-[220px] px-3 py-3 text-left">Descrição</th>
+      <th className="w-[105px] px-2 py-3 text-left">Venc.</th>
+      <th className="w-[180px] px-3 py-3 text-left">Fornecedor</th>
+      <th className="w-[55px] px-1 py-3 text-center">Parc.</th>
+      <th className="w-[55px] px-1 py-3 text-center">Qtd.</th>
+      <th className="w-[120px] px-3 py-3 text-right">Valor</th>
+      <th className="w-[90px] px-2 py-3 text-center">Status</th>
+       <th className="w-[90px] px-2 py-3 text-center">lote</th>
+      <th className="w-[250px] px-3 py-3 text-center">Ações</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {listaVisivel.map((c) => {
+        const statusClass =
+          c.status === "pago"
+            ? "bg-emerald-200 text-emerald-900"
+            : "bg-amber-200 text-amber-900";
+
+        return (
+          <tr key={c.id} className="border-b hover:bg-blue-50">
+            <td className="px-2 py-2 text-center">
+              <input
+                type="checkbox"
+                checked={selecionadas.includes(c.id)}
+                onChange={() => toggleSelecionada(c.id)}
+                disabled={c.status === "pago"}
+              />
+            </td>
+
+            <td className="px-2 py-2 font-semibold">{c.id}</td>
+
+            <td className="truncate px-3 py-2 font-semibold" title={c.descricao}>
+              {c.descricao}
+            </td>
+
+            <td className="px-2 py-2">
+              {formatarDataBR(c.vencimento)}
+            </td>
+
+            <td className="truncate px-3 py-2" title={c.fornecedor}>
+              {c.fornecedor}
+            </td>
+
+            <td className="px-1 py-2 text-center font-bold">
+              {c.parcela_num || "-"}
+            </td>
+
+            <td className="px-1 py-2 text-center font-bold">
+              {c.parcelas || "-"}
+            </td>
+
+            <td className="px-3 py-2 text-right font-bold whitespace-nowrap">
+              {Number(c.valor).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </td>
+
+            <td className="px-2 py-2 text-center">
+              <span className={`rounded-full px-2 py-1 text-xs font-bold ${statusClass}`}>
+                {c.status}
+              </span>
+            </td>
+            <td className="px-2 py-2 text-xs text-slate-500">
+                lote: {String(c.lote_id)}
+              </td>
+
+            <td className="px-3 py-2">
+          {c.status === "aberto" && (
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <button
+                onClick={() => navigate(`/edit-conta-pagar/${c.id}`)}
+                className="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-700 hover:bg-blue-200"
+              >
+                Editar
+              </button>
+
+              <button
+                onClick={() => excluir(c.id)}
+                className="rounded-full bg-red-100 px-3 py-1 text-xs font-black text-red-700 hover:bg-red-200"
+              >
+                Excluir
+              </button>
+
+              {Number(c.parcela_num) === 1 &&
+                Number(c.parcelas) > 1 &&
+                c.lote_id && (
+                   <button
+                 type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  excluirParcelamento(c);
+                }}
+                className="rounded-full bg-red-700 px-3 py-1 text-xs font-black text-white hover:bg-red-800"
+              >
+                Excluir lote
+              </button>
+                )}
+            </div>
+          )}
+        </td>
+
           </tr>
-        </thead>
-
-        <tbody>
-          {lista.map(c => {
-            const statusClass =
-              c.status === "pago"
-                ? "bg-emerald-200 text-emerald-900"
-                : "bg-amber-200 text-amber-900";
-
-            return (
-              <tr key={c.id} className="border-b hover:bg-blue-50">
-                <td className="px-3 py-2 text-center">
-                  <input
-                    type="checkbox"
-                    checked={selecionadas.includes(c.id)}
-                    onChange={() => toggleSelecionada(c.id)}
-                    disabled={c.status === "pago"}
-                  />
-                </td>
-
-                <td className="px-3 py-2 font-semibold">{c.id}</td>
-                <td className="px-3 py-2 font-semibold">{c.descricao}</td>
-                <td className="px-3 py-2">{formatarDataBR(c.vencimento)}</td>
-                <td className="px-3 py-2">{c.fornecedor}</td>
-
-                <td className="px-3 py-2 text-right font-bold">
-                  {Number(c.valor).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </td>
-
-                <td className="px-3 py-2">
-                  <span className={`rounded-full px-2 py-1 text-xs font-semibold ${statusClass}`}>
-                    {c.status}
-                  </span>
-                </td>
-
-                <td className="px-3 py-2 text-right">
-                  {c.status === "aberto" && (
-                    <>
-                      <button
-                        onClick={() => navigate(`/edit-conta-pagar/${c.id}`)}
-                        className="mr-3 text-blue-700 hover:underline"
-                      >
-                        Editar
-                      </button>
-                      
-                      <button
-                        onClick={() => excluir(c.id)}
-                        className="text-red-700 hover:underline"
-                      >
-                        Excluir
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
 
   </div>
 );
