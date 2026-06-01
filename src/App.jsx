@@ -635,6 +635,12 @@ const rotaAtual = window.location.pathname;
   <Route path="/dashboard-financeiro" element={<DashboardFinanceiroCartao />} />
 
   <Route path="/regras-classificacao" element={<RegrasClassificacao />} />
+
+     
+      <Route
+          path="/app/transferencia"
+          element={<AppTransferencia />}
+        />
  
 </Routes>
 
