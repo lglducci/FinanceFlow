@@ -602,9 +602,10 @@ useEffect(() => {
              //   subtitulo="Despesas a Prazo "
             onClick={() => ir("pagar")}
             />*/}
-           
-           
-              
+
+
+          
+             
             
 
              <BotaoMenu
@@ -625,9 +626,16 @@ useEffect(() => {
                 icone="📊"
                 titulo="Lançamentos "
                 //subtitulo=" Contulta  de  Contas , lançamentos e pagamentos ...."
-                onClick={() => navigate("/app/lancamentos")}
+                onClick={() => navigate("/app/lancamentos")} 
             />
 
+
+              <BotaoMenu
+                icone="💰"
+                titulo="Dinheiro"
+               subtitulo="Contas e Cartões "
+                 onClick={() => navigate("/app/contas-cartoes")}
+            /> 
             <BotaoMenu
                   icone={
                     <span

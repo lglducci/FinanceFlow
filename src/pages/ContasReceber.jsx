@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+ import { useEffect, useState, useRef } from "react";
  import { buildWebhookUrl } from "../config/globals";
  import { useNavigate } from "react-router-dom"; 
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -13,6 +13,10 @@ export default function ContasReceber() {
 
   const [status, setStatus] = useState("0");
   const [fornecedor_id, setFornecedorId] = useState(0);
+
+  const lotesOcultosRef = useRef(new Set());
+const idsOcultosRef = useRef(new Set());
+
 
    const [contas, setContas] = useState([]);
   const [dadosConta, setDadosConta] = useState(null);
@@ -176,11 +180,24 @@ async function receberSelecionadas() {
         json = JSON.parse(texto);
       } catch {}
 
-      setLista(json); 
 
-    // calcular total do período
-    const soma = json.reduce((acc, item) => acc + Number(item.valor || 0), 0);
-    setTotalPeriodo(soma);
+      let listaFinal = Array.isArray(json) ? json : [];
+
+        listaFinal = listaFinal.filter((x) => {
+          const id = String(x.id);
+          const lote = String(x.lote_id || "");
+
+          return (
+            !idsOcultosRef.current.has(id) &&
+            !lotesOcultosRef.current.has(lote)
+          );
+        });
+
+        setLista(listaFinal);
+
+        const soma = listaFinal.reduce((acc, item) => acc + Number(item.valor || 0), 0);
+        setTotalPeriodo(soma);
+ 
 
     } catch (e) {
       console.log("ERRO PESQUISA:", e);
@@ -238,6 +255,41 @@ async function receberSelecionadas() {
   }, []);
 
 
+  async function excluirParcelamento(c) {
+  if (!confirm("Excluir TODAS as parcelas deste parcelamento?")) return;
+
+  const lote = String(c.lote_id || "");
+  const id = String(c.id);
+
+  lotesOcultosRef.current.add(lote);
+  idsOcultosRef.current.add(id);
+
+  setLista((prev) =>
+    prev.filter((x) =>
+      String(x.id) !== id &&
+      String(x.lote_id || "") !== lote
+    )
+  );
+
+  setSelecionadas([]);
+
+  try {
+    await fetch(buildWebhookUrl("excluirparcelasreceber"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id,
+        lote_id: c.lote_id,
+      }),
+    });
+
+    alert("Parcelamento excluído com sucesso!");
+    window.dispatchEvent(new Event("contabil-atualizado"));
+  } catch (e) {
+    alert("Erro ao excluir parcelamento.");
+  }
+}
+
   //------------------------------------------------------------------
 
  return (
@@ -292,7 +344,7 @@ async function receberSelecionadas() {
             🖨️ Imprimir
           </button>
 
-          <button
+        {/*}  <button
             onClick={() => navigate("/excluir-parcelamento-receber")} 
               className="
                         px-5 py-2 rounded-full
@@ -308,7 +360,7 @@ async function receberSelecionadas() {
                       ">
        
             Excluir parcelamento
-          </button>
+          </button>*/}
         </div>
       </div>
     </div>
@@ -601,6 +653,23 @@ async function receberSelecionadas() {
                       >
                         Excluir
                       </button>
+
+                      {Number(c.parcela_num) === 1 &&
+                                Number(c.parcelas) > 1 &&
+                                c.status === "aberto" &&
+                                c.lote_id && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      excluirParcelamento(c);
+                                    }}
+                                    className="rounded-full bg-red-700 px-3 py-1 text-xs font-black text-white hover:bg-red-800"
+                                  >
+                                    Excluir lote
+                                  </button>
+                                )}
                     </div>
                   )}
                 </td>

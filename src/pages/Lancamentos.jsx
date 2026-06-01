@@ -170,18 +170,49 @@ function mostrarMensagemTela(mensagem, tempo = 20000) {
 
  async function carregarContas() {
   try {
-    const url = buildWebhookUrl("listacontas", { empresa_id });
+    const url = buildWebhookUrl("consultasaldo", {
+      empresa_id,
+      inicio: dataIni || hojeLocal(),
+      fim: dataFim || hojeLocal(),
+      conta_id: 0,
+    });
+
     const resp = await fetch(url);
     const data = await resp.json();
-    setContas(data);
+
+    const lista = Array.isArray(data) ? data : [];
+
+    setContas(
+      lista.map((c) => ({
+        id: c.conta_id,
+        nome: c.conta_nome,
+        nro_banco: c.nro_banco,
+        agencia: c.agencia,
+        conta: c.conta,
+        saldo: c.saldo_final,
+      }))
+    );
   } catch (error) {
     console.error("Erro ao carregar contas:", error);
   }
 }
-useEffect(() => {
-  carregarContas();
-}, [empresa_id]);
 
+
+function labelContaDrop(c) {
+  const banco = c.nro_banco ? `Banco ${c.nro_banco}` : "";
+  const ag = c.agencia ? `Ag : ${c.agencia}` : "";
+  const cc = c.conta ? `Cc : ${c.conta}` : "";
+
+  const dados = [banco, ag, cc].filter(Boolean).join(" • ");
+  const saldo = Number(c.saldo || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+  return dados
+    ? `${c.nome} — ${dados} — ${saldo}`
+    : `${c.nome} —  ${saldo} `;
+}
  
 useEffect(() => {
   if (contaId) {
@@ -479,6 +510,7 @@ async function carregarCategorias() {
 useEffect(() => {
   carregarFornecedores();
   carregarCategorias();
+   carregarContas();
 }, [empresa_id]);
 
 function calcularPeriodoDias(inicio, fim) {
@@ -1173,7 +1205,7 @@ return (
           </div>
    
  
-      {/* CONTA BANCÁRIA */}
+      {/* CONTA BANCÁRIA  
       <div className="bg-white rounded-xl p-4 border-l-4 border-green-600 shadow-sm">
         <p className="text-sm text-gray-500">Conta bancária</p>
 
@@ -1194,7 +1226,7 @@ return (
         ) : (
           <p className="text-sm text-gray-400">Selecione uma conta</p>
         )}
-      </div>
+      </div>*/}
     </div>
 
     {/* FILTROS */}
@@ -1224,29 +1256,61 @@ return (
           </div>
 
         <div>
-          <label className="text-sm font-semibold text-gray-700">Conta Bancária</label>
-          <select
-            value={contaId}
-             ref={contaRef}
-            onChange={(e) => {
-                if (e.target.value === "__nova__") {
-                  setModalConta(true);
-                  return;
-                }
+           
+         
 
-                setContaId(e.target.value);
-              }} 
-            className="block border rounded-lg px-3 py-2 text-sm" >
-          <option value="">Selecione</option>
+         <div className="flex items-end gap-2">
+            <div>
+              <label className="text-sm font-semibold text-gray-700">
+                Conta Bancária
+              </label>
 
-          {contas.map((c) => (
-            <option key={c.id} value={String(c.id)}>
-              {c.nome}
-            </option>
-          ))}
+              <select
+                value={contaId}
+                ref={contaRef}
+                onChange={(e) => {
+                  if (e.target.value === "__nova__") {
+                    setModalConta(true);
+                    return;
+                  }
 
-          <option value="__nova__">➕ Nova Conta Financeira</option>
-        </select>
+                  setContaId(e.target.value);
+                }}
+                className="block border rounded-lg px-3 py-2 text-base text-blue-900 font-bold min-w-[320px]"
+              >
+                <option value="">Selecione</option>
+
+                {contas.map((c) => (
+                  <option key={c.id} value={String(c.id)}>
+                    🏦 {labelContaDrop(c)}
+                  </option>
+                ))}
+
+                <option value="__nova__">➕ Nova Conta Financeira</option>
+              </select>
+            </div>
+            
+             {dadosConta && (
+                <div className="flex flex-col">
+                  <label className="text-sm font-bold text-gray-700">
+                    Saldo Conta
+                  </label>
+
+                  <div
+                    className={`rounded-lg border px-4 py-2 text-sm font-black whitespace-nowrap ${
+                      Number(dadosConta.saldo_final || 0) < 0
+                        ? "bg-red-50 border-red-200 text-red-700"
+                        : "bg-green-50 border-green-200 text-green-700"
+                    }`}
+                  >
+                    {Number(dadosConta.saldo_final || 0).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </div>
+                </div>
+              )}
+          </div>
   
         </div>
         {/* BUSCA */}
