@@ -287,7 +287,7 @@ function podeVer(menuKey) {
               <SubItem icon={<IconMap />} label="Calculadora" onClick={() => navigate("/calculadora")} /> 
              <SubItem icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
              <SubItem icon={<IconMap />} label="Regras Classificação" onClick={() => navigate("/regras-classificacao")} /> 
- 
+                <SubItem icon={<IconMap />} label="Contas Recorrentes" onClick={() => navigate("/conta-recorrente")} /> 
 
            </MenuGroup> )}
        </nav>

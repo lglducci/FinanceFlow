@@ -9,6 +9,7 @@ export default function Header() {
   const [alertaContabil, setAlertaContabil] = useState(null);
   const navigate = useNavigate();
   const [alertaReclassificacao, setAlertaReclassificacao] = useState(null);
+  const [alertaRecorrentes, setAlertaRecorrentes] = useState(null);
    
  const carregarStatus = useCallback(async () => {
   const empresa_id =
@@ -62,6 +63,30 @@ export default function Header() {
     console.error("Erro ao carregar alerta de reclassificação:", err);
     setAlertaReclassificacao(null);
   }
+
+   // ALERTA CONTAS RECORRENTES
+ // ALERTA CONTAS RECORRENTES
+try {
+  const respRec = await fetch(
+    buildWebhookUrl("status_contas_recorrentes", { empresa_id })
+  );
+
+  const dataRec = await respRec.json();
+
+  const baseRec = Array.isArray(dataRec) ? dataRec[0] : dataRec;
+  const itemRec = Array.isArray(baseRec?.data)
+    ? baseRec.data[0]
+    : baseRec?.data || baseRec;
+
+  if (Number(itemRec?.qtd || 0) > 0) {
+    setAlertaRecorrentes(itemRec);
+  } else {
+    setAlertaRecorrentes(null);
+  }
+} catch (err) {
+  console.error("Erro ao carregar alerta de contas recorrentes:", err);
+  setAlertaRecorrentes(null);
+}
 }, [perfil]);
 
   useEffect(() => {
@@ -92,6 +117,8 @@ export default function Header() {
 
   return (
     <>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8  bg-[#061f4a]"> 
       
  {alertaContabil && (
   <div className="px-4 pt-3  bg-[#061f4a]">
@@ -160,10 +187,45 @@ export default function Header() {
   </div>
 )}
 
+ {alertaRecorrentes && (
+  <div className="px-4 pt-3 bg-[#061f4a]">
+    <div className="mx-auto max-w-7xl rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50 px-5 py-3 shadow-sm flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">
+          🔁
+        </div>
+
+        <div className="text-sm">
+          <div className="font-black text-blue-700">
+            Contas recorrentes pendentes
+          </div>
+
+          <div className="font-semibold text-slate-700">
+            Existem{" "}
+            <span className="font-black text-blue-700">
+              {alertaRecorrentes.qtd}
+            </span>{" "}
+            conta(s) recorrente(s) para gerar ou revisar.
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={() => navigate("/conta-recorrente")}
+        className="shrink-0 rounded-full bg-blue-600 px-5 py-2 text-sm font-black text-white shadow hover:bg-blue-700 transition"
+      >
+        Ver agora
+      </button>
+    </div>
+  </div>
+)}
+
+</div>
+
       <header className="h-22 border-b bg-[#061f4a] px-5 flex items-center justify-between">
         <div className="flex gap-8">
           <div>
-            <div className="text-xs uppercase text-gray-300 font-semibold">
+            <div className="mt-3 text-xs uppercase text-gray-300 font-semibold">
               Empresa
             </div>
             <div className="text-white font-bold text-sm leading-tight">
@@ -178,7 +240,7 @@ export default function Header() {
           </div>
 
           <div>
-            <div className="text-xs uppercase text-gray-300 font-semibold">
+            <div className=" mt-3 text-xs uppercase text-gray-300 font-semibold">
               Usuário
             </div>
             <div className="text-white font-bold leading-tight">
@@ -190,7 +252,7 @@ export default function Header() {
           </div>
         </div>
 
-        <div className="text-sm text-gray-200 self-start pt-6">
+        <div className="  mt-3 text-base text-gray-200 self-start pt-6">
           {new Date().toLocaleDateString("pt-BR")}
         </div>
 
