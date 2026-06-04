@@ -195,6 +195,8 @@ import AppDashboardFinanceiroCartao from "./pages/app/AppDashboardFinanceiroCart
 import DashboardFinanceiroCartao from "./pages/DashboardFinanceiroCartao";
 import RegrasClassificacao from "./pages/RegrasClassificacao";
 
+import ContasRecorrentes  from  "./pages/ContasRecorrentes";
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -641,6 +643,10 @@ const rotaAtual = window.location.pathname;
           path="/app/transferencia"
           element={<AppTransferencia />}
         />
+
+      <Route path="/conta-recorrente" element={<ContasRecorrentes />} />
+
+ 
  
 </Routes>
 
