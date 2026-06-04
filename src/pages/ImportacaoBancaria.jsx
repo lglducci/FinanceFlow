@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+ import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { useRef } from "react";
@@ -7,6 +7,7 @@ import ModalBase from "../components/ModalBase";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import FormContaContabilModal from "../components/forms/FormContaContabilModal";
 import ImportadorSicoob from "../components/ImportadorSicoob";
+import * as XLSX from "xlsx";
 
 export default function ImportacaoBancaria() {
  
@@ -28,6 +29,7 @@ const [saldoBase, setSaldoBase] = useState(0);
 const [editandoId, setEditandoId] = useState(null);
  const dataMin = hojeMaisDias(-7);
  const [resumoImportacao, setResumoImportacao] = useState(null);
+const [abaAtiva, setAbaAtiva] = useState("lancamentos");
  
  const botaoBase = `
   px-5 py-2 rounded-full
@@ -782,358 +784,446 @@ function receberTextoImportadorSicoob(textoPronto) {
   recalcularLinhas([...linhas, ...novasLinhas]);
   setImportacao(1);
 }
+
+function exportarLayoutExtrato() {
+  const dados = [
+    ["DATA", "HISTÓRICO", "VALOR"],
+    ["24/04/2026", "PIX RECEBIDO - OUTRA IF", "251,00 C"],
+    ["27/04/2026", "PIX EMITIDO OUTRA IF - CEF", "-6.300,00 D"],
+    ["29/04/2026", "DEP.DINHEIRO", "500,00 C"],
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  ws["!cols"] = [{ wch: 14 }, { wch: 48 }, { wch: 18 }];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Layout Extrato");
+
+  const wbout = XLSX.write(wb, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const blob = new Blob([wbout], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "layout_importacao_extrato_bancario.xlsx";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
 return (
-           <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
+  <div className="flex justify-center bg-gray-100 min-h-screen pb-3">
+    <div className="bg-white rounded-2xl border border-gray-300 w-[1200px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
+      <div className="bg-gray-650 rounded-lg p-3">
+        <div className="bg-gray-600 border-b rounded-t-xl p-2">
+          <div className="bg-gray-600 border-b rounded-t-xl p-4">
+            <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
+              🏦 Importação de Extratos Bancários
+            </h2>
 
-      <div className="bg-white rounded-2xl border border-gray-300 w-[1400px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
-        <div className="bg-gray-650 rounded-lg p-3"> 
-        <div className="bg-gray-600 border-b rounded-t-xl p-2"> 
-       <div className="bg-gray-600 border-b rounded-t-xl p-4">
-        {/* TÍTULO */}
-        <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
-          🏦 Importação de Extratos Bancários
-        </h2>
+            <div className="flex gap-3 mb-4">
+              <button
+                type="button"
+                onClick={() => setAbaAtiva("lancamentos")}
+                className={`px-5 py-2 rounded-full font-bold text-sm ${
+                  abaAtiva === "lancamentos"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700"
+                }`}
+              >
+                🧾 Lançamentos
+              </button>
 
-        {/* CONTA + SALDO */}
-        <div className="grid grid-cols-[1fr_200px] gap-4 items-end">
+              <button
+                type="button"
+                onClick={() => setAbaAtiva("layout")}
+                className={`px-5 py-2 rounded-full font-bold text-sm ${
+                  abaAtiva === "layout"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700"
+                }`}
+              >
+                📄 Layout da Planilha
+              </button>
+            </div>
 
-          {/* CONTA */}
-          <div className="flex flex-col gap-1">
+            {abaAtiva === "layout" && (
+              <div className="bg-white rounded-xl p-6 border shadow mb-4">
+                <h3 className="text-xl font-black text-gray-800 mb-3">
+                  📄 Layout esperado da planilha
+                </h3>
 
-            <label className="text-sm font-semibold text-gray-50">
-               Conta Bancária 
-            </label>
-               <div>
-          
-          <select
-            value={contaId}
-             
-            onChange={(e) => {
-                if (e.target.value === "__nova__") {
-                  
-                  return;
-                }
+                <p className="text-sm text-gray-600 mb-4">
+                  A planilha deve conter as colunas abaixo. Use este modelo para importar extratos bancários.
+                </p>
 
-                setContaId(e.target.value);
-              }}
- 
-            
-            className="block border rounded-lg px-3 py-2 text-sm"
-          >
-          <option value="">Selecione</option>
+                <table className="w-full text-sm border">
+                  <thead className="bg-blue-700 text-white">
+                    <tr>
+                      <th className="p-2 border">DATA</th>
+                      <th className="p-2 border">HISTÓRICO</th>
+                      <th className="p-2 border">VALOR</th>
+                    </tr>
+                  </thead>
 
-          {contas.map((c) => (
-            <option key={c.id} value={String(c.id)}>
-              {c.nome}
-            </option>
-          ))}
+                  <tbody>
+                    <tr>
+                      <td className="p-2 border">24/04/2026</td>
+                      <td className="p-2 border">PIX RECEBIDO - OUTRA IF</td>
+                      <td className="p-2 border text-blue-700 font-bold">251,00 C</td>
+                    </tr>
 
-          
-        </select>
-  
-        </div>
+                    <tr>
+                      <td className="p-2 border">27/04/2026</td>
+                      <td className="p-2 border">PIX EMITIDO OUTRA IF - CEF</td>
+                      <td className="p-2 border text-red-600 font-bold">-6.300,00 D</td>
+                    </tr>
 
-    </div>
+                    <tr>
+                      <td className="p-2 border">29/04/2026</td>
+                      <td className="p-2 border">DEP.DINHEIRO</td>
+                      <td className="p-2 border text-blue-700 font-bold">500,00 C</td>
+                    </tr>
+                  </tbody>
+                </table>
 
-    {/* SALDO */}
-    <div className="text-right">
-
-      <div className="text-base text-gray-50">
-        Saldo atual
-      </div>
-     <div
-  className={`text-lg font-bold ${
-    saldo > 0
-      ? "text-green-600"
-      : saldo < 0
-      ? "text-red-400"
-      : "text-gray-200"
-  }`}
->
-  {carregandoSaldo
-    ? "Carregando..."
-    : saldo.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-      })
-  }
-</div>
-
-    </div>
-
-  </div>  </div>
-
-</div>
-          {/* TABELA */}
-             {/* CABEÇALHO */}
-             {resumoImportacao && (
-              <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
-                ✔ {resumoImportacao.qtd} registros importados | 
-                Entradas: {resumoImportacao.entrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} | 
-                Saídas: {resumoImportacao.saida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-              </div>
-            )}
-               <div className="mt-4 max-h-[580px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
-                 <div  className="grid  grid-cols-[120px_400px_120px_120px_220px_120px_60px]  gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
-                                   
-                    <div className="text-left font-bold" >Data </div>
-                    <div className="text-left font-bold" >Histórico</div>
-                        
-                      <div className="text-center">
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                              Tipo
-                            </span>
-                          </div>
-
-                            <div className="text-right">
-                              <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-700">
-                                Valor
-                              </span>
-                            </div>
-                    
-                <div className="text-right">Saldo</div>
-                <div className="text-center">Ação</div>
+                <div className="mt-4 text-sm text-gray-700 space-y-1">
+                  <p><b>Regras:</b></p>
+                  <p>• Data deve estar no formato DD/MM/AAAA.</p>
+                  <p>• Histórico é obrigatório.</p>
+                  <p>• Valor positivo ou com C será tratado como entrada.</p>
+                  <p>• Valor negativo ou com D será tratado como saída.</p>
+                  <p>• Se o histórico vier quebrado em várias linhas, prefira organizar em uma única linha antes de importar.</p>
                 </div>
 
-                {/* LINHAS */}
-
-                  {linhas.map((l) => (
-                  <div
-                    key={l._id}
-                    className="grid grid-cols-[120px_400px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
+                <div className="mt-5 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={exportarLayoutExtrato}
+                    className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800`}
                   >
-                    <div>
-                      {String(l.data || "").includes("-")
-                        ? l.data.split("-").reverse().join("/")
-                        : l.data}
-                    </div>
+                    📥 Exportar Layout
+                  </button>
+                </div>
+              </div>
+            )}
 
-                    <div className="truncate">{l.historico}</div>
+            {abaAtiva === "lancamentos" && (
+              <div className="grid grid-cols-[1fr_200px] gap-4 items-end">
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-gray-50">
+                    Conta Bancária
+                  </label>
 
-                    <div className="text-center">
-                      {l.tipo === "entrada" ? (
-                        <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
-                          <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
-                          Entrada
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-red-100 text-red-800 font-semibold text-xs">
-                          <span className="w-2 h-2 bg-red-600 rounded-sm"></span>
-                          Saída
-                        </span>
-                      )}
-                    </div>
+                  <div>
+                    <select
+                      value={contaId}
+                      onChange={(e) => {
+                        if (e.target.value === "__nova__") {
+                          return;
+                        }
 
-                    <div
-                      className={`text-right font-mono font-semibold ${
-                        l.tipo === "entrada" ? "text-green-700" : "text-red-700"
-                      }`}
+                        setContaId(e.target.value);
+                      }}
+                      className="block border rounded-lg px-3 py-2 text-sm"
                     >
-                       {normalizarValor(l.valor).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL"
-                        })}
-                    </div>
+                      <option value="">Selecione</option>
 
-                    <div>{l.contra}</div>
-
-                    <div
-                      className={`border rounded p-2 text-right font-semibold ${
-                        Number(l.saldo || 0) >= 0
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {Number(l.saldo || 0).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL"
-                      })}
-                    </div>
-
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        className="text-blue-600 hover:text-blue-800 text-lg"
-                        onClick={() => editarLinha(l._id)}
-                        title="Editar linha"
-                      >
-                        ✏️
-                      </button>
-
-                      <button
-                        type="button"
-                        className="text-red-600 hover:text-red-800 text-lg"
-                        onClick={() => removerLinha(l._id)}
-                        title="Excluir linha"
-                      >
-                        🗑
-                      </button>
-                    </div>
+                      {contas.map((c) => (
+                        <option key={c.id} value={String(c.id)}>
+                          {c.nome}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                ))} 
-          {/* NOVA LINHA */}
+                </div>
 
-            {mostrarNovaLinha && (
-             <div className="grid grid-cols-[120px_430px_120px_140px_140px_60px] gap-2 mb-4">
-         
-                 <input
-                        ref={dataRef}
-                        type="date"
-                        min={dataMin}
-                        className="border rounded p-2"
-                        value={nova.data || ""}
-                        onChange={(e) => {
-                          const valor = e.target.value;
+                <div className="text-right">
+                  <div className="text-base text-gray-50">Saldo atual</div>
 
-                          if (!valor) {
-                            setNova(prev => ({ ...prev, data: "" }));
-                            return;
-                          }
+                  <div
+                    className={`text-lg font-bold ${
+                      saldo > 0
+                        ? "text-green-600"
+                        : saldo < 0
+                        ? "text-red-400"
+                        : "text-gray-200"
+                    }`}
+                  >
+                    {carregandoSaldo
+                      ? "Carregando..."
+                      : saldo.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
-                          setNova(prev => ({ ...prev, data: valor }));
-                        }}
-                         onBlur={(e) => {
-                            const valor = e.target.value;
+        {abaAtiva === "lancamentos" && resumoImportacao && (
+          <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
+            ✔ {resumoImportacao.qtd} registros importados | Entradas: {" "}
+            {resumoImportacao.entrada.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })} | Saídas: {" "}
+            {resumoImportacao.saida.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </div>
+        )}
 
-                            if (valor && valor < dataMin) {
-                              alert(`Não pode ser menor que ${dataMin}`);
-                              setNova(prev => ({ ...prev, data: dataMin }));
-                            }
-                          }}
-                        onKeyDown={handleEnter(historicoRef)}
-                      />
+        {abaAtiva === "lancamentos" && (
+          <>
+            <div className="mt-4 max-h-[580px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
+              <div className="grid grid-cols-[120px_400px_120px_120px_220px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
+                <div className="text-left font-bold">Data</div>
+                <div className="text-left font-bold">Histórico</div>
 
+                <div className="text-center">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                    Tipo
+                  </span>
+                </div>
 
+                <div className="text-right">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-700">
+                    Valor
+                  </span>
+                </div>
 
-               
-                   <input
+              
+                <div className="text-right font-bold">Saldo</div>
+                <div className="text-center font-bold">Ação</div>
+              </div>
+
+              {linhas.map((l) => (
+                <div
+                  key={l._id}
+                  className="grid grid-cols-[120px_400px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
+                >
+                  <div>
+                    {String(l.data || "").includes("-")
+                      ? l.data.split("-").reverse().join("/")
+                      : l.data}
+                  </div>
+
+                  <div className="truncate">{l.historico}</div>
+
+                  <div className="text-center">
+                    {l.tipo === "entrada" ? (
+                      <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
+                        <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
+                        Entrada
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-red-100 text-red-800 font-semibold text-xs">
+                        <span className="w-2 h-2 bg-red-600 rounded-sm"></span>
+                        Saída
+                      </span>
+                    )}
+                  </div>
+
+                  <div
+                    className={`text-right font-mono font-semibold ${
+                      l.tipo === "entrada" ? "text-green-700" : "text-red-700"
+                    }`}
+                  >
+                    {normalizarValor(l.valor).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </div>
+
+            
+
+                  <div
+                    className={`border rounded p-2 text-right font-semibold ${
+                      Number(l.saldo || 0) >= 0
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {Number(l.saldo || 0).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      className="text-blue-600 hover:text-blue-800 text-lg"
+                      onClick={() => editarLinha(l._id)}
+                      title="Editar linha"
+                    >
+                      ✏️
+                    </button>
+
+                    <button
+                      type="button"
+                      className="text-red-600 hover:text-red-800 text-lg"
+                      onClick={() => removerLinha(l._id)}
+                      title="Excluir linha"
+                    >
+                      🗑
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {mostrarNovaLinha && (
+                <div className="grid grid-cols-[120px_430px_120px_140px_140px_60px] gap-2 mb-4">
+                  <input
+                    ref={dataRef}
+                    type="date"
+                    min={dataMin}
+                    className="border rounded p-2"
+                    value={nova.data || ""}
+                    onChange={(e) => {
+                      const valor = e.target.value;
+
+                      if (!valor) {
+                        setNova((prev) => ({ ...prev, data: "" }));
+                        return;
+                      }
+
+                      setNova((prev) => ({ ...prev, data: valor }));
+                    }}
+                    onBlur={(e) => {
+                      const valor = e.target.value;
+
+                      if (valor && valor < dataMin) {
+                        alert(`Não pode ser menor que ${dataMin}`);
+                        setNova((prev) => ({ ...prev, data: dataMin }));
+                      }
+                    }}
+                    onKeyDown={handleEnter(historicoRef)}
+                  />
+
+                  <input
                     ref={historicoRef}
                     className="border rounded p-2"
                     placeholder="Histórico"
                     value={nova.historico}
-                    onChange={(e)=> setNova(prev => ({ ...prev, historico: e.target.value }))}
-                   onKeyDown={handleEnter(tipoRef)} 
+                    onChange={(e) =>
+                      setNova((prev) => ({ ...prev, historico: e.target.value }))
+                    }
+                    onKeyDown={handleEnter(tipoRef)}
+                  />
 
-                  /> 
-
-                 <input
+                  <input
                     className="border rounded p-2 text-center bg-gray-50"
                     value={nova.tipo === "entrada" ? "Entrada" : "Saída"}
                     readOnly
                   />
 
-                    <input
-                        ref={valorRef}
-                        className="border rounded p-2 text-right"
-                        placeholder="Valor"
-                        value={nova.valor}
-                        onChange={(e) => {
-                          const v = e.target.value.replace(/[^\d.,-]/g, "");
-                          setNova(prev => {
-                            const valorDigitado = v;
-                            const numero = parseNumeroBR(valorDigitado);
+                  <input
+                    ref={valorRef}
+                    className="border rounded p-2 text-right"
+                    placeholder="Valor"
+                    value={nova.valor}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^\d.,-]/g, "");
+                      setNova((prev) => {
+                        const numero = parseNumeroBR(v);
 
-                            return {
-                              ...prev,
-                              valor: valorDigitado,
-                              tipo: numero >= 0 ? "entrada" : "saida"
-                            };
-                          });
-                        }}
-                      />
-                    
-                 <input
-                  className={`border rounded p-2 text-right font-semibold ${
-                    saldo > 0
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
-                   value={saldoLinhaAtual.toLocaleString("pt-BR", {
+                        return {
+                          ...prev,
+                          valor: v,
+                          tipo: numero >= 0 ? "entrada" : "saida",
+                        };
+                      });
+                    }}
+                  />
+
+                  <input
+                    className={`border rounded p-2 text-right font-semibold ${
+                      saldo > 0
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                    value={saldoLinhaAtual.toLocaleString("pt-BR", {
                       style: "currency",
-                      currency: "BRL"
+                      currency: "BRL",
                     })}
-                  disabled
-                />
-                 <div className="flex items-center justify-center">
-                  <button
-                        className="text-gray-400 hover:text-red-600 text-lg"
-                        onClick={cancelarNovaLinha}
-                      >
-                        🗑
-                      </button>
-                </div>     
+                    disabled
+                  />
 
-                </div> )} </div>
-              
-          {/* BOTÕES */}
-
-           <div className="flex justify-end gap-3 mt-4">
-
-         
-                 <button
-                  onClick={adicionarLinha}
-                  className={`${botaoBase} text-white bg-gradient-to-b from-slate-500 via-slate-600 to-slate-800`}
-                >
-                  ➕ Linha
-                </button>
-
-                  <button
-                      onClick={salvarLancamentos}
-                      
-                      className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800`}
+                  <div className="flex items-center justify-center">
+                    <button
+                      className="text-gray-400 hover:text-red-600 text-lg"
+                      onClick={cancelarNovaLinha}
                     >
-                      💾 Salvar
+                      🗑
                     </button>
- 
-                 
-                  <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
+                  </div>
+                </div>
+              )}
+            </div>
 
-
-               {/*} <button
-                onClick={colarLancamentos}
-                className={`${botaoBase} text-white bg-gradient-to-b from-cyan-500 via-teal-600 to-teal-800`}
-                >
-                  📋 Colar
-                </button>*/}
-
-              
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={adicionarLinha}
+                className={`${botaoBase} text-white bg-gradient-to-b from-slate-500 via-slate-600 to-slate-800`}
+              >
+                ➕ Linha
+              </button>
 
               <button
-                    onClick={limparEdicao}
-                    className={`${botaoBase} text-white bg-gradient-to-b from-red-500 via-red-600 to-red-800`}
-                  >
-                    🗑 Limpar
-                  </button>
-               
+                onClick={salvarLancamentos}
+                className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800`}
+              >
+                💾 Salvar
+              </button>
 
+              <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
 
-                 <button
-                  onClick={() => navigate("/importacao-bancaria")}
-                  className={`${botaoBase} text-white bg-gradient-to-b from-zinc-500 via-zinc-600 to-zinc-800`}
-                >
-                  ↩ Sair
-                </button>
+              <button
+                onClick={limparEdicao}
+                className={`${botaoBase} text-white bg-gradient-to-b from-red-500 via-red-600 to-red-800`}
+              >
+                🗑 Limpar
+              </button>
 
-                </div>
-      
-        </div>
-      </div> 
- 
-  <ModalBase
-  open={modalContaAberto}
-  onClose={() => setModalContaAberto(false)}
-  title="Nova Conta Contábil"
->
-    <FormContaContabilModal
-      empresa_id={empresa_id}
-      onSuccess={() => {
-        setModalContaAberto(false);
-        carregarContas();
-      }}
-      onCancel={() => setModalContaAberto(false)}
-    />
-  </ModalBase>
- 
+              <button
+                onClick={() => navigate("/importacao-bancaria")}
+                className={`${botaoBase} text-white bg-gradient-to-b from-zinc-500 via-zinc-600 to-zinc-800`}
+              >
+                ↩ Sair
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
-  );
+
+    <ModalBase
+      open={modalContaAberto}
+      onClose={() => setModalContaAberto(false)}
+      title="Nova Conta Contábil"
+    >
+      <FormContaContabilModal
+        empresa_id={empresa_id}
+        onSuccess={() => {
+          setModalContaAberto(false);
+          carregarContas();
+        }}
+        onCancel={() => setModalContaAberto(false)}
+      />
+    </ModalBase>
+  </div>
+);
 }

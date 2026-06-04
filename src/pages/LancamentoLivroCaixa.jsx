@@ -31,6 +31,8 @@ const [resumoImportacao, setResumoImportacao] = useState(null);
 //nova conta modelo inteligente 
 const [linhaContaNova, setLinhaContaNova] = useState(null);
 const [linhaDropdownAberta, setLinhaDropdownAberta] = useState(null);
+
+const [abaAtiva, setAbaAtiva] = useState("lancamentos");
  
  const [modoImportacao, setModoImportacao] = useState("contabil");
 const modoCartao = modoImportacao === "cartao";
@@ -859,6 +861,22 @@ function abrirNovaContaParaLinha(linha) {
   return valorNumero >= 0 ? "entrada" : "saida";
 }
 
+function exportarLayout() {
+  const dados = [
+    ["Data", "Histórico", "Conta", "Valor"],
+    ["24/04/2026", "PIX RECEBIDO - OUTRA IF", "1.1.1.01", "251,00 C"],
+    ["27/04/2026", "PIX EMITIDO OUTRA IF - CEF", "2.1.1.01", "-6.300,00 D"],
+    ["29/04/2026", "DEP.DINHEIRO", "", "500,00 C"],
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  const wb = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(wb, ws, "Layout");
+
+  XLSX.writeFile(wb, "layout_importacao_lancamentos.xlsx");
+}
+
 return (
       <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
 
@@ -869,10 +887,103 @@ return (
         {/* TÍTULO */}
         <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
           📘 Lançamento Contábil Inteligente  
-        </h2>
+        </h2> 
+         
+         <div className="flex gap-3 mb-4">
+              <button
+                onClick={() => setAbaAtiva("lancamentos")}
+                className={`px-5 py-2 rounded-full font-bold text-sm ${
+                  abaAtiva === "lancamentos"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700"
+                }`}
+              >
+                🧾 Lançamentos
+              </button>
 
+              <button
+                onClick={() => setAbaAtiva("layout")}
+                className={`px-5 py-2 rounded-full font-bold text-sm ${
+                  abaAtiva === "layout"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700"
+                }`}
+              >
+                📄 Layout da Planilha
+              </button>
+            </div> 
+             
+                  {abaAtiva === "layout" && (
+                      <div className="bg-white rounded-xl p-6 border shadow mb-4">
+                          <h3 className="text-xl font-black text-gray-800 mb-3">
+                            📄 Layout esperado da planilha
+                          </h3>
+
+                          <p className="text-sm text-gray-600 mb-4">
+                            A planilha deve conter as colunas abaixo. Use este modelo para importar
+                            lançamentos no Livro Caixa / Lançamento Inteligente.
+                          </p>
+
+                          <table className="w-full text-sm border">
+                            <thead className="bg-blue-700 text-white">
+                              <tr>
+                                <th className="p-2 border">Data</th>
+                                <th className="p-2 border">Histórico</th>
+                                <th className="p-2 border">Conta</th>
+                                <th className="p-2 border">Valor</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              <tr>
+                                <td className="p-2 border">24/04/2026</td>
+                                <td className="p-2 border">PIX RECEBIDO - OUTRA IF</td>
+                                <td className="p-2 border">1.1.1.01</td>
+                                <td className="p-2 border text-blue-700 font-bold">251,00 C</td>
+                              </tr>
+
+                              <tr>
+                                <td className="p-2 border">27/04/2026</td>
+                                <td className="p-2 border">PIX EMITIDO OUTRA IF - CEF</td>
+                                <td className="p-2 border">2.1.1.01</td>
+                                <td className="p-2 border text-red-600 font-bold">-6.300,00 D</td>
+                              </tr>
+
+                              <tr>
+                                <td className="p-2 border">29/04/2026</td>
+                                <td className="p-2 border">DEP.DINHEIRO</td>
+                                <td className="p-2 border"></td>
+                                <td className="p-2 border text-blue-700 font-bold">500,00 C</td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                          <div className="mt-4 text-sm text-gray-700 space-y-1">
+                            <p><b>Regras:</b></p>
+                            <p>• Data deve estar no formato DD/MM/AAAA.</p>
+                            <p>• Histórico é obrigatório.</p>
+                            <p>• Conta pode ser código contábil ou ficar em branco para classificação automática.</p>
+                            <p>• Valor positivo ou com C será tratado como entrada.</p>
+                            <p>• Valor negativo ou com D será tratado como saída.</p>
+                          </div>
+
+                          <div className="mt-5 flex justify-end">
+                              <button
+                                type="button"
+                                onClick={exportarLayout}
+                                className="btn-pill btn-blue"
+                              >
+                                📥 Exportar Layout
+                              </button>
+                            </div>
+                        </div> 
+                        
+                      )}
+
+    
         {/* CONTA + SALDO */}
-        <div className="grid grid-cols-[1fr_200px] gap-6 items-end">
+         {abaAtiva === "lancamentos" && (
+         <div className="grid grid-cols-[1fr_200px] gap-6 items-end">
 
           {/* CONTA */}
           <div className="flex flex-col gap-1">
@@ -882,7 +993,7 @@ return (
             </label>
 
      
-      <div className="relative">
+            <div className="relative">
 
                     <input
                     className="w-full border rounded-lg p-1"
@@ -961,53 +1072,55 @@ return (
                         ))}
 
                     </div>
-                    )}
-
+                    )}  
              </div>
-
-    </div>
-    
-    <select
-  value={modoImportacao}
-  onChange={(e) => setModoImportacao(e.target.value)}
-  disabled={linhas.length > 0}
-  className="border rounded-lg px-3 py-2 font-bold"
->
-  <option value="contabil">📘 Contábil normal</option>
-  <option value="cartao">💳 Fatura cartão</option>
-</select>
-    {/* SALDO */}
-    <div className="text-right">
-
-      <div className="text-base text-gray-50">
-        Saldo atual
-      </div>
-     <div
-  className={`text-lg font-bold ${
-    saldo > 0
-      ? "text-green-600"
-      : saldo < 0
-      ? "text-red-400"
-      : "text-gray-200"
-  }`}
->
-  {carregandoSaldo
-    ? "Carregando..."
-    : saldo.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL"
-      })
-  }
-        </div> 
+       
     </div> 
-  </div>  
-  </div> 
-  </div>
+    
+            <select
+          value={modoImportacao}
+          onChange={(e) => setModoImportacao(e.target.value)}
+          disabled={linhas.length > 0}
+          className="border rounded-lg px-3 py-2 font-bold"
+        >
+          <option value="contabil">📘 Contábil normal</option>
+          <option value="cartao">💳 Fatura cartão</option>
+        </select>
+            {/* SALDO */}
+            <div className="text-right">
+
+              <div className="text-base text-gray-50">
+                Saldo atual
+              </div>
+            <div
+          className={`text-lg font-bold ${
+            saldo > 0
+              ? "text-green-600"
+              : saldo < 0
+              ? "text-red-400"
+              : "text-gray-200"
+          }`}
+        >
+          {carregandoSaldo
+            ? "Carregando..."
+            : saldo.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
+              })
+          }
+                </div> 
+                
+            </div> 
+          </div>  
+          )}
+          </div> 
+          
+          </div>
 
      
 
           {/* TABELA */}
-                   {resumoImportacao && (
+              {abaAtiva === "lancamentos" && resumoImportacao && (
                 <div className="mt-2 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
                   ✔ {resumoImportacao.qtd} registros importados | 
                   Entradas: {resumoImportacao.entrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} | 
@@ -1015,7 +1128,8 @@ return (
                 </div>
               )}
                  
-                <div className="mt-4 max-h-[680px] overflow-y-auto rounded-xl border border-gray-200 bg-white"> 
+              {abaAtiva === "lancamentos" && (
+             <div className="mt-4 max-h-[680px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
                 
                <div className="sticky top-0 z-20 grid grid-cols-[120px_500px_120px_120px_320px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 bg-white">     
                 <div>Data</div>
@@ -1184,7 +1298,7 @@ return (
                     
                   </div> 
                 ))} </div> 
-          {/* NOVA LINHA */}
+                )}          {/* NOVA LINHA */}
           
             {mostrarNovaLinha && (
          <div className="sticky bottom-0 z-20 grid grid-cols-[120px_500px_120px_120px_320px_120px_60px] gap-2 border-t bg-white p-2">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { buildWebhookUrl } from "../config/globals";
@@ -12,6 +12,7 @@ export default function ImportacaoCartaoCredito() {
   const [cartaoId, setCartaoId] = useState("");
   const [linhas, setLinhas] = useState([]);
   const [resumo, setResumo] = useState(null);
+  const [abaAtiva, setAbaAtiva] = useState("lancamentos");
    
   const [dataReferencia, setDataReferencia] = useState("");
 const [importacaoId, setImportacaoId] = useState(null);
@@ -29,6 +30,51 @@ const [statusEtapa, setStatusEtapa] = useState("importar");
     transition-all duration-200
     inline-flex items-center gap-2
   `;
+
+  function exportarLayout() {
+    const dados = [
+      ["Data", "Estabelecimento", "Portador", "Valor", "Parcela"],
+      ["02/05/2026", "HETZNER ONLINE GMBH", "LUIS GUSTAVO LANDUCCI", "R$ 3,67", "-"],
+      ["02/05/2026", "HETZNER ONLINE GMBH", "LUIS GUSTAVO LANDUCCI", "R$ 104,90", "-"],
+      ["07/05/2026", "GERALDO FORTUNATO", "LUIS GUSTAVO LANDUCCI", "R$ 20,00", "-"],
+      ["08/05/2026", "ACOUGUE*CARRARA", "LUIS GUSTAVO LANDUCCI", "R$ 23,39", "-"],
+      ["20/04/2026", "Pagamentos Validos Normais", "LUIS GUSTAVO LANDUCCI", "R$ -272,44", "-"],
+      ["27/04/2026", "MP*MERCADOLIVRE", "LUIS GUSTAVO LANDUCCI", "R$ 10,68", "1 de 7"],
+      ["27/07/2025", "ASA*NO CODE START UP N", "LUIS GUSTAVO LANDUCCI", "R$ 157,53", "10 de 12"],
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(dados);
+    ws["!cols"] = [
+      { wch: 14 },
+      { wch: 34 },
+      { wch: 28 },
+      { wch: 14 },
+      { wch: 14 },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Layout Cartao");
+
+    const wbout = XLSX.write(wb, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([wbout], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "layout_importacao_cartao.xlsx";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  }
 
   useEffect(() => {
     carregarCartoes();
@@ -453,7 +499,112 @@ function sugerirDataReferencia(linhasConvertidas) {
               💳 Importação de Transações do Cartão
             </h2>
 
-            <div className="grid grid-cols-[1fr_220px_220px] gap-4 items-end">
+            <div className="flex gap-3 mb-4">
+              <button
+                type="button"
+                onClick={() => setAbaAtiva("lancamentos")}
+                className={`px-5 py-2 rounded-full font-bold text-sm ${
+                  abaAtiva === "lancamentos"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700"
+                }`}
+              >
+                💳 Lançamentos
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAbaAtiva("layout")}
+                className={`px-5 py-2 rounded-full font-bold text-sm ${
+                  abaAtiva === "layout"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700"
+                }`}
+              >
+                📄 Layout da Planilha
+              </button>
+            </div>
+
+            {abaAtiva === "layout" && (
+              <div className="bg-white rounded-xl p-6 border shadow mb-4">
+                <h3 className="text-xl font-black text-gray-800 mb-3">
+                  📄 Layout esperado da planilha de cartão
+                </h3>
+
+                <p className="text-sm text-gray-600 mb-4">
+                  A planilha deve conter as colunas abaixo. O arquivo pode ser Excel, CSV ou TXT separado por ponto e vírgula.
+                </p>
+
+                <table className="w-full text-sm border">
+                  <thead className="bg-blue-700 text-white">
+                    <tr>
+                      <th className="p-2 border">Data</th>
+                      <th className="p-2 border">Estabelecimento</th>
+                      <th className="p-2 border">Portador</th>
+                      <th className="p-2 border">Valor</th>
+                      <th className="p-2 border">Parcela</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td className="p-2 border">02/05/2026</td>
+                      <td className="p-2 border">HETZNER ONLINE GMBH</td>
+                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                      <td className="p-2 border text-red-700 font-bold">R$ 3,67</td>
+                      <td className="p-2 border">-</td>
+                    </tr>
+
+                    <tr>
+                      <td className="p-2 border">20/04/2026</td>
+                      <td className="p-2 border">Pagamentos Validos Normais</td>
+                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                      <td className="p-2 border text-green-700 font-bold">R$ -272,44</td>
+                      <td className="p-2 border">-</td>
+                    </tr>
+
+                    <tr>
+                      <td className="p-2 border">27/04/2026</td>
+                      <td className="p-2 border">MP*MERCADOLIVRE</td>
+                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                      <td className="p-2 border text-red-700 font-bold">R$ 10,68</td>
+                      <td className="p-2 border">1 de 7</td>
+                    </tr>
+
+                    <tr>
+                      <td className="p-2 border">27/07/2025</td>
+                      <td className="p-2 border">ASA*NO CODE START UP N</td>
+                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                      <td className="p-2 border text-red-700 font-bold">R$ 157,53</td>
+                      <td className="p-2 border">10 de 12</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div className="mt-4 text-sm text-gray-700 space-y-1">
+                  <p><b>Regras:</b></p>
+                  <p>• Data deve estar no formato DD/MM/AAAA.</p>
+                  <p>• Estabelecimento é obrigatório.</p>
+                  <p>• Portador é opcional, mas recomendado.</p>
+                  <p>• Valor positivo será tratado como compra.</p>
+                  <p>• Valor negativo será tratado como crédito/pagamento.</p>
+                  <p>• Parcela pode ser “-”, “1 de 7” ou “1/7”.</p>
+                </div>
+
+                <div className="mt-5 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={exportarLayout}
+                    className="btn-pill btn-blue"
+                  >
+                    📥 Exportar Layout
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {abaAtiva === "lancamentos" && (
+              <div className="grid grid-cols-[1fr_220px_220px] gap-4 items-end">
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-semibold text-gray-50">
                   Cartão
@@ -507,10 +658,11 @@ function sugerirDataReferencia(linhasConvertidas) {
                 </div>
               </div>
             </div>
+            )}
           </div>
            </div>
 
-          {resumo && (
+          {abaAtiva === "lancamentos" && resumo && (
             <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
               ✔ {resumo.qtd} registros importados | Compras:{" "}
               {resumo.compras.toLocaleString("pt-BR", {
@@ -530,6 +682,7 @@ function sugerirDataReferencia(linhasConvertidas) {
             </div>
           )}
 
+          {abaAtiva === "lancamentos" && (
           <div className="mt-4 max-h-[580px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
             <div className="grid grid-cols-[110px_420px_220px_120px_130px_120px] gap-2 text-sm py-2 border-b border-gray-200 bg-gray-50">
               <div className="text-left font-bold">Data</div>
@@ -584,7 +737,9 @@ function sugerirDataReferencia(linhasConvertidas) {
               </div>
             ))}
           </div>
+          )}
 
+           {abaAtiva === "lancamentos" && (
            <div className="flex justify-end gap-3 mt-4">
               <label
                 className={`${botaoBase} text-white bg-gradient-to-b from-cyan-500 via-teal-600 to-teal-800 cursor-pointer ${
@@ -631,6 +786,7 @@ function sugerirDataReferencia(linhasConvertidas) {
                 ↩ Sair
               </button>
             </div>
+           )}
         </div>
       </div>
     </div>

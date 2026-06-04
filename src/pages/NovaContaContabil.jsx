@@ -35,6 +35,9 @@ const [nome, setNome] = useState(""); // 👈 sempre vazio
   nivel: contexto?.nivel ?? "",
   conta_pai: contexto?.conta_pai_codigo ?? "",
   classificacao: "",
+  criar_regra:false,
+  texto_regra:"",
+  tipo_movimento:""
 });
  const classeConta = Number(String(form.codigo || "").trim().split(".")[0]);
 
@@ -75,6 +78,9 @@ async function salvar() {
       nivel: form.nivel,
       conta_pai_id: contaPaiId ?? null,
       classificacao: form.classificacao || "",
+      criar_regra:false,
+     texto_regra:"",
+     tipo_movimento:""
     });
  try {
   const resp = await fetch(url, { method: "POST" });
