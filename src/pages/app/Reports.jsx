@@ -1,0 +1,220 @@
+ import { useNavigate } from "react-router-dom";
+
+ const baseIcon = "w-10 h-10 stroke-blue-800";
+
+const IconCash = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="6" width="20" height="12" rx="2" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const IconChart = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M4 19V5M10 19V9M16 19V13M22 19H2" />
+  </svg>
+);
+
+const IconBook = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M4 4h16v16H4z" />
+  </svg>
+);
+
+const IconBalance = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M12 3v18M5 7h14M7 21h10" />
+  </svg>
+);
+
+const IconReport = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M6 2h9l5 5v15H6z" />
+  </svg>
+);
+
+const IconSigma = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M18 4H6l6 8-6 8h12" />
+  </svg>
+);
+
+const IconCashFlow = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M3 12h18" />
+    <path d="M7 8l-4 4 4 4" />
+    <path d="M17 16l4-4-4-4" />
+  </svg>
+);
+ 
+const IconDocument = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M6 2h9l5 5v15H6z" />
+    <path d="M9 12h6M9 16h6" />
+  </svg>
+);
+
+const IconJournal = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <path d="M5 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5z" />
+    <path d="M9 3v18" />
+    <path d="M12 8h4M12 12h4M12 16h4" />
+  </svg>
+);
+
+const IconBars = () => (
+  <svg className={baseIcon} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+    <rect x="4" y="10" width="3" height="10" />
+    <rect x="10" y="6" width="3" height="14" />
+    <rect x="16" y="3" width="3" height="17" />
+  </svg>
+);
+
+export default function Reports() {
+  const navigate = useNavigate();
+
+  const cards = [
+    //{
+   //   title: "Fluxo de Caixa Consolidado",
+   //   desc: "Entradas e saídas consolidado",
+   //   path: "/relatorios/fluxo-caixa",
+   //    icon: <IconCash />,
+  //  },
+
+    {
+      title: "Fluxo de Caixa Realizado",
+      desc: "Entradas e saídas no período, mensal e consolidado",
+     // path: "/relatorios/fluxo-caixa-detalhado",
+        path: "/relatorios/fluxo-caixa",
+       icon: <IconChart />,
+    },
+
+     {
+      title: "Relatório Fluxo Caixa Gráfico",
+      desc: "Fluxo de Caixa Realizado Gráfico",
+      path: "/fluxo-caixa-grafico",
+      icon: <IconChart />,
+    },
+
+      {
+      title: "Relatório Fluxo Caixa Projetado Gráfico",
+      desc: "Fluxo de Caixa Projetado Gráfico",
+      path: "/fluxo-projetado-grafico",
+      icon: <IconChart />,
+    },
+
+    {
+      title: "Saldos por Conta",
+      desc: "Saldo consolidado por conta financeira",
+      path: "/relatorios/saldoporconta",
+      icon: <IconCashFlow />,
+    },
+     
+    {
+      title: "Balancete",
+      desc: "Débito e crédito por conta contábil",
+      path: "/relatorios/balancete",
+          icon: <IconReport />,
+    },
+    {
+      title: "DRE",
+      desc: "Resultado do exercício",
+      path: "/relatorios/dre",
+        icon: <IconSigma />,
+    },
+
+    
+    
+    {
+      title: "Relação Razão",
+      desc: " Lançamentos detalhados por conta",
+      path: "/relatorios/razao",
+       icon: <IconDocument />,
+    },
+
+     {
+      title: "Relação Balanço",
+      desc: " Lançamentos detalhados por conta",
+      path: "/relatorios/balanco",
+        icon: <IconBars />,
+    },
+      {
+      title: "Relação KPIs",
+      desc: " Relatório de KPIs",
+      path: "/relatorios/gerencial",
+        icon: <IconChart />,
+    },
+ 
+       {
+      title: "Relatório Lancto Partida Dobrada",
+      desc: "Detalhe de Partida Dobrada",
+      path: "/rel-lancto_partida",
+      icon: <IconReport />,
+    },
+   
+     
+       {
+      title: "Relatório Balanço por Nível",
+      desc: "Valores Contábeis por Nivel de Conta",
+      path: "/relatorionivel",
+      icon: <IconReport />,
+    },
+
+     {
+      title: "Relatório Dre Gerencial",
+      desc: "Calcula DRE PE e Margem",
+      path: "/reldregerencial",
+      icon: <IconReport />,
+    },
+   
+
+    {
+      title: "Relatório Fornecedores",
+      desc: "Relatório de Endividamento",
+      path: "/rel-fornecedor",
+      icon: <IconReport />,
+    },
+    
+     
+    {
+      title: "Relatório de Recebimentos",
+      desc: "Relatório de Recebimentos",
+      path: "/relatorio-receber-pessoa" ,
+      icon: <IconReport />,
+    },
+    
+
+      
+  ];
+
+ 
+
+  return (
+    <div>
+ 
+      <div className="bg-gray-100 min-h-screen p-6  rounded-xl shadow-lg border-[4px] border-gray-400"> 
+      <h1 className="text-2xl font-bold mb-6">Relatórios</h1>
+ 
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 text-[#1e40af]"> 
+        {cards.map((c) => (
+         <div
+            key={c.title}
+            onClick={() => navigate(c.path)}
+            className="cursor-pointer rounded-xl border border-blue-900 bg-gray-100 p-5 shadow hover:shadow-lg transition"
+          >
+            <div className="mb-3 text-[#1e40af]">{c.icon}</div>
+
+            <h2 className="text-lg font-bold text-[#1e40af]">
+              {c.title}
+            </h2>
+
+            <p className="text-base text-gray-700 mt-2 text-[#1e40af]">
+              {c.desc}
+            </p>
+          </div>
+
+        ))}
+      </div></div>
+    </div>
+  );
+}
