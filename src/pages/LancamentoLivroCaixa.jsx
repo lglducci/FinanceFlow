@@ -31,7 +31,7 @@ const [resumoImportacao, setResumoImportacao] = useState(null);
 //nova conta modelo inteligente 
 const [linhaContaNova, setLinhaContaNova] = useState(null);
 const [linhaDropdownAberta, setLinhaDropdownAberta] = useState(null);
-
+const inputOfxRef = useRef(null);
 const [abaAtiva, setAbaAtiva] = useState("lancamentos");
  
  const [modoImportacao, setModoImportacao] = useState("contabil");
@@ -512,12 +512,75 @@ function cancelarNovaLinha() {
   setIndiceSelecionado(-1);
 }
  
+{/*}
  function dataBRparaISO(data) {
   const txt = String(data || "").trim();
   const m = txt.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if (m) return `${m[3]}-${m[2]}-${m[1]}`;
   return txt;
 }
+*/}
+
+function dataImportadaParaISO(valor) {
+  const txt = String(valor || "").trim();
+
+  if (!txt) {
+    throw new Error(
+      "A coluna DATA está vazia. Corrija a planilha e formate a data como DD/MM/AAAA."
+    );
+  }
+
+  // já veio ISO
+  if (/^\d{4}-\d{2}-\d{2}$/.test(txt)) return txt;
+
+  const m = txt.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+  if (!m) {
+    throw new Error(
+      `Data inválida encontrada: "${txt}". O Excel está enviando a data em formato incorreto. Formate a coluna DATA como DD/MM/AAAA no Excel ou Google Sheets.`
+    );
+  }
+
+  let p1 = Number(m[1]);
+  let p2 = Number(m[2]);
+  const ano = Number(m[3]);
+
+  let dia;
+  let mes;
+
+  // DD/MM/YYYY
+  if (p1 > 12 && p2 <= 12) {
+    dia = p1;
+    mes = p2;
+  }
+  // MM/DD/YYYY
+  else if (p2 > 12 && p1 <= 12) {
+    mes = p1;
+    dia = p2;
+  }
+  // Ambíguo: 05/11/2026 -> assume padrão brasileiro
+  else {
+    dia = p1;
+    mes = p2;
+  }
+
+  const dataTeste = new Date(ano, mes - 1, dia);
+
+  const dataValida =
+    dataTeste.getFullYear() === ano &&
+    dataTeste.getMonth() === mes - 1 &&
+    dataTeste.getDate() === dia;
+
+  if (!dataValida) {
+    throw new Error(
+      `Data inválida encontrada: "${txt}". Corrija a coluna DATA no Excel para DD/MM/AAAA.`
+    );
+  }
+
+  return `${ano}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+}
+
+
 
 function normalizarCodigoConta(txt) {
   return String(txt || "").trim().replace(/\s+/g, "");
@@ -571,7 +634,8 @@ function parseTextoParaLinhas(texto) {
     const codigoConta = String(colunas[2] || "").trim();
     const valorTexto = String(colunas[3] || "").trim();
 
-    const temData = /^\d{2}\/\d{2}\/\d{4}$/.test(data);
+    const temData = data !== "";
+
     const temValor = valorTexto !== "";
 
     // nova linha válida
@@ -581,7 +645,7 @@ const contaEncontrada = resolverContaPorCodigo(codigoConta);
 
       atual = {
         _id: gerarLinhaId(),
-        data: dataBRparaISO(data),
+        data: dataImportadaParaISO(data),
         historico: historico,
        tipo: tipoPorModo(valorOriginal),
 valor: Math.abs(valorOriginal).toFixed(2).replace(".", ","),
@@ -706,15 +770,22 @@ async function importarArquivoExcel(e) {
     let texto = "";
 
     if (["xlsx", "xls"].includes(ext)) {
-      const workbook = XLSX.read(buffer, { type: "array" });
+    
+      const workbook = XLSX.read(buffer, {
+  type: "array",
+  cellDates: true,
+  dateNF: "dd/mm/yyyy",
+});
+
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
 
-      const linhasArray = XLSX.utils.sheet_to_json(sheet, {
-        header: 1,
-        defval: "",
-        raw: false,
-      });
+       const linhasArray = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          defval: "",
+          raw: false,
+          dateNF: "dd/mm/yyyy",
+        });
 
       texto = linhasArray
         .map((linha) => linha.map((c) => String(c || "").trim()).join("\t"))
@@ -772,7 +843,7 @@ recalcularLinhas([...linhas, ...novasClassificadas]);
     e.target.value = "";
   } catch (erro) {
     console.error("Erro ao importar arquivo:", erro);
-    alert("Erro ao importar arquivo.");
+     alert(erro.message || "Erro ao importar arquivo.");
   }
 }
 
