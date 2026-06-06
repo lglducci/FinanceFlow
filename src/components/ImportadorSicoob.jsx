@@ -62,7 +62,8 @@ export default function ImportadorSicoob({ onTextoPronto }) {
   }
 
   return (
-    <label className="px-5 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold shadow cursor-pointer hover:brightness-110">
+    <label className="h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-sm shadow-sm hover:bg-slate-50 transition">
+      
       📥 Importar Excel 
       <input
         type="file"
