@@ -7,6 +7,14 @@ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import { Link } from "react-router-dom";
 import { fetchSeguro } from "../utils/apiSafe";
 import { useRef } from "react";
+import { FilePlus } from "lucide-react";
+
+import { FileText } from "lucide-react";   // relatório
+import { Receipt } from "lucide-react";    // recibo
+import { ScrollText } from "lucide-react"; // relatório detalhado
+import { Funnel } from "lucide-react";
+
+
 
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
@@ -17,14 +25,14 @@ export default function Lancamentos() {
   const [periodo, setPeriodo] = useState("mes");
   const [modalConta, setModalConta] = useState(false);
   const [qtdVencidos, setQtdVencidos] = useState(0);
-   const [qtdRegistros, setQtdRegistros] = useState(0);
-   const [selecionados, setSelecionados] = useState([]);
-const [totalEntrada, setTotalEntrada] = useState(0);
-const [totalSaida, setTotalSaida] = useState(0);
-const [saldoInicial, setSaldoInicial] = useState(0);
-const [saldoFinal, setSaldoFinal] = useState(0);
-const [refreshKey, setRefreshKey] = useState(0);
-const contaRef = useRef(null);
+  const [qtdRegistros, setQtdRegistros] = useState(0);
+  const [selecionados, setSelecionados] = useState([]);
+  const [totalEntrada, setTotalEntrada] = useState(0);
+  const [totalSaida, setTotalSaida] = useState(0);
+  const [saldoInicial, setSaldoInicial] = useState(0);
+  const [saldoFinal, setSaldoFinal] = useState(0);
+ const [refreshKey, setRefreshKey] = useState(0);
+  const contaRef = useRef(null);
  
 const [contas, setContas] = useState([]);
 const [loading, setLoading] = useState(false);
@@ -44,6 +52,22 @@ const [tipoOperacao, setTipoOperacao] = useState("transacao");
 const [busca, setBusca] = useState("");
 const [msgEstorno, setMsgEstorno] = useState("");
 const [piscarBotaoAcao, setPiscarBotaoAcao] = useState(false);
+
+
+const [modalFiltro, setModalFiltro] = useState(false);
+
+ 
+const [filtroTemp, setFiltroTemp] = useState({
+  dataIni: "",
+  dataFim: "",
+  filtroContaId: "",
+  busca: "",
+  tipoOperacao: "transacao",
+});
+
+
+const [filtroContaId, setFiltroContaId] = useState("");
+
 
 function chamarAtencaoBotaoAcao() {
   setPiscarBotaoAcao(true);
@@ -182,16 +206,21 @@ function mostrarMensagemTela(mensagem, tempo = 20000) {
 
     const lista = Array.isArray(data) ? data : [];
 
-    setContas(
-      lista.map((c) => ({
-        id: c.conta_id,
-        nome: c.conta_nome,
-        nro_banco: c.nro_banco,
-        agencia: c.agencia,
-        conta: c.conta,
-        saldo: c.saldo_final,
-      }))
-    );
+   setContas(
+  lista.map((c) => ({
+    id: c.conta_id,
+    conta_id: c.conta_id,
+    nome: c.conta_nome,
+    conta_nome: c.conta_nome,
+    banco_nome: c.banco_nome,
+    nro_banco: c.nro_banco,
+    agencia: c.agencia,
+    conta: c.conta,
+    saldo: c.saldo_final,
+    icone_url: String(c.icone_url || "").trim(),
+    cor_hex: c.cor_hex,
+  }))
+);
   } catch (error) {
     console.error("Erro ao carregar contas:", error);
   }
@@ -203,15 +232,15 @@ function labelContaDrop(c) {
   const ag = c.agencia ? `Ag : ${c.agencia}` : "";
   const cc = c.conta ? `Cc : ${c.conta}` : "";
 
-  const dados = [banco, ag, cc].filter(Boolean).join(" • ");
+  const dados = [ ag, cc].filter(Boolean).join(" • ");
   const saldo = Number(c.saldo || 0).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
 
   return dados
-    ? `${c.nome} — ${dados} — ${saldo}`
-    : `${c.nome} —  ${saldo} `;
+    ? `${c.nome} — ${dados}  `
+    : `${c.nome}   `;
 }
  
 useEffect(() => {
@@ -224,8 +253,8 @@ useEffect(() => {
    // setPeriodo("mes");
     //aplicarPeriodo("mes");
   //}, []);
-
- async function pesquisar(tipo = "") {
+ 
+  async function pesquisar(tipo = "", contaFiltroParam = null) {
 
   tipo = tipo || "";
 
@@ -234,7 +263,10 @@ useEffect(() => {
   // REGRA PARA VENCIDOS
   let dataIniLocal = dataIni;
   let dataFimLocal = dataFim;
-  let contaLocal = Number(contaId) || 0;
+  let contaLocal =
+  contaFiltroParam !== null
+    ? Number(contaFiltroParam) || 0
+    : Number(filtroContaId) || 0;
   let categoriaLocal = Number(categoriaId) || 0;
   let fornecedorLocal = Number(fornecedorId) || 0;
   let tipoOperacaoLocal = tipo;
@@ -296,7 +328,7 @@ useEffect(() => {
 
     if (tipo === "transacao") { 
     
-    contaLocal = 0;
+    
     categoriaLocal = 0;
     fornecedorLocal = 0;
     tipoOperacaoLocal = "transacao";
@@ -417,6 +449,18 @@ setCarregando(true);
 
     
   }   
+   
+   
+
+   function ReclassifacaoContabil() {
+    navigate("/regras-classificacao");
+  }
+
+
+    function ImportarExtrato() {
+    navigate("/importacao-bancaria");
+  }
+
 
   function abrirNovoLancamento() {
     navigate("/new-transaction");
@@ -687,8 +731,18 @@ const formaLabel = {
   boleto: "Boleto",
   aprazo: "A prazo"
 };
-
+ 
 const listaFiltrada = lista.filter((l) => {
+
+  if (
+    filtroContaId &&
+    String(l.conta_nome || "") !==
+      String(
+        contas.find(c => String(c.id) === String(filtroContaId))?.nome || ""
+      )
+  ) {
+    return false;
+  }
 
   if (!busca) return true;
 
@@ -696,16 +750,14 @@ const listaFiltrada = lista.filter((l) => {
 
   return (
     (l.descricao || "").toLowerCase().includes(texto) ||
-    //(l.categoria_nome || "").toLowerCase().includes(texto) ||
     (l.forma || "").toLowerCase().includes(texto) ||
     (l.tipo || "").toLowerCase().includes(texto) ||
-       (l.tipo_evento || "").toLowerCase().includes(texto) ||
+    (l.tipo_evento || "").toLowerCase().includes(texto) ||
     (l.origem || "").toLowerCase().includes(texto) ||
     (l.classificacao || "").toLowerCase().includes(texto) ||
     (l.valor || "").toString().toLowerCase().includes(texto)
   );
 });
-
  
 async function carregarQtdVencidos() {
   try {
@@ -1105,7 +1157,24 @@ function escolherFiltro(tipo) {
   );
 }
 
+const contaSelecionada = contas.find((c) => {
+  const idConta = String(c.conta_id ?? c.id ?? "");
+  const idSelecionado = String(contaId ?? "");
+  return idConta === idSelecionado;
+});
 
+ const iconeConta = String(
+  contaSelecionada?.icone_url ||
+  contaSelecionada?.icone ||
+  contaSelecionada?.url_icone ||
+  contaSelecionada?.logo_url ||
+  contaSelecionada?.banco_icone_url ||
+  ""
+).trim();
+
+console.log("contaId:", contaId);
+console.log("contaSelecionada:", contaSelecionada);
+console.log("iconeConta:", iconeConta);
  
 
 return (
@@ -1129,28 +1198,73 @@ return (
     {/* HEADER */}
    <div className="flex justify-between items-start">
   
-    <h1 className="text-xl font-bold text-blue-800">Transações Financeiras</h1>
+    <h1 className="text-2xl font-bold text-blue-800">Transações Financeiras</h1>
   <div>
 
-  {/* BOTÃO HELP */}
-  <span
-    onClick={() => navigate("/pages/ajuda/lancamentos")}
-    className="cursor-pointer bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-blue-700"
-    title="Abrir ajuda"
-  >
-    ?
-  </span> 
-    <p className="text-sm text-gray-500">
-      Consulte entradas e saídas financeiras com poucos cliques.
-    </p>
-  </div>
+  
+   
+    
+  </div> 
+         {/* BOTÃO HELP  
+         <div className="flex items-center gap-2 mt-3"> 
+            {tipoOperacao !== undefined && tipoOperacao !== null && ( 
+            <div className="mt-3 ml-3 flex justify-center">
+              <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm  ">
+                <span className="text-base text-slate-600">
+                Filtro de:{" "}
+                  <span className="font-bold text-blue-700">
+                    {RelatorioEscolhido(tipoOperacao)}
+                  </span>
+                  {" — Encontrados "}
+                  <span className="font-bold text-slate-700 text-blue-700">
+                    {qtdRegistros}
+                  </span>
+                  {" registros"}
+                      </span>
+                  </div> 
+              </div> 
+            )}      
+    </div> */}
 
   <div className="flex gap-4 text-base font-semibold">
-         <p className="text-sm text-gray-500 mt-30">
-          ℹ️ Transações já estornadas ou estornos não podem ser estornados novamente.
-        </p>
-
+         
    
+    <button
+  onClick={() => {
+    setFiltroTemp({
+  dataIni,
+  dataFim,
+  filtroContaId,
+  busca,
+  tipoOperacao,
+});
+    setModalFiltro(true);
+  }}
+  className="btn-pill btn-white flex items-center gap-2"
+>
+  <Funnel size={16} />
+  Filtros
+</button>
+
+
+
+     <button
+      onClick={ReclassifacaoContabil}
+       className="btn-pill btn-white"
+   >
+        <ScrollText size={16} /> Reclassificação 
+    </button>
+
+
+     
+     <button
+      onClick={ImportarExtrato}
+       className="btn-pill btn-white"
+   >
+        <FilePlus size={16} /> Importar 
+    </button>
+
+
      <button
       onClick={abrirNovoLancamento}
        className="btn-pill btn-emerald"
@@ -1179,7 +1293,7 @@ return (
     {/* CARDS SUPERIORES */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-      {/* TOTAL DO PERÍODO */}
+      {/* TOTAL DO PERÍODO  
       <div className="bg-white rounded-xl p-4 border-l-4 border-blue-600 shadow-sm">
         <p className="text-sm text-gray-500">Resultado do período</p>
         <p className="text-2xl font-bold text-gray-900">
@@ -1188,21 +1302,9 @@ return (
             currency: "BRL",
           })}
         </p>
-      </div>
+      </div>*/}
        
-       <div className="bg-white rounded-xl p-4 border-l-4 border-orange-400 shadow-sm">
-            <p className="text-base text-gray-700">Período</p>
-
-            {dataIni && dataFim ? (
-              <p className="font-bold text-gray-800">
-                Período de {calcularPeriodoDias(dataIni, dataFim)} dias
-              </p>
-            ) : (
-              <p className="font-bold text-blue-800">
-                Não selecionado
-              </p>
-            )}
-          </div>
+    
    
  
       {/* CONTA BANCÁRIA  
@@ -1233,22 +1335,24 @@ return (
     <div className="bg-white rounded-xl p-4 shadow-sm">
       <div className="flex flex-wrap items-end gap-2">
 
-        <div>
+         <div hidden={true}>
           <label className="text-sm font-semibold text-gray-700">Data início</label>
           <input
             type="date"
             value={dataIni}
+            visibled = {false}
             max={hojeLocal()}
             onChange={(e) => setDataIni(e.target.value)}
             className="block border rounded-lg px-3 py-2 text-sm"
           />
         </div>
 
-        <div>
+        <div hidden={true}>
           <label className="text-sm font-semibold text-gray-700">Data fim</label>
           <input
             type="date"
             value={dataFim}
+            visibled = {false}
            // max={hojeMaisDias(15)}
             onChange={(e) => setDataFim(e.target.value)}
             className="block border rounded-lg px-3 py-2 text-sm"
@@ -1260,35 +1364,62 @@ return (
          
 
          <div className="flex items-end gap-2">
-            <div>
-              <label className="text-sm font-semibold text-gray-700">
-                Conta Bancária
-              </label>
+             <div>
+  <label className="text-sm font-semibold text-gray-700">
+    Conta Bancária
+  </label>
 
-              <select
-                value={contaId}
-                ref={contaRef}
-                onChange={(e) => {
-                  if (e.target.value === "__nova__") {
-                    setModalConta(true);
-                    return;
-                  }
+  {(() => {
+    const contaSelecionada = contas.find((c) => {
+      const id = c.id ?? c.conta_id;
+      return String(id) === String(contaId);
+    });
 
-                  setContaId(e.target.value);
-                }}
-                className="block border rounded-lg px-3 py-2 text-base text-blue-900 font-bold min-w-[320px]"
-              >
-                <option value="">Selecione</option>
+    return (
+      <div className="flex items-center gap-2">
+         {iconeConta ? (
+  <img
+    src={iconeConta}
+    alt="Banco"
+    className="w-8 h-8 rounded-full object-contain border bg-white"
+  />
+) : (
+  <div className="w-8 h-8 rounded-full border bg-gray-100 flex items-center justify-center text-sm">
+    🏦
+  </div>
+)}
 
-                {contas.map((c) => (
-                  <option key={c.id} value={String(c.id)}>
-                    🏦 {labelContaDrop(c)}
-                  </option>
-                ))}
+        <select
+          value={contaId}
+          ref={contaRef}
+          onChange={(e) => {
+            if (e.target.value === "__nova__") {
+              setModalConta(true);
+              return;
+            }
 
-                <option value="__nova__">➕ Nova Conta Financeira</option>
-              </select>
-            </div>
+            setContaId(e.target.value);
+          }}
+          className="block border rounded-lg px-3 py-2 text-base text-blue-900 font-bold min-w-[320px]"
+        >
+          <option value="">Selecione</option>
+
+          {contas.map((c) => {
+            const id = c.id ?? c.conta_id;
+
+            return (
+              <option key={id} value={String(id)}>
+                {labelContaDrop(c)}
+              </option>
+            );
+          })}
+
+          <option value="__nova__">➕ Nova Conta Financeira</option>
+        </select>
+      </div>
+    );
+  })()}
+</div>
             
              {dadosConta && (
                 <div className="flex flex-col">
@@ -1328,40 +1459,7 @@ return (
             />
           </div>
          
-         {qtdVencidos > 0 && (
-            <div className="mt-3 ml-3 flex justify-center">
-              <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm">
-                <button   onClick={() => escolherFiltro("vencidos")}>
-                  <span className="text-base text-red-600 font-semibold">
-                    Existem {qtdVencidos} título(s) vencido(s).
-                  </span>
-                </button>
-              </div>
-            </div>
-          )}
-         <div className="flex items-center gap-2 mt-3"> 
-            {tipoOperacao !== undefined && tipoOperacao !== null && ( 
-            <div className="mt-3 ml-3 flex justify-center">
-              <div className="rounded-2xl border border-blue-400 bg-white px-6 py-3 shadow-sm  ">
-                <span className="text-base text-slate-600">
-                Filtro de:{" "}
-                  <span className="font-bold text-blue-700">
-                    {RelatorioEscolhido(tipoOperacao)}
-                  </span>
-                  {" — Encontrados "}
-                  <span className="font-bold text-slate-700 text-blue-700">
-                    {qtdRegistros}
-                  </span>
-                  {" registros"}
-                      </span>
-                  </div> 
-              </div> 
-            )}      
-
-        
-
-       
-        </div>
+     
 
       
                   
@@ -1389,7 +1487,7 @@ return (
 
                  <button
                   onClick={() => pesquisar(tipoOperacao || "")}
-                  className="btn-pill btn-blue"
+                  className="btn-pill btn-dark-blue"
                 >
                   🔎 Consultar
                 </button>
@@ -1419,10 +1517,10 @@ return (
     {/* TABELA */}
     <div className="bg-gray-650 rounded-xl shadow-sm overflow-x-auto">
       {listaFiltrada.length === 0 ? (
-        <p className="p-4 text-sm text-gray-500">Nenhum lançamento encontrado.</p>
+        <p className="p-4 text-sm text-gray-50">Nenhum lançamento encontrado.</p>
       ) : (
         <table className="w-full text-sm ">
-          <thead className="bg-gray-900 text-gray-600 text-white">
+          <thead className="bg-gray-200 text-gray-600 text-black">
             <tr>
              {permiteSelecao() && ( <th className="px-3 py-2 text-center">
                 <input
@@ -1438,29 +1536,28 @@ return (
                   
                 />
               </th> )}
-               <th className="px-3 py-2 text-left text-white">id</th>
-              <th className="px-3 py-2 text-left text-white">Descrição</th>
-               <th className="px-3 py-2 text-center  font-bold text-white">Data Movimento</th>
-
+               <th className="px-3 py-2 text-left text-black">id</th>
+              <th className="px-3 py-2 text-left text-balck">Descrição</th>
+               <th className="px-3 py-2 text-center  font-bold text-black">Data Movimento</th> 
 
               {lista.some(l => l.tipo_operacao === "fatura_cartao") ? (
                 <>
-                  <th className="px-3 py-2 text-left text-white">Nome</th>
-                  <th className="px-3 py-2 text-left text-white">Número</th>
+                  <th className="px-3 py-2 text-left text-black">Nome</th>
+                  <th className="px-3 py-2 text-left text-black">Número</th>
                 </>
               ) : (
                 <>
                 {/*}  <th className="px-3 py-2 text-left text-white">Categoria</th>*/}
-                  <th className="px-3 py-2 text-left text-white">Conta</th>
+                  <th className="px-3 py-2 text-left text-black">Conta</th>
                 </>
               )}
-              <th className="px-3 py-2 text-left text-white">Tipo</th> 
+              <th className="px-3 py-2 text-left text-black">Tipo</th> 
                 {temTransacao && (
-                    <th className="px-3 py-2 text-left text-white">Origem</th>
+                    <th className="px-3 py-2 text-left text-black">Origem</th>
                   )}
 
-                <th className="px-3 py-2 text-left text-white">Classsificação</th>
-                  <th className="px-3 py-2 text-left text-white">Forma Pagamento</th>
+                <th className="px-3 py-2 text-left text-black">Classsificação</th>
+                  <th className="px-3 py-2 text-left text-black">Forma Pagamento</th>
                 
               
                  {!temTransacao && (
@@ -1740,6 +1837,144 @@ return (
               onCancel={() => setModalConta(false)}
             />
           </ModalBase>
+
+
+          <ModalBase
+            open={modalFiltro}
+            onClose={() => setModalFiltro(false)}
+            title="Filtros"
+          >
+            <div className="space-y-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  Data início
+                </label>
+                <input
+                  type="date"
+                  value={filtroTemp.dataIni}
+                  max={hojeLocal()}
+                  onChange={(e) =>
+                    setFiltroTemp((p) => ({ ...p, dataIni: e.target.value }))
+                  }
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Data fim
+                  </label>
+                  <input
+                    type="date"
+                    value={filtroTemp.dataFim}
+                    onChange={(e) =>
+                      setFiltroTemp((p) => ({ ...p, dataFim: e.target.value }))
+                    }
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+
+                <div>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Conta bancária
+                  </label>
+                  <select
+                   value={filtroTemp.filtroContaId}
+                    onChange={(e) =>
+                       setFiltroTemp((p) => ({ ...p, filtroContaId: e.target.value }))
+                    }
+                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="">Todas</option>
+                    {contas.map((c) => (
+                      <option key={c.id} value={String(c.id)}>
+                        {labelContaDrop(c)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  Tipo de consulta
+                </label>
+                <select
+                  value={filtroTemp.tipoOperacao}
+                  onChange={(e) =>
+                    setFiltroTemp((p) => ({ ...p, tipoOperacao: e.target.value }))
+                  }
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="transacao">À vista</option>
+                  <option value="conta_receber">A receber</option>
+                  <option value="conta_pagar">A pagar</option>
+                  <option value="cartao_compra">Compras cartão</option>
+                  <option value="fatura_cartao">Faturas</option>
+                  <option value="vence_hoje">Vencimentos hoje</option>
+                  <option value="vencidos">Vencidos</option>
+                  <option value="vence_sete_dias">Vence 7 dias</option>
+                  <option value="estorno">Estornados</option>
+                  <option value="titulos_pagos">Baixados</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  Buscar no histórico
+                </label>
+                <input
+                  type="text"
+                  value={filtroTemp.busca}
+                  onChange={(e) =>
+                    setFiltroTemp((p) => ({ ...p, busca: e.target.value }))
+                  }
+                  placeholder="Ex: pix, carne, gasolina..."
+                  className="w-full border rounded-lg px-3 py-2 text-sm"
+                />
+              </div>
+
+            <div className="flex justify-end gap-3 pt-3">
+            <button
+              type="button"
+              onClick={() => {
+                setFiltroTemp({
+                  dataIni: hojeLocal(),
+                  dataFim: hojeLocal(),
+                  filtroContaId: "",
+                  busca: "",
+                  tipoOperacao: "transacao",
+                });
+              }}
+              className="btn-pill btn-white"
+            >
+              Limpar
+            </button>
+
+      <button
+        type="button"
+        onClick={() => {
+            setDataIni(filtroTemp.dataIni);
+            setDataFim(filtroTemp.dataFim);
+            setFiltroContaId(filtroTemp.filtroContaId);
+            setBusca(filtroTemp.busca.toLowerCase());
+            setTipoOperacao(filtroTemp.tipoOperacao);
+
+            setModalFiltro(false);
+
+            setTimeout(() => {
+              pesquisar(filtroTemp.tipoOperacao, filtroTemp.filtroContaId);
+            }, 50);
+          }}
+        className="btn-pill btn-dark-blue"
+      >
+        Aplicar filtros
+      </button>
+    </div>
+  </div>
+</ModalBase>
 
   </div>
 );

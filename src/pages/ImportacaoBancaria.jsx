@@ -11,11 +11,12 @@ import * as XLSX from "xlsx";
 
 export default function ImportacaoBancaria() {
  
- 
+ const [mensagemImportacao, setMensagemImportacao] = useState(null);
   const [saldo, setSaldo] = useState(0);
    const empresa_id = localStorage.getItem("empresa_id");
  const [contas, setContas] = useState([]);
- 
+ const inputOfxRef = useRef(null);
+  const hoje = hojeLocal();
   const [linhas, setLinhas] = useState([]); 
  
 const [contaId, setContaId] = useState(null);
@@ -30,7 +31,9 @@ const [editandoId, setEditandoId] = useState(null);
  const dataMin = hojeMaisDias(-7);
  const [resumoImportacao, setResumoImportacao] = useState(null);
 const [abaAtiva, setAbaAtiva] = useState("lancamentos");
- 
+const [tipoArquivo, setTipoArquivo] = useState("excel"); 
+
+
  const botaoBase = `
   px-5 py-2 rounded-full
   font-bold text-sm tracking-wide
@@ -41,6 +44,24 @@ const [abaAtiva, setAbaAtiva] = useState("lancamentos");
   transition-all duration-200
   inline-flex items-center gap-2
 `;
+
+
+
+function prepararNovaImportacao(tipo) {
+  setLinhas([]);
+  setResumoImportacao(null);
+  setImportacao(0);
+  setEditandoId(null);
+  limparNova();
+
+  setSaldo(saldoBase);
+
+  setMensagemImportacao(`Importação ${tipo} carregada. As linhas anteriores foram substituídas.`);
+
+  setTimeout(() => {
+    setMensagemImportacao(null);
+  }, 4000);
+}
 
 function normalizarValor(valor) {
   return parseFloat(String(valor || "0").replace(",", ".")) || 0;
@@ -137,21 +158,28 @@ const linha = {
   }, 0);
 }
    
+async function carregarContas() {
+  try {
+    const url = buildWebhookUrl("consultasaldo", {
+      inicio: hoje,
+      fim: hoje,
+      empresa_id,
+      conta_id: 0,
+    });
 
-   async function carregarContas() {
-    try {
-      const url = buildWebhookUrl("listacontas", { empresa_id });
-      const resp = await fetch(url);
-      const data = await resp.json();
-      setContas(data);
-    } catch (error) {
-      console.error("Erro ao carregar contas:", error);
-    }
+    const resp = await fetch(url, { method: "GET" });
+    const data = await resp.json();
+
+    setContas(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error("Erro ao carregar contas:", error);
   }
-  useEffect(() => {
-    carregarContas();
-  }, [empresa_id]);
-  
+}
+
+useEffect(() => {
+  carregarContas();
+}, [empresa_id]);
+ 
 
     function filtrarContas(texto) {
 
@@ -447,6 +475,24 @@ function cancelarNovaLinha() {
   setIndiceSelecionado(-1);
 }
   
+
+
+function parseValorOFX(valor) {
+  if (valor == null) return 0;
+
+  let txt = String(valor)
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/R\$/g, "");
+
+  // se vier BR: -20,00
+  if (txt.includes(",")) {
+    txt = txt.replace(/\./g, "").replace(",", ".");
+  }
+
+  return Number(txt) || 0;
+}
+
 
 
 function dataBRparaISO(data) {
@@ -760,6 +806,10 @@ setResumoImportacao({
 
 function receberTextoImportadorSicoob(textoPronto) {
   const novasLinhas = parseTextoParaLinhas(textoPronto);
+  const novasLinhasComTipo = novasLinhas.map((l) => ({
+  ...l,
+  arquivo_tipo: "EXCEL",
+}));
 
   if (!novasLinhas.length) {
     alert("Nenhuma linha válida encontrada no arquivo Sicoob.");
@@ -769,7 +819,7 @@ function receberTextoImportadorSicoob(textoPronto) {
   let totalEntrada = 0;
   let totalSaida = 0;
 
-  novasLinhas.forEach((l) => {
+   novasLinhasComTipo.forEach((l) => {
     const v = parseNumeroBR(l.valor);
     if (v >= 0) totalEntrada += v;
     else totalSaida += Math.abs(v);
@@ -781,7 +831,7 @@ function receberTextoImportadorSicoob(textoPronto) {
     saida: totalSaida,
   });
 
-  recalcularLinhas([...linhas, ...novasLinhas]);
+  recalcularLinhas([...linhas, ...novasLinhasComTipo]);
   setImportacao(1);
 }
 
@@ -819,17 +869,160 @@ function exportarLayoutExtrato() {
 
   URL.revokeObjectURL(url);
 }
-return (
-  <div className="flex justify-center bg-gray-100 min-h-screen pb-3">
-    <div className="bg-white rounded-2xl border border-gray-300 w-[1200px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
-      <div className="bg-gray-650 rounded-lg p-3">
-        <div className="bg-gray-600 border-b rounded-t-xl p-2">
-          <div className="bg-gray-600 border-b rounded-t-xl p-4">
-            <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
-              🏦 Importação de Extratos Bancários
-            </h2>
 
-            <div className="flex gap-3 mb-4">
+
+
+ 
+
+
+
+async function importarOFXArquivo(e) {
+  const arquivo = e.target.files?.[0];
+  if (!arquivo) return;
+
+
+  prepararNovaImportacao("OFX");
+
+
+  await importarOFX(arquivo);
+
+  e.target.value = "";
+}
+
+
+
+
+function somenteNumeros(v) {
+  return String(v || "").replace(/\D/g, "");
+}
+
+function extrairDadosContaOFX(texto) {
+  return {
+    banco: texto.match(/<BANKID>([^<\n\r]+)/)?.[1]?.trim() || "",
+    agencia: texto.match(/<BRANCHID>([^<\n\r]+)/)?.[1]?.trim() || "",
+    conta: texto.match(/<ACCTID>([^<\n\r]+)/)?.[1]?.trim() || "",
+  };
+}
+
+function validarOFXContaSelecionada(texto) {
+  const contaSelecionada = contas.find(
+    (c) => String(c.conta_id) === String(contaId)
+  );
+
+  if (!contaSelecionada) {
+    alert("Selecione uma conta bancária antes de importar o OFX.");
+    return false;
+  }
+
+  const ofx = extrairDadosContaOFX(texto);
+
+  const bancoTela = somenteNumeros(contaSelecionada.nro_banco);
+  const agenciaTela = somenteNumeros(contaSelecionada.agencia);
+  const contaTela = somenteNumeros(contaSelecionada.conta);
+
+  const bancoOfx = somenteNumeros(ofx.banco);
+  const agenciaOfx = somenteNumeros(ofx.agencia);
+  const contaOfx = somenteNumeros(ofx.conta);
+
+  if (bancoTela && bancoOfx && bancoTela !== bancoOfx) {
+    alert(`OFX bloqueado: banco do arquivo (${bancoOfx}) é diferente da conta selecionada (${bancoTela}).`);
+    return false;
+  }
+
+  if (agenciaTela && agenciaOfx && agenciaTela !== agenciaOfx) {
+    alert(`OFX bloqueado: agência do arquivo (${agenciaOfx}) é diferente da conta selecionada (${agenciaTela}).`);
+    return false;
+  }
+const contaTelaSemZero = contaTela.replace(/^0+/, "");
+const contaOfxSemZero = contaOfx.replace(/^0+/, "");
+
+const contaBate =
+  !contaTela ||
+  !contaOfx ||
+  contaTela === contaOfx ||
+  contaOfx.endsWith(contaTela) ||
+  contaTela.endsWith(contaOfx) ||
+  contaTelaSemZero === contaOfxSemZero ||
+  contaOfxSemZero.endsWith(contaTelaSemZero) ||
+  contaTelaSemZero.endsWith(contaOfxSemZero);
+
+  if (bancoOfx === "033") {
+  return true;
+}
+
+if (!contaBate) {
+  alert(`OFX bloqueado: conta do arquivo (${contaOfx}) é diferente da conta selecionada (${contaTela}).`);
+  return false;
+}
+
+  return true;
+}
+
+
+
+
+ async function importarOFX(arquivo) {
+  const texto = await arquivo.text();
+
+  if (!validarOFXContaSelecionada(texto)) {
+  return;
+}
+
+  const blocos = texto.split("<STMTTRN>").slice(1);
+
+  const novasLinhas = blocos.map((b) => {
+    const dataRaw = b.match(/<DTPOSTED>([^<\n\r]+)/)?.[1] || "";
+    const valorRaw = b.match(/<TRNAMT>([^<\n\r]+)/)?.[1] || "";
+    const memo =
+      b.match(/<MEMO>([^<\n\r]+)/)?.[1] ||
+      b.match(/<NAME>([^<\n\r]+)/)?.[1] ||
+      "LANÇAMENTO OFX";
+
+const valorNumero = parseValorOFX(valorRaw);
+
+    return {
+      _id: gerarLinhaId(),
+      data: `${dataRaw.slice(0, 4)}-${dataRaw.slice(4, 6)}-${dataRaw.slice(6, 8)}`,
+      historico: memo.trim(),
+      tipo: valorNumero >= 0 ? "entrada" : "saida",
+      valor: valorNumero.toFixed(2).replace(".", ","),
+      arquivo_tipo: "OFX",
+    };
+  });
+
+  if (!novasLinhas.length) {
+    alert("Nenhuma movimentação encontrada no OFX.");
+    return;
+  }
+
+  let totalEntrada = 0;
+  let totalSaida = 0;
+
+  novasLinhas.forEach((l) => {
+    const v = Number(String(l.valor).replace(",", "."));
+    if (v >= 0) totalEntrada += v;
+    else totalSaida += Math.abs(v);
+  });
+
+  setResumoImportacao({
+    qtd: novasLinhas.length,
+    entrada: totalEntrada,
+    saida: totalSaida,
+  });
+
+  recalcularLinhas(novasLinhas, saldoBase);
+  setImportacao(1);
+}
+
+   return (
+  <div className="min-h-screen bg-[#eef7fd] px-1 py-1">
+    <div className="mx-auto w-full max-w-[1620px]">
+      <div className="rounded-[28px] bg-[#f8fcff] border border-cyan-100 shadow-[0_8px_30px_rgba(15,23,42,0.08)] p-2">
+        <div className="mb-5">
+          <h2 className="text-3xl font-black tracking-tight text-[#063452]"></h2>
+
+          <div className="flex items-start justify-between mb-4 ">
+          <div className="flex gap-3"> 
               <button
                 type="button"
                 onClick={() => setAbaAtiva("lancamentos")}
@@ -848,15 +1041,17 @@ return (
                 className={`px-5 py-2 rounded-full font-bold text-sm ${
                   abaAtiva === "layout"
                     ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-700"
+                    : "bg-gray-100 text-gray-700"
                 }`}
               >
-                📄 Layout da Planilha
+                📄 Layout da Planilha Excel
               </button>
             </div>
 
+          
+
             {abaAtiva === "layout" && (
-              <div className="bg-white rounded-xl p-6 border shadow mb-4">
+              <div className="bg-white rounded-xl p-16 border shadow mb-4">
                 <h3 className="text-xl font-black text-gray-800 mb-3">
                   📄 Layout esperado da planilha
                 </h3>
@@ -912,50 +1107,21 @@ return (
                   >
                     📥 Exportar Layout
                   </button>
-                </div>
+                </div> 
+
               </div>
             )}
-
-            {abaAtiva === "lancamentos" && (
-              <div className="grid grid-cols-[1fr_200px] gap-4 items-end">
-                <div className="flex flex-col gap-1">
-                  <label className="text-sm font-semibold text-gray-50">
-                    Conta Bancária
-                  </label>
-
-                  <div>
-                    <select
-                      value={contaId}
-                      onChange={(e) => {
-                        if (e.target.value === "__nova__") {
-                          return;
-                        }
-
-                        setContaId(e.target.value);
-                      }}
-                      className="block border rounded-lg px-3 py-2 text-sm"
-                    >
-                      <option value="">Selecione</option>
-
-                      {contas.map((c) => (
-                        <option key={c.id} value={String(c.id)}>
-                          {c.nome}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <div className="text-base text-gray-50">Saldo atual</div>
+            
+              <div className="text-right">
+                  <div className="text-base text-gray-550">Saldo atual</div>
 
                   <div
-                    className={`text-lg font-bold ${
+                    className={`text-lg font-black ${
                       saldo > 0
                         ? "text-green-600"
                         : saldo < 0
                         ? "text-red-400"
-                        : "text-gray-200"
+                        : "text-gray-700"
                     }`}
                   >
                     {carregandoSaldo
@@ -966,29 +1132,151 @@ return (
                         })}
                   </div>
                 </div>
+             </div>
+
+            {abaAtiva === "lancamentos" && (
+               <div className="space-y-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-semibold text-gray-750">
+                    Conta Bancária
+                  </label>
+
+                  <div>
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                          {contas.map((c) => {
+                           const selecionada = String(contaId) === String(c.conta_id);
+
+                            return (
+                              <button
+                                key={c.conta_id}
+                              
+                                 onClick={() => {
+                                          setContaId(c.conta_id);
+
+                                          const saldoCard = Number(c.saldo_final || 0);
+                                          setSaldoBase(saldoCard);
+                                          setSaldo(saldoCard);
+                                          setLinhas([]);
+                                          limparNova();
+                                        }}
+                                        onDoubleClick={() => {
+                                          setContaId(c.conta_id);
+
+                                          const saldoCard = Number(c.saldo_final || 0);
+                                          setSaldoBase(saldoCard);
+                                          setSaldo(saldoCard);
+                                          setLinhas([]);
+                                          limparNova();
+
+                                          setTimeout(() => {
+                                            inputOfxRef.current?.click();
+                                          }, 0);
+                                        }}
+                                className={`
+                                            min-w-[180px] rounded-3xl border bg-white px-4 py-3
+                                            flex items-center gap-3 transition
+                                            ${
+                                              selecionada
+                                                ? "ring-2 ring-offset-1"
+                                                : "hover:scale-[1.02]"
+                                            }
+                                          `}
+                                          style={{
+                                            borderColor: c.cor_hex || "#bae6fd",
+                                            boxShadow: selecionada
+                                              ? `0 0 0 2px ${c.cor_hex || "#2563eb"}33, 0 12px 28px ${c.cor_hex || "#2563eb"}33`
+                                              : `0 8px 20px ${c.cor_hex || "#0f172a"}22`,
+                                          }}
+                              >
+                                <div  className="w-12 h-12 rounded-xl border flex items-center justify-center overflow-hidden"
+                                            style={{
+                                              background: `${c.cor_hex || "#f8fafc"}12`,
+                                              borderColor: `${c.cor_hex || "#e2e8f0"}55`,
+                                            }}
+                                          >
+                                  {c.icone_url ? (
+                                    <img
+                                      src={c.icone_url}
+                                      alt={c.banco_nome || c.nome}
+                                      className="w-8 h-8 object-contain"
+                                    />
+                                  ) : (
+                                    <span className="text-xl">🏦</span>
+                                  )}
+                                </div>
+
+                                <div className="flex-1 text-left">
+                                  <div className="font-black text-slate-800 text-sm">
+                                    {c.nome || c.conta_nome}
+                                  </div>
+
+                                  <div className="text-[11px] font-bold text-slate-400">
+                                    {c.banco_nome || "Conta bancária"}
+                                  </div>
+                                </div>
+
+                                <div className="text-right font-black text-slate-800 text-sm">
+                                  {Number(c.saldo_final || 0).toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                  </div>
+                </div>
+
+               
               </div>
             )}
           </div>
         </div>
 
-        {abaAtiva === "lancamentos" && resumoImportacao && (
-          <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
-            ✔ {resumoImportacao.qtd} registros importados | Entradas: {" "}
-            {resumoImportacao.entrada.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })} | Saídas: {" "}
-            {resumoImportacao.saida.toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })}
-          </div>
-        )}
+        {mensagemImportacao && (
+  <div className="mt-3 rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-bold text-[#063452]">
+    {mensagemImportacao}
+  </div>
+)}
+
+         {abaAtiva === "lancamentos" && resumoImportacao && (
+              <div className="mt-4 rounded-2xl border border-cyan-200 bg-gradient-to-r from-cyan-50 to-sky-50 px-5 py-4 shadow-sm flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-black text-[#063452]">
+                    Importação carregada
+                  </div>
+
+                  <div className="text-sm text-slate-600 font-semibold">
+                    {resumoImportacao.qtd} lançamento(s) encontrados para revisão.
+                  </div>
+                </div>
+
+                <div className="flex gap-3 text-sm font-black">
+                  <span className="rounded-xl bg-white px-4 py-2 text-emerald-700 shadow-sm">
+                    Entradas:{" "}
+                    {resumoImportacao.entrada.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </span>
+
+                  <span className="rounded-xl bg-white px-4 py-2 text-red-600 shadow-sm">
+                    Saídas:{" "}
+                    {resumoImportacao.saida.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </span>
+                </div>
+              </div>
+            )}
 
         {abaAtiva === "lancamentos" && (
           <>
             <div className="mt-4 max-h-[580px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
-              <div className="grid grid-cols-[120px_400px_120px_120px_220px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
+              <div  className="grid grid-cols-[80px_120px_650px_120px_220px_220px_120px_160px] gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
+                <div className="text-left font-bold">Arquivo</div>
                 <div className="text-left font-bold">Data</div>
                 <div className="text-left font-bold">Histórico</div>
 
@@ -1012,8 +1300,16 @@ return (
               {linhas.map((l) => (
                 <div
                   key={l._id}
-                  className="grid grid-cols-[120px_400px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
+                    className="grid grid-cols-[80px_120px_650px_120px_220px_220px_120px_160px] gap-2 text-sm border-b py-1"
                 >
+
+
+                   <div>
+                        <span className="rounded-full border border-cyan-100 bg-cyan-50 px-2 py-1 text-[11px] font-black text-[#063452]">
+                          {l.arquivo_tipo || "MANUAL"}
+                        </span>
+                      </div>
+
                   <div>
                     {String(l.data || "").includes("-")
                       ? l.data.split("-").reverse().join("/")
@@ -1022,19 +1318,17 @@ return (
 
                   <div className="truncate">{l.historico}</div>
 
-                  <div className="text-center">
-                    {l.tipo === "entrada" ? (
-                      <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
-                        <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
-                        Entrada
+                    <div className="text-center">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-black border ${
+                          l.tipo === "entrada"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                            : "bg-red-50 text-red-600 border-red-100"
+                        }`}
+                      >
+                        {l.tipo === "entrada" ? "Entrada" : "Saída"}
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-red-100 text-red-800 font-semibold text-xs">
-                        <span className="w-2 h-2 bg-red-600 rounded-sm"></span>
-                        Saída
-                      </span>
-                    )}
-                  </div>
+                    </div>
 
                   <div
                     className={`text-right font-mono font-semibold ${
@@ -1045,15 +1339,13 @@ return (
                       style: "currency",
                       currency: "BRL",
                     })}
-                  </div>
-
-            
+                  </div> 
 
                   <div
                     className={`border rounded p-2 text-right font-semibold ${
                       Number(l.saldo || 0) >= 0
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                        ? "text-green-700"
+                        :  "text-red-700"
                     }`}
                   >
                     {Number(l.saldo || 0).toLocaleString("pt-BR", {
@@ -1072,14 +1364,14 @@ return (
                       ✏️
                     </button>
 
-                    <button
-                      type="button"
-                      className="text-red-600 hover:text-red-800 text-lg"
-                      onClick={() => removerLinha(l._id)}
-                      title="Excluir linha"
-                    >
-                      🗑
-                    </button>
+                     <button
+                    type="button"
+                    className="w-7 h-7 rounded-full text-slate-600 hover:bg-red-150 hover:text-red-500 transition flex items-center justify-center"
+                    onClick={() => removerLinha(l._id)}
+                    title="Excluir linha"
+                  >
+                    ✕
+                  </button>
                   </div>
                 </div>
               ))}
@@ -1174,41 +1466,54 @@ return (
               )}
             </div>
 
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={adicionarLinha}
-                className={`${botaoBase} text-white bg-gradient-to-b from-slate-500 via-slate-600 to-slate-800`}
-              >
-                ➕ Linha
-              </button>
+          <div className="mt-5 flex items-center justify-between">
+  <div className="flex items-center gap-2">
+    <input
+      id="inputOfx"
+      ref={inputOfxRef}
+      type="file"
+      accept=".ofx"
+      className="hidden"
+      onChange={importarOFXArquivo}
+    />
+   
+   <button
+        onClick={() => inputOfxRef.current?.click()}
+        className="h-10 px-4 rounded-xl border border-cyan-200 bg-cyan-50 text-[#063452] font-bold text-sm shadow-sm hover:bg-cyan-100 transition"
+      >
+        📥 Importar OFX
+      </button>
 
-              <button
-                onClick={salvarLancamentos}
-                className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800`}
-              >
-                💾 Salvar
-              </button>
+    <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
+  </div>
 
-              <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
+  <div className="flex items-center gap-2">
+    <button
+      onClick={limparEdicao}
+      className="h-10 px-4 rounded-xl border border-red-100 bg-red-50 text-red-700 font-bold text-sm shadow-sm hover:bg-red-100 transition"
+    >
+      Limpar
+    </button>
 
-              <button
-                onClick={limparEdicao}
-                className={`${botaoBase} text-white bg-gradient-to-b from-red-500 via-red-600 to-red-800`}
-              >
-                🗑 Limpar
-              </button>
+    <button
+      onClick={() => navigate("/importacao-bancaria")}
+      className="h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-sm shadow-sm hover:bg-slate-50 transition"
+    >
+      Sair
+    </button>
 
-              <button
-                onClick={() => navigate("/importacao-bancaria")}
-                className={`${botaoBase} text-white bg-gradient-to-b from-zinc-500 via-zinc-600 to-zinc-800`}
-              >
-                ↩ Sair
-              </button>
-            </div>
+    <button
+      onClick={salvarLancamentos}
+      className="h-10 px-5 rounded-xl bg-[#063452] text-white font-black text-sm shadow-sm hover:brightness-110 transition"
+    >
+      Salvar
+    </button>
+  </div>
+</div>
           </>
         )}
       </div>
-    </div>
+ 
 
     <ModalBase
       open={modalContaAberto}

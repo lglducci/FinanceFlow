@@ -97,6 +97,7 @@ const THEME = {
               conjunta: conta.conjunta || false,
               juridica: conta.juridica || false,
               padrao: conta.padrao || false,
+              icone_url:conta.icone_url
             });
 
       } catch (e) {
@@ -167,12 +168,30 @@ const THEME = {
   );
 }
 
-return (
-   <div className="bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-100 px-4 py-5 flex justify-center">
-    <div className="w-full max-w-md rounded-[30px] bg-white/95 shadow-2xl border border-white/40 overflow-hidden">
+ 
 
-      {/* TOPO */}
-      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 px-5 py-5 text-white">
+const labelCls = "block text-sm font-semibold text-slate-700 mb-1";
+const inputCls =
+  "w-full h-11 rounded-xl border border-cyan-100 bg-white px-3 text-slate-800 font-semibold shadow-[0_2px_8px_rgba(15,23,42,0.10)] focus:outline-none focus:ring-2 focus:ring-cyan-200";
+
+  
+  const fieldCls =
+    "w-full px-3 py-2 rounded-xl focus:outline-none transition-shadow";
+  const fieldStyle = {
+    background: THEME.fieldBg,
+    color: THEME.text,
+    border: `1px solid ${THEME.fieldBorder}`,
+    boxShadow: "none",
+  };
+  const fieldFocus = { boxShadow: `0 0 0 2px ${THEME.focusRing}55` };
+
+return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-150 via-blue-150 to-slate-100 px-3 py-4 flex items-start justify-center">
+     <div className="w-full max-w-[620px] rounded-2xl bg-white shadow-2xl border border-slate-300 overflow-hidden">
+
+       {/* TOPO */}
+      <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600 px-5 py-5 text-white">
+
         <div className="flex items-center justify-between">
           <button
             type="button"
@@ -189,135 +208,159 @@ return (
           <div className="w-10" />
         </div>
 
-        <p className="text-center text-blue-100 font-bold mt-4">
-          Alteração de conta financeira
-        </p>
+         
       </div>
 
       {/* FORM */}
       <div className="p-5 space-y-4">
 
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center gap-4">
+                {form.icone_url && (
+                  <img
+                    src={form.icone_url}
+                    alt={form.banco}
+                    className="w-14 h-14 object-contain"
+                  />
+                )}
+
+                <div>
+                  <div className="font-black text-slate-800 text-lg">
+                    {form.banco}
+                  </div>
+
+                  <div className="text-sm text-slate-500 font-semi-bold">
+                    Código: {form.nro_banco}
+                  </div>
+                </div>
+              </div>
+
+
+
+
         <div>
-          <label className="block text-sm font-black text-blue-900 mb-1">
+          <label  className={labelCls}>
             Nome da Conta
           </label>
           <input
             name="nome"
             value={form.nome}
             onChange={handleChange}
-            className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+            className={inputCls}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-black text-blue-900 mb-1">
+               <label  className={labelCls}>
               Banco
             </label>
             <input
               name="banco"
               value={form.banco}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-black text-blue-900 mb-1">
+              <label  className={labelCls}>
               Nº Banco
             </label>
             <input
               name="nro_banco"
               value={form.nro_banco}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+              className={inputCls}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-black text-blue-900 mb-1">
+               <label  className={labelCls}>
               Agência
             </label>
             <input
               name="agencia"
               value={form.agencia}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-black text-blue-900 mb-1">
+               <label  className={labelCls}>
               Conta
             </label>
             <input
               name="conta"
               value={form.conta}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+              className={inputCls}
             />
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-black text-blue-900 mb-1">
+               <label  className={labelCls}>
               Tipo
             </label>
             <input
               name="tipo"
               value={form.tipo}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+              className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-black text-blue-900 mb-1">
+               <label  className={labelCls}>
               Saldo Inicial
             </label>
             <input
               name="saldo_inicial"
               value={form.saldo_inicial}
               onChange={handleChange}
-              className="w-full rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-cyan-500"
+             className={inputCls}
             />
           </div>
         </div>
 
         <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3">
-          <label className="flex items-center gap-3 text-blue-900 font-black">
+            <label  className={labelCls}>
             <input type="checkbox" name="conjunta" checked={form.conjunta} onChange={handleChange} />
             Conta conjunta
           </label>
 
-          <label className="flex items-center gap-3 text-blue-900 font-black">
+              <label  className={labelCls}>
             <input type="checkbox" name="juridica" checked={form.juridica} onChange={handleChange} />
             Conta jurídica
           </label>
 
-          <label className="flex items-center gap-3 text-blue-900 font-black">
+             <label  className={labelCls}>
             <input type="checkbox" name="padrao" checked={form.padrao} onChange={handleChange} />
             Conta padrão
           </label>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 pt-3">
-          <button
-            onClick={salvar}
-            disabled={loading}
-            className="rounded-2xl bg-gradient-to-br from-blue-900 to-cyan-700 text-white py-4 font-black shadow-lg disabled:opacity-60"
+        
+          <div className="border-t border-slate-200 pt-4 flex justify-end gap-3">
+           <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="px-6 py-3 rounded-xl bg-cyan-50 border border-cyan-200 text-slate-700 font-bold shadow-sm hover:bg-cyan-100"
           >
-            {loading ? "Salvando..." : "Salvar"}
+            Cancelar
           </button>
 
           <button
-            onClick={() => navigate(-1)}
-            className="rounded-2xl bg-slate-200 text-slate-700 py-4 font-black"
+            type="button"
+            onClick={salvar}
+            disabled={loading}
+            className="px-6 py-3 rounded-xl bg-[#062b49] text-white font-black shadow-sm hover:brightness-110"
           >
-            Sair
+            💾 {loading ? "Salvando..." : "Salvar"}
           </button>
         </div>
       </div>

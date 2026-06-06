@@ -2,21 +2,28 @@
  import { hojeLocal, dataLocal } from "../utils/dataLocal";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
+import { useLocation } from "react-router-dom";
 
 export default function NovaConta() {
+
+
+  const location = useLocation();
+const bancoSelecionado = location.state || {};
+ 
   const [form, setForm] = useState({
     empresa_id: localStorage.getItem("id_empresa") || "",
     nome: "",
-    banco: "",
+     banco: bancoSelecionado.banco_nome || "",
     tipo: "corrente",
     saldo_inicial: "",
-    nro_banco: "",
+     nro_banco: bancoSelecionado.banco_codigo || "",
     agencia: "",
     conta: "",
     conjunta: false,
     juridica: false,
     padrao: false,
-    conta_contabil:""
+    conta_contabil:"",
+     icone_url: bancoSelecionado.banco_icone_url || "",
 
   });
 
@@ -58,8 +65,8 @@ const THEME = {
 
   const salvar = async () => {
 
-     if (!form.conta_contabil.startsWith("1.1.1.")) {
-      alert("Conta financeira deve estar no grupo 1.1.1 (Disponibilidades). Ex: 1.1.1.01");
+     if (!form.conta_contabil.startsWith("1.1.")) {
+      alert("Conta financeira deve estar no grupo 1.1 (Disponibilidades). Ex: 1.1.01");
       return;
     }
   try {
@@ -130,6 +137,9 @@ const THEME = {
 };
 
 
+const labelCls = "block text-sm font-semibold text-slate-700 mb-1";
+const inputCls =
+  "w-full h-11 rounded-xl border border-cyan-100 bg-white px-3 text-slate-800 font-semibold shadow-[0_2px_8px_rgba(15,23,42,0.10)] focus:outline-none focus:ring-2 focus:ring-cyan-200";
 
   
   const fieldCls =
@@ -141,12 +151,16 @@ const THEME = {
     boxShadow: "none",
   };
   const fieldFocus = { boxShadow: `0 0 0 2px ${THEME.focusRing}55` };
+
+  
 return (
    <div className="min-h-screen bg-gradient-to-br from-slate-150 via-blue-150 to-slate-100 px-3 py-4 flex items-start justify-center">
-    <div className="w-full max-w-md rounded-[30px] bg-white/95 shadow-2xl border border-white/40 overflow-hidden">
+     <div className="w-full max-w-[620px] rounded-2xl bg-white shadow-2xl border border-slate-300 overflow-hidden">
 
        {/* TOPO */}
-      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-700 px-5 py-5 text-white">
+      <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600 px-5 py-5 text-white">
+
+        
         <div className="flex items-center justify-between">
           <button
             type="button"
@@ -163,13 +177,32 @@ return (
           <div className="w-10" />
         </div>
 
-        <p  className="text-center text-blue-100 font-bold mt-4">
-          Cadastro de conta financeira
-        </p>
+      
       </div>
 
       {/* CARD */}
-      <div className="bg-white rounded-[28px] shadow-xl border border-slate-200 p-5 space-y-4">
+        <div className="bg-white px-6 pb-6 space-y-5">
+     
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center gap-4">
+                {form.icone_url && (
+                  <img
+                    src={form.icone_url}
+                    alt={form.banco}
+                    className="w-14 h-14 object-contain"
+                  />
+                )}
+
+                <div>
+                  <div className="font-black text-slate-800 text-lg">
+                    {form.banco}
+                  </div>
+
+                  <div className="text-sm text-slate-500 font-semi-bold">
+                    Código: {form.nro_banco}
+                  </div>
+                </div>
+              </div>
+
 
         <div>
           <label className="block font-black text-[#1e1b4b] mb-1">
@@ -179,34 +212,33 @@ return (
             name="nome"
             value={form.nome}
             onChange={handleChange}
-            className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
+              className={inputCls}
             placeholder="Ex: Bradesco, Itaú, Caixa"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-black text-[#1e1b4b] mb-1">
+            <label className="block font-semi-bold text-[#1e1b4b] mb-1">
               Banco
             </label>
             <input
-              name="banco"
               value={form.banco}
-              onChange={handleChange}
-              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
-              placeholder="Banco"
+              disabled
+                className={inputCls}
             />
           </div>
 
           <div>
-            <label className="block font-black text-[#1e1b4b] mb-1">
+            <label className="block font-semi-bold text-[#1e1b4b] mb-1">
               Nº Banco
             </label>
             <input
               name="nro_banco"
               value={form.nro_banco}
               onChange={handleChange}
-              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
+                disabled
+                className={inputCls}
               placeholder="341"
             />
           </div>
@@ -214,27 +246,27 @@ return (
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-black text-[#1e1b4b] mb-1">
+            <label className="block font-semi-bold text-[#1e1b4b] mb-1">
               Agência
             </label>
             <input
               name="agencia"
               value={form.agencia}
               onChange={handleChange}
-              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
+               className={inputCls}
               placeholder="0001"
             />
           </div>
 
           <div>
-            <label className="block font-black text-[#1e1b4b] mb-1">
+            <label className="block font-semi-bold text-[#1e1b4b] mb-1">
               Conta
             </label>
             <input
               name="conta"
               value={form.conta}
               onChange={handleChange}
-              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
+                className={inputCls}
               placeholder="00458-8"
             />
           </div>
@@ -242,14 +274,14 @@ return (
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-black text-[#1e1b4b] mb-1">
+            <label className="block font-semi-bold text-[#1e1b4b] mb-1">
               Tipo
             </label>
             <select
               name="tipo"
               value={form.tipo}
               onChange={handleChange}
-              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold text-slate-700"
+               className={inputCls}
             >
               <option value="">Selecione...</option>
               <option value="corrente">Corrente</option>
@@ -260,7 +292,7 @@ return (
           </div>
 
           <div>
-            <label className="block font-black text-[#1e1b4b] mb-1">
+            <label className="block font-semi-bold text-[#1e1b4b] mb-1">
               Saldo Inicial
             </label>
             <input
@@ -268,21 +300,21 @@ return (
               name="saldo_inicial"
               value={form.saldo_inicial}
               onChange={handleChange}
-              className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
+                className={inputCls}
               placeholder="0,00"
             />
           </div>
         </div>
 
         <div>
-          <label className="block font-black text-[#1e1b4b] mb-1">
+          <label className="block font-semi-bold text-[#1e1b4b] mb-1">
             Conta Contábil
           </label>
           <input
             name="conta_contabil"
             value={form.conta_contabil}
             onChange={handleChange}
-            className="w-full  h-8 rounded-xl border border-slate-300 px-3 font-bold"
+              className={inputCls}
             placeholder="Ex: 1.1.1.23"
           />
         </div>
@@ -319,22 +351,22 @@ return (
           </label>
         </div>
 
-           <div className="grid grid-cols-2 gap-3 pt-4">
+          <div className="border-t border-slate-200 pt-4 flex justify-end gap-3">
           <button
             type="button"
-            onClick={salvar}
-            disabled={loading}
-             className="rounded-2xl bg-gradient-to-br from-blue-700 to-cyan-600 text-white px-4 py-3 font-black shadow-lg active:scale-95"
+            onClick={() => navigate(-1)}
+            className="px-6 py-3 rounded-xl bg-cyan-50 border border-cyan-200 text-slate-700 font-bold shadow-sm hover:bg-cyan-100"
           >
-            {loading ? "Salvando..." : "Salvar"}
+            Cancelar
           </button>
 
           <button
             type="button"
-            onClick={() => navigate(-1)}
-            className="rounded-2xl bg-slate-200 text-slate-700 px-4 py-3 font-black active:scale-95"
+            onClick={salvar}
+            disabled={loading}
+            className="px-6 py-3 rounded-xl bg-[#062b49] text-white font-black shadow-sm hover:brightness-110"
           >
-            Sair
+            💾 {loading ? "Salvando..." : "Salvar"}
           </button>
         </div>
       </div>

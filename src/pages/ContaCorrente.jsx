@@ -2,9 +2,13 @@
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
+import ModalEscolhaBanco from "../components/ModalEscolhaBanco";
 
 export default function AppContas() {
   const navigate = useNavigate();
+
+  const [modalBancoAberto, setModalBancoAberto] = useState(false);
+const [bancoSelecionado, setBancoSelecionado] = useState(null);
 
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -262,7 +266,7 @@ export default function AppContas() {
         <div style={secaoTitulo}>Minhas contas</div>
 
         <button
-          onClick={() => navigate("/app/nova-conta")}
+         onClick={() => setModalBancoAberto(true)}
           title="Nova conta"
           style={{
             width: 42,
@@ -290,9 +294,29 @@ export default function AppContas() {
               borderBottom: idx === contas.length - 1 ? "0" : linhaConta.borderBottom,
             }}
           >
-            <div style={icone}>🏦</div>
+              <div style={icone}>
+                {c.icone_url ? (
+                  <img
+                    src={c.icone_url}
+                    alt={c.banco_nome || c.conta_nome}
+                    style={{
+                      width: 30,
+                      height: 30,
+                      objectFit: "contain",
+                    }}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  "🏦"
+                )}
+              </div>
 
             <div>
+
+              
+
               <div style={{ fontSize: 15, fontWeight: 900, color: "#1e1b4b" }}>
                 {c.conta_nome}
               </div>
@@ -320,6 +344,7 @@ export default function AppContas() {
                     ...c,
                     id: c.id ?? c.conta_id ?? c.id_conta,
                     empresa_id: c.empresa_id ?? empresa_id,
+                    icone_url:c.icone_url ?? empresa_id,
                   },
                 })
               }
@@ -336,6 +361,26 @@ export default function AppContas() {
           </div>
         )}
       </div>
+ 
+    <ModalEscolhaBanco
+  open={modalBancoAberto}
+  empresa_id={empresa_id}
+  onClose={() => setModalBancoAberto(false)}
+  onSelect={(banco) => {
+    setModalBancoAberto(false);
+
+    navigate("/nova-conta", {
+      state: {
+        banco_codigo: banco.codigo,
+        banco_nome: banco.nome,
+        banco_icone_url: banco.icone_url,
+        banco_cor_hex: banco.cor_hex,
+        agencia: "",
+        conta: "",
+      },
+    });
+  }}
+/>
     </div>
   );
 }

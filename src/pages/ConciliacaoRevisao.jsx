@@ -5,6 +5,8 @@ import { fetchSeguro } from "../utils/apiSafe";
 import ModalBase from "../components/ModalBase";
 import FormContaContabilModal from "../components/forms/FormContaContabilModal";
 
+
+
 export default function ConciliacaoRevisao() {
   const empresa_id = localStorage.getItem("empresa_id");
   const conta_id = localStorage.getItem("conta_id");
@@ -29,6 +31,8 @@ const [textoContaBusca, setTextoContaBusca] = useState({});
 const [contasFiltradasContabil, setContasFiltradasContabil] = useState([]);
 
 // Reclassificacao de conta contabil
+const [contasContabeis, setContasContabeis] = useState([]);
+
 
 
  const [resultadoExecucao, setResultadoExecucao] = useState(null);
@@ -44,15 +48,25 @@ const [contaDestinoId, setContaDestinoId] = useState("");
  
 const [importacaoId, setImportacaoId] = useState(0);
  const [filtroSituacao, setFiltroSituacao] = useState("todos");
+ 
 
-const linhasFiltradas =
+ const linhasFiltradas =
   filtroSituacao === "rejeitado"
     ? linhas.filter((l) => l.situacao === "rejeitado")
     : filtroSituacao === "pendente"
       ? linhas.filter((l) => l.situacao === "pendente")
       : filtroSituacao === "ok"
         ? linhas.filter((l) => l.situacao === "ok")
-        : linhas;
+        : filtroSituacao === "sem_conta"
+          ? linhas.filter(
+              (l) =>
+                l.importar !== false &&
+                l.situacao !== "rejeitado" &&
+                l.tipo_evento !== "transf_mesma_tit" &&
+                !l.conta_id &&
+                !l.conta_descricao
+            )
+          : linhas;
 
  
 
@@ -387,11 +401,25 @@ function statusClasse(situacao) {
   return "bg-blue-100 text-blue-700 border-blue-300";
 }
 
- const podeExecutar =
-  linhas.some((l) => l.situacao === "ok") &&
+ const linhasValidasParaExecutar = linhas.filter(
+  (l) => l.importar !== false && l.situacao !== "rejeitado"
+);
+
+const faltamContas = linhasValidasParaExecutar.filter(
+  (l) =>
+    l.tipo_evento !== "transf_mesma_tit" &&
+    !l.conta_id &&
+    !l.conta_descricao
+);  
+
+
+const podeExecutar =
+  linhasValidasParaExecutar.length > 0 &&
+  faltamContas.length === 0 &&
   linhas.every((l) =>
     ["ok", "rejeitado", "executado"].includes(l.situacao)
   );
+
 
 
   const pendentes = linhas.filter((l) => l.situacao === "pendente");
@@ -532,6 +560,7 @@ function resolverTransferencia(linha) {
   useEffect(() => {
    carregarDados();
   carregarContas();
+    carregarContasContabeis(); // plano contábil
 }, []);
 
 
@@ -580,19 +609,25 @@ function resolverTransferencia(linha) {
     alert(retorno?.message || "Não foi possível resolver a transferência.");
 
     setLinhas((prev) =>
-      prev.map((l) =>
-        Number(l.id) === Number(linhaEditando.id)
-          ? {
-              ...l,
-              situacao: "rejeitado",
-              status: "rejeitado",
-              mensagem: retorno?.message || "Transferência rejeitada.",
-              importar: false,
-            }
-          : l
-      )
-    );
-
+  prev.map((l) =>
+    Number(l.id) === Number(linhaEditando.id)
+      ? {
+          ...l,
+          situacao: "ok",
+          status: "resolvido",
+          mensagem: retorno?.message || "Transferência resolvida manualmente",
+          importar: true,
+          conta_origem_id: Number(contaOrigemId),
+          conta_destino_id: Number(contaDestinoId),
+          conta_id: retorno?.conta_contabil_destino_id || l.conta_id,
+          conta_descricao:
+            retorno?.conta_contabil_destino_descricao ||
+            "Conta contábil definida pela transferência",
+        }
+      : l
+  )
+);
+  
     setLinhaEditando(null);
     return;
   }
@@ -677,7 +712,7 @@ async function selecionarContaContabilLinha(l, c) {
 function filtrarContasContabeis(texto) {
   const t = String(texto || "").toLowerCase();
 
-  const lista = contas
+ const lista = contasContabeis
     .filter((c) =>
       String(c.codigo || "").toLowerCase().includes(t) ||
       String(c.nome || "").toLowerCase().includes(t) ||
@@ -722,6 +757,19 @@ async function criarRegraDaLinha(l) {
   }
 }
 
+
+async function carregarContasContabeis() {
+  const r = await fetch(
+    buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id })
+  );
+
+  const j = await r.json();
+
+  const base = Array.isArray(j) ? j[0] : j;
+  const dados = base?.data || base?.dados || j;
+
+  setContasContabeis(Array.isArray(dados) ? dados : []);
+}
 
   return (
      <div className="min-h-screen bg-slate-100 px-2 pt-0 pb-2">
@@ -846,6 +894,10 @@ async function criarRegraDaLinha(l) {
                   <option value="ok">
                     OK ({linhas.filter((l) => l.situacao === "ok").length})
                   </option>
+
+                  <option value="sem_conta">
+                    Sem Plano de Contas ({faltamContas.length})
+                  </option>
                 </select>
                   
 
@@ -862,6 +914,12 @@ async function criarRegraDaLinha(l) {
             </div>
           )}
 
+
+         {faltamContas.length > 0 && (
+  <div className="mt-4 rounded-2xl border border-red-300 bg-red-50 px-5 py-3 text-red-700 font-bold">
+    ⚠️ Faltam {faltamContas.length} lançamento(s) para informar o Plano de Conta.
+  </div>
+)}
 
         </div>)}
 
@@ -1096,8 +1154,8 @@ async function criarRegraDaLinha(l) {
                     <th className="p-3 text-left">Histórico</th>
                     <th className="p-3 text-right">Valor</th>
                     <th className="p-3 text-center">Situação</th>
-                  {/*}   <th className="p-3 text-left">Conta Contábil</th>*/}
-                    <th className="p-3 text-left">Mensagem</th>
+                  {/*}   <th className="p-3 text-left">Conta Contábil</th> */}
+                    <th className="p-3 text-left">Plano de Conta</th> 
                     <th className="p-3 text-center">Tipo Evento</th> 
                     <th className="p-3 text-center">Ação</th>
                     
@@ -1154,11 +1212,66 @@ async function criarRegraDaLinha(l) {
                     </td>
 
         
+                    <td className="p-3 relative min-w-[260px]">
+                    <input
+                      value={
+                          l.tipo_evento === "transf_mesma_tit"
+                            ? "Conta contábil definida pela transferência"
+                            : textoContaBusca[l.id] ?? l.conta_descricao ?? l.conta_id ?? ""
+                        }
+                      onFocus={() => {
+                        setLinhaContaDropdown(l.id);
+                        filtrarContasContabeis("");
+                      }}
+                      onChange={(e) => {
+                        const texto = e.target.value;
 
+                        setTextoContaBusca((prev) => ({
+                          ...prev,
+                          [l.id]: texto,
+                        }));
 
-                    <td className="p-3 text-slate-600 font-semibold">
-                      {l.mensagem}
-                    </td>
+                        setLinhaContaDropdown(l.id);
+                        filtrarContasContabeis(texto);
+                      }}
+                      placeholder="Digite a conta..."
+                      className="w-full rounded-xl border px-3 py-2 text-xs font-bold"
+                      disabled={l.situacao === "executado" || l.tipo_evento === "transf_mesma_tit"}
+                    />
+
+                    {linhaContaDropdown === l.id && (
+                      <div className="absolute z-50 mt-1 max-h-64 w-[360px] overflow-y-auto rounded-xl border bg-white shadow-xl">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLinhaContaNova(l);
+                            setModalContaAberto(true);
+                            setLinhaContaDropdown(null);
+                          }}
+                          className="w-full px-3 py-2 text-left text-xs font-black text-blue-700 hover:bg-blue-50"
+                        >
+                          ➕ Criar nova conta para este histórico
+                        </button>
+
+                        {contasFiltradasContabil.map((c) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => selecionarContaContabilLinha(l, c)}
+                            className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
+                          >
+                            <span className="font-black">{c.codigo}</span> — {c.nome}
+                          </button>
+                        ))}
+
+                        {contasFiltradasContabil.length === 0 && (
+                          <div className="px-3 py-2 text-xs font-bold text-slate-400">
+                            Nenhuma conta encontrada
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td>
 
                      <td className="p-3 text-slate-600 font-semibold">
                       {l.tipo_evento}
@@ -1369,7 +1482,7 @@ async function criarRegraDaLinha(l) {
 >
   <FormContaContabilModal
     empresa_id={empresa_id}
-    contas={contas}
+     contas={contasContabeis}
     nomeInicial={linhaContaNova?.historico || ""}
     historicoRegra={linhaContaNova?.historico || ""}
     tipoMovimento={linhaContaNova?.tipo || ""}
@@ -1397,7 +1510,7 @@ async function criarRegraDaLinha(l) {
       }
 
       setLinhaContaNova(null);
-      carregarContas();
+      carregarContasContabeis();
     }}
     onCancel={() => {
       setModalContaAberto(false);
