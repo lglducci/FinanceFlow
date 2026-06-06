@@ -68,6 +68,7 @@ import ContasContabeis from "./pages/ContasContabeis";
 import NovaContaContabil from "./pages/NovaContaContabil";
 import EditarContaContabil from "./pages/EditarContaContabil";
 import NovaModeloContabil from "./pages/NovaModeloContabil";
+import ModalEscolhaBanco from "./components/ModalEscolhaBanco";
 
  import Diario from "./pages/Diario";
 import NovoDiario from "./pages/NovoDiario";
@@ -637,6 +638,8 @@ const rotaAtual = window.location.pathname;
   <Route path="/dashboard-financeiro" element={<DashboardFinanceiroCartao />} />
 
   <Route path="/regras-classificacao" element={<RegrasClassificacao />} />
+
+   <Route path="/escolha-banco" element={<ModalEscolhaBanco />} />
 
      
       <Route
