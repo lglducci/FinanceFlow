@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -37,6 +37,8 @@ const [creditoConta, setCreditoConta] = useState(null);
 
 const [contasDebito, setContasDebito] = useState([]);
 const [contasCredito, setContasCredito] = useState([]);
+const [contasPlano, setContasPlano] = useState([]);
+
 
   const [form, setForm] = useState({
     id: "",
@@ -69,7 +71,8 @@ const [contasCredito, setContasCredito] = useState([]);
   const [resultadoBusca, setResultadoBusca] = useState([]); // contas retornadas
   const [modeloSelecionado, setModeloSelecionado] = useState(null);
 
- 
+
+  
   async function buscarContas(linha, texto) {
       if (!texto || texto.length < 2) {
         setResultadoBusca([]);
@@ -520,7 +523,8 @@ useEffect(() => {
     cartao_nome: cartaoSelecionado, 
     valor_total: form.valor, 
     data_compra:  form.data  ,
-    modelo_codigo:modeloCodigo 
+    modelo_codigo:modeloCodigo ,
+    contabil_id:form.contabil_id
   };
 
   // 🔵 DECIDE APENAS O ENDPOINT
@@ -746,6 +750,26 @@ const formatarDataBR = (data) => {
   return `${dia}/${mes}/${ano}`;
 };
 
+async function carregarPlanoContas() {
+  try {
+    const url = buildWebhookUrl("contas_contabeis_lancaveis", {
+      empresa_id
+    });
+
+    const r = await fetch(url);
+    const j = await r.json();
+
+    setContasPlano(Array.isArray(j) ? j : []);
+  } catch (e) {
+    console.log("ERRO PLANO CONTAS:", e);
+    setContasPlano([]);
+  }
+}
+
+useEffect(() => {
+  carregarPlanoContas();
+}, [empresa_id]);
+
   return (
           
 
@@ -768,27 +792,7 @@ const formatarDataBR = (data) => {
       
  
        <div className="flex border-b mb-4"> 
-          <button
-            onClick={() => setAba("principal")}
-            className={`px-4 py-2 font-bold ${
-              aba === "principal"
-                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
-                : "text-gray-500"
-            }`}
-          >
-            Principal
-          </button>
-
-          <button
-            onClick={() => setAba("contabil")}
-            className={`px-4 py-2 font-bold ${
-              aba === "contabil"
-                ? "border-b-2 border-[#ff9f43] text-[#ff9f43]"
-                : "text-gray-500"
-            }`}
-          >
-            Customização Contábil
-          </button> 
+         
 
           
            
@@ -1141,6 +1145,8 @@ const formatarDataBR = (data) => {
                   />
                 </div>
 
+
+
           {/* STATUS */}
             {!mostrarCartao && (  <div>
                           <div className="w-2/4">
@@ -1156,11 +1162,57 @@ const formatarDataBR = (data) => {
                               <option value="pago">Pago</option>
                             </select>
                           </div>
-                        </div>)}
+                        </div> 
+                      
+                      )} 
+
+
                           </div>  
                             </div>  )}
+
+                          <div className="w-2/4">
+                                <label className="label label-required font-bold text-[#1e40af]">
+                                  Plano de Contas
+                                </label>
+
+                                 <input
+                                      list="planocontas"
+                                      name="contabil_id"
+                                      className="input-premium w-full"
+                                      placeholder="Digite: despesa, banco, estoque, cliente..."
+                                      value={form.contabil_texto || ""}
+                                      onChange={(e) => {
+                                        const texto = e.target.value;
+
+                                        const conta = contasPlano.find(
+                                          (c) =>
+                                            `${c.codigo} - ${c.nome}` === texto
+                                        );
+
+                                        setForm((prev) => ({
+                                          ...prev,
+                                          contabil_texto: texto,
+                                          contabil_id: conta?.id || ""
+                                        }));
+                                      }}
+                                    />
+
+                                    <datalist id="planocontas">
+                                      {contasPlano.map((c) => (
+                                        <option
+                                          key={c.id}
+                                          value={`${c.codigo} - ${c.nome}`}
+                                        />
+                                      ))}
+                                    </datalist>
+                              </div>
+
                             </div>
-                       )}
+                          
+                           
+                          
+                          
+                          )}
 
  
                {aba === "contabil" && (
