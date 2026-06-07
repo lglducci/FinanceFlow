@@ -31,6 +31,8 @@ export default function NovaContaPagar() {
     forma_pagamento:"aprazo"
   });
 
+  const [contasPlano, setContasPlano] = useState([]);
+
 
 
   /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
@@ -98,31 +100,39 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
     }
   }
 
-  // =======================================================
-  //     CARREGAR CATEGORIAS (já existe webhook em outra janela)
-  // =======================================================
-  {/*async function carregarCategorias() {
-    try {
-      const url = buildWebhookUrl("listacategorias", { empresa_id, tipo: 'saida' });
-      const resp = await fetch(url);
-      const txt = await resp.text();
-
-      let lista = [];
-      try {
-        lista = JSON.parse(txt);
-      } catch { }
-
-      setCategorias(Array.isArray(lista) ? lista : []);
-    } catch (e) {
-      console.log("ERRO ao carregar categorias:", e);
-    }
-  }
-*/}
+   
+  
+  
+  
   // =======================================================
   useEffect(() => {
     carregarFornecedores();
     
   }, []); 
+
+
+
+  
+async function carregarPlanoContas() {
+  try {
+    const url = buildWebhookUrl("contas_contabeis_lancaveis", {
+      empresa_id
+    });
+
+    const r = await fetch(url);
+    const j = await r.json();
+
+    setContasPlano(Array.isArray(j) ? j : []);
+  } catch (e) {
+    console.log("ERRO PLANO CONTAS:", e);
+    setContasPlano([]);
+  }
+}
+
+useEffect(() => {
+  carregarPlanoContas();
+}, [empresa_id]);
+
 
   // =======================================================
   //                  SALVAR NOVA CONTA
@@ -194,7 +204,8 @@ const [modeloSelecionado, setModeloSelecionado] = useState(null);
           doc_ref: form.doc_ref,
           contabil_id: form.contabil_id,
           modelo_codigo: modeloCodigo ,
-          classificacao:form.classificacao 
+          classificacao:form.classificacao ,
+          contabil_id:form.contabil_id ,
         })
       });
 
@@ -538,7 +549,49 @@ useEffect(() => {
               <option value="passivo">Passivo (Financiamento/Dívida)</option>
             </select>
             </div>
-          </div> 
+           </div> 
+
+              <div className="w-2/4">
+                  <label className="label label-required font-bold text-[#1e40af]">
+                    Plano de Contas
+                  </label>
+
+                    <input
+                        list="planocontas"
+                        name="contabil_id"
+                        className="input-premium w-full"
+                        placeholder="Digite: despesa, banco, estoque, cliente..."
+                        value={form.contabil_texto || ""}
+                        onChange={(e) => {
+                          const texto = e.target.value;
+
+                          const conta = contasPlano.find(
+                            (c) =>
+                              `${c.codigo} - ${c.nome}` === texto
+                          );
+
+                          setForm((prev) => ({
+                            ...prev,
+                            contabil_texto: texto,
+                            contabil_id: conta?.id || ""
+                          }));
+                        }}
+                      />
+
+                      <datalist id="planocontas">
+                        {contasPlano.map((c) => (
+                          <option
+                            key={c.id}
+                            value={`${c.codigo} - ${c.nome}`}
+                          />
+                        ))}
+                      </datalist>
+                </div> 
+
+
+
+
+ 
             </div>
           </div>
            </>  )}

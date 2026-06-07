@@ -1,7 +1,8 @@
- import { useEffect, useState, useRef } from "react";
+    import { useEffect, useState, useRef } from "react";
  import { buildWebhookUrl } from "../config/globals";
  import { useNavigate } from "react-router-dom"; 
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+import { Funnel } from "lucide-react";
 
  
 export default function ContasReceber() {
@@ -32,6 +33,14 @@ const idsOcultosRef = useRef(new Set());
  const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false);
  const [selecionadas, setSelecionadas] = useState([]);
 const [somenteVencidas, setSomenteVencidas] = useState(false);
+const [modalFiltro, setModalFiltro] = useState(false);
+const [filtroTemp, setFiltroTemp] = useState({
+  dataIni: hojeMaisDias(-3),
+  dataFim: hojeMaisDias(15),
+  fornecedor_id: 0,
+  status: "0",
+  somenteVencidas: false,
+});
 
   function formatarDataBR(data) {
   if (!data) return "";
@@ -40,6 +49,67 @@ const [somenteVencidas, setSomenteVencidas] = useState(false);
   const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
   const ano = d.getUTCFullYear();
   return `${dia}-${mes}-${ano}`;
+}
+
+
+function labelContaDrop(c) {
+  const nome = c.nome || c.conta_nome || "Conta";
+  const ag = c.agencia ? `Ag: ${c.agencia}` : "";
+  const cc = c.conta ? `Conta: ${c.conta}` : "";
+  const dados = [ag, cc].filter(Boolean).join(" • ");
+  return dados ? `${nome} — ${dados}` : nome;
+}
+
+function contaSelecionadaAtual() {
+  return contas.find((c) => String(c.id ?? c.conta_id) === String(conta_id));
+}
+
+const contaAtual = contaSelecionadaAtual();
+const corContaAtual = contaAtual?.cor_hex || "#16a34a";
+
+async function selecionarContaBancaria(valor) {
+  const id = Number(valor);
+  setContaId(id);
+
+  if (id === 0) {
+    setDadosConta(null);
+    return;
+  }
+
+  const url = buildWebhookUrl("consultasaldo", {
+    inicio: hojeLocal(),
+    fim: hojeLocal(),
+    empresa_id,
+    conta_id: id,
+  });
+
+  const resp = await fetch(url);
+  const json = await resp.json();
+  setDadosConta(Array.isArray(json) ? json[0] : json);
+}
+
+function abrirModalFiltro() {
+  setFiltroTemp({
+    dataIni,
+    dataFim,
+    fornecedor_id,
+    status,
+    somenteVencidas,
+  });
+  setModalFiltro(true);
+}
+
+function aplicarFiltros() {
+  setDataIni(filtroTemp.dataIni);
+  setDataFim(filtroTemp.dataFim);
+  setFornecedorId(Number(filtroTemp.fornecedor_id || 0));
+  setStatus(filtroTemp.status || "0");
+  setSomenteVencidas(!!filtroTemp.somenteVencidas);
+  setModalFiltro(false);
+
+  setTimeout(() => {
+    pesquisar();
+  }, 50);
 }
 
    const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
@@ -52,9 +122,20 @@ async function carregarContas() {
     const url = buildWebhookUrl("listacontas", { empresa_id });
     const resp = await fetch(url);
     const json = await resp.json();
-    setContas(json);
+    const lista = Array.isArray(json) ? json : [];
+
+    setContas(lista.map((c) => ({
+      ...c,
+      id: c.id ?? c.conta_id,
+      conta_id: c.conta_id ?? c.id,
+      nome: c.nome ?? c.conta_nome,
+      conta_nome: c.conta_nome ?? c.nome,
+      icone_url: String(c.icone_url || c.icone || c.logo_url || "").trim(),
+      cor_hex: c.cor_hex || "#e2e8f0",
+    })));
   } catch (e) {
     console.log("ERRO ao carregar contas:", e);
+    setContas([]);
   }
 }
 
@@ -308,266 +389,140 @@ async function receberSelecionadas() {
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => navigate("/nova-conta-receber")}
-            className="
-        px-5 py-2 rounded-full
-        font-bold text-sm tracking-wide
-        text-white
-        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
-        border-2 border-black
-        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-        hover:brightness-110 hover:scale-105
-        active:scale-95
-        transition-all duration-200
-        inline-flex items-center gap-2
-      ">
+          className="btn-pill btn-green"
+        >
           + Nova conta
         </button>
 
-       
-        {/* MENU “MAIS AÇÕES” (simples) */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => window.print()}
-              className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-       
-            🖨️ Imprimir
-          </button>
-
-        {/*}  <button
-            onClick={() => navigate("/excluir-parcelamento-receber")} 
-              className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-red-700
-                        bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-       
-            Excluir parcelamento
-          </button>*/}
-        </div>
+        <button
+          onClick={() => window.print()}
+          className="btn-pill btn-gray"
+        >
+          🖨️ Imprimir
+        </button>
       </div>
     </div>
 
     {/* RESUMOS */}
     <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-      <div className="rounded-xl border-l-4 border-blue-600 bg-white p-4">
+      
 
-        <p className="text-xs font-semibold text-slate-500">Total do período</p>
-        <p className="mt-1 text-xl font-bold text-slate-900">
-          {totalPeriodo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-        </p>
-      </div>
-
-     <div className="rounded-xl border-l-4 border-blue-600 bg-white p-4">
-
-        <p className="text-xs font-semibold text-slate-500">Status</p>
-        <p className="mt-1 text-sm font-semibold text-slate-900">
-          {status === "0" ? "Todos" : status}
-        </p>
-        <p className="text-xs text-slate-500">
-          {somenteVencidas ? "Somente vencidas" : "Inclui todas"}
-        </p>
-      </div>
- 
-        <div className="
-        text-right
-        rounded-2xl
-        px-5 py-3
-        border border-emerald-200
-        bg-gradient-to-br from-emerald-150 via-white to-blue-150
-        shadow-sm
-      ">
-        <p className="text-base font-bold text-slate-900">Conta bancária</p>
-        <p className="mt-1 text-sm font-semibold text-slate-900">
-          {dadosConta?.conta_nome ?? "Não selecionada"}
-        </p>
-        <p className="text-base text-green-500 font-bold">
-          {dadosConta
-            ? `Saldo: R$ ${Number(dadosConta.saldo_final).toLocaleString("pt-BR")}`
-            : "Selecione para ver saldo"}
-        </p>
-      </div>
+    
+  
     </div>
 
-    {/* FILTROS + CONTA (layout moderno) */}
- 
-  <details
-    open
-    className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-  >
-    <summary className="list-none cursor-pointer">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
-          <span className="text-xs text-slate-500">
-            {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
-          </span>
+    {/* CONTA + AÇÕES */}
+    <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex items-end gap-3">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              Conta bancária para receber
+            </label>
+
+            {(() => {
+              const conta = contaSelecionadaAtual();
+              const iconeConta = String(conta?.icone_url || "").trim();
+              const corConta = conta?.cor_hex || "#e2e8f0";
+
+              return (
+                <div className="flex items-center gap-2">
+                  {iconeConta ? (
+                    <img
+                      src={iconeConta}
+                      alt="Banco"
+                      className="h-9 w-9 rounded-full border bg-white object-contain"
+                      style={{ borderColor: corConta }}
+                    />
+                  ) : (
+                    <div
+                      className="flex h-9 w-9 items-center justify-center rounded-full border text-sm"
+                      style={{ backgroundColor: `${corConta}22`, borderColor: corConta }}
+                    >
+                      🏦
+                    </div>
+                  )}
+
+                  <select
+                    value={conta_id}
+                    onChange={(e) => selecionarContaBancaria(e.target.value)}
+                    className="min-w-[340px] rounded-lg border px-3 py-2 text-base font-bold text-blue-900"
+                  >
+                    <option value={0}>Selecione...</option>
+                    {contas.map((ct) => (
+                      <option key={ct.id ?? ct.conta_id} value={ct.id ?? ct.conta_id}>
+                        {labelContaDrop(ct)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              );
+            })()}
+          </div>
+                    
+            {dadosConta && (
+              <div
+                className="rounded-xl border px-4 py-2 text-sm font-black whitespace-nowrap"
+                style={{
+              borderColor: "#052386" ,
+              backgroundColor: corContaAtual  ,
+              color: "#052386",
+            }}
+              >
+                Saldo:{" "}
+                {Number(dadosConta.saldo_final || 0).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </div>
+)}
+
+
+
+
         </div>
 
-        <span className="text-xs text-slate-500">
-          clique para abrir/fechar
-        </span>
-      </div>
-    </summary>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="rounded-xl bg-blue-50 px-4 py-2 text-sm font-bold text-blue-800">
+            {dataIni} → {dataFim}
+            {somenteVencidas ? " • Vencidas" : ""}
+          </div>
 
-    <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12">
-      <div className="xl:col-span-2">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">
-          Data início
-        </label>
-        <input
-          type="date"
-          value={dataIni}
-          disabled={somenteVencidas}
-          onChange={(e) => setDataIni(e.target.value)}
-          className={`w-full rounded-lg border px-3 py-2 text-sm ${
-            somenteVencidas ? "bg-slate-100 text-slate-500" : "bg-white"
-          }`}
-        />
-      </div>
+          <button
+            onClick={abrirModalFiltro}
+            className="btn-pill btn-white flex items-center gap-2 whitespace-nowrap"
+          >
+            <Funnel size={16} />
+            Filtros
+          </button>
 
-      <div className="xl:col-span-2">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">
-          Data fim
-        </label>
-        <input
-          type="date"
-          value={dataFim}
-          disabled={somenteVencidas}
-          onChange={(e) => setDataFim(e.target.value)}
-          className={`w-full rounded-lg border px-3 py-2 text-sm ${
-            somenteVencidas ? "bg-slate-100 text-slate-500" : "bg-white"
-          }`}
-        />
-      </div>
+          <button
+            onClick={receberSelecionadas}
+            className="btn-pill btn-black whitespace-nowrap"
+          >
+            Receber selecionadas
+            {selecionadas.length > 0 && (
+              <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
+                {selecionadas.length}
+              </span>
+            )}
+          </button>
 
-      <div className="xl:col-span-2">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">
-          Status
-        </label>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
-        >
-          <option value="0">Todos</option>
-          <option value="aberto">Aberto</option>
-          <option value="recebido">Recebido</option>
-        </select>
-      </div>
-
-      <div className="xl:col-span-3">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">
-          Fornecedor
-        </label>
-        <select
-          value={fornecedor_id}
-          onChange={(e) => setFornecedorId(Number(e.target.value))}
-          className="w-full rounded-lg border bg-white px-3 py-2 text-sm font-semibold"
-        >
-          <option value={0}>Todos</option>
-          {fornecedores.map((f) => (
-            <option key={f.id} value={f.id}>
-              {f.nome}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="xl:col-span-3">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">
-          Conta bancária
-        </label>
-        <select
-          value={conta_id}
-          onChange={async (e) => {
-            const id = Number(e.target.value);
-            setContaId(id);
-
-            if (id === 0) {
-              setDadosConta(null);
-              return;
-            }
-
-            const empresa = localStorage.getItem("empresa_id") || 1;
-
-            const url = buildWebhookUrl("consultasaldo", {
-              inicio: new Date().toISOString().split("T")[0],
-              fim: new Date().toISOString().split("T")[0],
-              empresa_id: empresa,
-              conta_id: id,
-            });
-
-            const resp = await fetch(url);
-            const json = await resp.json();
-            setDadosConta(json[0]);
-          }}
-          className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
-        >
-          <option value={0}>Selecione...</option>
-          {contas.map((ct) => (
-            <option key={ct.id} value={ct.id}>
-              {ct.nome}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex items-end xl:col-span-4">
-        <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
-          <input
-            type="checkbox"
-            checked={somenteVencidas}
-            onChange={(e) => setSomenteVencidas(e.target.checked)}
-          />
-          Somente vencidas
-        </label>
-      </div>
-
-      <div className="flex items-end justify-end gap-3 border-t pt-4 md:col-span-2 xl:col-span-8">
-        <button
-          onClick={receberSelecionadas}
-          className="btn-pill btn-black whitespace-nowrap"
-        >
-          Receber selecionadas
-          {selecionadas.length > 0 && (
-            <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
-              {selecionadas.length}
-            </span>
-          )}
-        </button>
-
-        <button
-          onClick={pesquisar}
-          className="btn-pill btn-yellow whitespace-nowrap"
-        >
-          🔎 Pesquisar
-        </button>
+          <button
+            onClick={pesquisar}
+            disabled={loading}
+            className="btn-pill btn-gray whitespace-nowrap disabled:opacity-60"
+          >
+            {loading ? "Pesquisando..." : "🔎 Pesquisar"}
+          </button>
+        </div>
       </div>
     </div>
-  </details>
- 
+
     {/* TABELA */}
         <div className="max-h-[720px] overflow-y-auto overflow-x-auto"> 
-      <table className="w-full text-base"> 
-       <thead className="sticky top-0 z-20 bg-slate-800 text-white"> 
+       <table className="w-full text-sm ">
+       <thead className="bg-gray-200 text-gray-600 text-black">
           <tr>
             <th className="px-3 py-3 text-left">Sel.</th>
             <th className="px-3 py-3 text-left">ID</th>
@@ -691,6 +646,112 @@ async function receberSelecionadas() {
         </tfoot>
       </table>
     </div>
+
+    {modalFiltro && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="w-full max-w-2xl rounded-3xl bg-white p-5 shadow-2xl">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-xl font-black text-blue-900">Filtros</h3>
+            <button
+              type="button"
+              onClick={() => setModalFiltro(false)}
+              className="rounded-full bg-slate-100 px-3 py-1 font-black text-slate-600"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-bold text-slate-700">Data início</label>
+              <input
+                type="date"
+                value={filtroTemp.dataIni}
+                disabled={filtroTemp.somenteVencidas}
+                onChange={(e) => setFiltroTemp((p) => ({ ...p, dataIni: e.target.value }))}
+                className="w-full rounded-lg border px-3 py-2 font-semibold disabled:bg-slate-100"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-bold text-slate-700">Data fim</label>
+              <input
+                type="date"
+                value={filtroTemp.dataFim}
+                disabled={filtroTemp.somenteVencidas}
+                onChange={(e) => setFiltroTemp((p) => ({ ...p, dataFim: e.target.value }))}
+                className="w-full rounded-lg border px-3 py-2 font-semibold disabled:bg-slate-100"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-bold text-slate-700">Status</label>
+              <select
+                value={filtroTemp.status}
+                onChange={(e) => setFiltroTemp((p) => ({ ...p, status: e.target.value }))}
+                className="w-full rounded-lg border bg-white px-3 py-2 font-semibold"
+              >
+                <option value="0">Todos</option>
+                <option value="aberto">Aberto</option>
+                <option value="recebido">Recebido</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-bold text-slate-700">Fornecedor / Cliente</label>
+              <select
+                value={filtroTemp.fornecedor_id}
+                onChange={(e) => setFiltroTemp((p) => ({ ...p, fornecedor_id: Number(e.target.value) }))}
+                className="w-full rounded-lg border bg-white px-3 py-2 font-semibold"
+              >
+                <option value={0}>Todos</option>
+                {fornecedores.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <label className="md:col-span-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold text-slate-700">
+              <input
+                type="checkbox"
+                checked={filtroTemp.somenteVencidas}
+                onChange={(e) => setFiltroTemp((p) => ({ ...p, somenteVencidas: e.target.checked }))}
+                className="h-4 w-4"
+              />
+              Somente vencidas
+            </label>
+          </div>
+
+          <div className="mt-5 flex justify-end gap-3 border-t pt-4">
+            <button
+              type="button"
+              onClick={() =>
+                setFiltroTemp({
+                  dataIni: hojeMaisDias(-3),
+                  dataFim: hojeMaisDias(15),
+                  fornecedor_id: 0,
+                  status: "0",
+                  somenteVencidas: false,
+                })
+              }
+              className="btn-pill btn-white"
+            >
+              Limpar
+            </button>
+
+            <button
+              type="button"
+              onClick={aplicarFiltros}
+              className="btn-pill btn-dark-blue"
+            >
+              Aplicar filtros
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 );
 

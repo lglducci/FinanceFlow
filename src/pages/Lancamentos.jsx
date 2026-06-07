@@ -1365,29 +1365,29 @@ return (
 
          <div className="flex items-end gap-2">
              <div>
-  <label className="text-sm font-semibold text-gray-700">
-    Conta Bancária
-  </label>
+            <label className="text-sm font-semibold text-gray-700">
+              Conta Bancária
+            </label>
 
-  {(() => {
-    const contaSelecionada = contas.find((c) => {
-      const id = c.id ?? c.conta_id;
-      return String(id) === String(contaId);
-    });
+            {(() => {
+              const contaSelecionada = contas.find((c) => {
+                const id = c.id ?? c.conta_id;
+                return String(id) === String(contaId);
+              });
 
-    return (
-      <div className="flex items-center gap-2">
-         {iconeConta ? (
-  <img
-    src={iconeConta}
-    alt="Banco"
-    className="w-8 h-8 rounded-full object-contain border bg-white"
-  />
-) : (
-  <div className="w-8 h-8 rounded-full border bg-gray-100 flex items-center justify-center text-sm">
-    🏦
-  </div>
-)}
+              return (
+                <div className="flex items-center gap-2">
+                  {iconeConta ? (
+            <img
+              src={iconeConta}
+              alt="Banco"
+              className="w-8 h-8 rounded-full object-contain border bg-white"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full border bg-gray-100 flex items-center justify-center text-sm">
+              🏦
+            </div>
+          )}
 
         <select
           value={contaId}
@@ -1420,27 +1420,20 @@ return (
     );
   })()}
 </div>
-            
-             {dadosConta && (
-                <div className="flex flex-col">
-                  <label className="text-sm font-bold text-gray-700">
-                    Saldo Conta
-                  </label>
+        {dadosConta && (
+            <div className="flex flex-col">
+              <label className="text-sm font-bold text-blue-800">
+                Saldo Conta
+              </label>
 
-                  <div
-                    className={`rounded-lg border px-4 py-2 text-sm font-black whitespace-nowrap ${
-                      Number(dadosConta.saldo_final || 0) < 0
-                        ? "bg-red-50 border-red-200 text-red-700"
-                        : "bg-green-50 border-green-200 text-green-700"
-                    }`}
-                  >
-                    {Number(dadosConta.saldo_final || 0).toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </div>
-                </div>
-              )}
+              <div className="rounded-lg border-2 border-blue-700 bg-white px-4 py-2 text-sm font-black whitespace-nowrap text-blue-700">
+                {Number(dadosConta.saldo_final || 0).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </div>
+            </div>
+          )}
           </div>
   
         </div>

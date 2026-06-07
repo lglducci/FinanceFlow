@@ -12,6 +12,7 @@ import { fetchSeguro } from "../utils/apiSafe";
 import { explicarLancamento } from "../helpers/contabilHelper";
 import { useRef } from "react";
 
+
 export default function NovoLancamento() {
   const navigate = useNavigate();   
   const tipoRef = useRef(null);
@@ -804,7 +805,7 @@ useEffect(() => {
     <div className="flex flex-col gap-4">
 
           {mostrarCartao && (   <div>      {/* Cartão */}
-              <label className="block label label-required">Cartão</label>
+              <label className="block label label-required">Meu Cartão</label>
                   <div className="flex items-center gap-2"> 
               <select
                     className="input-premium w-[480px]"
@@ -869,7 +870,7 @@ useEffect(() => {
                   {/* Tipo */}
                   <div>
                     <label className="label label-required font-bold text-[#1e40af]">
-                     Tipo Movimento
+                     É uma Receita o Despesa?
                     </label>
 
                     <select
@@ -920,7 +921,7 @@ useEffect(() => {
                   {form.tipo === "entrada" && (
                     <div>
                       <label className="label label-required font-bold text-[#1e40af]">
-                        Forma de Recebimento
+                      Qual a forma de recebimento?
                       </label>
 
                       <select
@@ -944,7 +945,7 @@ useEffect(() => {
                   {form.tipo === "saida" && (
                     <div>
                       <label className="label label-required font-bold text-[#1e40af]">
-                        Forma de Pagamento
+                       Qual o tipo de transação?
                       </label>
 
                       <select
@@ -972,7 +973,7 @@ useEffect(() => {
 
            {mostrarContaFinanceira && ( 
             <div>
-              <label  className="label label-required block font-bold text-[#1e40af]">Conta Financeira</label>
+              <label  className="label label-required block font-bold text-[#1e40af]">Onde pagarei ou receberei? </label>
                 <select
                     name="conta_id"
                     value={String(form.conta_id || "")}
@@ -1000,7 +1001,7 @@ useEffect(() => {
 
 
             <div>
-              <label  className="label label-required block font-bold text-[#1e40af]">Valor</label>
+              <label  className="label label-required block font-bold text-[#1e40af]">Qual o Valor?</label>
               <input
                 type="number"
                 name="valor"
@@ -1015,7 +1016,7 @@ useEffect(() => {
          
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label label-required font-bold block text-[#1e40af]">Data</label>
+              <label className="label label-required font-bold block text-[#1e40af]">Data Movimento</label>
               <input
                 type="date"
                 name="data"
@@ -1026,9 +1027,9 @@ useEffect(() => {
             </div>
 
            <div>
-                <div className="w-4/5">
+                <div className="w-5/5">
                   <label className="label label-required">
-                    Classificação
+                   Como eu classifico isso?
                   </label>
 
                   <select
@@ -1051,7 +1052,7 @@ useEffect(() => {
           </div>
 
           {/* Descrição */}
-          <label className="label label-required font-bold text-[#1e40af]">Descrição</label>
+          <label className="label label-required font-bold text-[#1e40af]">Uma breve Descrição</label>
          
           <input
             type="text"
@@ -1132,7 +1133,7 @@ useEffect(() => {
             {/* PARCELAS */}
                 <div className="w-2/4">
                   <label className="label label-required font-bold text-[#1e40af]">
-                    Parcelas
+                    Qual o número de parcelas
                   </label>
                   <input
                     type="number"
@@ -1172,7 +1173,7 @@ useEffect(() => {
 
                           <div className="w-2/4">
                                 <label className="label label-required font-bold text-[#1e40af]">
-                                  Plano de Contas
+                                 Qual o Plano de Contas
                                 </label>
 
                                  <input
@@ -1375,27 +1376,26 @@ useEffect(() => {
                   
                   </div> )} 
                
-          <div className="flex gap-6 pt-8 pb-8 pl-1">  
-            <button
-              type="button"
-              onClick={handleSalvarGeral}
-              className="flex-1 bg-[#061f4aff] text-white px-4 py-3 rounded-lg font-semibold"
-            >
-              Salvar
-            </button>  
-            <button
-            
-              onClick={() => {
-                  sessionStorage.setItem("mostrar_alerta_lancamento", "1");
-                  navigate(-1);
-                }}
-              className="flex-1 bg-gray-500 text-white px-4 py-3  rounded-lg font-semibold"
-            >
-              Voltar
-            </button> 
+           <div className="flex justify-end gap-6 pt-8 pb-18 pl-1">
+                <button
+                  type="button"
+                  onClick={handleSalvarGeral}
+                  className="btn-pill btn-dark-blue flex items-center gap-2"
+                >
+                  Salvar
+                </button>
 
-          </div> 
-        </div>
+                <button
+                  onClick={() => {
+                    sessionStorage.setItem("mostrar_alerta_lancamento", "1");
+                    navigate(-1);
+                  }}
+                  className="btn-pill btn-gray flex items-center gap-2"
+                >
+                  Voltar
+                </button>
+              </div>
+             </div>
 
       </div>
       

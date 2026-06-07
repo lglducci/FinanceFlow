@@ -1,8 +1,10 @@
- 
+  
  import { useEffect, useState, useRef } from "react";
  import { buildWebhookUrl } from "../config/globals";
  import { useNavigate } from "react-router-dom";
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+ import ModalBase from "../components/ModalBase";
+ import { Funnel } from "lucide-react";
  
  
  
@@ -54,6 +56,14 @@ const [dataFim, setDataFim] = useState(hojeMaisDias(7));
  const [totalPeriodo, setTotalPeriodo] = useState(0);
  const [mostrarModalExcluir, setMostrarModalExcluir] = useState(false);
  const [selecionadas, setSelecionadas] = useState([]);
+const [modalFiltro, setModalFiltro] = useState(false);
+const [filtroTemp, setFiltroTemp] = useState({
+  dataIni: hojeMaisDias(-1),
+  dataFim: hojeMaisDias(7),
+  fornecedor_id: 0,
+  status: "0",
+  somenteVencidas: false,
+});
 
   const btnPadrao = "w-60 h-12 flex items-center justify-center text-white font-semibold rounded-lg text-base";
 
@@ -64,7 +74,19 @@ async function carregarContas() {
     const url = buildWebhookUrl("listacontas", { empresa_id });
     const resp = await fetch(url);
     const json = await resp.json();
-    setContas(json);
+    const lista = Array.isArray(json) ? json : [];
+
+    setContas(
+      lista.map((c) => ({
+        ...c,
+        id: c.id ?? c.conta_id,
+        conta_id: c.conta_id ?? c.id,
+        nome: c.nome ?? c.conta_nome,
+        conta_nome: c.conta_nome ?? c.nome,
+        icone_url: String(c.icone_url || c.icone || c.url_icone || "").trim(),
+        cor_hex: c.cor_hex || c.cor || "#1e40af",
+      }))
+    );
   } catch (e) {
     console.log("ERRO ao carregar contas:", e);
   }
@@ -195,18 +217,25 @@ async function pagarSelecionadas() {
   //------------------------------------------------------------------
   // 3) PESQUISAR
   //------------------------------------------------------------------
- async function pesquisar(loteRemover = null) {
+ async function pesquisar(loteRemover = null, filtrosOverride = null) {
     try {
       setLoading(true);
 
+      const f = filtrosOverride || {};
+      const statusBusca = f.status ?? status;
+      const dataIniBusca = f.dataIni ?? dataIni;
+      const dataFimBusca = f.dataFim ?? dataFim;
+      const fornecedorBusca = f.fornecedor_id ?? fornecedor_id;
+      const somenteVencidasBusca = f.somenteVencidas ?? somenteVencidas;
+
       const url = buildWebhookUrl("consultarcontapagar", {
         empresa_id,
-        status,
-        data_ini: dataIni,
-        data_fim: dataFim,
-        fornecedor_id,
-        somente_vencidas: somenteVencidas,
-_t: Date.now()
+        status: statusBusca,
+        data_ini: dataIniBusca,
+        data_fim: dataFimBusca,
+        fornecedor_id: fornecedorBusca,
+        somente_vencidas: somenteVencidasBusca,
+        _t: Date.now()
       });
 
       const resp = await fetch(url);
@@ -331,6 +360,43 @@ async function excluirParcelamento(c) {
 
 
 
+function labelContaDrop(c) {
+  const ag = c.agencia ? `Ag: ${c.agencia}` : "";
+  const cc = c.conta ? `Conta: ${c.conta}` : "";
+  const dados = [ag, cc].filter(Boolean).join(" • ");
+  return dados ? `${c.nome} — ${dados}` : `${c.nome || "Conta"}`;
+}
+
+const contaSelecionada = contas.find((c) =>
+  String(c.id ?? c.conta_id) === String(conta_id)
+);
+
+const iconeConta = String(contaSelecionada?.icone_url || "").trim();
+const corConta = contaSelecionada?.cor_hex || "#1e40af";
+
+async function selecionarContaBancaria(valor) {
+  const id = Number(valor);
+  setContaId(id);
+
+  if (id === 0) {
+    setDadosConta(null);
+    return;
+  }
+
+  const empresa = localStorage.getItem("empresa_id") || 1;
+
+  const url = buildWebhookUrl("consultasaldo", {
+    inicio: new Date().toISOString().split("T")[0],
+    fim: new Date().toISOString().split("T")[0],
+    empresa_id: empresa,
+    conta_id: id,
+  });
+
+  const resp = await fetch(url);
+  const json = await resp.json();
+  setDadosConta(json[0]);
+}
+
  const listaVisivel = lista.filter(
   (c) => !idsOcultos.includes(Number(c.id))
 );
@@ -388,207 +454,115 @@ return (
 
     {/* RESUMOS */}
     <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-      <div className="rounded-xl border-l-4 border-blue-600 bg-white p-4">
-        <p className="text-xs font-semibold text-slate-500">Total do período</p>
-        <p className="mt-1 text-xl font-bold text-slate-900">
-          {totalPeriodo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-        </p>
-      </div>
-
-      <div className="rounded-xl border-l-4 border-amber-500 bg-white p-4">
-        <p className="text-xs font-semibold text-slate-500">Status</p>
-        <p className="mt-1 text-sm font-semibold text-slate-900">
-          {status === "0" ? "Todos" : status}
-        </p>
-        <p className="text-xs text-slate-500">
-          {somenteVencidas ? "Somente vencidas" : "Inclui todas"}
-        </p>
-      </div>
-
        
-    <div className="
-        text-right
-        rounded-2xl
-        px-5 py-3
-        border border-emerald-200
-        bg-gradient-to-br from-emerald-150 via-white to-blue-150
-        shadow-sm
-      ">
-        <p className="text-base font-bold text-slate-900">Conta bancária</p>
-        <p className="mt-1 text-sm font-semibold text-slate-900">
-          {dadosConta?.conta_nome ?? "Não selecionada"}
-        </p>
-        <p className="text-base text-green-500 font-bold">
-          {dadosConta
-            ? `Saldo: R$ ${Number(dadosConta.saldo_final).toLocaleString("pt-BR")}`
-            : "Selecione para ver saldo"}
-        </p>
-      </div> 
-
+       
+     
 
       
     </div>
 
-    {/* FILTROS + CONTA */}
-    <details
-  open
-  className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
->
-  <summary className="list-none cursor-pointer">
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-2">
-        <span className="text-base font-bold text-slate-900">🔎 Filtros</span>
-        <span className="text-xs text-slate-500">
-          {dataIni || dataFim ? `${dataIni || "--"} → ${dataFim || "--"}` : "sem datas"}
-        </span>
+    {/* CONTA + AÇÕES */}
+    <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-slate-600">
+            Conta bancária
+          </label>
+
+          <div className="flex items-center gap-2">
+            {iconeConta ? (
+              <img
+                src={iconeConta}
+                alt="Banco"
+                className="h-9 w-9 rounded-full border bg-white object-contain"
+                style={{ borderColor: corConta }}
+              />
+            ) : (
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-full border bg-gray-100 text-sm"
+                style={{ borderColor: corConta }}
+              >
+                🏦
+              </div>
+            )}
+
+            <select
+              value={conta_id}
+              onChange={(e) => selecionarContaBancaria(e.target.value)}
+              className="block min-w-[340px] rounded-lg border px-3 py-2 text-base font-bold text-blue-900"
+            >
+              <option value={0}>Selecione...</option>
+              {contas.map((ct) => {
+                const id = ct.id ?? ct.conta_id;
+                return (
+                  <option key={id} value={id}>
+                    {labelContaDrop(ct)}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        </div>
+        
+          
+        {dadosConta && (
+          <div className="rounded-xl border px-4 py-2 text-sm font-black"
+            style={{ borderColor: corConta, color: corConta }}>
+            Saldo: {Number(dadosConta.saldo_final || 0).toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => {
+              setFiltroTemp({
+                dataIni,
+                dataFim,
+                fornecedor_id,
+                status,
+                somenteVencidas,
+              });
+              setModalFiltro(true);
+            }}
+            className="btn-pill btn-white flex items-center gap-2"
+          >
+            <Funnel size={16} />
+            Filtros
+          </button>
+
+          <button
+            onClick={pesquisar}
+            className="btn-pill btn-yellow whitespace-nowrap"
+          >
+            🔎 Pesquisar
+          </button>
+
+          <button
+            onClick={pagarSelecionadas}
+            className="btn-pill btn-black whitespace-nowrap"
+          >
+            Pagar selecionadas
+            {selecionadas.length > 0 && (
+              <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
+                {selecionadas.length}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
-      <span className="text-xs text-slate-500">
-        clique para abrir/fechar
-      </span>
-    </div>
-  </summary>
-
-  <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12">
-
-    <div className="xl:col-span-2">
-      <label className="mb-1 block text-xs font-semibold text-slate-600">
-        Data inicial
-      </label>
-      <input
-        type="date"
-        value={dataIni}
-        onChange={(e) => setDataIni(e.target.value)}
-        className="w-full rounded-lg border px-3 py-2 text-sm"
-      />
+      <div className="mt-3 text-xs font-bold text-slate-500">
+        Filtros: {dataIni} → {dataFim} • {status === "0" ? "Todos" : status} • {somenteVencidas ? "Somente vencidas" : "Todas"}
+      </div>
     </div>
 
-    <div className="xl:col-span-2">
-      <label className="mb-1 block text-xs font-semibold text-slate-600">
-        Data final
-      </label>
-      <input
-        type="date"
-        value={dataFim}
-        onChange={(e) => setDataFim(e.target.value)}
-        className="w-full rounded-lg border px-3 py-2 text-sm"
-      />
-    </div>
-
-    <div className="xl:col-span-2">
-      <label className="mb-1 block text-xs font-semibold text-slate-600">
-        Status
-      </label>
-      <select
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
-      >
-        <option value="0">Todos</option>
-        <option value="aberto">Aberto</option>
-        <option value="pago">Pago</option>
-      </select>
-    </div>
-
-    <div className="xl:col-span-3">
-      <label className="mb-1 block text-xs font-semibold text-slate-600">
-        Fornecedor
-      </label>
-      <select
-        value={fornecedor_id}
-        onChange={(e) => setFornecedorId(Number(e.target.value))}
-        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
-      >
-        <option value={0}>Todos</option>
-        {fornecedores.map((f) => (
-          <option key={f.id} value={f.id}>
-            {f.nome}
-          </option>
-        ))}
-      </select>
-    </div>
-
-    
-
-    <div className="xl:col-span-3">
-      <label className="mb-1 block text-xs font-semibold text-slate-600">
-        Conta bancária
-      </label>
-      <select
-        value={conta_id}
-        onChange={async (e) => {
-          const id = Number(e.target.value);
-          setContaId(id);
-
-          if (id === 0) {
-            setDadosConta(null);
-            return;
-          }
-
-          const empresa = localStorage.getItem("empresa_id") || 1;
-
-          const url = buildWebhookUrl("consultasaldo", {
-            inicio: new Date().toISOString().split("T")[0],
-            fim: new Date().toISOString().split("T")[0],
-            empresa_id: empresa,
-            conta_id: id,
-          });
-
-          const resp = await fetch(url);
-          const json = await resp.json();
-          setDadosConta(json[0]);
-        }}
-        className="w-full rounded-lg border px-3 py-2 text-sm font-semibold"
-      >
-        <option value={0}>Selecione...</option>
-        {contas.map((ct) => (
-          <option key={ct.id} value={ct.id}>
-            {ct.nome}
-          </option>
-        ))}
-      </select>
-    </div>
-
-    <div className="flex items-end xl:col-span-4">
-      <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
-        <input
-          type="checkbox"
-          checked={somenteVencidas}
-          onChange={(e) => setSomenteVencidas(e.target.checked)}
-        />
-        Somente vencidas
-      </label>
-    </div>
-
-    <div className="flex items-end justify-end gap-3 border-t pt-4 md:col-span-2 xl:col-span-8">
-      <button
-        onClick={pagarSelecionadas}
-        className="btn-pill btn-black whitespace-nowrap"
-      >
-        Pagar selecionadas
-        {selecionadas.length > 0 && (
-          <span className="ml-2 rounded-full bg-white/20 px-2 text-xs">
-            {selecionadas.length}
-          </span>
-        )}
-      </button>
-
-      <button
-        onClick={pesquisar}
-        className="btn-pill btn-yellow whitespace-nowrap"
-      >
-        🔎 Pesquisar
-      </button>
-    </div>
-  </div>
-</details>
-
-     
      {/* TABELA */}
-<div className="max-h-[720px] overflow-y-auto overflow-x-auto rounded-xl border border-slate-200">
-  <table className="min-w-[1180px] w-full table-fixed text-sm"> 
-   
-    <thead className="sticky top-0 z-20 bg-slate-800 text-white">
+     <div className="max-h-[720px] overflow-y-auto overflow-x-auto"> 
+       <table className="w-full text-sm ">
+       <thead className="bg-gray-200 text-gray-600 text-black">
       <tr>
        <th className="w-[45px] px-2 py-3 text-center">Sel.</th>
       <th className="w-[60px] px-2 py-3 text-left">ID</th>
@@ -702,6 +676,108 @@ return (
     </tbody>
   </table>
 </div>
+
+    <ModalBase
+      open={modalFiltro}
+      onClose={() => setModalFiltro(false)}
+      title="Filtros"
+    >
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <label className="text-sm font-semibold text-gray-700">Data inicial</label>
+            <input
+              type="date"
+              value={filtroTemp.dataIni}
+              onChange={(e) => setFiltroTemp((p) => ({ ...p, dataIni: e.target.value }))}
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold text-gray-700">Data final</label>
+            <input
+              type="date"
+              value={filtroTemp.dataFim}
+              onChange={(e) => setFiltroTemp((p) => ({ ...p, dataFim: e.target.value }))}
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Fornecedor</label>
+          <select
+            value={filtroTemp.fornecedor_id}
+            onChange={(e) => setFiltroTemp((p) => ({ ...p, fornecedor_id: Number(e.target.value) }))}
+            className="w-full rounded-lg border px-3 py-2 text-sm"
+          >
+            <option value={0}>Todos</option>
+            {fornecedores.map((f) => (
+              <option key={f.id} value={f.id}>{f.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-gray-700">Status</label>
+          <select
+            value={filtroTemp.status}
+            onChange={(e) => setFiltroTemp((p) => ({ ...p, status: e.target.value }))}
+            className="w-full rounded-lg border px-3 py-2 text-sm"
+          >
+            <option value="0">Todos</option>
+            <option value="aberto">Aberto</option>
+            <option value="pago">Pago</option>
+          </select>
+        </div>
+
+        <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700">
+          <input
+            type="checkbox"
+            checked={filtroTemp.somenteVencidas}
+            onChange={(e) => setFiltroTemp((p) => ({ ...p, somenteVencidas: e.target.checked }))}
+          />
+          Somente vencidas
+        </label>
+
+        <div className="flex justify-end gap-3 pt-3">
+          <button
+            type="button"
+            onClick={() => {
+              setFiltroTemp({
+                dataIni: hojeMaisDias(-1),
+                dataFim: hojeMaisDias(7),
+                fornecedor_id: 0,
+                status: "0",
+                somenteVencidas: false,
+              });
+            }}
+            className="btn-pill btn-white"
+          >
+            Limpar
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setDataIni(filtroTemp.dataIni);
+              setDataFim(filtroTemp.dataFim);
+              setFornecedorId(Number(filtroTemp.fornecedor_id || 0));
+              setStatus(filtroTemp.status || "0");
+              setSomenteVencidas(!!filtroTemp.somenteVencidas);
+              setModalFiltro(false);
+
+              pesquisar(null, filtroTemp);
+            }}
+            className="btn-pill btn-dark-blue"
+          >
+            Aplicar filtros
+          </button>
+        </div>
+      </div>
+    </ModalBase>
+
 
   </div>
 );
