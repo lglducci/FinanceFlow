@@ -1016,7 +1016,8 @@ const valorNumero = parseValorOFX(valorRaw);
 
    return (
   <div className="min-h-screen bg-[#eef7fd] px-1 py-1">
-    <div className="mx-auto w-full max-w-[1620px]">
+     
+      <div className="ml-0 mr-auto w-full max-w-[1520px]">
       <div className="rounded-[28px] bg-[#f8fcff] border border-cyan-100 shadow-[0_8px_30px_rgba(15,23,42,0.08)] p-2">
         <div className="mb-5">
           <h2 className="text-3xl font-black tracking-tight text-[#063452]"></h2>
@@ -1274,8 +1275,8 @@ const valorNumero = parseValorOFX(valorRaw);
 
         {abaAtiva === "lancamentos" && (
           <>
-            <div className="mt-4 max-h-[580px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
-              <div  className="grid grid-cols-[80px_120px_650px_120px_220px_220px_120px_160px] gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
+            <div className="mt-4 h-auto max-h-[420px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
+              <div  className="grid grid-cols-[80px_120px_550px_120px_220px_220px_120px_160px] gap-2 text-sm py-2 border-b border-gray-200 hover:bg-gray-50">
                 <div className="text-left font-bold">Arquivo</div>
                 <div className="text-left font-bold">Data</div>
                 <div className="text-left font-bold">Histórico</div>
@@ -1300,7 +1301,7 @@ const valorNumero = parseValorOFX(valorRaw);
               {linhas.map((l) => (
                 <div
                   key={l._id}
-                    className="grid grid-cols-[80px_120px_650px_120px_220px_220px_120px_160px] gap-2 text-sm border-b py-1"
+                    className="grid grid-cols-[80px_120px_550px_120px_220px_220px_120px_160px] gap-2 text-sm border-b py-1"
                 >
 
 

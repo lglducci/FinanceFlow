@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import { fetchSeguro } from "../utils/apiSafe";
 import { useRef } from "react";
 import { FilePlus } from "lucide-react";
+import { Repeat } from "lucide-react";
+import { CalendarClock  } from "lucide-react";
 
 import { FileText } from "lucide-react";   // relatório
 import { Receipt } from "lucide-react";    // recibo
@@ -453,6 +455,12 @@ setCarregando(true);
   }   
    
    
+  
+   function ContaRecorrente() {
+    navigate("/conta-recorrente");
+  }
+
+
 
    function ReclassifacaoContabil() {
     navigate("/regras-classificacao");
@@ -1256,6 +1264,14 @@ return (
   <Funnel size={16} />
   Filtros
 </button> 
+
+          
+     <button
+      onClick={ContaRecorrente}
+       className="btn-pill btn-white"
+   >
+      <Repeat size={16} /> Conta Recorrente
+    </button>
 
      <button
       onClick={ReclassifacaoContabil}
