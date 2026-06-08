@@ -3,89 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
 import ReactECharts from "echarts-for-react";
-
-function serieBarra3D({
-  name,
-  valores,
-  xShift = 0,
-  largura = 18,
-  profundidadeX = 10,
-  profundidadeY = 7,
-  corFrente,
-  corTopo,
-  corLado,
-  sombra = "rgba(0,0,0,0.18)",
-}) {
-  return {
-    name,
-    type: "custom",
-    renderItem: (params, api) => {
-      const idx = api.value(0);
-      const valor = Number(api.value(1) || 0);
-
-      const xBase = api.coord([idx, 0])[0] + xShift;
-      const yTopo = api.coord([idx, valor])[1];
-      const yBase = api.coord([idx, 0])[1];
-
-      const altura = yBase - yTopo;
-      if (altura <= 0) return null;
-
-      const x = xBase - largura / 2;
-      const y = yTopo;
-
-      return {
-        type: "group",
-        children: [
-          {
-            type: "rect",
-            shape: {
-              x,
-              y,
-              width: largura,
-              height: altura,
-              r: 4,
-            },
-            style: {
-              fill: corFrente,
-              shadowBlur: 12,
-              shadowColor: sombra,
-            },
-          },
-          {
-            type: "polygon",
-            shape: {
-              points: [
-                [x, y],
-                [x + profundidadeX, y - profundidadeY],
-                [x + largura + profundidadeX, y - profundidadeY],
-                [x + largura, y],
-              ],
-            },
-            style: {
-              fill: corTopo,
-            },
-          },
-          {
-            type: "polygon",
-            shape: {
-              points: [
-                [x + largura, y],
-                [x + largura + profundidadeX, y - profundidadeY],
-                [x + largura + profundidadeX, yBase - profundidadeY],
-                [x + largura, yBase],
-              ],
-            },
-            style: {
-              fill: corLado,
-            },
-          },
-        ],
-      };
-    },
-    data: valores.map((v, i) => [i, Number(v || 0)]),
-    z: 10,
-  };
-}
+ 
 
 export default function RelatorioFluxoCaixaGrafico() {
   const navigate = useNavigate();
@@ -328,65 +246,54 @@ export default function RelatorioFluxoCaixaGrafico() {
           },
         },
       ],
+ 
 
       series: [
-        serieBarra3D({
-          name: "Entradas",
-          valores: entradas,
-          xShift: -14,
-          largura: modo === "DIARIO" ? 14 : 18,
-          corFrente: "#22c55e",
-          corTopo: "#4ade80",
-          corLado: "#15803d",
-          sombra: "rgba(34,197,94,0.35)",
-        }),
+  {
+    name: "Entradas",
+    type: "bar",
+    data: entradas,
+    barWidth: modo === "DIARIO" ? 10 : 16,
+    itemStyle: {
+      color: "#3b82f6",
+      borderRadius: [4, 4, 0, 0],
+    },
+    z: 10,
+  },
 
-        serieBarra3D({
-          name: "Saídas",
-          valores: saidas,
-          xShift: 14,
-          largura: modo === "DIARIO" ? 14 : 18,
-          corFrente: "#f43f5e",
-          corTopo: "#fb7185",
-          corLado: "#be123c",
-          sombra: "rgba(244,63,94,0.35)",
-        }),
+  {
+    name: "Saídas",
+    type: "bar",
+    data: saidas,
+    barWidth: modo === "DIARIO" ? 10 : 16,
+    itemStyle: {
+      color: "#f31212",
+      borderRadius: [4, 4, 0, 0],
+    },
+    z: 10,
+  },
 
-        {
-          name: "Saldo",
-          type: "line",
-          yAxisIndex: 1,
-          smooth: true,
-          data: saldos,
-          symbol: "circle",
-          symbolSize: 10,
-          lineStyle: {
-            width: 5,
-            color: "#60a5fa",
-            shadowBlur: 12,
-            shadowColor: "rgba(96,165,250,0.35)",
-          },
-          itemStyle: {
-            color: "#60a5fa",
-            borderColor: "#ffffff",
-            borderWidth: 2,
-          },
-          areaStyle: {
-            color: {
-              type: "linear",
-              x: 0,
-              y: 0,
-              x2: 0,
-              y2: 1,
-              colorStops: [
-                { offset: 0, color: "rgba(96,165,250,0.28)" },
-                { offset: 1, color: "rgba(96,165,250,0.03)" },
-              ],
-            },
-          },
-          z: 20,
-        },
-      ],
+  {
+    name: "Saldo",
+    type: "line",
+    yAxisIndex: 1,
+    smooth: true,
+    data: saldos,
+    symbol: "circle",
+    symbolSize: 6,
+    lineStyle: {
+      width: 3,
+      color: "#2563eb",
+    },
+    itemStyle: {
+      color: "#2563eb",
+    },
+    areaStyle: {
+      color: "rgba(37,99,235,0.08)",
+    },
+    z: 20,
+  },
+],
 
       animationDuration: 900,
       animationEasing: "cubicOut",
