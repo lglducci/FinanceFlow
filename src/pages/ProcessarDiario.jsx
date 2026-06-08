@@ -412,35 +412,13 @@ useEffect(() => {
             onClick={gerarContabil}
            
 
-             className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
-                        border-2 border-black
-                        shadow-[0_4px_10px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
+              className="btn-pill btn-dark-blue">
            Gerar Contábil 
           </button>
 
           <button
             onClick={voltadata}
-             className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-red-500 via-red-600 to-red-800
-                        border-2 border-black
-                        shadow-[0_4px_10px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      "
+              className="btn-pill btn-dark-red"
                       >
             Voltar Data
           </button>

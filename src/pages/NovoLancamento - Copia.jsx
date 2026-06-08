@@ -1,4 +1,4 @@
-    import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -13,13 +13,7 @@ import { explicarLancamento } from "../helpers/contabilHelper";
 import { useRef } from "react";
 
 
- export default function NovoLancamentoDrawer({
-  inicial,
-  onBack,
-  onClose,
-  onSuccess,
-  modoDrawer = true
-} = {}) {
+export default function NovoLancamento() {
   const navigate = useNavigate();   
   const tipoRef = useRef(null);
   const empresa_id = localStorage.getItem("empresa_id") || "1";
@@ -64,36 +58,6 @@ const [contasPlano, setContasPlano] = useState([]);
     parcela_num:1,
     parcelas:1
   });
-
-
-
-useEffect(() => {
-  if (!inicial) return;
- setForm((prev) => ({
-  ...prev,
-  tipo: inicial.tipo || prev.tipo,
-  forma_pagamento: inicial.forma_pagamento || "",
-  forma_recebimento: inicial.forma_recebimento || "",
-
-  classificacao:
-    inicial.classificacao ||
-    (
-      inicial.tipo === "entrada"
-        ? "receita"
-        : inicial.tipo === "saida"
-        ? "despesa"
-        : ""
-    ),
-}));
-
-  setModeloCodigo("");
-  setModeloSelecionado(null);
-  setLinhas([]);
-}, [inicial]);
-
-
-
-
 
   const [categorias, setCategorias] = useState([]);
   const [contas, setContas] = useState([]);
@@ -405,15 +369,7 @@ const classificacoesPorNatureza = {
 useEffect(() => {
   setForm((prev) => ({
     ...prev,
-    classificacao:
-    inicial.classificacao ||
-    (
-      inicial.tipo === "entrada"
-        ? "receita"
-        : inicial.tipo === "saida"
-        ? "despesa"
-        : ""
-    ),
+    classificacao: ""
   }));
 }, [form.tipo]);
 
@@ -609,23 +565,14 @@ useEffect(() => {
   });
 
   alert("Salvo com sucesso!");
-
-  window.dispatchEvent(new Event("contabil-atualizado"));
-
+ 
+   window.dispatchEvent(new Event("contabil-atualizado"));
+   
   limparFormulario();
-
-  if (typeof onSuccess === "function") {
-    onSuccess();
-  }
-
-  if (modoDrawer && typeof onClose === "function") {
-    onClose();
-    return;
-  }
-
+  
   setTimeout(() => {
-    tipoRef.current?.focus();
-  }, 100);
+  tipoRef.current?.focus();
+}, 100);
 } catch (err) {
   console.error("ERRO CAPTURADO:", err.message);
 
@@ -828,20 +775,18 @@ useEffect(() => {
           
 
      
-      <div className={modoDrawer ? "h-full bg-white" : "min-h-screen py-6 px-4 bg-bgSoft"}>
+      <div className="min-h-screen py-6 px-4 bg-bgSoft">
        <div
- className={modoDrawer
-   ? "w-full rounded-none bg-white px-4 pb-4 pt-3"
-   : "w-full max-w-5xl mx-auto rounded-3xl p-6 shadow-xl bg-white border border-slate-200 mt-1 mb-1"}
- style={{ borderTop: `5px solid ${corTitulo}` }}
+ className="w-full max-w-5xl mx-auto rounded-3xl p-6 shadow-xl bg-white border border-slate-200 mt-1 mb-1"
+ style={{ borderTop: `6px solid ${corTitulo}` }}
 >
   
  
  
         {/* TÍTULO IGUAL AO EDITAR */}
-        <h1 className={modoDrawer ? "text-lg font-black mb-3 text-left" : "text-2xl md:text-3xl font-bold mb-6 text-center"}  style={{ color: corTitulo }}>
-            {inicial?.titulo || titulo}
-            <p className={modoDrawer ? "text-xs text-gray-500 text-left font-semibold" : "text-sm text-gray-700 text-center"}>
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 text-center"  style={{ color: corTitulo }}>
+            {titulo}
+            <p className="text-sm text-gray-700 text-center">
              {descricao}
           </p>
           </h1>
@@ -854,28 +799,28 @@ useEffect(() => {
            
 
        </div>
-        <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 shadow-sm [&_label]:text-xs [&_.input-premium]:min-h-9 [&_.input-premium]:text-sm">
+        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-sm">
 
-  <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-3">
-    <div className="rounded-xl border bg-white px-3 py-2 shadow-sm">
+  <div className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-3">
+    <div className="rounded-2xl border bg-white px-4 py-3 shadow-sm">
       <div className="text-xs font-black uppercase tracking-wide text-slate-400">Tipo</div>
-      <div className="mt-1 text-sm font-black" style={{ color: form.tipo === "entrada" ? "#16a34a" : "#dc2626" }}>
+      <div className="mt-1 text-lg font-black" style={{ color: form.tipo === "entrada" ? "#16a34a" : "#dc2626" }}>
         {form.tipo === "entrada" ? "Receita" : "Despesa"}
       </div>
     </div>
 
-    <div className="rounded-xl border bg-white px-3 py-2 shadow-sm">
+    <div className="rounded-2xl border bg-white px-4 py-3 shadow-sm">
       <div className="text-xs font-black uppercase tracking-wide text-slate-400">Forma</div>
-      <div className="mt-1 text-sm font-black text-blue-900">
+      <div className="mt-1 text-lg font-black text-blue-900">
         {form.tipo === "entrada"
           ? (form.forma_recebimento || "Escolha a forma")
           : (form.forma_pagamento || "Escolha a forma")}
       </div>
     </div>
 
-    <div className="rounded-xl border bg-white px-3 py-2 shadow-sm">
+    <div className="rounded-2xl border bg-white px-4 py-3 shadow-sm">
       <div className="text-xs font-black uppercase tracking-wide text-slate-400">Destino</div>
-      <div className="mt-1 text-sm font-black" style={{ color: corTitulo }}>
+      <div className="mt-1 text-lg font-black" style={{ color: corTitulo }}>
         {modo === "financeiro" ? "Financeiro" : modo === "pagar" ? "Conta a Pagar" : modo === "receber" || modo === "receber_cartao" ? "Conta a Receber" : "Cartão"}
       </div>
     </div>
@@ -957,7 +902,6 @@ useEffect(() => {
                         ref={tipoRef}
                       name="tipo"
                       value={form.tipo}
-                      disabled={!!inicial?.tipo}
                       onChange={handleChange}
                       className="input-premium w-full"
                     >
@@ -965,7 +909,36 @@ useEffect(() => {
                       <option value="saida">Despesa</option>
                     </select>
                   </div>
- 
+
+                  {/* Categoria  
+                  <div>
+                    <label className="label label-required font-bold text-[#1e40af]">
+                      Categoria
+                    </label>
+
+                    <select
+                      name="categoria_id"
+                      value={form.categoria_id}
+                      onChange={(e) => {
+                        if (e.target.value === "__nova__") {
+                          setModalCategoria(true);
+                          return;
+                        }
+                        handleChange(e);
+                      }}
+                      className="input-premium w-full"
+                    >
+                      <option value="">Selecione</option>
+
+                      {categorias.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.nome}
+                        </option>
+                      ))}
+
+                      <option value="__nova__">➕ Nova Categoria</option>
+                    </select>
+                  </div>*/}
 
                  
 
@@ -980,7 +953,6 @@ useEffect(() => {
                         name="forma_recebimento"
                         value={form.forma_recebimento || ""}
                         onChange={handleChange}
-                        disabled={!!inicial?.forma_recebimento}
                         className="input-premium w-full"
                       >
                         <option value="">Selecione</option>
@@ -1005,8 +977,6 @@ useEffect(() => {
                         name="forma_pagamento"
                         value={form.forma_pagamento || ""}
                         onChange={handleChange}
-                         disabled={!form.tipo}
-                           disabled={!!inicial?.forma_pagamento}
                         className="input-premium w-full"
                       >
                         <option value="">Selecione</option>
@@ -1083,8 +1053,8 @@ useEffect(() => {
 
            <div>
                 <div className="w-5/5">
-                  <label className="label label-required font-bold block text-[#1e40af]">
-                    Como eu classifico isso?
+                  <label className="label label-required">
+                   Como eu classifico isso?
                   </label>
 
                   <select
@@ -1093,7 +1063,7 @@ useEffect(() => {
                     onChange={handleChange}
                     className="input-premium w-full"
                     required
-                    
+                    disabled={!form.tipo}
                   >
                     <option value="">Selecione...</option>
                     {getClassificacoes().map((item) => (
@@ -1107,20 +1077,16 @@ useEffect(() => {
           </div>
 
           {/* Descrição */}
-           <div>
-                <label className="mb-1 block text-xs font-bold text-[#1e40af]">
-                  Descrição
-                </label>
-
-                <input
-                  type="text"
-                  name="descricao"
-                  value={form.descricao}
-                  onChange={handleChange}
-                  placeholder="Descricao"
-                  className="input-premium w-full"
-                />
-              </div>
+          <label className="label label-required font-bold text-[#1e40af]">Descrição</label>
+          <input
+            type="text"
+            name="descricao"
+            value={form.descricao}
+            onChange={handleChange}
+            placeholder="Descricao"
+            rows="2"
+               className="input-premium"
+          /> 
 
           {/* Numero documento ou nota fiscal  */}
           {ehAPrazo && (    <div className="grid grid-cols-1 md:grid-cols-1 gap-3">   
@@ -1227,54 +1193,39 @@ useEffect(() => {
 
 
                           </div>  
-                                </div>  )}
-                             
-                           <div className="relative w-full md:w-[310px]">
-                              <label className="mb-1 block text-[11px] font-bold text-[#1e40af]">
-                                Plano de contas
-                              </label>
+                            </div>  )}
+                              <div className="w-full md:w-1/2">
+                                <label className="label label-required font-bold text-[#1e40af] text-sm">
+                                  Plano de Contas
+                                </label>
 
-                              <input
-                                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-                                placeholder="Digite para buscar..."
-                                value={form.contabil_texto || ""}
-                                onChange={(e) =>
-                                  setForm((prev) => ({
-                                    ...prev,
-                                    contabil_texto: e.target.value,
-                                    contabil_id: "",
-                                  }))
-                                }
-                              />
+                                <input
+                                  list="planocontas"
+                                  name="contabil_id"
+                                  className="input-premium w-full text-sm h-9"
+                                  placeholder="Digite a conta..."
+                                  value={form.contabil_texto || ""}
+                                  onChange={(e) => {
+                                    const texto = e.target.value;
 
-                              {form.contabil_texto && (
-                                <div className="absolute z-50 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border bg-white shadow-lg">
-                                  {contasPlano
-                                    .filter((c) =>
-                                      `${c.codigo} ${c.nome}`
-                                        .toLowerCase()
-                                        .includes(form.contabil_texto.toLowerCase())
-                                    )
-                                    .slice(0, 30)
-                                    .map((c) => (
-                                      <button
-                                        key={c.id}
-                                        type="button"
-                                        onClick={() =>
-                                          setForm((prev) => ({
-                                            ...prev,
-                                            contabil_texto: `${c.codigo} - ${c.nome}`,
-                                            contabil_id: c.id,
-                                          }))
-                                        }
-                                        className="block w-full px-3 py-2 text-left text-xs font-semibold hover:bg-cyan-100"
-                                      >
-                                        {c.codigo} - {c.nome}
-                                      </button>
-                                    ))}
-                                </div>
-                              )}
-                            </div>
+                                    const conta = contasPlano.find(
+                                      (c) => `${c.codigo} - ${c.nome}` === texto
+                                    );
+
+                                    setForm((prev) => ({
+                                      ...prev,
+                                      contabil_texto: texto,
+                                      contabil_id: conta?.id || ""
+                                    }));
+                                  }}
+                                />
+
+                                <datalist id="planocontas">
+                                  {contasPlano.map((c) => (
+                                    <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
+                                  ))}
+                                </datalist>
+                              </div>
 
                             </div>
                           
@@ -1444,7 +1395,7 @@ useEffect(() => {
                   
                   </div> )} 
                
-           <div className="sticky bottom-0 z-20 -mx-3 mt-3 flex justify-end gap-3 border-t bg-white/95 px-3 py-3 backdrop-blur">
+           <div className="flex justify-end gap-6 pt-8 pb-18 pl-1">
                 <button
                   type="button"
                   onClick={handleSalvarGeral}
@@ -1455,11 +1406,7 @@ useEffect(() => {
 
                 <button
                   onClick={() => {
-                    if (modoDrawer && typeof onBack === "function") {
-                      onBack();
-                      return;
-                    }
-
+                    sessionStorage.setItem("mostrar_alerta_lancamento", "1");
                     navigate(-1);
                   }}
                   className="btn-pill btn-gray flex items-center gap-2"

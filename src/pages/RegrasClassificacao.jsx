@@ -411,7 +411,7 @@ async function aplicarContaLote() {
             <input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} className="border rounded-xl px-3 py-2 font-bold" />
           </div>
 
-          <button type="button" onClick={pesquisar} disabled={carregando} className="mt-5 px-5 py-2 rounded-xl bg-slate-900 text-white font-black disabled:opacity-60">
+          <button type="button" onClick={pesquisar} disabled={carregando}   className="btn-pill btn-dark-blue">
             {carregando ? "Pesquisando..." : "Pesquisar"}
           </button>
 
@@ -485,16 +485,18 @@ async function aplicarContaLote() {
       type="button"
       onClick={aplicarContaLote}
       disabled={!contaLote || selecionados.length === 0}
-      className="px-4 py-2 rounded-xl bg-slate-900 text-white font-black disabled:opacity-50"
+      className="btn-pill btn-green"
     >
       Aplicar nos selecionados
     </button>
   </div>
 )}
 
+
+
         <div className="overflow-auto border rounded-2xl pb-52">
           <div className="min-w-[1500px]">
-          <div className="grid grid-cols-[50px_80px_150px_110px_110px_1.8fr_120px_120px_110px_130px_2fr] gap-1 bg-slate-900 text-white font-bold text-xs p-2 sticky top-0">
+          <div className="grid grid-cols-[50px_80px_150px_110px_110px_1.8fr_120px_120px_110px_130px_2fr] gap-1 bg-slate-200 text-black font-bold text-xs p-2 sticky top-0">
                <div>
                   {modoLote && (
                     <input

@@ -4,28 +4,48 @@ import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { useLocation } from "react-router-dom";
 
-export default function NovaConta() {
+
+export default function NovaConta({
+  modoDrawer = false,
+  dadosIniciais = null,
+  onClose,
+  onSuccess,
+} = {}) {
 
 
   const location = useLocation();
 const bancoSelecionado = location.state || {};
- 
-  const [form, setForm] = useState({
-    empresa_id: localStorage.getItem("id_empresa") || "",
-    nome: "",
-     banco: bancoSelecionado.banco_nome || "",
-    tipo: "corrente",
-    saldo_inicial: "",
-     nro_banco: bancoSelecionado.banco_codigo || "",
-    agencia: "",
-    conta: "",
-    conjunta: false,
-    juridica: false,
-    padrao: false,
-    conta_contabil:"",
-     icone_url: bancoSelecionado.banco_icone_url || "",
 
-  });
+const state = dadosIniciais || location.state || {};
+ 
+ const [form, setForm] = useState({
+  empresa_id: localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa") || "",
+  nome: "",
+  banco: state.banco_nome || "",
+  tipo: "corrente",
+  saldo_inicial: "",
+  nro_banco: state.banco_codigo || "",
+  agencia: state.agencia || "",
+  conta: state.conta || "",
+  conjunta: false,
+  juridica: false,
+  padrao: false,
+  conta_contabil: "",
+  icone_url: state.banco_icone_url || "",
+});
+
+React.useEffect(() => {
+  if (!dadosIniciais) return;
+
+  setForm((prev) => ({
+    ...prev,
+    banco: dadosIniciais.banco_nome || "",
+    nro_banco: dadosIniciais.banco_codigo || "",
+    icone_url: dadosIniciais.banco_icone_url || "",
+    agencia: dadosIniciais.agencia || "",
+    conta: dadosIniciais.conta || "",
+  }));
+}, [dadosIniciais]);
 
 /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
 const THEME = {
@@ -154,23 +174,28 @@ const inputCls =
 
   
 return (
-   <div className="min-h-screen bg-gradient-to-br from-slate-150 via-blue-150 to-slate-100 px-3 py-4 flex items-start justify-center">
-     <div className="w-full max-w-[620px] rounded-2xl bg-white shadow-2xl border border-slate-300 overflow-hidden">
+    <div className={modoDrawer ? "bg-white px-2 py-2" : "min-h-screen bg-slate-100 px-3 py-4 flex items-start justify-center"}>
+    <div className={modoDrawer ? "w-full rounded-2xl bg-white border border-slate-200 overflow-hidden" : "w-full max-w-[620px] rounded-2xl bg-white shadow-2xl border border-slate-300 overflow-hidden"}>
 
        {/* TOPO */}
-      <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-cyan-600 px-5 py-5 text-white">
-
+      
         
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+           onClick={() => {
+              if (modoDrawer && typeof onClose === "function") {
+                onClose();
+                return;
+              }
+              navigate("/contacorrente");
+            }}
            className="text-3xl font-black text-white"
           >
             ←
           </button>
 
-          <h1 className="text-xl font-black text-white">
+          <h1 className="text-xl font-black text-black">
             Nova Conta
           </h1>
 
@@ -371,7 +396,7 @@ return (
         </div>
       </div>
     </div>
-  </div>
+   
 );
  
 

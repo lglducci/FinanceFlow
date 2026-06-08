@@ -1,8 +1,10 @@
-    import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
  import { buildWebhookUrl } from "../config/globals";
  import { useNavigate } from "react-router-dom"; 
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import { Funnel } from "lucide-react";
+ import NovoLancamentoDrawer from "./NovoLancamento";
+ 
 
  
 export default function ContasReceber() {
@@ -17,6 +19,14 @@ export default function ContasReceber() {
 
   const lotesOcultosRef = useRef(new Set());
 const idsOcultosRef = useRef(new Set());
+
+
+
+
+const [drawerNovo, setDrawerNovo] = useState(false);
+const [tipoNovo, setTipoNovo] = useState(null);
+
+
 
 
    const [contas, setContas] = useState([]);
@@ -373,8 +383,10 @@ async function receberSelecionadas() {
 
   //------------------------------------------------------------------
 
- return (
-  <div className="p-4">
+  return (
+  <div className="flex gap-4 p-4">
+    <main className={drawerNovo ? "w-[65%] transition-all" : "w-full transition-all"}> 
+
     {/* HEADER */}
  <div className="mb-4 flex flex-col gap-3 rounded-xl bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
 
@@ -387,12 +399,17 @@ async function receberSelecionadas() {
 
       {/* AÇÕES PRINCIPAIS */}
       <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => navigate("/nova-conta-receber")}
-          className="btn-pill btn-green"
-        >
-          + Nova conta
-        </button>
+          
+     <button
+      //onClick={abrirNovoLancamento}
+       onClick={() => {
+          setTipoNovo(null);
+          setDrawerNovo(true);
+        }}
+              className="btn-pill btn-emerald"
+                            >
+      + Novo Conta Receber
+    </button>
 
         <button
           onClick={() => window.print()}
@@ -496,6 +513,15 @@ async function receberSelecionadas() {
             Filtros
           </button>
 
+          
+          <button
+            onClick={pesquisar}
+            disabled={loading}
+            className="btn-pill btn-gray whitespace-nowrap disabled:opacity-60"
+          >
+            {loading ? "Pesquisando..." : "🔎 Pesquisar"}
+          </button>
+
           <button
             onClick={receberSelecionadas}
             className="btn-pill btn-black whitespace-nowrap"
@@ -507,14 +533,7 @@ async function receberSelecionadas() {
               </span>
             )}
           </button>
-
-          <button
-            onClick={pesquisar}
-            disabled={loading}
-            className="btn-pill btn-gray whitespace-nowrap disabled:opacity-60"
-          >
-            {loading ? "Pesquisando..." : "🔎 Pesquisar"}
-          </button>
+ 
         </div>
       </div>
     </div>
@@ -752,6 +771,65 @@ async function receberSelecionadas() {
         </div>
       </div>
     )}
+
+    </main>
+
+{drawerNovo && (
+  <aside className="w-[35%] min-w-[420px] max-w-[560px] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+    <div className="flex items-center justify-between border-b bg-slate-50 px-4 py-3">
+      <button
+        type="button"
+        onClick={() => {
+          setTipoNovo(null);
+          setDrawerNovo(false);
+        }}
+        className="rounded-full px-3 py-1 text-lg font-black text-blue-800 hover:bg-blue-100"
+      >
+        ←
+      </button>
+
+      <span className="text-sm font-black text-blue-900">
+        Conta a pagar
+      </span>
+
+      <button
+        type="button"
+        onClick={() => {
+          setTipoNovo(null);
+          setDrawerNovo(false);
+        }}
+        className="rounded-full px-3 py-1 text-lg font-black text-slate-500 hover:bg-slate-200"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div className="h-[calc(100vh-88px)] overflow-y-auto bg-slate-50 p-3">
+      <NovoLancamentoDrawer
+  inicial={{
+    titulo: "Conta a receber",
+    tipo: "entrada",
+    forma_recebimento: "aprazo",
+    classificacao: "receita",
+  }}
+  onBack={() => {
+    setTipoNovo(null);
+    setDrawerNovo(false);
+  }}
+  onClose={() => {
+    setTipoNovo(null);
+    setDrawerNovo(false);
+  }}
+  onSuccess={() => {
+    setDrawerNovo(false);
+    setTipoNovo(null);
+    pesquisar();
+  }}
+/>
+    </div>
+  </aside>
+)}
+
   </div>
 );
 

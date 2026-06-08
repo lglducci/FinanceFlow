@@ -5,7 +5,7 @@
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
  import ModalBase from "../components/ModalBase";
  import { Funnel } from "lucide-react";
- 
+ import NovoLancamentoDrawer from "./NovoLancamento";
  
  
 
@@ -19,6 +19,9 @@ export default function ContasPagar() {
  const [idsOcultos, setIdsOcultos] = useState([]);
 const lotesOcultosRef = useRef(new Set());
 const idsOcultosRef = useRef(new Set());
+
+const [drawerNovo, setDrawerNovo] = useState(false);
+const [tipoNovo, setTipoNovo] = useState(null);
 
 
   function formatarDataBR(data) {
@@ -403,8 +406,10 @@ async function selecionarContaBancaria(valor) {
 
 
   //------------------------------------------------------------------
-return (
-  <div className="p-4">
+ 
+ return (
+  <div className="flex gap-4 p-4">
+    <main className={drawerNovo ? "w-[65%] transition-all" : "w-full transition-all"}> 
 
     {/* HEADER */}
     <div className="mb-4 flex flex-col gap-3 rounded-xl bg-blue-50 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -416,12 +421,24 @@ return (
       </div>
     <div className="flex flex-wrap items-center gap-3">
       {/* AÇÃO PRINCIPAL */}
-      <button
+      {/*<button
         onClick={() => navigate("/nova-conta-pagar")}
           className="btn-pill btn-emerald"
                       >
         + Nova conta
-      </button> 
+      </button> */}
+
+      
+     <button
+      //onClick={abrirNovoLancamento}
+       onClick={() => {
+          setTipoNovo(null);
+          setDrawerNovo(true);
+        }}
+              className="btn-pill btn-emerald"
+                            >
+      + Novo Conta Pagar
+    </button>
 
   {/* AÇÕES SECUNDÁRIAS */}
   <button
@@ -516,6 +533,11 @@ return (
         )}
 
         <div className="flex flex-wrap items-center gap-2">
+
+           <div className="mt-3 text-xs font-bold text-slate-500">
+        Filtros: {dataIni} → {dataFim} • {status === "0" ? "Todos" : status} • {somenteVencidas ? "Somente vencidas" : "Todas"}
+      </div>
+      
           <button
             onClick={() => {
               setFiltroTemp({
@@ -532,13 +554,15 @@ return (
             <Funnel size={16} />
             Filtros
           </button>
-
-          <button
+          
+           <button
             onClick={pesquisar}
-            className="btn-pill btn-yellow whitespace-nowrap"
+            disabled={loading}
+            className="btn-pill btn-gray whitespace-nowrap disabled:opacity-60"
           >
-            🔎 Pesquisar
+            {loading ? "Pesquisando..." : "🔎 Pesquisar"}
           </button>
+
 
           <button
             onClick={pagarSelecionadas}
@@ -554,9 +578,7 @@ return (
         </div>
       </div>
 
-      <div className="mt-3 text-xs font-bold text-slate-500">
-        Filtros: {dataIni} → {dataFim} • {status === "0" ? "Todos" : status} • {somenteVencidas ? "Somente vencidas" : "Todas"}
-      </div>
+      
     </div>
 
      {/* TABELA */}
@@ -677,6 +699,7 @@ return (
   </table>
 </div>
 
+
     <ModalBase
       open={modalFiltro}
       onClose={() => setModalFiltro(false)}
@@ -777,6 +800,65 @@ return (
         </div>
       </div>
     </ModalBase>
+{/*coloquei o drawer aqui..  vamos agora ajeitar para o que falta */}
+ 
+</main>
+ 
+ {drawerNovo && (
+  <aside className="w-[35%] min-w-[420px] max-w-[560px] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+    <div className="flex items-center justify-between border-b bg-slate-50 px-4 py-3">
+      <button
+        type="button"
+        onClick={() => {
+          setTipoNovo(null);
+          setDrawerNovo(false);
+        }}
+        className="rounded-full px-3 py-1 text-lg font-black text-blue-800 hover:bg-blue-100"
+      >
+        ←
+      </button>
+
+      <span className="text-sm font-black text-blue-900">
+        Conta a pagar
+      </span>
+
+      <button
+        type="button"
+        onClick={() => {
+          setTipoNovo(null);
+          setDrawerNovo(false);
+        }}
+        className="rounded-full px-3 py-1 text-lg font-black text-slate-500 hover:bg-slate-200"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div className="h-[calc(100vh-88px)] overflow-y-auto bg-slate-50 p-3">
+      <NovoLancamentoDrawer
+        inicial={{
+          titulo: "Conta a pagar",
+          tipo: "saida",
+          forma_pagamento: "aprazo",
+          classificacao: "despesa",
+        }}
+        onBack={() => {
+          setTipoNovo(null);
+          setDrawerNovo(false);
+        }}
+        onClose={() => {
+          setTipoNovo(null);
+          setDrawerNovo(false);
+        }}
+        onSuccess={() => {
+          setDrawerNovo(false);
+          setTipoNovo(null);
+          pesquisar();
+        }}
+      />
+    </div>
+  </aside>
+)}
 
 
   </div>

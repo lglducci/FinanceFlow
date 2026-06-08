@@ -1,4 +1,4 @@
-   import { useState, useEffect } from "react";
+    import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 import ModalBase from "../components/ModalBase";
@@ -13,7 +13,8 @@ import { FileText } from "lucide-react";   // relatório
 import { Receipt } from "lucide-react";    // recibo
 import { ScrollText } from "lucide-react"; // relatório detalhado
 import { Funnel } from "lucide-react";
-
+import NovoLancamentoDrawer from "./NovoLancamento";
+import TransferenciaDrawer from "./app/AppTransferencia.jsx";
 
 
 export default function Lancamentos() {
@@ -33,7 +34,8 @@ export default function Lancamentos() {
   const [saldoFinal, setSaldoFinal] = useState(0);
  const [refreshKey, setRefreshKey] = useState(0);
   const contaRef = useRef(null);
- 
+ const [drawerNovo, setDrawerNovo] = useState(false);
+const [tipoNovo, setTipoNovo] = useState(null);
 const [contas, setContas] = useState([]);
 const [loading, setLoading] = useState(false);
 
@@ -1178,7 +1180,8 @@ console.log("iconeConta:", iconeConta);
  
 
 return (
-  <div className="p-4 space-y-4">
+  <div className="flex h-[calc(100vh-20px)] gap-4 p-4 overflow-hidden">
+    <div className={`${drawerNovo ? "w-[65%]" : "w-full"} space-y-4 overflow-y-auto transition-all duration-300`}> 
 
     {msgEstorno && (
   <div className="mb-4 rounded-xl border border-amber-400 bg-amber-150 px-5 py-3 text-base font-bold text-amber-800 shadow-sm">
@@ -1228,6 +1231,14 @@ return (
 
   <div className="flex gap-4 text-base font-semibold">
          
+
+    <div className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold text-blue-800 whitespace-nowrap">
+  {RelatorioEscolhido(tipoOperacao || "transacao")} • {dataIni || "--"} até {dataFim || "--"} • Conta:{" "}
+  {filtroContaId
+    ? contas.find((c) => String(c.id) === String(filtroContaId))?.nome || "Selecionada"
+    : "Todas"}{" "}
+  • Busca: {busca || "Sem busca"}
+</div>     
    
     <button
   onClick={() => {
@@ -1244,9 +1255,7 @@ return (
 >
   <Funnel size={16} />
   Filtros
-</button>
-
-
+</button> 
 
      <button
       onClick={ReclassifacaoContabil}
@@ -1266,7 +1275,11 @@ return (
 
 
      <button
-      onClick={abrirNovoLancamento}
+      //onClick={abrirNovoLancamento}
+       onClick={() => {
+  setTipoNovo(null);
+  setDrawerNovo(true);
+}}
        className="btn-pill btn-emerald"
                     >
       + Novo lançamento
@@ -1294,16 +1307,7 @@ return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
       {/* TOTAL DO PERÍODO  
-      <div className="bg-white rounded-xl p-4 border-l-4 border-blue-600 shadow-sm">
-        <p className="text-sm text-gray-500">Resultado do período</p>
-        <p className="text-2xl font-bold text-gray-900">
-          {(totalEntrada - totalSaida).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
-        </p>
-      </div>*/}
-       
+      
     
    
  
@@ -1969,6 +1973,177 @@ return (
   </div>
 </ModalBase>
 
+
+    </div>
+
+{drawerNovo && (
+  <aside className="w-[35%] min-w-[420px] max-w-[560px] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+    <div className="flex items-center justify-between border-b bg-slate-50 px-4 py-3">
+      <button
+        type="button"
+        onClick={() => {
+          if (tipoNovo) {
+            setTipoNovo(null);
+            return;
+          }
+          setDrawerNovo(false);
+        }}
+        className="rounded-full px-3 py-1 text-lg font-black text-blue-800 hover:bg-blue-100"
+      >
+        ←
+      </button>
+
+      <span className="text-sm font-black text-blue-900">
+        {!tipoNovo ? "Novo lançamento" : tipoNovo.titulo}
+      </span>
+
+      <button
+        type="button"
+        onClick={() => {
+          setTipoNovo(null);
+          setDrawerNovo(false);
+        }}
+        className="rounded-full px-3 py-1 text-lg font-black text-slate-500 hover:bg-slate-200"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div className="h-[calc(100vh-88px)] overflow-y-auto bg-slate-50 p-3">
+      {!tipoNovo && (
+        <div className="space-y-3">
+          <h2 className="px-2 text-base font-black text-blue-900">
+            O que deseja registrar?
+          </h2>
+
+          <div className="rounded-2xl border bg-white p-2 shadow-sm">
+            <div className="mb-2 text-sm font-black text-emerald-700">
+              📥 Recebimento
+            </div>
+
+            <div className="space-y-1.5">
+              {[
+                ["À vista", "avista", "Recebimento à vista"],
+                ["Pix", "pix", "Recebimento via Pix"],
+                ["Cartão débito", "cartao_debito", "Recebimento no cartão de débito"],
+                ["Cartão crédito", "cartao_credito", "Recebimento no cartão de crédito"],
+                ["A prazo", "aprazo", "Conta a receber"],
+              ].map(([label, forma, titulo]) => (
+                <button
+                  key={forma}
+                  type="button"
+                  onClick={() =>
+                    setTipoNovo({
+                      titulo,
+                      tipo: "entrada",
+                      forma_recebimento: forma,
+                      classificacao: "receita",
+                    })
+                  }
+                  className="flex w-full items-center justify-between rounded-lg border bg-slate-50 px-3 py-2 text-left hover:bg-emerald-50"
+                >
+                  <span className="text-sm font-bold text-slate-800">
+                    {label}
+                  </span>
+                  <span className="h-3.5 w-3.5 rounded-full border-2 border-emerald-600" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border bg-white p-2 shadow-sm">
+            <div className="mb-2 text-sm font-black text-red-700">
+              📤 Pagamento
+            </div>
+
+            <div className="space-y-1.5">
+              {[
+                ["À vista", "avista", "Pagamento à vista"],
+                ["Pix", "pix", "Pagamento via Pix"],
+                ["Cartão débito", "cartao_debito", "Pagamento no cartão de débito"],
+                ["Cartão crédito", "cartao_credito", "Pagamento no cartão de crédito"],
+                ["A prazo", "aprazo", "Conta a pagar"],
+              ].map(([label, forma, titulo]) => (
+                <button
+                  key={forma}
+                  type="button"
+                  onClick={() =>
+                    setTipoNovo({
+                      titulo,
+                      tipo: "saida",
+                      forma_pagamento: forma,
+                      classificacao: "despesa",
+                    })
+                  }
+                  className="flex w-full items-center justify-between rounded-lg border bg-slate-50 px-3 py-2 text-left hover:bg-red-50"
+                >
+                  <span className="text-sm font-bold text-slate-800">
+                    {label}
+                  </span>
+                  <span className="h-3.5 w-3.5 rounded-full border-2 border-red-600" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setTipoNovo({
+                titulo: "Transferência entre contas",
+                tipo: "transferencia",
+              })
+            }
+            className="flex w-full items-center justify-between rounded-2xl border bg-white px-4 py-3 text-left shadow-sm hover:bg-blue-50"
+          >
+            <div>
+              <div className="text-sm font-black text-blue-800">
+                🔄 Transferência
+              </div>
+              <div className="text-xs font-bold text-slate-500">
+                Movimentar valor entre contas bancárias
+              </div>
+            </div>
+
+            <span className="h-4 w-4 rounded-full border-2 border-blue-700" />
+          </button>
+        </div>
+      )}
+
+      {tipoNovo?.tipo === "transferencia" && (
+        <TransferenciaDrawer
+          onClose={() => {
+            setTipoNovo(null);
+            setDrawerNovo(false);
+          }}
+          onSuccess={() => {
+            setDrawerNovo(false);
+            setTipoNovo(null);
+            pesquisar(tipoOperacao || "");
+          }}
+        />
+      )}
+
+      {tipoNovo && tipoNovo.tipo !== "transferencia" && (
+        <NovoLancamentoDrawer
+          inicial={tipoNovo}
+          onBack={() => setTipoNovo(null)}
+          onClose={() => {
+            setTipoNovo(null);
+            setDrawerNovo(false);
+          }}
+          onSuccess={() => {
+            setDrawerNovo(false);
+            setTipoNovo(null);
+            pesquisar(tipoOperacao || "");
+          }}
+        />
+      )}
+    </div>
+  </aside>
+)}
+    
+ 
   </div>
 );
 
