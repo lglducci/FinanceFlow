@@ -197,7 +197,7 @@ function podeVer(menuKey) {
           {/*} <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
              <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
            <SubItem icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />*/}
-               <SubItem icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/importacao-bancaria")}  />
+       {/*}    <SubItem icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/importacao-bancaria")}  />*/}
                <SubItem icon={<IconDoc />} label="Extrato via Contábil" onClick={() => navigate("/livro-caixa")}  />
                 <SubItem icon={<IconDoc />} label="Extrato de Cartões" onClick={() => navigate("/importacao-cartao")}  />
                
@@ -282,8 +282,8 @@ function podeVer(menuKey) {
             <SubItem icon={<IconMap />} label="Minha Empresa" onClick={() => navigate("/editar-empresa")} /> 
               <SubItem icon={<IconMap />} label="Calculadora" onClick={() => navigate("/calculadora")} /> 
              <SubItem icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
-             <SubItem icon={<IconMap />} label="Regras Classificação" onClick={() => navigate("/regras-classificacao")} /> 
-                <SubItem icon={<IconMap />} label="Contas Recorrentes" onClick={() => navigate("/conta-recorrente")} /> 
+            {/*} <SubItem icon={<IconMap />} label="Regras Classificação" onClick={() => navigate("/regras-classificacao")} /> 
+                <SubItem icon={<IconMap />} label="Contas Recorrentes" onClick={() => navigate("/conta-recorrente")} /> */}
 
            </MenuGroup> )}
        </nav>
