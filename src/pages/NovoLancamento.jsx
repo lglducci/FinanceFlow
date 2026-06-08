@@ -948,7 +948,7 @@ useEffect(() => {
          <div className="grid grid-cols-2 gap-3">
 
                   {/* Tipo */}
-                  <div>
+                  <div hidden group-hover:block>
                     <label className="label label-required font-bold text-[#1e40af]">
                      Receita ou Despesa?
                     </label>
@@ -971,7 +971,7 @@ useEffect(() => {
 
                   {/* ENTRADA */}
                   {form.tipo === "entrada" && (
-                    <div>
+                    <div hidden group-hover:block>
                       <label className="label label-required font-bold text-[#1e40af]">
                       Como será recebido?
                       </label>
@@ -996,7 +996,7 @@ useEffect(() => {
 
                   {/* SAÍDA */}
                   {form.tipo === "saida" && (
-                    <div>
+                    <div hidden group-hover:block>
                       <label className="label label-required font-bold text-[#1e40af]">
                        Como será pago?
                       </label>
@@ -1082,7 +1082,7 @@ useEffect(() => {
             </div>
 
            <div>
-                <div className="w-5/5">
+                <div hidden group-hover:block className="w-5/5">
                   <label className="label label-required font-bold block text-[#1e40af]">
                     Como eu classifico isso?
                   </label>

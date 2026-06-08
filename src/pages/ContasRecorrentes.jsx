@@ -15,6 +15,8 @@ export default function ContasRecorrentes() {
   const [recorrenteEditando, setRecorrenteEditando] = useState(null);
  const [recorrenciaGerando, setRecorrenciaGerando] = useState(null);
 
+ const [contasDespesas, setContasDespesas] = useState([]);
+
  const [recorrenteHistorico, setRecorrenteHistorico] = useState(null);
 
  const [dashboard, setDashboard] = useState([]);
@@ -124,13 +126,7 @@ async function carregar() {
 
   setDashboard(Array.isArray(dados) ? dados : []);
 }
-
-  useEffect(() => {
-    carregar();
-    carregarContas();
-     carregarFornecedores();
-      carregarDashboard();
-  }, []);
+ 
 
 
 const mesAtual = dashboard[0] || {};
@@ -146,7 +142,38 @@ const totalFixo = Number(mesAtual.total_fixo || 0);
 const totalVariavel = Number(mesAtual.total_variavel || 0);
  
 
- 
+ async function carregarContasDespesas() {
+  const url = buildWebhookUrl("despesa", { empresa_id });
+  console.log("URL DESPESA:", url);
+
+  const resp = await fetch(url, {
+    method: "GET",
+  });
+
+  const txt = await resp.text();
+  console.log("RETORNO DESPESA:", txt);
+
+  let json = [];
+  try {
+    json = JSON.parse(txt);
+  } catch {
+    json = [];
+  }
+
+  const base = Array.isArray(json) ? json[0] : json;
+  const dados = base?.data || base?.dados || base?.resultado || json;
+
+  setContasDespesas(Array.isArray(dados) ? dados : []);
+}
+
+useEffect(() => {
+  carregar();
+  carregarContas();
+  carregarFornecedores();
+  carregarDashboard();
+  carregarContasDespesas();
+}, []);
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="bg-white rounded-2xl shadow-xl border p-5">
@@ -344,15 +371,17 @@ const totalVariavel = Number(mesAtual.total_variavel || 0);
       </div>
 
       {recorrenciaGerando && (
-  <ModalGerarRecorrencia
-    recorrencia={recorrenciaGerando}
-    contas={contas}
-    empresa_id={empresa_id}
-    onClose={() => setRecorrenciaGerando(null)}
-    onSuccess={() => {
-      setRecorrenciaGerando(null);
-      carregar();
-    }}
+ 
+ <ModalGerarRecorrencia
+  recorrencia={recorrenciaGerando}
+  contas={contas}
+  contasDespesas={contasDespesas}
+  empresa_id={empresa_id}
+  onClose={() => setRecorrenciaGerando(null)}
+  onSuccess={() => {
+    setRecorrenciaGerando(null);
+    carregar();
+  }}
   />
 )}
 
@@ -390,19 +419,21 @@ const totalVariavel = Number(mesAtual.total_variavel || 0);
   );
 }
 
-function ModalGerarRecorrencia({ recorrencia, contas, empresa_id, onClose, onSuccess }) {
+ function ModalGerarRecorrencia({ recorrencia, contas, contasDespesas, empresa_id, onClose, onSuccess }) {
   const hoje = new Date();
 
   const competenciaInicial = `${hoje.getFullYear()}-${String(
     hoje.getMonth() + 1
   ).padStart(2, "0")}-01`;
 
-  const [form, setForm] = useState({
-    competencia: competenciaInicial,
-    data_pagamento: hojeLocal(),
-    valor: recorrencia?.valor_padrao || "",
-    conta_id: recorrencia?.conta_id || "",
-  });
+ const [form, setForm] = useState({
+  competencia: competenciaInicial,
+  data_pagamento: hojeLocal(),
+  valor: recorrencia?.valor_padrao || "",
+  conta_id: recorrencia?.conta_id || "",
+  contabil_id: recorrencia?.contabil_id || "",
+});
+
 
   const vencimento = (() => {
     const [ano, mes] = String(form.competencia).split("-").map(Number);
@@ -414,10 +445,10 @@ function ModalGerarRecorrencia({ recorrencia, contas, empresa_id, onClose, onSuc
   })();
 
   async function gerar() {
-    if (!form.competencia || !form.valor || !form.conta_id) {
-      alert("Informe competência, valor e conta financeira.");
-      return;
-    }
+     if (!form.competencia || !form.valor || !form.conta_id || !form.contabil_id) {
+  alert("Informe competência, valor, conta financeira e conta contábil.");
+  return;
+}
  
     const resp = await fetch(buildWebhookUrl("gera_lancamento_recorrente"), {
       method: "POST",
@@ -427,8 +458,9 @@ function ModalGerarRecorrencia({ recorrencia, contas, empresa_id, onClose, onSuc
         recorrente_id: recorrencia.id,
         competencia: form.competencia,
         conta_id: form.conta_id,
+        contabil_id: form.contabil_id,
         valor: form.valor,
-          data_pagamento: form.data_pagamento,
+        data_pagamento: form.data_pagamento,
       }),
     });
     const txt = await resp.text();
@@ -537,6 +569,38 @@ onSuccess();
               </option>
             ))}
           </select>
+
+          
+         <input
+            list="lista-contas-despesas"
+            className="w-full border rounded-xl px-3 py-2 font-bold"
+            placeholder="Digite a despesa. Ex: energia"
+            value={form.contabil_label || ""}
+            onChange={(e) => {
+              const texto = e.target.value;
+
+              const conta = (contasDespesas || []).find((c) => {
+                const label = c.label || `${c.codigo} - ${c.nome}`;
+                return label === texto;
+              });
+
+              setForm((p) => ({
+                ...p,
+                contabil_label: texto,
+                contabil_id: conta?.id || "",
+              }));
+            }}
+          />
+
+          <datalist id="lista-contas-despesas">
+            {(contasDespesas || []).map((c) => (
+              <option
+                key={c.id}
+                value={c.label || `${c.codigo} - ${c.nome}`}
+              />
+            ))}
+          </datalist>
+
         </div>
 
         <div className="flex justify-end gap-3 mt-6">
@@ -591,6 +655,11 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
 
     carregarHistorico();
   }, [empresa_id, recorrencia.id]);
+
+
+
+
+
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
@@ -751,7 +820,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
                     setForm((p) => ({ ...p, fornecedor_id: e.target.value }))
                 }
                 >
-                <option value="">Fornecedor</option>
+                <option value="">Selecione</option>
                 {fornecedores.map((f) => (
                     <option key={f.id} value={f.id}>
                     {f.nome || f.razao_social || f.apelido || `Fornecedor ${f.id}`}
@@ -798,7 +867,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
               setForm((p) => ({ ...p, conta_id: e.target.value }))
             }
           >
-            <option value="">Conta financeira</option>
+            <option value="">Selecione</option>
             {contas.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.nome}
@@ -806,6 +875,8 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
             ))}
           </select>
 
+
+          
           
         </div>
 
