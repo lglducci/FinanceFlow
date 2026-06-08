@@ -432,6 +432,7 @@ useEffect(() => {
   valor: recorrencia?.valor_padrao || "",
   conta_id: recorrencia?.conta_id || "",
   contabil_id: recorrencia?.contabil_id || "",
+  contabil_label: recorrencia?.contabil_label || "",
 });
 
 
@@ -483,6 +484,18 @@ if (!resp.ok || retorno?.ok === false) {
 alert(retorno?.message || "Conta recorrente gerada.");
 onSuccess();
   }
+
+  const despesasFiltradas = (contasDespesas || [])
+  .filter((c) => {
+    const texto = String(form.contabil_label || "").toLowerCase();
+    const label = `${c.codigo || ""} ${c.nome || ""} ${c.label || ""}`.toLowerCase();
+
+    if (!texto) return false;
+
+    return label.includes(texto);
+  })
+  .slice(0, 8);
+
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
@@ -571,35 +584,45 @@ onSuccess();
           </select>
 
           
-         <input
-            list="lista-contas-despesas"
-            className="w-full border rounded-xl px-3 py-2 font-bold"
-            placeholder="Digite a despesa. Ex: energia"
-            value={form.contabil_label || ""}
-            onChange={(e) => {
-              const texto = e.target.value;
+          <div className="relative">
+            <input
+              className="w-full border rounded-xl px-3 py-2 font-bold"
+              placeholder="Digite a despesa. Ex: energia"
+              value={form.contabil_label || ""}
+              onChange={(e) =>
+                setForm((p) => ({
+                  ...p,
+                  contabil_label: e.target.value,
+                  contabil_id: "",
+                }))
+              }
+            />
 
-              const conta = (contasDespesas || []).find((c) => {
-                const label = c.label || `${c.codigo} - ${c.nome}`;
-                return label === texto;
-              });
+            {despesasFiltradas.length > 0 && !form.contabil_id && (
+              <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border bg-white shadow-lg">
+                {despesasFiltradas.map((c) => {
+                  const label = c.label || `${c.codigo} - ${c.nome}`;
 
-              setForm((p) => ({
-                ...p,
-                contabil_label: texto,
-                contabil_id: conta?.id || "",
-              }));
-            }}
-          />
-
-          <datalist id="lista-contas-despesas">
-            {(contasDespesas || []).map((c) => (
-              <option
-                key={c.id}
-                value={c.label || `${c.codigo} - ${c.nome}`}
-              />
-            ))}
-          </datalist>
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() =>
+                        setForm((p) => ({
+                          ...p,
+                          contabil_label: label,
+                          contabil_id: c.id,
+                        }))
+                      }
+                      className="w-full text-left px-3 py-2 text-sm font-bold hover:bg-blue-50"
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
         </div>
 
