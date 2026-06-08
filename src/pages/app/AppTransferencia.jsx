@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../../config/globals";
 import { hojeLocal } from "../../utils/dataLocal";
@@ -142,28 +142,27 @@ function dadosBancarios(c) {
     <div style={page}>
       <div style={card}>
          <button onClick={() => navigate(-1)} style={backBtn}>
-          ← Voltar
+          ← 
         </button>
 
-        <div style={{ textAlign: "center", marginTop: 18 }}>
-          <div style={{ fontSize: 46 }}>💸</div>
-          <h1 style={{ margin: "8px 0 4px", fontSize: 24, fontWeight: 950 }}>
-            Transferência
+        <div style={{ marginTop: 12 }}>
+          <h1 style={{ margin: "4px 0 4px", fontSize: 20, fontWeight: 900, color: "#0f172a" }}>
+            Transferência entre contas
           </h1>
-          <p style={{ margin: 0, color: "#64748b", fontWeight: 700 }}>
-            Origem ↔ Destino
+          <p style={{ margin: 0, color: "#64748b", fontWeight: 700, fontSize: 13 }}>
+            Movimente valores entre contas bancárias da empresa.
           </p>
         </div>
 
         <div style={{ marginTop: 24, display: "grid", gap: 14 }}>
           <div>
-            <label style={label}>🏦 Conta origem </label>
+            <label style={label}>Conta origem</label>
              
                <select value={origemId} onChange={(e) => setOrigemId(e.target.value)} style={input}>
                 <option value="">Selecione a origem...</option>
                 {contas.map((c) => (
                   <option key={c.id} value={c.id}>
-                      🏦 {c.nome} — {moeda(c.saldo)}
+                      {c.nome} — {moeda(c.saldo)}
                       {c.agencia || c.conta ? ` — Ag: ${c.agencia || "-"} Cc: ${c.conta || "-"}` : ""}
                     </option>
                 ))}
@@ -192,19 +191,19 @@ function dadosBancarios(c) {
               )}
           </div>
 
-          <div style={{ textAlign: "center", fontSize: 28, fontWeight: 950, color: "#2563eb" }}>
-            ↔
+          <div style={{ textAlign: "center", fontSize: 20, fontWeight: 900, color: "#64748b" }}>
+            ↓
           </div>
 
           <div>
-            <label style={label}>🏦 Conta destino</label>
+            <label style={label}>Conta destino</label>
             <select value={destinoId} onChange={(e) => setDestinoId(e.target.value)} style={input}>
               <option value="">Selecione o destino...</option>
               {contas
                 .filter((c) => String(c.id) !== String(origemId))
                 .map((c) => (
                   <option key={c.id} value={c.id}>
-                    🏦 {c.nome} — {moeda(c.saldo)}
+                    {c.nome} — {moeda(c.saldo)}
                     {c.agencia || c.conta ? ` — Ag: ${c.agencia || "-"} Cc: ${c.conta || "-"}` : ""}
                   </option>
                 ))}
@@ -236,12 +235,12 @@ function dadosBancarios(c) {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
-              <label style={label}>💰 Valor</label>
+              <label style={label}>Valor</label>
               <input value={valor} onChange={(e) => setValor(e.target.value)} placeholder="0,00" inputMode="decimal" style={input} />
             </div>
 
             <div>
-              <label style={label}>📅 Data</label>
+              <label style={label}>Data</label>
               <input type="date" value={dataMov} onChange={(e) => setDataMov(e.target.value)} style={input} />
             </div>
           </div>
@@ -260,8 +259,9 @@ function dadosBancarios(c) {
               borderRadius: 16,
               fontWeight: 900,
               fontSize: 13,
-              background: mensagem.startsWith("✅") ? "#dcfce7" : "#fee2e2",
+              background: mensagem.startsWith("✅") ? "#f0fdf4" : "#fef2f2",
               color: mensagem.startsWith("✅") ? "#166534" : "#991b1b",
+              border: mensagem.startsWith("✅") ? "1px solid #bbf7d0" : "1px solid #fecaca",
             }}>
               {mensagem}
             </div>
@@ -277,68 +277,70 @@ function dadosBancarios(c) {
 }
 
 const page = {
-  minHeight: "100vh",
-  background: "linear-gradient(135deg,#eef2ff,#dbeafe,#f8fafc)",
-  padding: 14,
+  minHeight: "100%",
+  background: "#f8fafc",
+  padding: 10,
 };
 
 const card = {
-  maxWidth: 430,
+  maxWidth: 460,
   margin: "0 auto",
-  borderRadius: 28,
-  padding: 20,
-  background: "linear-gradient(135deg,#ffffff,#eff6ff,#dbeafe)",
-  boxShadow: "0 20px 60px rgba(15,23,42,0.25)",
+  borderRadius: 20,
+  padding: 18,
+  background: "#ffffff",
+  border: "1px solid #e2e8f0",
+  boxShadow: "0 12px 30px rgba(15,23,42,0.10)",
 };
 
 const backBtn = {
-  border: 0,
+  border: "1px solid #cbd5e1",
   borderRadius: 999,
-  padding: "8px 14px",
-  fontWeight: 900,
-  background: "#fff",
-  boxShadow: "0 8px 20px rgba(15,23,42,0.15)",
+  padding: "7px 12px",
+  fontWeight: 850,
+  background: "#ffffff",
+  color: "#334155",
+  boxShadow: "none",
 };
 
 const label = {
   display: "block",
-  fontSize: 13,
-  fontWeight: 900,
+  fontSize: 12,
+  fontWeight: 850,
   color: "#334155",
-  marginBottom: 6,
+  marginBottom: 5,
 };
 
 const input = {
   width: "100%",
   border: "1px solid #cbd5e1",
-  borderRadius: 18,
-  padding: "13px 14px",
-  fontSize: 14,
-  fontWeight: 800,
-  background: "#fff",
+  borderRadius: 12,
+  padding: "10px 12px",
+  fontSize: 13,
+  fontWeight: 750,
+  background: "#ffffff",
+  color: "#0f172a",
   outline: "none",
   boxSizing: "border-box",
 };
 
 const resumo = {
-  borderRadius: 20,
-  padding: 14,
-  background: "linear-gradient(135deg,#dbeafe,#bfdbfe)",
-  border: "1px solid #93c5fd",
-  color: "#1e3a8a",
-  fontWeight: 900,
-  fontSize: 13,
+  borderRadius: 14,
+  padding: 12,
+  background: "#f1f5f9",
+  border: "1px solid #cbd5e1",
+  color: "#334155",
+  fontWeight: 850,
+  fontSize: 12,
 };
-
 
 const infoConta = {
   marginTop: 6,
-  fontSize: 14,
-  fontWeight: 800,
+  fontSize: 12,
+  fontWeight: 750,
   color: "#475569",
   background: "#f8fafc",
   border: "1px solid #e2e8f0",
-  borderRadius: 14,
+  borderRadius: 12,
   padding: "8px 10px",
 };
 
@@ -346,25 +348,25 @@ const infoContaLinha = {
   marginTop: 6,
   display: "flex",
   alignItems: "center",
-  gap: 10,
+  gap: 8,
   flexWrap: "wrap",
-  fontSize: 12,
-  fontWeight: 800,
+  fontSize: 11,
+  fontWeight: 750,
   color: "#475569",
   background: "#f8fafc",
   border: "1px solid #e2e8f0",
-  borderRadius: 14,
-  padding: "8px 10px",
+  borderRadius: 12,
+  padding: "7px 9px",
 };
 
 const salvarBtn = (salvando) => ({
   border: 0,
-  borderRadius: 999,
-  padding: "15px 18px",
-  fontWeight: 950,
+  borderRadius: 12,
+  padding: "12px 16px",
+  fontWeight: 900,
   color: "white",
-  fontSize: 15,
-  background: salvando ? "#94a3b8" : "linear-gradient(135deg,#38bdf8,#2563eb,#1e3a8a)",
-  boxShadow: "0 12px 28px rgba(37,99,235,0.35)",
+  fontSize: 14,
+  background: salvando ? "#94a3b8" : "#0f172a",
+  boxShadow: "0 8px 18px rgba(15,23,42,0.18)",
   cursor: salvando ? "not-allowed" : "pointer",
 });
