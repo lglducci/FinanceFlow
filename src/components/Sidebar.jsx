@@ -165,11 +165,7 @@ function podeVer(menuKey) {
                       onClick={() => navigate("/contacorrente")}
                     />
 
-                    <SubItem
-                      icon={<IconRefresh />}
-                      label="Transferência"
-                      onClick={() => navigate("/app/transferencia")}
-                    />
+                    
                   </div>
                 )}
               </div>
