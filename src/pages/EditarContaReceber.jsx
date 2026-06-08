@@ -225,206 +225,145 @@ async function carregar() {
   // LAYOUT
   //------------------------------------------------------------------
   return (
- 
-     <div className="min-h-screen py-6 px-4 bg-bgSoft">
-        <div className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]   mt-1 mb-1" >
-    
-        <h1
-        className="text-2xl md:text-3xl font-bold mb-6 text-center"
-        style={{ color: THEME.title }}
-      >
-        ✏️ Editar Conta a Receber
-      </h1>
+  <div className="min-h-screen bg-[#f3f7fb] px-4 py-6">
+    <div className="mx-auto w-full max-w-3xl rounded-3xl border border-slate-200 bg-white shadow-xl overflow-hidden">
+      
+      <div className="bg-gradient-to-r from-[#0f172a] to-[#1e3a8a] px-6 py-5">
+        <h1 className="text-2xl font-black text-white">
+          ✏️ Editar Conta a Receber
+        </h1>
+        <p className="text-sm font-semibold text-blue-100 mt-1">
+          Atualize os dados principais do recebimento
+        </p>
+      </div>
 
-      <div className="bg-white p-5 rounded-xl shadow flex flex-col gap-4"> 
-
- 
-
-        {/* DESCRIÇÃO */}
+      <div className="p-6 space-y-5">
         <div>
-          <label  className="label label-required font-bold text-[#1e40af]" >Descrição</label>
+          <label className="text-sm font-bold text-slate-700">Descrição</label>
           <input
             name="descricao"
-          
             value={form.descricao}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="descricao "
-
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-bold text-slate-800 outline-none focus:border-blue-600"
+            placeholder="Descrição"
           />
-        </div> 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
-        {/* CATEGORIA */}
-        <div>
-          <div className="w-2/3"> 
-          <label className="label label-required font-bold text-[#1e40af]">Categoria</label>
-          <select
-            name="categoria_id"
-            value={form.categoria_id}
-            onChange={handleChange}
-             className="input-premium"
-            placeholder="categoria"
-          >
-            <option value="">Selecione</option>
-            {categorias.map((c) => (
-              <option key={c.id} value={c.id}>{c.nome}</option>
-            ))}
-          </select>
         </div>
-         </div>
-        {/* FORNECEDOR */}
+
         <div>
-            <div className="w-2/3"> 
-          <label  className="label label-required font-bold text-[#1e40af]">Fornecedor</label>
+          <label className="text-sm font-bold text-slate-700">Cliente</label>
           <select
             name="fornecedor_id"
             value={form.fornecedor_id}
             onChange={handleChange}
-             className="input-premium"
-            placeholder="fornecedor"
+            className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-bold text-slate-800 outline-none focus:border-blue-600"
           >
             <option value="">Selecione</option>
             {fornecedores.map((f) => (
-              <option key={f.id} value={f.id}>{f.nome}</option>
+              <option key={f.id} value={f.id}>
+                {f.nome}
+              </option>
             ))}
           </select>
         </div>
-            </div>
-            </div> 
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
-         {/* VALOR */}
-        <div>
-              <div className="w-2/3"> 
-          <label  className="label label-required font-bold text-[#1e40af]" >Valor</label>
-          <input
-            type="number"
-            name="valor" 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-bold text-slate-700">Valor</label>
+            <input
+              type="number"
+              name="valor"
               disabled
-            value={form.valor}
-            onChange={handleChange}
-            className="input-premium"
-            placeholder="valor"
-          />
-        </div>
+              value={form.valor}
+              onChange={handleChange}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
+            />
           </div>
 
-        {/* VENCIMENTO */}
-        <div>
-            <div className="w-2/3"> 
-          <label className="label label-required font-bold text-[#1e40af]">Vencimento</label>
-          <input
-            type="date"
-            name="vencimento"  
+          <div>
+            <label className="text-sm font-bold text-slate-700">Vencimento</label>
+            <input
+              type="date"
+              name="vencimento"
               disabled
-            value={form.vencimento}
-            onChange={handleChange}
-            className="input-premium"
-            placeholder="vencimento"
-          />
-        </div>
-            </div>
-           </div> 
-        {/* STATUS */}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
-         <div className="w-2/3"> 
-          <label className="label label-required font-bold text-[#1e40af]">Parcelas</label>
-          <input
-            type="number"
-            name="parcela_num" 
-                   disabled
-            value={form.parcela_num}
-            onChange={handleChange}
-            className="input-premium"
-            placeholder="Nro Parcela"
-          />
+              value={form.vencimento}
+              onChange={handleChange}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
+            />
+          </div>
         </div>
 
-        <div className="w-2/3"> 
-          <label className="label label-required font-bold text-[#1e40af]">Total Parcela</label>
-          <input
-            type="number"
-            name="parcelas" 
-               disabled
-            value={form.parcelas}
-            onChange={handleChange}
-            className="input-premium"
-            placeholder="Nro Parcela"
-          />
-        </div> 
-        </div>
-
-        
-        <div>
-            <div className="w-2/3"> 
-          <label  className="label label-required font-bold text-[#1e40af]" >Status</label>
-          <select
-            name="status" 
-            value={form.status}
-            onChange={handleChange}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="text-sm font-bold text-slate-700">Parcela</label>
+            <input
+              type="number"
+              name="parcela_num"
               disabled
-            className="input-premium"
-            readOnly
-            
-            placeholder="status"
-          >
-            <option value="aberto">Aberto</option>
-            <option value="recebido">Recebido</option>
-          </select>
-        </div>
+              value={form.parcela_num}
+              onChange={handleChange}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-bold text-slate-700">Total parcelas</label>
+            <input
+              type="number"
+              name="parcelas"
+              disabled
+              value={form.parcelas}
+              onChange={handleChange}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-bold text-slate-700">Status</label>
+            <select
+              name="status"
+              value={form.status}
+              disabled
+              onChange={handleChange}
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
+            >
+              <option value="aberto">Aberto</option>
+              <option value="recebido">Recebido</option>
+            </select>
+          </div>
         </div>
 
-        
-
-        {/* documento */}
-        <div>
-          <label className="label label-required font-bold text-[#1e40af]">Documento</label>
+        <div hidden>
           <input
             name="doc_ref"
-          
             value={form.doc_ref}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="Nro Documento "
-
           />
-        </div> 
-     
-       <div>
-          <label className="label label-required font-bold text-[#1e40af]">Modelo</label>
           <input
             name="modelo_codigo"
-              disabled
+            disabled
             value={form.modelo_codigo}
             onChange={handleChange}
-            className="input-premium"
-            placeholder="Modelo"
-
           />
-        </div>  
+        </div>
 
-
-        {/* BOTÕES */}
-             <div className="flex gap-6 pt-8 pb-8 pl-1">
-          <button
-            onClick={salvar}
-            disabled={salvando}
-            className="flex-1  bg-[#061f4aff] text-white px-4 py-3 rounded font-semibold"
-          >
-            {salvando ? "Salvando..." : "Salvar"}
-          </button>
-
+        <div className="flex justify-end gap-3 pt-5 border-t border-slate-200">
           <button
             onClick={() => navigate(-1)}
-            className="flex-1  bg-gray-500 text-white px-4 py-3 rounded font-semibold"
+            className="rounded-xl bg-slate-200 px-6 py-3 font-black text-slate-700 hover:bg-slate-300"
           >
             Cancelar
           </button>
-        </div>
 
+          <button
+            onClick={salvar}
+            disabled={salvando}
+            className="rounded-xl bg-blue-700 px-7 py-3 font-black text-white shadow hover:bg-blue-800 disabled:opacity-60"
+          >
+            {salvando ? "Salvando..." : "Salvar"}
+          </button>
+        </div>
       </div>
     </div>
-     </div>
-  );
+  </div>
+);
 }

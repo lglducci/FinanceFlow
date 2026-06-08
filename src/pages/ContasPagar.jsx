@@ -47,9 +47,9 @@ const [tipoNovo, setTipoNovo] = useState(null);
   const [saldoConta, setSaldoConta] = useState(0);
 
   const [periodo, setPeriodo] = useState("hoje");
-  {/*}
-  const [dataIni, setDataIni] = useState("");
-  const [dataFim, setDataFim] = useState("");*/}
+const [datapagto, setDatapagto] = useState(hojeLocal());
+
+    {/*}const [dataFim, setDataFim] = useState("");*/}
 
 const [dataIni, setDataIni] = useState(hojeMaisDias(-1));
 const [dataFim, setDataFim] = useState(hojeMaisDias(7));
@@ -183,7 +183,8 @@ async function pagarSelecionadas() {
       body: JSON.stringify({
         empresa_id,
         contas: selecionadas,
-        conta_id
+        conta_id,
+         data_pagto:datapagto
       }),
     });
 
@@ -531,6 +532,17 @@ async function selecionarContaBancaria(valor) {
             })}
           </div>
         )}
+
+             <div className="flex flex-col w-[130px]">
+            <label className="font-bold text-black text-xs mb-1">Data Pagto</label>
+            <input
+              type="date"
+              value={datapagto}
+              onChange={(e) => setDatapagto(e.target.value)}
+              className="h-9 w-[130px] rounded-lg border border-slate-300 px-2 text-xs font-bold text-slate-700"
+            />
+          </div>
+ 
 
         <div className="flex flex-wrap items-center gap-2">
 
