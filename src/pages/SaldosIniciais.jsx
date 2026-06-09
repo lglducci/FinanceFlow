@@ -134,177 +134,208 @@ useEffect(() => {
 }
 
   return (
-    <div className="p-6">
+  <div className="min-h-screen bg-[#f3f4f6] p-4 md:p-6">
 
-        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
-      <h1 className="text-2xl font-bold mb-6">📒 Implantação de Saldos Iniciais</h1>
+    <div className="mx-auto max-w-7xl">
 
-      <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
-        
-
-       <div>
-      <label className="block font-bold text-[#1e40af]">Conta (opcional)</label>
-      <input
-        type="text"
-        placeholder="Código ou nome"
-        value={contaId}
-        onChange={(e) => setContaId(e.target.value)}
-        className="border rounded-lg px-3 py-2 border-yellow-500 w-64"
-      />
-    </div>
-
-        <button
-          onClick={consultar}
-      
- 
-           className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-'95'
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-          Filtrar
-        </button>
-      
-      
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!mostrarZeradas}
-            onChange={() => setMostrarZeradas(!mostrarZeradas)}
-          />
-          Ocultar contas sem movimento
-        </label>
-
-
-        <button
-          onClick={() => window.print()}
-           className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-gray-500 via-gray-600 to-gray-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-'95'
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-          🖨️ Imprimir
-        </button> 
-
+      {/* CABEÇALHO */}
+      <div className="mb-4 rounded-2xl bg-[#0f172a] px-5 py-4 shadow-lg text-white">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <h1 className="text-xl md:text-2xl font-black">
+              📒 Implantação de Saldos Iniciais
+            </h1>
+            <p className="text-sm text-slate-300 mt-1">
+              Informe ou ajuste os saldos iniciais das contas contábeis.
+            </p>
+          </div>
 
           <button
-          onClick={() =>   navigate(-1) }
-          className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-gray-200 via-gray-400 to-gray-600
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-'95'
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-          Voltar 
+            onClick={() => navigate(-1)}
+            className="btn-pill btn-gray"
+          >
+            ← Voltar
           </button>
-         </div>
+        </div>
       </div>
 
-       <div id="print-area"> 
-       
-        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
+      {/* FILTROS */}
+      <div className="mb-4 rounded-2xl bg-white border border-slate-200 shadow p-4">
+        <div className="flex flex-col md:flex-row md:items-end gap-3">
 
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-blue-900 text-white">
-            <tr style={{ background: "#002b80", color: "white", height: 40 }}>
-                 <th className="p-3 text-left">id</th>
-              <th className="p-3 text-left">Código</th>
-              <th className="p-3 text-left">Nome</th>
-                 <th className="p-3 text-left">TIpo</th>
+          <div className="flex-1">
+            <label className="block text-sm font-black text-slate-700 mb-1">
+              Conta
+            </label>
+            <input
+              type="text"
+              placeholder="Digite código ou nome da conta"
+              value={contaId}
+              onChange={(e) => setContaId(e.target.value)}
+              className="w-full rounded-xl border-2 border-slate-300 px-3 py-2 font-semibold
+                         focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-700"
+            />
+          </div>
+
+          <button
+            onClick={consultar}
+            className="btn-pill btn-dark-blue"
+          >
+            🔎 Consultar
+          </button>
+
+          <button
+            onClick={() => window.print()}
+            className="btn-pill btn-dark-gray"
+          >
+            🖨️ Imprimir
+          </button>
+
+          <label className="flex items-center gap-2 cursor-pointer text-sm font-bold text-slate-700 md:pb-2">
+            <input
+              type="checkbox"
+              checked={!mostrarZeradas}
+              onChange={() => setMostrarZeradas(!mostrarZeradas)}
+              className="h-4 w-4"
+            />
+            Ocultar zeradas
+          </label>
+
+        </div>
+      </div>
+
+      {/* ÁREA DE IMPRESSÃO */}
+      <div id="print-area">
+
+        <div className="rounded-2xl bg-white border border-slate-200 shadow-lg overflow-hidden">
+
+          {/* TOPO DA TABELA */}
+          <div className="bg-[#1e293b] px-4 py-3 text-white flex items-center justify-between">
+            <div>
+              <h2 className="font-black text-base">
+                Contas para implantação
+              </h2>
+              <p className="text-xs text-slate-300">
+                Total de registros: {dados.length}
+              </p>
+            </div>
+
+            {loading && (
+              <span className="text-sm font-bold text-blue-200">
+                Carregando...
+              </span>
+            )}
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-slate-100 text-slate-700 border-b border-slate-300">
+                  <th className="p-3 text-left">ID</th>
+                  <th className="p-3 text-left">Código</th>
+                  <th className="p-3 text-left">Nome</th>
+                  <th className="p-3 text-left">Tipo</th>
                   <th className="p-3 text-right">Saldo Inicial</th>
                   <th className="p-3 text-center">Ação</th>
-            </tr>
-          </thead>
-          <tbody>
-           {/*} {dados.map((l, idx) => (*/}
+                </tr>
+              </thead>
 
-               { dados.filter((l) => mostrarZeradas || !linhaZerada(l)).map((l, idx) => (
-              <tr key={idx}   className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-               
-                <td className="p-2 font-bold font-size: 16px">{l.id}</td>
-                  <td className="p-2 font-bold font-size: 16px">{l.codigo}</td>
-                    <td className="p-2 font-bold font-size: 16px">{l.nome}</td>
-                      <td className="p-2 font-bold font-size: 16px">{l.tipo}</td>
-               
-                 
-                <td
-                  className={`p-3 text-right font-bold font-size: 16px ${
-                    l.saldo < 0 ? "text-red-600" : "text-green-700"
-                  }`}
-                >
-                  {fmt.format(l.saldo)}
-                </td>
-                <td className="p-2 text-center">
-                    <button
-                      onClick={() => {
-                        setForm({
-                          id: l.id,
-                          codigo: l.codigo,
-                          nome: l.nome,
-                          tipo: l.tipo,
-                          saldo: Number(l.saldo || 0)
-                        });
-
-                        setModalAberto(true);
-                      }}
-                      className="text-blue-600 underline font-bold"
+              <tbody>
+                {dados
+                  .filter((l) => mostrarZeradas || !linhaZerada(l))
+                  .map((l, idx) => (
+                    <tr
+                      key={idx}
+                      className={`border-b border-slate-200 hover:bg-blue-50 transition ${
+                        idx % 2 === 0 ? "bg-white" : "bg-slate-50"
+                      }`}
                     >
-                      {Number(l.saldo || 0) > 0 ? "Alterar" : "Incluir"}
-                    </button>
-                  </td>
-              </tr>
-            ))}
+                      <td className="p-3 font-bold text-slate-700">
+                        {l.id}
+                      </td>
 
-            {!loading && dados.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-400">
-                  Nenhum dado para o período selecionado.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                      <td className="p-3 font-black text-slate-800">
+                        {l.codigo}
+                      </td>
 
-        {loading && (
-          <div className="p-6 text-center text-blue-600 font-bold">
-            Carregando...
+                      <td className="p-3 font-semibold text-slate-700">
+                        {l.nome}
+                      </td>
+
+                      <td className="p-3">
+                        <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-black text-slate-700">
+                          {l.tipo}
+                        </span>
+                      </td>
+
+                      <td
+                        className={`p-3 text-right font-black text-base ${
+                          Number(l.saldo || 0) < 0
+                            ? "text-red-600"
+                            : "text-green-700"
+                        }`}
+                      >
+                        {fmt.format(l.saldo)}
+                      </td>
+
+                      <td className="p-3 text-center">
+                        <button
+                          onClick={() => {
+                            setForm({
+                              id: l.id,
+                              codigo: l.codigo,
+                              nome: l.nome,
+                              tipo: l.tipo,
+                              saldo: Number(l.saldo || 0),
+                            });
+
+                            setModalAberto(true);
+                          }}
+                          className={`rounded-full px-4 py-1.5 text-xs font-black shadow-sm transition
+                            ${
+                              Number(l.saldo || 0) !== 0
+                                ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                                : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
+                            }`}
+                        >
+                          {Number(l.saldo || 0) !== 0 ? "Alterar" : "Incluir"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+
+                {!loading && dados.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-400 font-bold">
+                      Nenhum saldo encontrado.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
-    </div>
-    </div>
 
-    <FormSaldoInicial
-  aberto={modalAberto}
-  form={form}
-  setForm={setForm}
-  onClose={() => {
-    setModalAberto(false);
-    setForm(null);
-  }}
-  onSalvar={salvarSaldo}
-/>
-     </div>
-  );
+        </div>
+      </div>
+
+      <FormSaldoInicial
+        aberto={modalAberto}
+        form={form}
+        setForm={setForm}
+        onClose={() => {
+          setModalAberto(false);
+          setForm({
+            id: null,
+            codigo: "",
+            nome: "",
+            tipo: "",
+            saldo: 0,
+          });
+        }}
+        onSalvar={salvarSaldo}
+      />
+
+    </div>
+  </div>
+);
 }

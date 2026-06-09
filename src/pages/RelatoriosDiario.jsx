@@ -1,11 +1,15 @@
-import { useState, useEffect } from "react";
+ import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate,useLocation } from "react-router-dom";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import ExcelExport from "../utils/ExcelExport";
+import ModalBase from "../components/ModalBase";
+import { Funnel } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import { FileSpreadsheet } from "lucide-react";
+import { FileUp } from "lucide-react";
 
 
- 
 export default function RelatoriosDiario() {
   const hoje = new Date().toISOString().slice(0, 10);
     
@@ -16,6 +20,7 @@ export default function RelatoriosDiario() {
   const [dados, setDados] = useState([]);
   const [loading, setLoading] = useState(false);
     const [filtro, setFiltro] = useState("");
+const [modalFiltro, setModalFiltro] = useState(false);
 
   const navigate = useNavigate();
     const btnPadrao =
@@ -241,239 +246,335 @@ useEffect(() => {
   }
 }, [empresaId]);
  
-
+ 
 return (
-  <div className="p-4 bg-gray-100 rounded-xl">
+  <div className="min-h-screen bg-[#f3f4f6] p-4 md:p-6">
+    <div className="mx-auto max-w-8xl">
 
-    {/* ===== FILTROS ===== */}
-    <div className="bg-white rounded-xl shadow border-l-4 border-blue-600 p-4 mb-6">
-      <h2 className="text-2xl font-bold text-blue-600 mb-4">
-        📘 Lançamentos Contábeis (Detalhes) 
-      </h2>
-
-       <div className="flex flex-wrap gap-4 items-end mt-6">
-
-        <div className="flex flex-col">
-          <label className="font-bold text-blue-800 mb-1">Data inicial</label>
-          <input
-            type="date"
-            value={dataIni}
-            onChange={(e) => setDataIni(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label className="font-bold text-blue-800 mb-1">Data final</label>
-          <input
-            type="date"
-            value={dataFim}
-            onChange={(e) => setDataFim(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
-
-        <div className="flex flex-col flex-1 min-w-[260px]">
-          <label className="font-bold text-blue-800 mb-1">Conta / Histórico/ Lancto id/ Lote </label>
-          <input
-            type="text"
-            placeholder="Conta, histórico ou modelo"
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
-
-        <button
-          onClick={() => consultar()}
-             className="btn-pill btn-blue"
-                    >
-          Consultar
-        </button>
-
-        <button
-          onClick={() => navigate("/lancamentocontabilrapido")}
-           
-               className="btn-pill btn-emerald"
-                    >
-          ⚡ Novo Lançamento
-        </button>
-
-
-            <button 
-            onClick={() => navigate("/livro-caixa")}
-            className="btn-pill btn-yellow"
-                    >
-          ⚡ Lançar Livro Caixa
-        </button>
-
-        <button
-          onClick={() => window.print()}
-         
-            className="btn-pill btn-gray"
-                    >
-           
-          🖨️ Imprimir
-        </button>
-
-        <button
-            onClick={exportarExcel}
-               
-            className="btn-pill btn-green"
-                    >
-          Exportar Excel
-          </button>
-
+      {/* CABEÇALHO */}
+      <div className="mb-4 rounded-2xl bg-[#0f172a] px-5 py-4 text-white shadow-lg">
+        <h1 className="text-xl md:text-2xl font-black">
+          📘 Lançamentos Contábeis
+        </h1>
+        <p className="mt-1 text-sm text-slate-300">
+          Consulta detalhada dos lançamentos, lotes e importações.
+        </p>
       </div>
 
-      <div className="flex flex-wrap gap-4 items-end mt-6">
-     <div className="flex items-center gap-3 mb-4">
-  <label className="font-semibold text-sm text-slate-700">
-    Filtrar importação:
-  </label>
+      {/* FILTROS */}
+        <div className="mb-4 rounded-2xl bg-white border border-slate-200 shadow p-4">
 
-  <select
-    value={importacaoSelecionada}
-    onChange={(e) => setImportacaoSelecionada(e.target.value)}
-    className="border rounded px-3 py-2 text-sm"
-  >
-    <option value="">Todas</option>
+  <div className="flex flex-col gap-4">
 
-    {importacoes.map((imp, i) => (
-      <option
-        key={i}
-        value={imp.importacao_id}
+    {/* LINHA 1 - FILTRO APLICADO */}
+ 
+     {/* LINHA 2 - BOTÕES */}
+    <div className="flex flex-wrap items-center gap-4">
+
+      <div className="text-sm font-black text-slate-700">
+        Filtro aplicado:
+      </div>
+
+      <div className="mt-1 text-sm font-bold text-blue-800">
+        {dataIni && `De ${formatarDataBR(dataIni)}`}
+        {dataFim && ` até ${formatarDataBR(dataFim)}`}
+        {filtro && ` • ${filtro}`}
+        {!dataIni && !dataFim && !filtro && "Nenhum filtro aplicado"}
+      </div> 
+
+      <button
+        onClick={() => setModalFiltro(true)}
+        className="btn-pill btn-blue"
       >
-        {imp.importacao_id}
-      </option>
-    ))}
-  </select>
+          <Funnel size={16} />  Filtro
+      </button>
 
-  <button
-    onClick={aplicarFiltro}
-       className="btn-pill btn-gray"
-                    >
-    Filtrar
-  </button>
+      <button
+        onClick={() => consultar()}
+        className="btn-pill btn-white"
+      >
+        🔎 Pesquisar
+      </button>
 
-  <button
-    onClick={limparFiltro}
+      <button
+        onClick={() => window.print()}
+        className="btn-pill btn-gray"
+      >
+        🖨️ Imprimir
+      </button>
 
-    className="btn-pill btn-blue"
-            >
-    Limpar
-  </button>
+      <button
+        onClick={exportarExcel}
+        className="btn-pill btn-white"
+      >
+        <FileSpreadsheet size={16} />  Excel
+      </button>
 
-   <button
-    onClick={() => {
-    if (!importacaoSelecionada) {
-      alert("Selecione uma importação.");
-      return;
-    }
-    Estornar(0, importacaoSelecionada);
-  }}
-    
-    className="btn-pill btn-red"
-            >
-  Excluir Importação
-</button>
+      <button
+        onClick={() => navigate("/lancamentocontabilrapido")}
+        className="btn-pill btn-emerald"
+      >
+        ⚡ Novo Lançamento
+      </button>
 
-</div>
-</div>
+      <button
+        onClick={() => navigate("/livro-caixa")}
+        className="btn-pill btn-white"
+      >
+        <FileUp size={16} /> Importar
+      </button>
 
-    </div>
-
-    {/* ===== TABELA ===== */}
-     <div id="print-area" className="bg-white rounded-xl shadow p-4 border border-gray-400">
-      
-      <table className="w-full text-sm border-collapse">
-        <thead className="bg-gray-100 text-blue-800">
-          <tr>
-            <th className="p-2 text-left">Lancto id</th>
-            <th className="p-2 text-left">Data</th>
-            <th className="p-2 text-left">Histórico</th>
-            <th className="p-2 text-left">Débito</th>
-            <th className="p-2 text-left">Crédito</th>
-            <th className="p-2 text-right pr-6">Valor</th>
-           <th className="p-2 text-center pl-6">Lote</th>
-            <th className="p-2 text-center text-blue-700">Importação</th>
-           <th className="p-2">
-          
-             
-            <span  className="text-blue-700 font-bold">Ação</span>
-           
-        </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {filtrados.map((l, i) => (
-            <tr
-              key={i}
-              className={i % 2 === 0 ? "bg-gray-50" : "bg-gray-100"}
-            >
-              <td className="p-2 font-bold">{l.id}</td>
-              <td className="p-2 font-bold">{formatarDataBR(l.data)}</td>
-              <td className="p-2 font-bold max-w-[400px] truncate">
-                  {l.historico}
-                </td>
-              <td className="p-2 font-bold">{l.conta_debito}</td>
-              <td className="p-2 font-bold">{l.conta_credito}</td>
-              <td className="p-2 text-right font-bold pr-6">
-                  {fmt.format(l.credito)}
-                </td>
-                <td className="p-2 text-center font-bold pl-6">
-                  {l.lote_id}
-                </td>
-
-              <td   className="p-2 font-bold text-center font-size: 16px text-blue-900">{l.importacao_id}</td>
-             
-              <div className="flex gap-3 justify-center">
-  
-                  <button
-                    onClick={() => Estornar(l.lote_id,0)}
-                    className="text-red-700 underline font-bold  text-left ml-4"
-                  >
-                     Excluir
-                  </button> 
-
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate("/lanctoctbrapeditar", {
-                        state: { id: l.lote_id }
-                      });
-                    }}
-                    className="text-blue-700 underline font-bold ml-4"
-                  >
-                    Editar
-                  </button>
-
-                </div>
-              
-            </tr>
-          ))}
-
-          {!loading && dados.length === 0 && (
-            <tr>
-              <td colSpan={8} className="py-6 text-center text-gray-500">
-                Nenhum lançamento encontrado.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-      {loading && (
-        <div className="p-6 text-center text-blue-600 font-semibold">
-          Carregando...
-        </div>
-      )}
     </div>
 
   </div>
-);
+</div>
 
+      {/* FILTRO IMPORTAÇÃO */}
+      <div className="mb-4 rounded-2xl bg-white border border-slate-200 shadow p-4">
+        <div className="flex flex-col md:flex-row md:items-end gap-3">
+
+          <div className="w-full md:w-72">
+            <label className="block text-sm font-black text-slate-700 mb-1">
+               Importações
+            </label>
+
+            <select
+              value={importacaoSelecionada}
+              onChange={(e) => setImportacaoSelecionada(e.target.value)}
+              className="w-full rounded-xl border-2 border-slate-300 px-3 py-2 font-semibold
+                         focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-700"
+            >
+              <option value="">Todas</option>
+
+              {importacoes.map((imp, i) => (
+                <option key={i} value={imp.importacao_id}>
+                  {imp.importacao_id}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button onClick={aplicarFiltro} className="btn-pill btn-dark-blue">
+               <Funnel size={16} /> Filtrar importação
+          </button>
+
+          <button onClick={limparFiltro} className="btn-pill btn-gray">
+            Limpar
+          </button>
+
+          <button
+            onClick={() => {
+              if (!importacaoSelecionada) {
+                alert("Selecione uma importação.");
+                return;
+              }
+              Estornar(0, importacaoSelecionada);
+            }}
+            className="btn-pill btn-red"
+          >
+            <Trash2 size={16} /> Excluir 
+          </button>
+
+        </div>
+      </div>
+
+      {/* TABELA */}
+      <div
+        id="print-area"
+        className="rounded-2xl bg-white border border-slate-200 shadow-lg overflow-hidden"
+      >
+        <div className="bg-[#1e293b] px-4 py-3 text-white flex items-center justify-between">
+          <div>
+            <h2 className="font-black text-base">
+              Detalhes dos lançamentos
+            </h2>
+            <p className="text-xs text-slate-300">
+              Total de registros: {filtrados.length}
+            </p>
+          </div>
+
+          {loading && (
+            <span className="text-sm font-bold text-blue-200">
+              Carregando...
+            </span>
+          )}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-slate-100 text-slate-700 border-b border-slate-300">
+                <th className="p-3 text-left">Lancto ID</th>
+                <th className="p-3 text-left">Data</th>
+                <th className="p-3 text-left">Histórico</th>
+                <th className="p-3 text-left">Débito</th>
+                <th className="p-3 text-left">Crédito</th>
+                <th className="p-3 text-right">Valor</th>
+                <th className="p-3 text-center">Lote</th>
+                <th className="p-3 text-center">Importação</th>
+                <th className="p-3 text-center">Ação</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filtrados.map((l, i) => (
+                <tr
+                  key={i}
+                  className={`border-b border-slate-200 hover:bg-blue-50 transition ${
+                    i % 2 === 0 ? "bg-white" : "bg-slate-50"
+                  }`}
+                >
+                  <td className="p-3 font-black text-slate-800">
+                    {l.id}
+                  </td>
+
+                  <td className="p-3 font-bold text-slate-700 whitespace-nowrap">
+                    {formatarDataBR(l.data)}
+                  </td>
+
+                  <td className="p-3 font-semibold text-slate-700 max-w-[420px] truncate">
+                    {l.historico}
+                  </td>
+
+                  <td className="p-3 font-bold text-slate-700">
+                    {l.conta_debito}
+                  </td>
+
+                  <td className="p-3 font-bold text-slate-700">
+                    {l.conta_credito}
+                  </td>
+
+                  <td className="p-3 text-right font-black text-slate-900 whitespace-nowrap">
+                    {fmt.format(l.credito)}
+                  </td>
+
+                  <td className="p-3 text-center">
+                    <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-black text-slate-700">
+                      {l.lote_id}
+                    </span>
+                  </td>
+
+                  <td className="p-3 text-center">
+                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-black text-blue-800">
+                      {l.importacao_id || "-"}
+                    </span>
+                  </td>
+
+                  <td className="p-3">
+                    <div className="flex gap-2 justify-center">
+                      <button
+                        onClick={() => Estornar(l.lote_id, 0)}
+                        className="rounded-full bg-red-100 px-3 py-1.5 text-xs font-black text-red-700 hover:bg-red-200"
+                      >
+                        Excluir
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate("/lanctoctbrapeditar", {
+                            state: { id: l.lote_id },
+                          });
+                        }}
+                        className="rounded-full bg-blue-100 px-3 py-1.5 text-xs font-black text-blue-700 hover:bg-blue-200"
+                      >
+                        Editar
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {!loading && dados.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="p-8 text-center text-slate-400 font-bold">
+                    Nenhum lançamento encontrado.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {loading && (
+          <div className="p-6 text-center text-blue-600 font-black">
+            Carregando...
+          </div>
+        )}
+      </div>
+
+    </div>
+   <ModalBase
+  open={modalFiltro}
+  title="Filtro de Lançamentos"
+  onClose={() => setModalFiltro(false)}
+>
+  <div className="space-y-4">
+
+    <div>
+      <label className="block font-bold text-slate-700 mb-1">
+        Data inicial
+      </label>
+      <input
+        type="date"
+        value={dataIni}
+        onChange={(e) => setDataIni(e.target.value)}
+        className="w-full rounded-xl border-2 border-slate-300 px-3 py-2 font-semibold"
+      />
+    </div>
+
+    <div>
+      <label className="block font-bold text-slate-700 mb-1">
+        Data final
+      </label>
+      <input
+        type="date"
+        value={dataFim}
+        onChange={(e) => setDataFim(e.target.value)}
+        className="w-full rounded-xl border-2 border-slate-300 px-3 py-2 font-semibold"
+      />
+    </div>
+
+    <div>
+      <label className="block font-bold text-slate-700 mb-1">
+        Conta / Histórico / Lançamento / Lote
+      </label>
+      <input
+        type="text"
+        value={filtro}
+        onChange={(e) => setFiltro(e.target.value)}
+        placeholder="Digite conta, histórico, lançamento ou lote"
+        className="w-full rounded-xl border-2 border-slate-300 px-3 py-2 font-semibold"
+      />
+    </div>
+
+    <div className="flex justify-end gap-2 pt-3">
+      <button
+        onClick={() => {
+          setFiltro("");
+          setDataIni(hojeLocal());
+          setDataFim(hojeLocal());
+        }}
+        className="btn-pill btn-gray"
+      >
+        Limpar
+      </button>
+
+      <button
+        onClick={() => {
+          setModalFiltro(false);
+          consultar();
+        }}
+        className="btn-pill btn-dark-blue"
+      >
+        Aplicar
+      </button>
+    </div>
+
+  </div>
+</ModalBase>
+  </div>
+);
    
   
 }
