@@ -17,7 +17,7 @@ import { ScrollText } from "lucide-react"; // relatório detalhado
 import { Funnel } from "lucide-react";
 import NovoLancamentoDrawer from "./NovoLancamento";
 import TransferenciaDrawer from "./app/AppTransferencia.jsx";
-
+import { BarChart3 } from "lucide-react";
 
 export default function Lancamentos() {
   const [dataIni, setDataIni] = useState("");
@@ -454,7 +454,9 @@ setCarregando(true);
     
   }   
    
-   
+   function VisaoFinanceira() {
+  navigate("/app/dashboard");
+}
   
    function ContaRecorrente() {
     navigate("/conta-recorrente");
@@ -1246,28 +1248,39 @@ return (
     ? contas.find((c) => String(c.id) === String(filtroContaId))?.nome || "Selecionada"
     : "Todas"}{" "}
   • Busca: {busca || "Sem busca"}
-</div>     
-   
-    <button
-  onClick={() => {
-    setFiltroTemp({
-  dataIni,
-  dataFim,
-  filtroContaId,
-  busca,
-  tipoOperacao,
-});
-    setModalFiltro(true);
-  }}
-  className="btn-pill btn-white flex items-center gap-2"
->
-  <Funnel size={16} />
-  Filtros
-</button> 
+        </div>     
+          
+            <button
+          onClick={() => {
+            setFiltroTemp({
+          dataIni,
+          dataFim,
+          filtroContaId,
+          busca,
+          tipoOperacao,
+        });
+            setModalFiltro(true);
+          }}
+            title="Filtro de registros"
+          className="btn-pill btn-white flex items-center gap-2"
+        >
+          <Funnel size={16} />
+          Filtros
+        </button> 
+ 
+          
+     <button
+      onClick={VisaoFinanceira}
+      title="Mostra saldo atual, contas abertas, vencidos e projeção dos próximos 30 dias"
+      className="btn-pill btn-white"
+    >
+      <BarChart3 size={17} /> Visão Financeira
+</button>
 
           
      <button
       onClick={ContaRecorrente}
+       title="Gerar e revisar contas fixas ou recorrentes, como aluguel, internet e assinaturas"
        className="btn-pill btn-white"
    >
       <Repeat size={16} /> Conta Recorrente
@@ -1275,6 +1288,7 @@ return (
 
      <button
       onClick={ReclassifacaoContabil}
+       title="Revisar lançamentos sem classificação contábil correta"
        className="btn-pill btn-white"
    >
         <ScrollText size={16} /> Reclassificação 
@@ -1284,6 +1298,7 @@ return (
      
      <button
       onClick={ImportarExtrato}
+        title="Importar extrato bancário para conciliação e lançamento automático"
        className="btn-pill btn-white"
    >
         <FilePlus size={16} /> Importar 
@@ -1293,9 +1308,9 @@ return (
      <button
       //onClick={abrirNovoLancamento}
        onClick={() => {
-  setTipoNovo(null);
-  setDrawerNovo(true);
-}}
+        setTipoNovo(null);
+        setDrawerNovo(true);
+      }}
        className="btn-pill btn-emerald"
                     >
       + Novo lançamento
@@ -1993,7 +2008,7 @@ return (
     </div>
 
 {drawerNovo && (
-  <aside className="w-[35%] min-w-[420px] max-w-[560px] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+  <aside className="w-[42%] min-w-[420px] max-w-[700px] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
     <div className="flex items-center justify-between border-b bg-slate-50 px-4 py-3">
       <button
         type="button"
