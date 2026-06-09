@@ -1,46 +1,24 @@
-import React, { useState, useEffect } from "react";
+ import React, { useState, useEffect, useMemo } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
-import { hojeLocal, dataLocal } from "../utils/dataLocal";
+import { hojeLocal } from "../utils/dataLocal";
 import ExcelExport from "../utils/ExcelExport";
- 
-
 
 export default function RelatoriosDRE() {
-  const hoje = new Date().toISOString().slice(0, 10);
- const [empresaId, setEmpresaId] = useState(null);
- const [dataIni, setDataIni] = useState(hojeLocal());
- const [dataFim, setDataFim] = useState(hojeLocal());
-
-  const [dados, setDados] = useState([]);
+  const [empresaId, setEmpresaId] = useState(null);
+  const [dataIni, setDataIni] = useState(hojeLocal());
+  const [dataFim, setDataFim] = useState(hojeLocal());
+  const [nivel, setNivel] = useState(1);
+  const [dadosSintetico, setDadosSintetico] = useState([]);
+  const [dadosAnalitico, setDadosAnalitico] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [analitico, setAnalitico] = useState(false);
-  const receita = dados.find(d => d.grupo === "RECEITA_BRUTA")?.valor_periodo || 0;
-const custos = dados.find(d => d.grupo === "CUSTOS")?.valor_periodo || 0;
-const despesas = dados.find(d => d.grupo === "DESPESAS_OPERACIONAIS")?.valor_periodo || 0;
 
- 
- 
- 
+  const navigate = useNavigate();
 
-
-const lucroBruto = receita - custos;
-const resultado = lucroBruto - despesas;
-
-
-function percReceitaTotal(valor) {
-  if (!receita) return "0,00%";
-  return `${((Number(valor || 0) / receita) * 100).toFixed(2)}%`;
-}
-
-  // formatter BR
   const fmt = new Intl.NumberFormat("pt-BR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const id =
@@ -51,32 +29,40 @@ function percReceitaTotal(valor) {
   }, []);
 
   async function consultar() {
-
-    const webhook = analitico ? "dre_analitico" : "der";
     if (!empresaId) {
       alert("Empresa não carregada");
       return;
     }
 
     setLoading(true);
-    setMsg("");
-    setDados([]);
 
     try {
-
-      
-      const resp = await fetch(buildWebhookUrl(webhook), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresa_id: empresaId,
-          data_ini: dataIni,
-          data_fim: dataFim,
+      const [respSintetico, respAnalitico] = await Promise.all([
+        fetch(buildWebhookUrl("der"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            empresa_id: empresaId,
+            data_ini: dataIni,
+            data_fim: dataFim,
+          }),
         }),
-      });
+        fetch(buildWebhookUrl("dre_analitico"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            empresa_id: empresaId,
+            data_ini: dataIni,
+            data_fim: dataFim,
+          }),
+        }),
+      ]);
 
-      const json = await resp.json();
-      setDados(Array.isArray(json) ? json : []);
+      const jsonSintetico = await respSintetico.json();
+      const jsonAnalitico = await respAnalitico.json();
+
+      setDadosSintetico(Array.isArray(jsonSintetico) ? jsonSintetico : []);
+      setDadosAnalitico(Array.isArray(jsonAnalitico) ? jsonAnalitico : []);
     } catch (e) {
       alert("Erro ao carregar DRE");
     } finally {
@@ -84,295 +70,325 @@ function percReceitaTotal(valor) {
     }
   }
 
+  useEffect(() => {
+    if (!empresaId) return;
+    consultar();
+  }, [empresaId, dataIni, dataFim]);
 
- function exportarExcel() {
+  const receita = Number(
+    dadosSintetico.find((d) => d.grupo === "RECEITA_BRUTA")?.valor_periodo || 0
+  );
 
-  const receita = Number(dados.find(d => d.grupo === "RECEITA_BRUTA")?.valor_periodo || 0);
-  const custos = Number(dados.find(d => d.grupo === "CUSTOS")?.valor_periodo || 0);
-  const despesas = Number(dados.find(d => d.grupo === "DESPESAS_OPERACIONAIS")?.valor_periodo || 0);
+  const custos = Number(
+    dadosSintetico.find((d) => d.grupo === "CUSTOS")?.valor_periodo || 0
+  );
+
+  const despesas = Number(
+    dadosSintetico.find((d) => d.grupo === "DESPESAS_OPERACIONAIS")?.valor_periodo || 0
+  );
 
   const lucroBruto = receita - custos;
   const resultado = lucroBruto - despesas;
+  const margem = receita ? (resultado / receita) * 100 : 0;
 
-  const linhas = [
-    { Grupo: "Receita Bruta", Valor: receita },
-    { Grupo: "(-) Custos", Valor: custos },
-    { Grupo: "Lucro Bruto", Valor: lucroBruto },
-    { Grupo: "Despesas Operacionais", Valor: despesas },
-    { Grupo: "Resultado do Período", Valor: resultado }
-  ];
+  function perc(valor) {
+    if (!receita) return "0,00%";
+    return `${((Number(valor || 0) / receita) * 100).toFixed(2)}%`;
+  }
 
-  ExcelExport.exportar(linhas, "dre.xlsx");
-}
-
-const gruposAnalitico = ["RECEITA", "CUSTO", "DESPESA"];
-
-const dadosAgrupados = gruposAnalitico
-  .map((grupo) => {
-    const itens = dados.filter((d) => d.grupo === grupo);
-    const subtotal = itens.reduce(
-      (acc, item) => acc + Number(item.valor || 0),
-      0
-    );
-
-    return {
-      grupo,
-      itens,
-      subtotal,
+  const gruposGerenciais = useMemo(() => {
+    const mapa = {
+      receita: { titulo: "Receitas", total: 0, itens: [] },
+      custo_variavel: { titulo: "Custos Variáveis", total: 0, itens: [] },
+      custo_fixo: { titulo: "Custos Fixos", total: 0, itens: [] },
+      despesa_variavel: { titulo: "Despesas Variáveis", total: 0, itens: [] },
+      despesa_fixa: { titulo: "Despesas Fixas", total: 0, itens: [] },
+      sem_classificacao: { titulo: "Sem Classificação", total: 0, itens: [] },
     };
-  })
-  .filter((g) => g.itens.length > 0);
 
-  const nomeGrupo = {
-  RECEITA: "Receita",
-  CUSTO: "Custo",
-  DESPESA: "Despesa",
-};
+    dadosAnalitico.forEach((item) => {
+      const chave = item.classificacao_gerencial || "sem_classificacao";
+      const grupo = mapa[chave] || mapa.sem_classificacao;
 
-const totalFinalAnalitico = dadosAgrupados.reduce((acc, g) => {
-  const subtotal = Number(g.subtotal || 0);
+      grupo.total += Number(item.valor || 0);
+      grupo.itens.push(item);
+    });
 
-  if (g.grupo === "RECEITA") return acc + subtotal;
-  return acc - subtotal; // CUSTO e DESPESA
-}, 0);
+    return Object.entries(mapa)
+      .map(([chave, g]) => ({ chave, ...g }))
+      .filter((g) => g.itens.length > 0 || g.total !== 0);
+  }, [dadosAnalitico]);
+
+  function exportarExcel() {
+    if (nivel === 1) {
+      ExcelExport.exportar(
+        [
+          { Indicador: "Receita", Valor: receita },
+          { Indicador: "Custos", Valor: custos },
+          { Indicador: "Lucro Bruto", Valor: lucroBruto },
+          { Indicador: "Despesas", Valor: despesas },
+          { Indicador: "Resultado", Valor: resultado },
+          { Indicador: "Margem %", Valor: margem },
+        ],
+        "dre_n1.xlsx"
+      );
+      return;
+    }
+
+    ExcelExport.exportar(dadosAnalitico, `dre_n${nivel}.xlsx`);
+  }
 
   return (
-    <div className="p-6">
-         <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
-      <h1 className="text-2xl font-bold mb-6">
-  📊 DRE – Demonstrativo de Resultado{analitico ? " Analítico" : ""}
-</h1>
+    <div className="min-h-screen bg-[#eef7fd] px-4 py-5">
+      <div className="mx-auto w-full max-w-[1500px] space-y-4">
+        <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-black text-[#063452]">
+                📊 Entenda seu Negócio
+              </h1>
+              <p className="text-sm font-semibold text-slate-500">
+                DRE gerencial por níveis: visão rápida, grupos e contas analíticas
+              </p>
+            </div>
 
-      {/* FILTROS */}
-      <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
-        <div>
-          <label className="block font-bold text-[#1e40af]"> Data inicial  </label>
-          <input
-            type="date"
-            value={dataIni}
-            onChange={(e) => setDataIni(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
+            <div className="flex flex-wrap items-end gap-2">
+              <input
+                type="date"
+                value={dataIni}
+                onChange={(e) => setDataIni(e.target.value)}
+                className="h-10 rounded-xl border border-cyan-200 bg-white px-3 text-sm font-bold text-slate-700 shadow-sm"
+              />
+
+              <input
+                type="date"
+                value={dataFim}
+                onChange={(e) => setDataFim(e.target.value)}
+                className="h-10 rounded-xl border border-cyan-200 bg-white px-3 text-sm font-bold text-slate-700 shadow-sm"
+              />
+
+              <div className="flex overflow-hidden rounded-xl border border-cyan-200 bg-white shadow-sm">
+                {[1, 2, 3].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setNivel(n)}
+                    className={`h-10 px-5 text-sm font-black ${
+                      nivel === n
+                        ? "bg-[#063452] text-white"
+                        : "bg-white text-[#063452] hover:bg-cyan-50"
+                    }`}
+                  >
+                    N{n}
+                  </button>
+                ))}
+              </div>
+
+              <button onClick={consultar} className="btn-pill btn-blue">
+                🔎 Consultar
+              </button>
+
+              <button onClick={exportarExcel} className="btn-pill btn-green">
+                Excel
+              </button>
+
+              <button onClick={() => navigate("/reports")} className="btn-pill btn-white">
+                Sair
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="block font-bold text-[#1e40af]"> Data final  </label>
-          <input
-            type="date"
-            value={dataFim}
-            onChange={(e) => setDataFim(e.target.value)}
-            className="block border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
+        {nivel === 1 && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              <Card titulo="Receita" valor={receita} cor="text-emerald-700" />
+              <Card titulo="Custos" valor={custos} cor="text-red-600" />
+              <Card titulo="Despesas" valor={despesas} cor="text-red-600" />
+              <Card titulo="Resultado" valor={resultado} cor={resultado >= 0 ? "text-emerald-700" : "text-red-600"} />
+              <Card titulo="Margem" valor={`${margem.toFixed(2)}%`} cor={margem >= 0 ? "text-blue-700" : "text-red-600"} texto />
+            </div>
 
-        <label className="flex items-center gap-2 font-bold text-[#1e40af]">
-        <input
-          type="checkbox"
-          checked={analitico}
-          onChange={(e) => setAnalitico(e.target.checked)}
-        />
-        Analítico
-      </label>
+            <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
+              <table className="w-full text-sm">
+                <thead className="bg-[#e7f5fc] text-[#063452]">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-black">Indicador</th>
+                    <th className="px-4 py-3 text-right font-black">Valor</th>
+                    <th className="px-4 py-3 text-right font-black">% Receita</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <Linha nome="Receita Bruta" valor={receita} percentual={perc(receita)} positivo />
+                  <Linha nome="(-) Custos" valor={custos} percentual={perc(custos)} negativo />
+                  <Linha nome="Lucro Bruto" valor={lucroBruto} percentual={perc(lucroBruto)} destaque />
+                  <Linha nome="(-) Despesas Operacionais" valor={despesas} percentual={perc(despesas)} negativo />
+                  <Linha nome="Resultado do Período" valor={resultado} percentual={perc(resultado)} final />
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
 
-        <button
-          onClick={consultar}
-            className="btn-pill btn-blue" 
-        >
-          Consultar
-        </button>
+        {nivel === 2 && (
+          <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
+            <table className="w-full text-sm">
+              <thead className="bg-[#e7f5fc] text-[#063452]">
+                <tr>
+                  <th className="px-4 py-3 text-left font-black">Grupo Gerencial</th>
+                  <th className="px-4 py-3 text-right font-black">Valor</th>
+                  <th className="px-4 py-3 text-right font-black">% Receita</th>
+                </tr>
+              </thead>
+              <tbody>
+                {gruposGerenciais.map((g) => (
+                  <tr key={g.chave} className="border-b hover:bg-cyan-50">
+                    <td className="px-4 py-3 font-black text-[#063452]">
+                      {g.titulo}
+                    </td>
+                    <td className={`px-4 py-3 text-right font-black ${
+                      g.chave === "receita" ? "text-emerald-700" : "text-red-600"
+                    }`}>
+                      R$ {fmt.format(Math.abs(g.total))}
+                    </td>
+                    <td className="px-4 py-3 text-right font-bold text-slate-600">
+                      {perc(g.total)}
+                    </td>
+                  </tr>
+                ))}
 
-        <button
-          onClick={() => window.print()}
-                 className="btn-pill btn-gray" 
-        >
-          🖨️ Imprimir
-        </button>
-         
-          <button
-             onClick={exportarExcel}
-              className="btn-pill btn-green">
-          📊 Exportar Excel
-          </button>
-        
-         <button
-          onClick={() =>   navigate("/reports") }
-             className="btn-pill btn-gray" 
-        >   
-         ← Voltar
-        </button>
-      </div>
-      </div>
+                <tr className="bg-[#dcecf7]">
+                  <td className="px-4 py-3 text-right font-black text-[#063452]">
+                    Resultado
+                  </td>
+                  <td className={`px-4 py-3 text-right font-black ${
+                    resultado >= 0 ? "text-emerald-700" : "text-red-600"
+                  }`}>
+                    R$ {fmt.format(Math.abs(resultado))}
+                  </td>
+                  <td className="px-4 py-3 text-right font-black text-[#063452]">
+                    {perc(resultado)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
 
- {/* TABELA */}
-      <div id="print-area" className="bg-white rounded-xl shadow overflow-x-auto">
-         <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
+        {nivel === 3 && (
+          <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
+            <div className="max-h-[680px] overflow-auto">
+              <table className="w-full min-w-[950px] text-sm">
+                <thead className="sticky top-0 bg-[#e7f5fc] text-[#063452]">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-black">Código</th>
+                    <th className="px-4 py-3 text-left font-black">Conta</th>
+                    <th className="px-4 py-3 text-left font-black">Classificação</th>
+                    <th className="px-4 py-3 text-right font-black">Valor</th>
+                    <th className="px-4 py-3 text-right font-black">% Grupo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gruposGerenciais.map((g) => (
+                    <React.Fragment key={g.chave}>
+                      <tr className="bg-[#dcecf7]">
+                        <td colSpan={5} className="px-4 py-3 font-black text-[#063452]">
+                          {g.titulo}
+                        </td>
+                      </tr>
 
- {analitico ? (
-  <table className="w-full text-sm">
-    <thead className="bg-blue-900 text-white">
-      <tr>
-        <th className="p-3 text-left">Código</th>
-        <th className="p-3 text-left">Conta</th>
-         <th className="p-3 text-left">Classificação Gerencia</th> 
-        <th className="p-3 text-right">Valor</th>
-         <th className="text-right">% sobre grupo</th>
-      </tr>
-    </thead>
-    <tbody>
-      {dadosAgrupados.map((g) => (
-        <React.Fragment key={g.grupo}>
-          <tr className="bg-blue-100">
-            <td colSpan={3} className="p-1 font-bold text-blue-900 text-base">
-              {g.grupo}
-            </td>
-          </tr>
+                      {g.itens.map((l, i) => (
+                        <tr key={`${g.chave}-${i}`} className="border-b hover:bg-cyan-50">
+                          <td className="px-4 py-3 font-black text-[#063452]">
+                            {l.conta_codigo}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-slate-700">
+                            {l.conta_nome}
+                          </td>
+                          <td className="px-4 py-3 font-bold text-slate-500">
+                            {(l.classificacao_gerencial || "-").replaceAll("_", " ")}
+                          </td>
+                          <td className={`px-4 py-3 text-right font-black ${
+                            l.grupo === "RECEITA" ? "text-emerald-700" : "text-red-600"
+                          }`}>
+                            R$ {fmt.format(Math.abs(Number(l.valor || 0)))}
+                          </td>
+                          <td className="px-4 py-3 text-right font-bold text-slate-600">
+                            {l.perc_sobre_grupo != null
+                              ? `${Number(l.perc_sobre_grupo).toFixed(2)}%`
+                              : ""}
+                          </td>
+                        </tr>
+                      ))}
 
-          {g.itens.map((l, idx) => (
-            <tr
-              key={`${g.grupo}-${idx}`}
-              className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}
-            >
-              <td className="p-2 font-bold">{l.conta_codigo}</td>
-              <td className="p-2">{l.conta_nome}</td>
-            <td
-                className={`p-2 text-left font-bold ${
-                  l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
-                }`}
-              >{(l.classificacao_gerencial || "-").replaceAll("_", " ")}</td>
-               
-              
-              <td
-                className={`p-2 text-right font-bold ${
-                  l.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
-                }`}
-              >
-                {fmt.format(Number(l.valor || 0))}
-              </td>
+                      <tr className="bg-slate-100">
+                        <td colSpan={3} className="px-4 py-3 text-right font-black">
+                          Subtotal {g.titulo}
+                        </td>
+                        <td className="px-4 py-3 text-right font-black text-[#063452]">
+                          R$ {fmt.format(Math.abs(g.total))}
+                        </td>
+                        <td />
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
-              <td className="text-right font-semibold tabular-nums pr-2">
-                  {l.perc_sobre_grupo != null
-                    ? `${Number(l.perc_sobre_grupo).toFixed(2)}%`
-                    : ""}
-                </td>
-
-            </tr>
-          ))}
-
-          <tr className="border-t-2 border-gray-500 bg-gray-100">
-            <td colSpan={3} className="p-1 text-right font-bold">
-              Subtotal {nomeGrupo[g.grupo]}
-            </td>
-            <td
-              className={`p-1 text-right font-bold ${
-                g.grupo === "RECEITA" ? "text-green-700" : "text-red-600"
-              }`}
-            >
-              {fmt.format(g.subtotal)}
-            </td>
-          </tr>
-        </React.Fragment>
-      ))}
-
-      <tr className="border-t-4 border-black bg-yellow-100">
-        <td colSpan={3} className="p-2 text-right font-bold text-lg">
-          Resultado do Período
-        </td>
-        <td
-          className={`p-2 text-right font-bold text-lg ${
-            totalFinalAnalitico >= 0 ? "text-green-700" : "text-red-600"
-          }`}
-        >
-          {fmt.format(totalFinalAnalitico)}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-) : (
-  // tabela sintética atual
- 
-
-      
-        <table className="w-full text-sm">
-          <thead className="bg-blue-900 text-white">
-            <tr>
-              <th className="p-3 text-left">Grupo</th>
-              <th className="text-right">% Receita Total</th>
-              <th className="p-3 text-right">Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-              {/* RECEITA */}
-              <tr className="bg-gray-100 font-bold text-lg">
-                <td className="p-3">Receita Bruta</td>
-                
-                <td className="p-3 text-right text-green-700">
-                  {fmt.format(receita)}
-                </td>
-
-                 <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(receita)}
-                </td>
-              </tr>
-
-              {/* CUSTOS */}
-              <tr className="bg-gray-100 font-bold text-lg">
-                <td className="p-3">(-) Custos</td>
-                
-                <td className="p-3 text-right text-red-600">
-                  {fmt.format(custos)}
-                </td>
-                 <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(custos)}
-                </td>
-              </tr>
-
-              {/* LUCRO BRUTO */}
-              <tr className="border-t-4 border-gray-400 font-bold text-lg">
-                <td className="p-3">Lucro Bruto</td>
-                 
-                <td className="p-3 text-right text-green-700">
-                  {fmt.format(lucroBruto)}
-                </td>
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(lucroBruto)}
-                </td>
-              </tr>
-
-              {/* DESPESAS */}
-              <tr className="bg-gray-100 font-bold text-lg">
-                <td className="p-3">Despesas Operacionais</td>
-                 
-                <td className="p-3 text-right text-red-600">
-                  {fmt.format(despesas)}
-                </td>
-
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(despesas)}
-                </td>
-              </tr>
-
-              {/* RESULTADO FINAL */}
-              <tr className="border-t-4 border-black text-xl font-bold">
-                <td className="p-3">Resultado do Período</td>
-                
-                <td className="p-3 text-right text-green-700">
-                  {fmt.format(resultado)}
-                </td>
-                <td className="p-3 text-right text-blue-900">
-                  {percReceitaTotal(resultado)}
-                </td>
-
-              </tr>
-            </tbody>
-        </table>
- )}
         {loading && (
-          <div className="p-6 text-center text-blue-600 font-semibold">
+          <div className="rounded-2xl bg-white p-6 text-center font-black text-[#063452] shadow-sm">
             Carregando...
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function Card({ titulo, valor, cor, texto = false }) {
+  const fmt = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+  return (
+    <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
+      <div className="text-xs font-black uppercase text-slate-400">{titulo}</div>
+      <div className={`mt-2 text-2xl font-black ${cor}`}>
+        {texto ? valor : fmt.format(Number(valor || 0))}
+      </div>
     </div>
+  );
+}
+
+function Linha({ nome, valor, percentual, positivo, negativo, destaque, final }) {
+  const fmt = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const cor = positivo
+    ? "text-emerald-700"
+    : negativo
+    ? "text-red-600"
+    : Number(valor) >= 0
+    ? "text-emerald-700"
+    : "text-red-600";
+
+  return (
+    <tr className={`${final ? "bg-[#dcecf7]" : destaque ? "bg-slate-50" : "border-b"} hover:bg-cyan-50`}>
+      <td className={`px-4 py-3 ${final ? "text-lg font-black" : "font-bold"} text-[#063452]`}>
+        {nome}
+      </td>
+      <td className={`px-4 py-3 text-right font-black ${cor}`}>
+        R$ {fmt.format(Math.abs(Number(valor || 0)))}
+      </td>
+      <td className="px-4 py-3 text-right font-black text-slate-600">
+        {percentual}
+      </td>
+    </tr>
   );
 }
