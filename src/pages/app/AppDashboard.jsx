@@ -32,13 +32,15 @@ function somaPorPrazo(lista = [], dias) {
     })
     .reduce((s, i) => s + numero(i.valor), 0);
 }
-
-function MiniCard({ titulo, valor, icone, cor }) {
+  
+ function MiniCard({ titulo, valor }) {
   return (
-    <div className="bg-white rounded-[24px] p-4 shadow-md border border-slate-200">
-      <div className="text-2xl">{icone}</div>
-      <div className="text-xs font-black text-slate-500 mt-2">{titulo}</div>
-      <div className="text-lg font-black mt-1" style={{ color: cor }}>
+    <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+      <div className="text-[11px] font-black text-slate-500 uppercase">
+        {titulo}
+      </div>
+
+      <div className="text-lg font-black mt-2 text-slate-800">
         {moeda(valor)}
       </div>
     </div>
@@ -50,6 +52,7 @@ function PrazoLinha({ label, receber, pagar }) {
 
   return (
     <div className="grid grid-cols-3 gap-2 items-center border-b border-slate-200 py-2 last:border-0">
+      
       <div className="font-black text-slate-700">{label}</div>
 
       <div className="text-right">
@@ -138,47 +141,46 @@ export default function AppDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
+    <div className="min-h-screen bg-[#f3f7fb] px-4 py-5">
       <div className="w-full max-w-lg mx-auto">
 
+         <div className="bg-white rounded-t-[28px] shadow-sm border border-slate-200 px-5 py-5 mb-0">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate(-1)}
+                className="bg-slate-100 px-4 py-2 rounded-full text-sm font-black text-slate-700"
+              >
+                ← Voltar
+              </button>
 
-        <div  className="bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#0284c7] rounded-t-[28px] shadow-lg px-5 py-5 mb-0 text-white">
-          <div className="flex justify-between items-center">
-            <button
-              onClick={() => navigate(-1)}
-              className="bg-white/15 px-4 py-2 rounded-full text-sm font-black"
-            >
-              ← Voltar
-            </button>
+              <button
+                onClick={carregar}
+                className="bg-slate-100 w-10 h-10 rounded-full text-lg font-black text-slate-700"
+              >
+                ↻
+              </button>
+            </div>
 
-            <button
-              onClick={carregar}
-              className="bg-white/15 w-10 h-10 rounded-full text-xl font-black"
-            >
-              ↻
-            </button>
+            <div className="mt-5">
+              <div className="text-sm font-bold text-slate-500">
+                Saldo atual
+              </div>
+
+              <div className="text-4xl font-black mt-1 text-slate-900">
+                {moeda(saldoAtual)}
+              </div>
+
+              <div className="mt-3 inline-block bg-slate-100 rounded-full px-4 py-2 text-sm font-black text-slate-700">
+                Projetado 30 dias: {moeda(saldoProjetado30)}
+              </div>
+            </div>
           </div>
-
-          <div className="mt-5">
-            <div className="text-sm font-bold text-blue-100">
-              Saldo atual
-            </div>
-
-            <div className="text-4xl font-black mt-1">
-              {moeda(saldoAtual)}
-            </div>
-
-            <div className="mt-3 inline-block bg-white/15 rounded-full px-4 py-2 text-sm font-black">
-              Projetado 30 dias: {moeda(saldoProjetado30)}
-            </div>
-          </div>
-        </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <MiniCard titulo="A receber aberto" valor={receberAberto} icone="💰" cor="#16a34a" />
-          <MiniCard titulo="A pagar aberto" valor={pagarAberto} icone="📤" cor="#dc2626" />
-          <MiniCard titulo="Cartões abertos" valor={faturasAberto} icone="💳" cor="#2563eb" />
-          <MiniCard titulo="Vencidos" valor={receberVencido + pagarVencido} icone="🔔" cor="#ea580c" />
+          <MiniCard titulo="A receber aberto" valor={receberAberto} />
+          <MiniCard titulo="A pagar aberto" valor={pagarAberto} />
+          <MiniCard titulo="Cartões abertos" valor={faturasAberto} />
+          <MiniCard titulo="Vencidos" valor={receberVencido + pagarVencido} />
         </div>
 
         <div className="bg-white rounded-[28px] shadow-xl border border-slate-200 p-5 mt-5">
