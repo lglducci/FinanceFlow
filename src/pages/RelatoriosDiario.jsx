@@ -252,11 +252,11 @@ return (
     <div className="mx-auto max-w-8xl">
 
       {/* CABEÇALHO */}
-      <div className="mb-4 rounded-2xl bg-[#0f172a] px-5 py-4 text-white shadow-lg">
+      <div className="mb-4 rounded-2xl bg-slate-200  px-5 py-4 text-black shadow-lg">
         <h1 className="text-xl md:text-2xl font-black">
           📘 Lançamentos Contábeis
         </h1>
-        <p className="mt-1 text-sm text-slate-300">
+        <p className="mt-1 text-sm text-slate-800">
           Consulta detalhada dos lançamentos, lotes e importações.
         </p>
       </div>
@@ -383,12 +383,12 @@ return (
         id="print-area"
         className="rounded-2xl bg-white border border-slate-200 shadow-lg overflow-hidden"
       >
-        <div className="bg-[#1e293b] px-4 py-3 text-white flex items-center justify-between">
+        <div className="bg-gray-200 px-4 py-3 text-black flex items-center justify-between">
           <div>
             <h2 className="font-black text-base">
               Detalhes dos lançamentos
             </h2>
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-slate-800">
               Total de registros: {filtrados.length}
             </p>
           </div>

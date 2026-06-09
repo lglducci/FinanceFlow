@@ -136,16 +136,16 @@ useEffect(() => {
   return (
   <div className="min-h-screen bg-[#f3f4f6] p-4 md:p-6">
 
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-8xl">
 
       {/* CABEÇALHO */}
-      <div className="mb-4 rounded-2xl bg-[#0f172a] px-5 py-4 shadow-lg text-white">
+      <div className="mb-4 rounded-2xl bg-slate-200 px-5 py-4 shadow-lg text-black">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-xl md:text-2xl font-black">
               📒 Implantação de Saldos Iniciais
             </h1>
-            <p className="text-sm text-slate-300 mt-1">
+            <p className="text-sm text-slate-800 mt-1">
               Informe ou ajuste os saldos iniciais das contas contábeis.
             </p>
           </div>
@@ -210,12 +210,12 @@ useEffect(() => {
         <div className="rounded-2xl bg-white border border-slate-200 shadow-lg overflow-hidden">
 
           {/* TOPO DA TABELA */}
-          <div className="bg-[#1e293b] px-4 py-3 text-white flex items-center justify-between">
+          <div className="bg-gray-200 px-4 py-3 text-black flex items-center justify-between">
             <div>
               <h2 className="font-black text-base">
                 Contas para implantação
               </h2>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-slate-800">
                 Total de registros: {dados.length}
               </p>
             </div>
