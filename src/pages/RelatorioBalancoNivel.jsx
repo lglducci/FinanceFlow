@@ -88,143 +88,170 @@ dados.forEach(l => {
   }
 });
 
-  return (
-    <div className="p-4 bg-gray-100 rounded-xl">
+   return (
+  <div className="min-h-screen bg-[#eef7fd] px-4 py-5">
+    <div className="mx-auto w-full max-w-[1500px]">
 
-      {/* HEADER */}
-      <div className="bg-white rounded-xl shadow border-l-4 border-blue-600 p-4 mb-6">
-        <h2 className="text-2xl font-bold text-blue-600 mb-4">
-          📊 Balanço por Nível
-        </h2>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-[#063452]">
+            📊 Balanço por Nível
+          </h1>
+          <p className="text-sm font-semibold text-slate-500">
+            Visualização por níveis contábeis no período selecionado
+          </p>
+        </div>
 
-        <div className="flex flex-wrap gap-4 items-end">
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            type="date"
+            value={dataIni}
+            onChange={(e) => setDataIni(e.target.value)}
+            className="h-10 rounded-xl border border-cyan-200 bg-white px-3 text-sm font-bold text-slate-700 shadow-sm"
+          />
 
-          <div className="flex flex-col">
-            <label className="font-bold text-blue-800 mb-1">Data inicial</label>
-            <input
-              type="date"
-              value={dataIni}
-              onChange={(e) => setDataIni(e.target.value)}
-              className="border rounded-lg px-3 py-2 border-yellow-500"
-            />
+          <input
+            type="date"
+            value={dataFim}
+            onChange={(e) => setDataFim(e.target.value)}
+            className="h-10 rounded-xl border border-cyan-200 bg-white px-3 text-sm font-bold text-slate-700 shadow-sm"
+          />
+
+          <div className="flex rounded-xl border border-cyan-200 bg-white overflow-hidden shadow-sm">
+            {[1, 2, 3, 4].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setNivel(n)}
+                className={`h-10 px-4 text-sm font-black transition ${
+                  nivel === n
+                    ? "bg-[#063452] text-white"
+                    : "bg-white text-[#063452] hover:bg-cyan-50"
+                }`}
+              >
+                N{n}
+              </button>
+            ))}
           </div>
 
-          <div className="flex flex-col">
-            <label className="font-bold text-blue-800 mb-1">Data final</label>
-            <input
-              type="date"
-              value={dataFim}
-              onChange={(e) => setDataFim(e.target.value)}
-              className="border rounded-lg px-3 py-2 border-yellow-500"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="font-bold text-blue-800 mb-1">Nível</label>
-            <select
-              value={nivel}
-              onChange={(e) => setNivel(Number(e.target.value))}
-              className="border rounded-lg px-3 py-2 border-yellow-500"
-            >
-              {[1,2,3,4,5,6].map(n => (
-                <option key={n} value={n}>Nível {n}</option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            onClick={consultar}
-             className="btn-pill btn-blue"
-          >
+          <button onClick={consultar} className="btn-pill btn-blue">
             🔎 Consultar
           </button>
 
-          <button
-            onClick={() => window.print()}
-              className="btn-pill btn-gray"
-          >
-            🖨️ Imprimir
+          <button onClick={() => window.print()} className="btn-pill btn-gray">
+            🖨️
           </button>
 
-          <button
-            onClick={exportarExcel}
-            className="btn-pill btn-green"
-          >
-            📥 Excel
+          <button onClick={exportarExcel} className="btn-pill btn-green">
+            Excel
           </button>
 
-          <button
-            onClick={() => navigate("/reports")}
-            className="btn-pill btn-red"
-          >
-            ❌ Sair
+          <button onClick={() => navigate("/reports")} className="btn-pill btn-white">
+            Sair
           </button>
-
         </div>
       </div>
 
-      {/* TABELA */}
-      <div id="print-area" className="bg-white rounded-xl shadow-sm overflow-hidden p-4 border">
+      <div
+        id="print-area"
+        className="rounded-2xl border border-cyan-200 bg-white shadow-sm overflow-hidden"
+      >
+        <div className="max-h-[680px] overflow-auto">
+          <table className="w-full min-w-[900px] text-sm">
+            <thead className="sticky top-0 z-10 bg-[#e7f5fc] text-[#063452] shadow-sm">
+              <tr>
+                <th className="w-[140px] px-4 py-3 text-left font-black">
+                  Código
+                </th>
+                <th className="px-4 py-3 text-left font-black">
+                  Conta
+                </th>
+                <th className="w-[90px] px-4 py-3 text-center font-black">
+                  Nível
+                </th>
+                <th className="w-[180px] px-4 py-3 text-right font-black">
+                  Valor
+                </th>
+              </tr>
+            </thead>
 
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-blue-800">
-            <tr>
-              <th className="p-2 text-left">Código</th>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-center">Nível</th>
-              <th className="p-2 text-right">Valor</th>
-            </tr>
-          </thead>
-         <tbody>
-            {Object.entries(grupos).map(([raiz, grupo], gIndex) => (
+            <tbody>
+              {Object.entries(grupos).map(([raiz, grupo], gIndex) => (
                 <>
-                {/* LINHAS */}
-                {grupo.itens.map((l, i) => (
-                    <tr key={`${gIndex}-${i}`} className="bg-white">
-                    <td className="p-2 font-bold">{l.codigo}</td>
-                    <td className="p-2">{l.nome}</td>
-                    <td className="p-2 text-center">{l.nivel}</td>
-                    <td className="p-2 text-right font-bold">
-                        {fmt.format(l.valor)}
-                    </td>
-                    </tr>
-                ))}
+                  {grupo.itens.map((l, i) => {
+                    const valor = Number(l.valor || 0);
 
-                {/* TOTAL DO GRUPO */}
-                <tr className="border-t-2 border-gray-400 bg-gray-100">
-                    <td colSpan={3} className="p-2 text-right font-bold text-gray-700">
-                    Total do conta - {raiz}
-                    </td>
-                    <td className="p-2 text-right font-bold text-black">
-                    {fmt.format(grupo.total)}
-                    </td>
-                </tr>
+                    return (
+                      <tr
+                        key={`${gIndex}-${i}`}
+                        className={`border-b border-cyan-50 hover:bg-cyan-50 ${
+                          i === 0 ? "bg-[#f1f9fd]" : "bg-white"
+                        }`}
+                      >
+                        <td className="px-4 py-3 font-black text-[#063452]">
+                          {l.codigo}
+                        </td>
 
-                {/* SEPARADOR DISCRETO */}
-                <tr>
-                    <td colSpan={4} className="h-3"></td>
-                </tr>
+                        <td className="px-4 py-3 font-semibold text-slate-700">
+                          {l.nome}
+                        </td>
+
+                        <td className="px-4 py-3 text-center">
+                          <span className="rounded-full bg-cyan-100 px-3 py-1 text-xs font-black text-[#063452]">
+                            N{l.nivel}
+                          </span>
+                        </td>
+
+                        <td
+                          className={`px-4 py-3 text-right font-black ${
+                            valor < 0 ? "text-red-600" : "text-slate-800"
+                          }`}
+                        >
+                          {valor < 0 ? "-" : ""}
+                          R$ {fmt.format(Math.abs(valor))}
+                        </td>
+                      </tr>
+                    );
+                  })}
+
+                  <tr className="bg-[#dcecf7] border-t border-cyan-200">
+                    <td colSpan={3} className="px-4 py-3 text-right font-black text-[#063452]">
+                      Total da conta {raiz}
+                    </td>
+
+                    <td
+                      className={`px-4 py-3 text-right font-black ${
+                        Number(grupo.total || 0) < 0 ? "text-red-600" : "text-[#063452]"
+                      }`}
+                    >
+                      R$ {fmt.format(Math.abs(Number(grupo.total || 0)))}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td colSpan={4} className="h-2 bg-white"></td>
+                  </tr>
                 </>
-            ))}
+              ))}
 
-            {!loading && dados.length === 0 && (
+              {!loading && dados.length === 0 && (
                 <tr>
-                <td colSpan={4} className="text-center py-6 text-gray-500">
+                  <td colSpan={4} className="py-10 text-center font-bold text-slate-400">
                     Nenhum dado encontrado
-                </td>
+                  </td>
                 </tr>
-            )}
-    </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {loading && (
-          <div className="p-6 text-center text-blue-600 font-semibold">
+          <div className="p-6 text-center font-black text-[#063452]">
             Carregando...
           </div>
         )}
-
       </div>
-
     </div>
-  );
+  </div>
+);
 }
