@@ -11,6 +11,10 @@ export default function Header() {
   const [alertaReclassificacao, setAlertaReclassificacao] = useState(null);
   const [alertaRecorrentes, setAlertaRecorrentes] = useState(null);
    
+{/*Titulos vencidos  */}
+
+const [alertaTitulosVencidos, setAlertaTitulosVencidos] = useState(null);
+
  const carregarStatus = useCallback(async () => {
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -64,6 +68,59 @@ export default function Header() {
     setAlertaReclassificacao(null);
   }
 
+
+
+ // ALERTA TÍTULOS VENCIDOS
+try {
+  const respTit = await fetch(
+    buildWebhookUrl("titulos_vencidos", {
+      empresa_id,
+      modo: "vencidos",
+      dias: 0,
+      conta_id: null,
+    })
+  );
+
+  const dataTit = await respTit.json();
+
+  const base = Array.isArray(dataTit) ? dataTit[0] : dataTit;
+
+  const dados = Array.isArray(base?.data)
+    ? base.data
+    : base?.data
+    ? [base.data]
+    : [];
+
+  const dadosValidos = dados.filter((item) => {
+    return (
+      item &&
+      item.origem_id &&
+      item.origem_tabela &&
+      item.evento_codigo &&
+      item.valor !== null &&
+      item.valor !== undefined
+    );
+  });
+
+  if (dadosValidos.length > 0) {
+    const total = dadosValidos.reduce(
+      (acc, item) => acc + Number(item.valor || 0),
+      0
+    );
+
+    setAlertaTitulosVencidos({
+      qtd: dadosValidos.length,
+      total,
+    });
+  } else {
+    setAlertaTitulosVencidos(null);
+  }
+} catch (err) {
+  console.error("Erro ao carregar títulos vencidos:", err);
+  setAlertaTitulosVencidos(null);
+}
+
+
    // ALERTA CONTAS RECORRENTES
  // ALERTA CONTAS RECORRENTES
 try {
@@ -113,6 +170,8 @@ try {
 
   if (loading) return null;
 
+
+  
  
 
   return (
@@ -215,6 +274,46 @@ try {
         className="shrink-0 rounded-full bg-blue-600 px-5 py-2 text-sm font-black text-white shadow hover:bg-blue-700 transition"
       >
         Ver agora
+      </button>
+    </div>
+  </div>
+)}
+
+{alertaTitulosVencidos && (
+  <div className="px-4 pt-3 bg-[#061f4a]">
+    <div className="mx-auto max-w-7xl rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-3 shadow-sm flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center text-xl">
+          ⏰
+        </div>
+
+        <div className="text-sm">
+          <div className="font-black text-red-700">
+            Títulos vencidos
+          </div>
+
+          <div className="font-semibold text-slate-700">
+            Existem{" "}
+            <span className="font-black text-red-700">
+              {alertaTitulosVencidos.qtd}
+            </span>{" "}
+            título(s) vencido(s), totalizando{" "}
+            <span className="font-black text-red-700">
+              {Number(alertaTitulosVencidos.total || 0).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </span>
+            .
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={() => navigate("/titulos-vencidos")}
+        className="shrink-0 rounded-full bg-red-600 px-5 py-2 text-sm font-black text-white shadow hover:bg-red-700 transition"
+      >
+        Ver vencidos
       </button>
     </div>
   </div>
