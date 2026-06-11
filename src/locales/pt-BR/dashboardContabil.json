@@ -1,0 +1,21 @@
+ {
+  "titulo": "Dashboard Contábil",
+  "periodo": "Período: {{dias}} dias",
+  "atualizar": "Atualizar",
+  "erroCarregar": "Erro ao carregar dashboard.",
+  "ativo": "Ativo",
+  "passivo": "Passivo",
+  "patrimonioLiquido": "Patrimônio Líquido",
+  "resultadoLiquido": "Resultado Líquido",
+  "ativosNegativos": "Ativos negativos",
+  "passivosInvertidos": "Passivos invertidos",
+  "diferencaAtivo": "Diferença Ativo - Passivo - PL",
+  "verificarSaldos": "Verificar saldos invertidos",
+  "verificarPassivos": "Verificar passivos devedores",
+  "nenhumProblema": "Nenhum problema",
+  "idealZero": "Idealmente deve ser zero",
+  "dre": "Demonstração do Resultado (DRE)",
+  "evolucaoResultado": "Evolução do Resultado",
+  "semDados": "Sem dados.",
+  "carregando": "Carregando..."
+}
