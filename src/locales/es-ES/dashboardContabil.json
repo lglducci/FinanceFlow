@@ -1,0 +1,21 @@
+{
+  "titulo": "Panel Contable",
+  "periodo": "Período: {{dias}} días",
+  "atualizar": "Actualizar",
+  "erroCarregar": "Error al cargar el panel.",
+  "ativo": "Activo",
+  "passivo": "Pasivo",
+  "patrimonioLiquido": "Patrimonio Neto",
+  "resultadoLiquido": "Resultado Neto",
+  "ativosNegativos": "Activos negativos",
+  "passivosInvertidos": "Pasivos invertidos",
+  "diferencaAtivo": "Diferencia Activo - Pasivo - Patrimonio Neto",
+  "verificarSaldos": "Verificar saldos invertidos",
+  "verificarPassivos": "Verificar pasivos deudores",
+  "nenhumProblema": "Ningún problema",
+  "idealZero": "Idealmente debe ser cero",
+  "dre": "Estado de Resultados (DRE)",
+  "evolucaoResultado": "Evolución del Resultado",
+  "semDados": "Sin datos.",
+  "carregando": "Cargando..."
+}
