@@ -3,8 +3,13 @@ import { buildWebhookUrl } from "../config/globals";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+ import { useTranslation } from "react-i18next";
+ 
+
 
 export default function Header() {
+
+  const { i18n } = useTranslation();
   const { empresa, usuario, documento, tipo, email, loading, perfil } = useApp();
   const [alertaContabil, setAlertaContabil] = useState(null);
   const navigate = useNavigate();
@@ -354,10 +359,26 @@ try {
         <div className="  mt-3 text-base text-gray-200 self-start pt-6">
           {new Date().toLocaleDateString("pt-BR")}
         </div>
+           
+           <div className="flex flex-col items-end gap-2">
+  <a href="/ajuda" className="text-white underline font-medium">
+    🔗 Abrir ajuda
+  </a>
 
-        <a href="/ajuda" className="text-white underline font-medium">
-          🔗 Abrir ajuda
-        </a>
+ <select
+  value={i18n.language || "pt-BR"}
+  onChange={(e) => {
+    localStorage.setItem("idioma", e.target.value);
+    i18n.changeLanguage(e.target.value);
+  }}
+  className="rounded-lg border border-blue-700 px-3 py-2 text-sm font-bold text-white bg-[#061f4a]"
+>
+  <option value="pt-BR">🇧🇷 Português</option>
+  <option value="en-US">🇺🇸 English</option>
+  <option value="es-ES">🇪🇸 Español</option>
+</select>
+</div>
+       
       </header>
     </>
   );
