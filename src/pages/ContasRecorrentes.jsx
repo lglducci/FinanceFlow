@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+ import { useEffect, useMemo, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
+import { useTranslation } from "react-i18next";
 
 
 export default function ContasRecorrentes() {
+  const { t } = useTranslation();
   const empresa_id =
     localStorage.getItem("empresa_id") || localStorage.getItem("id_empresa");
 
@@ -81,7 +83,7 @@ async function carregar() {
 
   async function gerarLancamento(r) {
     const valor = prompt(
-      `Valor para gerar ${r.descricao}:`,
+      `${t("contasRecorrentes.valorParaGerar", "Valor para gerar")} ${r.descricao}:`,
       r.valor_padrao || ""
     );
 
@@ -91,7 +93,7 @@ async function carregar() {
       r.conta_id || r.conta_financeira_id || r.conta_financeira_padrao_id;
 
     if (!conta_financeira_id) {
-      alert("Essa recorrência não possui conta financeira vinculada.");
+      alert(t("contasRecorrentes.semContaVinculada", "Essa recorrência não possui conta financeira vinculada."));
       return;
     }
 
@@ -110,7 +112,7 @@ async function carregar() {
     const txt = await resp.text();
     console.log("RETORNO GERAR:", txt);
 
-    alert("Lançamento financeiro gerado.");
+    alert(t("contasRecorrentes.lancamentoFinanceiroGerado", "Lançamento financeiro gerado."));
     carregar();
   }
 
@@ -176,10 +178,10 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-white rounded-2xl shadow-xl border p-5">
+      <div className="bg-state-300 rounded-2xl shadow-xl border p-5">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-black text-slate-800">
-            🔁 Contas Recorrentes
+            🔁 {t("contasRecorrentes.titulo", "Transações Recorrentes")}
           </h2>
 
        
@@ -187,7 +189,7 @@ useEffect(() => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-5">
             <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
               <div className="text-xs font-black text-blue-600 uppercase">
-                Mensal atual
+                {t("contasRecorrentes.mensalAtual", "Mensal atual")}
               </div>
               <div className="text-xl font-black text-blue-900">
                 {totalMensal.toLocaleString("pt-BR", {
@@ -199,7 +201,7 @@ useEffect(() => {
 
             <div className="rounded-2xl border border-purple-200 bg-purple-50 p-4">
               <div className="text-xs font-black text-purple-600 uppercase">
-                Próximos 6 meses
+                {t("contasRecorrentes.proximosSeisMeses", "Próximos 6 meses")}
               </div>
               <div className="text-xl font-black text-purple-900">
                 {totalSeisMeses.toLocaleString("pt-BR", {
@@ -211,7 +213,7 @@ useEffect(() => {
 
             <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
               <div className="text-xs font-black text-green-600 uppercase">
-                Fixas
+                {t("contasRecorrentes.fixas", "Fixas")}
               </div>
               <div className="text-xl font-black text-green-900">
                 {totalFixo.toLocaleString("pt-BR", {
@@ -223,7 +225,7 @@ useEffect(() => {
 
             <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
               <div className="text-xs font-black text-orange-600 uppercase">
-                Variáveis
+                {t("contasRecorrentes.variaveis", "Variáveis")}
               </div>
               <div className="text-xl font-black text-orange-900">
                 {totalVariavel.toLocaleString("pt-BR", {
@@ -240,14 +242,14 @@ useEffect(() => {
             onClick={() => setModalNovo(true)}
             className="rounded-full px-5 py-2 bg-blue-700 text-white font-black shadow hover:bg-blue-800"
           > 
-          ➕ Nova Conta Recorrente
+          ➕ {t("contasRecorrentes.novaTransacaoRecorrente", "Nova Transação Recorrente")}
           </button>
         </div>
         
         <div className="grid grid-cols-[1fr_180px] gap-3 mb-5">
           <input
             className="border rounded-xl px-3 py-2 font-bold"
-            placeholder="Pesquisar por descrição..."
+            placeholder={t("contasRecorrentes.placeholderPesquisarDescricao", "Pesquisar por descrição...")}
             value={filtro.descricao}
             onChange={(e) =>
               setFiltro((p) => ({ ...p, descricao: e.target.value }))
@@ -261,26 +263,26 @@ useEffect(() => {
               setFiltro((p) => ({ ...p, ativo: e.target.value }))
             }
           >
-            <option value="todos">Todos</option>
-            <option value="ativo">Ativos</option>
-            <option value="inativo">Inativos</option>
+            <option value="todos">{t("contasRecorrentes.todos", "Todos")}</option>
+            <option value="ativo">{t("contasRecorrentes.ativos", "Ativos")}</option>
+            <option value="inativo">{t("contasRecorrentes.inativos", "Inativos")}</option>
           </select>
  
         </div>
 
         <div className="rounded-xl border overflow-hidden bg-white">
-          <div className="grid grid-cols-[1fr_90px_120px_140px_90px_150px_150px] bg-slate-800 text-white text-sm font-black px-3 py-2">
-            <div>Descrição</div>
-            <div>Dia</div>
-            <div>Valor</div>
-            <div>Conta</div>
-            <div>Status</div>
-              <div>Status Geração</div>
-            <div className="text-center">Ação</div>
+          <div className="grid grid-cols-[1fr_90px_120px_140px_90px_150px_150px] bg-slate-200 text-black text-sm font-black px-3 py-2">
+            <div>{t("contasRecorrentes.descricao", "Descrição")}</div>
+            <div>{t("contasRecorrentes.dia", "Dia")}</div>
+            <div>{t("contasRecorrentes.valor", "Valor")}</div>
+            <div>{t("contasRecorrentes.conta", "Conta")}</div>
+            <div>{t("contasRecorrentes.status", "Status")}</div>
+              <div>{t("contasRecorrentes.statusGeracao", "Status Geração")}</div>
+            <div className="text-center">{t("contasRecorrentes.acao", "Ação")}</div>
           </div>
 
           {carregando && (
-            <div className="p-4 font-bold text-slate-500">Carregando...</div>
+            <div className="p-4 font-bold text-slate-500">{t("contasRecorrentes.carregando", "Carregando...")}</div>
           )}
 
           {!carregando &&
@@ -294,7 +296,7 @@ useEffect(() => {
                   {r.descricao}
                 </div>
 
-                <div>Dia {r.dia_vencimento}</div>
+                <div>{t("contasRecorrentes.dia", "Dia")} {r.dia_vencimento}</div>
 
                 <div className="font-black">
                   {r.valor_padrao
@@ -302,7 +304,7 @@ useEffect(() => {
                         style: "currency",
                         currency: "BRL",
                       })
-                    : "Variável"}
+                    : t("contasRecorrentes.variavel", "Variável")}
                 </div>
 
                 <div>{r.conta_nome || r.nome_conta || r.conta_id || "-"}</div>
@@ -310,11 +312,11 @@ useEffect(() => {
                 <div>
                   {r.ativo ? (
                     <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-black text-xs">
-                      Ativo
+                      {t("contasRecorrentes.ativo", "Ativo")}
                     </span>
                   ) : (
                     <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-black text-xs">
-                      Inativo
+                      {t("contasRecorrentes.inativo", "Inativo")}
                     </span>
                   )}
                 </div>
@@ -323,11 +325,11 @@ useEffect(() => {
                 <div>
                       {r.status_mes === "GERADO" ? (
                         <span className="px-2 py-1 rounded-full bg-green-100 text-green-700 font-black text-xs">
-                          Gerado
+                          {t("contasRecorrentes.gerado", "Gerado")}
                         </span>
                       ) : (
                         <span className="px-2 py-1 rounded-full bg-red-100 text-red-700 font-black text-xs">
-                          Pendente
+                          {t("contasRecorrentes.pendente", "Pendente")}
                         </span>
                       )}
                     </div>
@@ -337,7 +339,7 @@ useEffect(() => {
                     onClick={() => setRecorrenteEditando(r)}
                     className="rounded-full px-3 py-1 bg-blue-600 text-white font-black text-xs"
                   >
-                    Editar
+                    {t("contasRecorrentes.editar", "Editar")}
                   </button> 
                    <button
                             onClick={() => setRecorrenciaGerando(r)}
@@ -345,10 +347,10 @@ useEffect(() => {
                             className={`rounded-full px-3 py-1 text-white font-black text-xs ${
                               r.status_mes === "GERADO"
                                 ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-emerald-600 hover:bg-emerald-700"
+                                : "bg-red-600 hover:bg-red-700"
                             }`}
                           >
-                            Gerar
+                            {t("contasRecorrentes.gerar", "Pagar")}
                           </button>
 
 
@@ -364,7 +366,7 @@ useEffect(() => {
 
           {!carregando && filtradas.length === 0 && (
             <div className="p-4 text-slate-500 font-bold">
-              Nenhuma conta recorrente encontrada.
+              {t("contasRecorrentes.nenhumaEncontrada", "Nenhuma transação recorrente encontrada.")}
             </div>
           )}
         </div>
@@ -394,21 +396,32 @@ useEffect(() => {
 )}
 
        {(modalNovo || recorrenteEditando) && (
-       <NovaContaRecorrente 
-        empresa_id={empresa_id}
-        contas={contas}
-        fornecedores={fornecedores}
-        recorrente={recorrenteEditando}
-        onClose={() => {
-          setModalNovo(false);
-          setRecorrenteEditando(null);
-        }}
-        onSuccess={() => {
-          setModalNovo(false);
-          setRecorrenteEditando(null);
-          carregar();
-        }}
-      />
+      
+
+         <NovaContaRecorrente 
+          empresa_id={empresa_id}
+          contas={contas}
+          contasDespesas={contasDespesas}
+          fornecedores={fornecedores}
+          recorrente={recorrenteEditando}
+
+          
+          onClose={() => {
+            setModalNovo(false);
+            setRecorrenteEditando(null);
+          }}
+          onSuccess={() => {
+            setModalNovo(false);
+            setRecorrenteEditando(null);
+            carregar();
+          }}
+        />
+
+
+
+
+
+
       )}
 
 
@@ -420,21 +433,46 @@ useEffect(() => {
 }
 
  function ModalGerarRecorrencia({ recorrencia, contas, contasDespesas, empresa_id, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const hoje = new Date();
 
   const competenciaInicial = `${hoje.getFullYear()}-${String(
     hoje.getMonth() + 1
   ).padStart(2, "0")}-01`;
 
- const [form, setForm] = useState({
+ const contaContabilInicial = (contasDespesas || []).find(
+  (c) => String(c.id) === String(recorrencia?.contabil_id)
+);
+
+ 
+ const vencimentoInicial = calcularVencimento(competenciaInicial);
+
+const [form, setForm] = useState({
   competencia: competenciaInicial,
-  data_pagamento: hojeLocal(),
+  data_pagamento:
+    recorrencia?.data_pagamento ||
+    recorrencia?.vencimento ||
+    vencimentoInicial,
   valor: recorrencia?.valor_padrao || "",
   conta_id: recorrencia?.conta_id || "",
   contabil_id: recorrencia?.contabil_id || "",
-  contabil_label: recorrencia?.contabil_label || "",
+  contabil_label:
+    recorrencia?.contabil_label ||
+    contaContabilInicial?.label ||
+    (contaContabilInicial
+      ? `${contaContabilInicial.codigo} - ${contaContabilInicial.nome}`
+      : ""),
 });
 
+
+function calcularVencimento(competencia) {
+  const [ano, mes] = String(competencia).split("-").map(Number);
+  const dia = Number(recorrencia?.dia_vencimento || 1);
+  const ultimoDia = new Date(ano, mes, 0).getDate();
+  const diaFinal = Math.min(dia, ultimoDia);
+
+  return `${ano}-${String(mes).padStart(2, "0")}-${String(diaFinal).padStart(2, "0")}`;
+}
 
   const vencimento = (() => {
     const [ano, mes] = String(form.competencia).split("-").map(Number);
@@ -447,7 +485,7 @@ useEffect(() => {
 
   async function gerar() {
      if (!form.competencia || !form.valor || !form.conta_id || !form.contabil_id) {
-  alert("Informe competência, valor, conta financeira e conta contábil.");
+  alert(t("contasRecorrentes.informeCamposGerar", "Informe competência, valor, conta financeira e conta contábil."));
   return;
 }
  
@@ -477,11 +515,11 @@ try {
 const retorno = Array.isArray(json) ? json[0] : json;
 
 if (!resp.ok || retorno?.ok === false) {
-  alert(retorno?.message || "Erro ao gerar conta recorrente.");
+  alert(retorno?.message || t("contasRecorrentes.erroGerar", "Erro ao gerar conta recorrente."));
   return;
 }
 
-alert(retorno?.message || "Conta recorrente gerada.");
+alert(retorno?.message || t("contasRecorrentes.contaRecorrenteGerada", "Conta recorrente gerada."));
 onSuccess();
   }
 
@@ -502,7 +540,7 @@ onSuccess();
       <div className="bg-white rounded-2xl shadow-2xl border w-[560px] p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-black text-slate-800">
-            💸 Gerar Conta Recorrente
+            💸 {t("contasRecorrentes.gerarTransacaoRecorrente", "Pagar Transação Recorrente")}
           </h3>
 
           <button onClick={onClose} className="font-black text-slate-500">
@@ -512,17 +550,17 @@ onSuccess();
 
         <div className="space-y-3 text-sm">
           <div>
-            <b>Descrição:</b> {recorrencia?.descricao}
+            <b>{t("contasRecorrentes.descricao", "Descrição")}:</b> {recorrencia?.descricao}
           </div>
 
-          <div>
-            <b>Fornecedor:</b>{" "}
+         {/*} <div>
+            <b>{t("contasRecorrentes.fornecedor", "Fornecedor")}:</b>{" "}
             {recorrencia?.fornecedor_nome || recorrencia?.nome_fornecedor || recorrencia?.fornecedor_id || "-"}
-          </div>
+          </div>*/}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="font-bold">Competência</label>
+              <label className="font-bold">{t("contasRecorrentes.competencia", "Competência")}</label>
               <input
                 type="month"
                 className="w-full border rounded-xl px-3 py-2 font-bold"
@@ -538,7 +576,7 @@ onSuccess();
 
 
             <div>
-              <label className="font-bold">Data pagamento</label>
+              <label className="font-bold">{t("contasRecorrentes.dataPagamento", "Data pagamento")}</label>
               <input
                 type="date"
                 className="w-full border rounded-xl px-3 py-2 font-bold"
@@ -550,7 +588,7 @@ onSuccess();
             </div>
 
             <div>
-              <label className="font-bold">Vencimento</label>
+              <label className="font-bold">{t("contasRecorrentes.vencimento", "Vencimento")}</label>
               <input
                 className="w-full border rounded-xl px-3 py-2 font-bold bg-gray-100"
                 value={vencimento.split("-").reverse().join("/")}
@@ -561,7 +599,7 @@ onSuccess();
 
           <input
             className="w-full border rounded-xl px-3 py-2 font-bold"
-            placeholder="Valor"
+            placeholder={t("contasRecorrentes.valor", "Valor")}
             value={form.valor}
             onChange={(e) =>
               setForm((p) => ({ ...p, valor: e.target.value }))
@@ -575,7 +613,7 @@ onSuccess();
               setForm((p) => ({ ...p, conta_id: e.target.value }))
             }
           >
-            <option value="">Conta financeira</option>
+            <option value="">{t("contasRecorrentes.contaFinanceira", "Conta financeira")}</option>
             {contas.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.nome}
@@ -587,7 +625,7 @@ onSuccess();
           <div className="relative">
             <input
               className="w-full border rounded-xl px-3 py-2 font-bold"
-              placeholder="Digite a despesa. Ex: energia"
+              placeholder={t("contasRecorrentes.placeholderDespesa", "Digite a despesa. Ex: energia")}
               value={form.contabil_label || ""}
               onChange={(e) =>
                 setForm((p) => ({
@@ -631,14 +669,14 @@ onSuccess();
             onClick={onClose}
             className="rounded-full px-5 py-2 bg-slate-500 text-white font-black"
           >
-            Cancelar
+            {t("contasRecorrentes.cancelar", "Cancelar")}
           </button>
 
           <button
             onClick={gerar}
             className="rounded-full px-5 py-2 bg-emerald-600 text-white font-black"
           >
-            Gerar
+            {t("contasRecorrentes.gerar", "Gerar")}
           </button>
         </div>
       </div>
@@ -650,6 +688,7 @@ onSuccess();
 
 
 function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
+  const { t } = useTranslation();
   const [linhas, setLinhas] = useState([]);
   const [carregando, setCarregando] = useState(false);
 
@@ -690,7 +729,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="text-lg font-black text-slate-800">
-              📜 Histórico de Pagamentos (últimos seis meses)
+              📜 {t("contasRecorrentes.historicoPagamentos", "Histórico de Pagamentos (últimos seis meses)")}
             </h3>
             <p className="text-sm text-slate-500 font-bold">
               {recorrencia.descricao}
@@ -703,12 +742,12 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
         </div>
 
         {carregando && (
-          <div className="p-4 font-bold text-slate-500">Carregando...</div>
+          <div className="p-4 font-bold text-slate-500">{t("contasRecorrentes.carregando", "Carregando...")}</div>
         )}
 
         {!carregando && linhas.length === 0 && (
           <div className="p-4 rounded-xl bg-slate-50 text-slate-500 font-bold">
-            Nenhum pagamento encontrado para esta recorrência.
+            {t("contasRecorrentes.nenhumPagamento", "Nenhum pagamento encontrado para esta recorrência.")}
           </div>
         )}
 
@@ -716,11 +755,11 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
           <div className="rounded-xl border overflow-hidden">
              
            <div className="grid grid-cols-[110px_1fr_130px_160px_130px] bg-slate-800 text-white text-sm font-black px-3 py-2">
-            <div>Competência</div>
-            <div>Descrição</div>
-            <div>Data Pagamento</div>
-            <div>Conta Corrente</div>
-            <div className="text-right">Valor</div>
+            <div>{t("contasRecorrentes.competencia", "Competência")}</div>
+            <div>{t("contasRecorrentes.descricao", "Descrição")}</div>
+            <div>{t("contasRecorrentes.dataPagamento", "Data Pagamento")}</div>
+            <div>{t("contasRecorrentes.contaCorrente", "Conta Corrente")}</div>
+            <div className="text-right">{t("contasRecorrentes.valor", "Valor")}</div>
           </div>
             {linhas.map((h, i) => (
               <div 
@@ -761,7 +800,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
             onClick={onClose}
             className="rounded-full px-5 py-2 bg-slate-600 text-white font-black"
           >
-            Fechar
+            {t("contasRecorrentes.fechar", "Fechar")}
           </button>
         </div>
       </div>
@@ -773,9 +812,9 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
 
 
 
-
  
- function NovaContaRecorrente({ empresa_id, contas, fornecedores, recorrente, onClose, onSuccess }) {
+  function NovaContaRecorrente({ empresa_id, contas, contasDespesas, fornecedores, recorrente, onClose, onSuccess }) {
+   const { t } = useTranslation();
    const [form, setForm] = useState({
   id: recorrente?.id || null,
   descricao: recorrente?.descricao || "",
@@ -785,15 +824,26 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
   conta_id: recorrente?.conta_id || "",
   ativo: recorrente?.ativo ?? true,
   fornecedor_id: recorrente?.fornecedor_id || "",
+  contabil_id: recorrente?.contabil_id || "",
+contabil_label: recorrente?.contabil_label || "",
 });
 
  
 
   async function salvar() {
-    if (!form.descricao || !form.dia_vencimento || !form.conta_id) {
-      alert("Preencha descrição, dia de vencimento e conta financeira.");
-      return;
-    }
+     
+
+    const valorNumerico = Number(String(form.valor_padrao || "").replace(",", "."));
+
+if (!form.descricao || !form.dia_vencimento || !form.conta_id || !form.contabil_id) {
+  alert("Preencha descrição, dia de vencimento, conta financeira e conta contábil.");
+  return;
+}
+
+if (form.tipo_valor === "FIXO" && (!form.valor_padrao || valorNumerico <= 0)) {
+  alert("Para valor fixo, informe um valor maior que zero.");
+  return;
+}
 
     const webhook = form.id
   ? "atualiza_conta_recorrente"
@@ -809,16 +859,44 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
     const txt = await resp.text();
     console.log("RETORNO INSERE:", txt);
 
-    alert("Conta recorrente cadastrada.");
+    alert(t("contasRecorrentes.contaRecorrenteCadastrada", "Conta recorrente cadastrada."));
     onSuccess();
   }
+
+  const despesasFiltradas = (contasDespesas || [])
+  .filter((c) => {
+    const texto = String(form.contabil_label || "").toLowerCase();
+    const label = `${c.codigo || ""} ${c.nome || ""} ${c.label || ""}`.toLowerCase();
+
+    if (!texto) return false;
+
+    return label.includes(texto);
+  })
+  .slice(0, 8);
+
+useEffect(() => {
+  if (!form.contabil_id || form.contabil_label || !contasDespesas.length) return;
+
+  const conta = contasDespesas.find(
+    (c) => String(c.id) === String(form.contabil_id)
+  );
+
+  if (conta) {
+    setForm((p) => ({
+      ...p,
+      contabil_label: conta.label || `${conta.codigo} - ${conta.nome}`,
+    }));
+  }
+}, [form.contabil_id, form.contabil_label, contasDespesas]);
+
+
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-2xl border w-[560px] p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-black text-slate-800">
-            ➕ Nova Conta Recorrente
+            ➕ {t("contasRecorrentes.novaTransacaoRecorrente", "Nova Transação Recorrente")}
           </h3>
 
           <button onClick={onClose} className="font-black text-slate-500">
@@ -829,7 +907,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
         <div className="grid gap-3">
           <input
             className="border rounded-xl px-3 py-2 font-bold"
-            placeholder="Descrição: Energia CPFL, Internet, ChatGPT..."
+            placeholder={t("contasRecorrentes.placeholderDescricaoNova", "Descrição: Energia CPFL, Internet, ChatGPT...")}
             value={form.descricao}
             onChange={(e) =>
               setForm((p) => ({ ...p, descricao: e.target.value }))
@@ -843,7 +921,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
                     setForm((p) => ({ ...p, fornecedor_id: e.target.value }))
                 }
                 >
-                <option value="">Selecione</option>
+                <option value="">{t("contasRecorrentes.selecionefornecedor", "Selecione ")}</option>
                 {fornecedores.map((f) => (
                     <option key={f.id} value={f.id}>
                     {f.nome || f.razao_social || f.apelido || `Fornecedor ${f.id}`}
@@ -855,7 +933,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
             <input
               type="number"
               className="border rounded-xl px-3 py-2 font-bold"
-              placeholder="Dia vencimento"
+              placeholder={t("contasRecorrentes.diaVencimento", "Dia vencimento")}
               value={form.dia_vencimento}
               onChange={(e) =>
                 setForm((p) => ({ ...p, dia_vencimento: e.target.value }))
@@ -869,14 +947,14 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
                 setForm((p) => ({ ...p, tipo_valor: e.target.value }))
               }
             >
-              <option value="VARIAVEL">Valor variável</option>
-              <option value="FIXO">Valor fixo</option>
+              <option value="VARIAVEL">{t("contasRecorrentes.valorVariavel", "Valor variável")}</option>
+              <option value="FIXO">{t("contasRecorrentes.valorFixo", "Valor fixo")}</option>
             </select>
           </div>
 
           <input
             className="border rounded-xl px-3 py-2 font-bold"
-            placeholder="Valor padrão"
+            placeholder={t("contasRecorrentes.valorPadrao", "Valor padrão")}
             value={form.valor_padrao}
             onChange={(e) =>
               setForm((p) => ({ ...p, valor_padrao: e.target.value }))
@@ -890,7 +968,7 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
               setForm((p) => ({ ...p, conta_id: e.target.value }))
             }
           >
-            <option value="">Selecione</option>
+            <option value="">{t("contasRecorrentes.selecioneconta", "Selecione")}</option>
             {contas.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.nome}
@@ -898,7 +976,45 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
             ))}
           </select>
 
+          <div className="relative">
+            <input
+              className="border rounded-xl px-3 py-2 font-bold w-full"
+              placeholder="Conta contábil. Ex: energia, internet, aluguel..."
+              value={form.contabil_label || ""}
+              onChange={(e) =>
+                setForm((p) => ({
+                  ...p,
+                  contabil_label: e.target.value,
+                  contabil_id: "",
+                }))
+              }
+            />
 
+  {despesasFiltradas.length > 0 && !form.contabil_id && (
+    <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border bg-white shadow-lg">
+      {despesasFiltradas.map((c) => {
+        const label = c.label || `${c.codigo} - ${c.nome}`;
+
+        return (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() =>
+              setForm((p) => ({
+                ...p,
+                contabil_label: label,
+                contabil_id: c.id,
+              }))
+            }
+            className="w-full text-left px-3 py-2 text-sm font-bold hover:bg-blue-50"
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  )}
+</div>
           
           
         </div>
@@ -914,21 +1030,21 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
                   setForm((p) => ({ ...p, ativo: e.target.checked }))
                 }
               />
-              Conta recorrente ativa
+              {t("contasRecorrentes.contaRecorrenteAtiva", "Conta recorrente ativa")}
             </label>
 
           <button
             onClick={onClose}
             className="rounded-full px-5 py-2 bg-slate-500 text-white font-black"
           >
-            Cancelar
+            {t("contasRecorrentes.cancelar", "Cancelar")}
           </button>
 
           <button
             onClick={salvar}
             className="rounded-full px-5 py-2 bg-blue-700 text-white font-black"
           >
-            {form.id ? "Atualizar" : "Salvar"}
+            {form.id ? t("contasRecorrentes.atualizar", "Atualizar") : t("contasRecorrentes.salvar", "Salvar")}
           </button>
         </div>
       </div>
