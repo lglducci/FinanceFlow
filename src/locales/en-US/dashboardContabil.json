@@ -1,0 +1,21 @@
+ {
+  "titulo": "Accounting Dashboard",
+  "periodo": "Period: {{dias}} days",
+  "atualizar": "Refresh",
+  "erroCarregar": "Error loading dashboard.",
+  "ativo": "Assets",
+  "passivo": "Liabilities",
+  "patrimonioLiquido": "Equity",
+  "resultadoLiquido": "Net Income",
+  "ativosNegativos": "Negative assets",
+  "passivosInvertidos": "Inverted liabilities",
+  "diferencaAtivo": "Assets - Liabilities - Equity Difference",
+  "verificarSaldos": "Check inverted balances",
+  "verificarPassivos": "Check debit liabilities",
+  "nenhumProblema": "No issues",
+  "idealZero": "Ideally should be zero",
+  "dre": "Income Statement",
+  "evolucaoResultado": "Income Evolution",
+  "semDados": "No data.",
+  "carregando": "Loading..."
+}
