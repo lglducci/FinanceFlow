@@ -254,8 +254,8 @@ useEffect(() => {
 }, []);
 
  return (
-  <div className="min-h-screen bg-[#eef7fd] px-4 py-5">
-    <div className="mx-auto w-full max-w-[1500px] space-y-4">
+  <div className="min-h-screen bg-slate-100 px-4 py-5">
+    <div className="mx-auto w-full max-w-[1400px] space-y-4">
 
       <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -268,7 +268,7 @@ useEffect(() => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-blue-50 px-5 py-3 text-right shadow-sm">
+          <div className="rounded-2xl border border-emerald-500 bg-gradient-to-br from-emerald-350 via-white to-blue-250 px-5 py-3 text-right shadow-sm">
             <p className="text-xs font-black uppercase text-slate-400">
               Conta bancária
             </p>
@@ -384,7 +384,7 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-4xl border border-cyan-100 bg-white shadow-sm overflow-hidden">
         <div className="max-h-[680px] overflow-auto">
           <table className="w-full min-w-[1150px] text-sm">
             <thead className="sticky top-0 z-20 bg-[#e7f5fc] text-[#063452] shadow-sm">

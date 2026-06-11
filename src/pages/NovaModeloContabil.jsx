@@ -66,157 +66,179 @@ export default function NovaModeloContabil() {
   }
 }
 
+return (
+  <div className="min-h-screen bg-slate-100 px-4 py-6">
+    <div className="fixed inset-0 bg-black/55" />
 
+    <div className="relative z-10 w-full max-w-3xl mx-auto">
+      <div className="bg-white rounded-[22px] shadow-2xl border border-slate-200 overflow-hidden">
 
-  return (
-    <div 
-      style={{
-        width: "100%",
-        padding: 20,
-        display: "flex",
-        justifyContent: "center",
-        marginTop: 20,
-      }}
-    >
-      <div  className="w-full max-w-3xl mx-auto rounded-3xl p-2 shadow-xl bg-[#061f4aff]  mt-1 mb-1" 
-       
-      >
-        {/* TÍTULO */}
-        <div style={{ textAlign: "center", marginBottom: 10 }}>
-          <span
-            style={{
-              color: "white",
-              fontSize: "18px",
-              fontWeight: "bold",
-            }}
+        {/* CABEÇALHO */}
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-black text-[#08233d]">
+              Novo Modelo Contábil
+            </h1>
+            <p className="text-xs font-semibold text-slate-500 mt-1">
+              Configure o modelo padrão de lançamento contábil.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-400 text-2xl leading-none"
           >
-            🧾 Novo Modelo Contábil
-          </span>
+            ×
+          </button>
         </div>
 
-        {/* CONTEÚDO BRANCO */}
-        <div
-          style={{
-            background: "white",
-            padding: 20,
-            borderRadius: 10,
-          }}
-        >
-         
-           {/* CÓDIGO */}
-                  <div className="mb-4">
-                    <label className="block mb-1 font-bold text-[#1e40af] label-required">
-                      Código
-                    </label>
-                    <input
-                      type="text"
-                      value={form.codigo}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, codigo: e.target.value }))
-                      }
-                      placeholder="Ex: VENDA01"
-                      className="input-premium w-full"
-                    />
-                  </div>
+        {/* CORPO */}
+        <div className="max-h-[68vh] overflow-y-auto px-6 py-5 space-y-6">
 
-                  {/* NOME */}
-                  <div className="mb-4">
-                    <label className="block mb-1 font-bold text-[#1e40af] label-required">
-                      Nome
-                    </label>
-                    <input
-                      type="text"
-                      value={form.nome}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, nome: e.target.value }))
-                      }
-                      placeholder="Ex: Modelo venda à vista"
-                      className="input-premium w-full"
-                    />
-                  </div>
-          
-           <div className="flex flex-col gap-4"> 
-                  <div className="mb-4">
-                        <label className="block mb-1 font-bold text-[#1e40af] label-required">
-                          Tipo Evento
-                        </label>
+          {/* IDENTIFICAÇÃO */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Identificação
+            </h2>
 
-                        <select
-                          name="tipo_evento"
-                          value={form.tipo_evento || ""}
-                          onChange={(e) =>
-                            setForm((prev) => ({
-                              ...prev,
-                              tipo_evento: e.target.value,
-                            }))
-                          }
-                          className="input-premium w-full"
-                          required
-                        >
-                          <option value="">Selecione...</option>
-                          <option value="receber">Receber</option>
-                          <option value="receber_cartao">Receber Cartão</option>
-                          <option value="pagar">Pagar</option>
-                          <option value="financeiro">Financeiro</option>
-                        </select>
-                      </div>
-                      <div className="mb-4">
-                        <label className="block mb-1 font-bold text-[#1e40af] label-required">
-                          Classificação
-                        </label>
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+              <div className="sm:col-span-4">
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Código
+                </label>
+                <input
+                  type="text"
+                  value={form.codigo}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, codigo: e.target.value }))
+                  }
+                  placeholder="Ex: VENDA01"
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                />
+              </div>
 
-                        <select
-                          name="classificacao"
-                          value={form.classificacao || ""}
-                          onChange={(e) =>
-                            setForm((f) => ({
-                              ...f,
-                              classificacao: e.target.value,
-                            }))
-                          }
-                          className="input-premium w-full"
-                          required
-                        >
-                           <option value="">Selecione...</option>
-                              <option value="receita">Receita</option>
-                              <option value="custo">Custo</option>
-                              <option value="despesa">Despesa</option>
-                              <option value="imobilizado">Imobilizado</option>
-                              <option value="ativo">Ativo</option>
-                              <option value="passivo">Passivo</option>
-                        </select>
-                      </div>
-             
-                  {/* DÉBITO */}
-                    
-                        <div className="mb-4">
-                    <label className="label label-required font-bold text-[#1e40af]">
-                      Conta Contábil – Débito (Entrada)
-                    </label>
-                     <AutocompleteInput
-                        value={debitoTexto}
-                        options={contas}
-                        placeholder="Selecione"
-                        onChange={(v) => {
-                          setDebitoTexto(v);
-                          setDebitoId(null);
-                        }}
-                        onSelect={(c) => {
-                          setDebitoTexto(`${c.codigo} - ${c.nome}`);
-                          setDebitoId(c.id);
-                        }}
-                      />
-                  </div>
+              <div className="sm:col-span-8">
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Nome
+                </label>
+                <input
+                  type="text"
+                  value={form.nome}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, nome: e.target.value }))
+                  }
+                  placeholder="Ex: Modelo venda à vista"
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                />
+              </div>
+            </div>
+          </section>
 
-                  {/* CRÉDITO */}
-                  <div className="mb-4">
-                    <label className="label label-required font-bold text-[#1e40af]">
-                      Conta Contábil – Crédito (Saída)
-                    </label>
-                    <AutocompleteInput
+          <div className="border-t border-slate-200" />
+
+          {/* REGRA DO MODELO */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Regra do modelo
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Tipo de evento
+                </label>
+
+                <select
+                  name="tipo_evento"
+                  value={form.tipo_evento || ""}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      tipo_evento: e.target.value,
+                    }))
+                  }
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  required
+                >
+                  <option value="">Selecione...</option>
+                  <option value="receber">Receber</option>
+                  <option value="receber_cartao">Receber Cartão</option>
+                  <option value="pagar">Pagar</option>
+                  <option value="financeiro">Financeiro</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Classificação
+                </label>
+
+                <select
+                  name="classificacao"
+                  value={form.classificacao || ""}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      classificacao: e.target.value,
+                    }))
+                  }
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  required
+                >
+                  <option value="">Selecione...</option>
+                  <option value="receita">Receita</option>
+                  <option value="custo">Custo</option>
+                  <option value="despesa">Despesa</option>
+                  <option value="imobilizado">Imobilizado</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="passivo">Passivo</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <div className="border-t border-slate-200" />
+
+          {/* PARTIDA CONTÁBIL */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Partida contábil
+            </h2>
+
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Conta Contábil — Débito
+                </label>
+
+                <div className="rounded-lg border border-sky-200 bg-sky-50 px-2 py-1">
+                  <AutocompleteInput
+                    value={debitoTexto}
+                    options={contas}
+                    placeholder="Selecione a conta de débito"
+                    onChange={(v) => {
+                      setDebitoTexto(v);
+                      setDebitoId(null);
+                    }}
+                    onSelect={(c) => {
+                      setDebitoTexto(`${c.codigo} - ${c.nome}`);
+                      setDebitoId(c.id);
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Conta Contábil — Crédito
+                </label>
+
+                <div className="rounded-lg border border-sky-200 bg-sky-50 px-2 py-1">
+                  <AutocompleteInput
                     value={creditoTexto}
                     options={contas}
-                    placeholder="Selecione"
+                    placeholder="Selecione a conta de crédito"
                     onChange={(v) => {
                       setCreditoTexto(v);
                       setCreditoId(null);
@@ -226,54 +248,38 @@ export default function NovaModeloContabil() {
                       setCreditoId(c.id);
                     }}
                   />
-                  </div>
+                </div>
+              </div>
             </div>
- 
 
-          {/* BOTÕES */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginTop: 20,
-            }}
+            <p className="text-xs font-semibold text-slate-400">
+              Esse modelo será usado para automatizar a classificação contábil
+              conforme o tipo de evento e a classificação escolhida.
+            </p>
+          </section>
+        </div>
+
+        {/* RODAPÉ */}
+        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="h-11 px-6 rounded-lg border border-sky-200 bg-sky-50 text-[#08233d] text-sm font-black"
           >
-            {/* SALVAR */}
-            <button
-              onClick={salvar}
-              style={{
-                padding: "10px 20px",
-                background: "#061f4aff",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                fontWeight: "bold",
-                cursor: "pointer",
-                width: "48%",
-              }}
-            >
-              Salvar
-            </button>
+            Cancelar
+          </button>
 
-            {/* CANCELAR */}
-            <button
-              onClick={() => navigate(-1)}
-              style={{
-                padding: "10px 20px",
-                background: "rgba(92, 87, 87, 0.82)",
-                color: "white",
-                border: "none",
-                borderRadius: 8,
-                fontWeight: "bold",
-                cursor: "pointer",
-                width: "48%",
-              }}
-            >
-              Cancelar
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={salvar}
+            className="h-11 px-7 rounded-lg bg-[#082f4f] text-white text-sm font-black shadow-md"
+          >
+            Salvar Modelo
+          </button>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+ 
 }

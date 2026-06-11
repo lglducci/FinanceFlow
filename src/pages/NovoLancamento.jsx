@@ -1,4 +1,4 @@
-    import { useEffect, useState } from "react";
+     import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -11,6 +11,7 @@ import FormModeloContabil from "../components/forms/FormModeloContabil";
 import { fetchSeguro } from "../utils/apiSafe";
 import { explicarLancamento } from "../helpers/contabilHelper";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 
  export default function NovoLancamentoDrawer({
@@ -20,6 +21,7 @@ import { useRef } from "react";
   onSuccess,
   modoDrawer = true
 } = {}) {
+  const { t } = useTranslation();
   const navigate = useNavigate();   
   const tipoRef = useRef(null);
   const empresa_id = localStorage.getItem("empresa_id") || "1";
@@ -172,40 +174,40 @@ useEffect(() => {
   //  erros.push("Categoria é obrigatória.");
 
   if (!form.valor || Number(form.valor) <= 0)
-    erros.push("Valor inválido.");
+    erros.push(t("novoLancamento.valorInvalido", "Valor inválido."));
 
   if (!form.descricao?.trim())
-    erros.push("Descrição é obrigatória.");
+    erros.push(t("novoLancamento.descricaoObrigatoria", "Descrição é obrigatória."));
 
   if (!form.data)
-    erros.push("Data é obrigatória.");
+    erros.push(t("novoLancamento.dataObrigatoria", "Data é obrigatória."));
 
   if (!form.classificacao)
-    erros.push("Classificação é obrigatória.");
+    erros.push(t("novoLancamento.classificacaoObrigatoria", "Classificação é obrigatória."));
 
   if (modo === "financeiro") {
     if (!form.conta_id || Number(form.conta_id) <= 0)
-      erros.push("Conta financeira é obrigatória.");
+      erros.push(t("novoLancamento.contaFinanceiraObrigatoria", "Conta financeira é obrigatória."));
   }
 
   if (modo === "receber" || modo === "pagar" || modo === "receber_cartao") {
     if (!form.vencimento)
-      erros.push("Vencimento é obrigatório.");
+      erros.push(t("novoLancamento.vencimentoObrigatorio", "Vencimento é obrigatório."));
 
     if (!form.parcelas || Number(form.parcelas) < 1 )
-      erros.push("Parcelas inválidas.");
+      erros.push(t("novoLancamento.parcelasInvalidas", "Parcelas inválidas."));
   }
 
   if (modo === "cartao_compra") {
     if (!cartaoSelecionado)
-      erros.push("Selecione um cartão.");
+      erros.push(t("novoLancamento.selecioneCartao", "Selecione um cartão."));
 
     if (!form.parcelas || Number(form.parcelas) < 1)
-      erros.push("Parcelas inválidas.");
+      erros.push(t("novoLancamento.parcelasInvalidas", "Parcelas inválidas."));
   } 
   if (modo === "receber" || modo === "pagar" || modo === "receber_cartao" ) {
     if (!form.fornecedor_id)
-      erros.push("Fornecedor é obrigatório.");
+      erros.push(t("novoLancamento.fornecedorObrigatorio", "Fornecedor é obrigatório."));
    }
 
    
@@ -330,35 +332,35 @@ function montarHistoricoPorNomes(nomeDeb, nomeCred) {
 
 const classificacoesPorNatureza = {
   entrada: [
-    { value: "receita", label: "Receita" }, 
-    { value: "passivo", label: "Empréstimo / Financiamento Recebido" },
-     { value: "ativo", label: "Aporte Sócios" }
+    { value: "receita", label: t("novoLancamento.receita", "Receita") }, 
+    { value: "passivo", label: t("novoLancamento.emprestimoFinanciamentoRecebido", "Empréstimo / Financiamento Recebido") },
+     { value: "ativo", label: t("novoLancamento.aporteSocios", "Aporte Sócios") }
   ],
   saida: [
-    { value: "despesa", label: "Despesa" },
-    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
-    { value: "imobilizado", label: "Aquisição de Imobilizado" } 
+    { value: "despesa", label: t("novoLancamento.despesa", "Despesa") },
+    { value: "custo", label: t("novoLancamento.custoMercadoria", "Custo de Mercadoria / Insumo") } ,
+    { value: "imobilizado", label: t("novoLancamento.aquisicaoImobilizado", "Aquisição de Imobilizado") } 
   ],
   pagar: [
-    { value: "despesa", label: "Despesa" },
-    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
-    { value: "imobilizado", label: "Aquisição de Imobilizado" } ,
-    { value: "passivo", label: "Passivo (Financiamento/Dívida)"}
+    { value: "despesa", label: t("novoLancamento.despesa", "Despesa") },
+    { value: "custo", label: t("novoLancamento.custoMercadoria", "Custo de Mercadoria / Insumo") } ,
+    { value: "imobilizado", label: t("novoLancamento.aquisicaoImobilizado", "Aquisição de Imobilizado") } ,
+    { value: "passivo", label: t("novoLancamento.passivoFinanciamentoDivida", "Passivo (Financiamento/Dívida)")}
 
   ],
 
   cartao: [
-    { value: "despesa", label: "Despesa" },
-    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
-    { value: "imobilizado", label: "Aquisição de Imobilizado" }  
+    { value: "despesa", label: t("novoLancamento.despesa", "Despesa") },
+    { value: "custo", label: t("novoLancamento.custoMercadoria", "Custo de Mercadoria / Insumo") } ,
+    { value: "imobilizado", label: t("novoLancamento.aquisicaoImobilizado", "Aquisição de Imobilizado") }  
 
   ] ,
 
   
   cartao_compra: [
-    { value: "despesa", label: "Despesa" },
-    { value: "custo", label: "Custo de Mercadoria / Insumo" } ,
-    { value: "imobilizado", label: "Aquisição de Imobilizado" }  
+    { value: "despesa", label: t("novoLancamento.despesa", "Despesa") },
+    { value: "custo", label: t("novoLancamento.custoMercadoria", "Custo de Mercadoria / Insumo") } ,
+    { value: "imobilizado", label: t("novoLancamento.aquisicaoImobilizado", "Aquisição de Imobilizado") }  
 
   ] 
 };
@@ -370,13 +372,13 @@ const classificacoesPorNatureza = {
 
   if (modo === "receber") {
     return [
-      { value: "receita", label: "Receita" } 
+      { value: "receita", label: t("novoLancamento.receita", "Receita") } 
     ];
   }
 
    if (modo === "receber_cartao") {
     return [
-      { value: "receita", label: "Receita" } 
+      { value: "receita", label: t("novoLancamento.receita", "Receita") } 
     ];
   }
 
@@ -439,19 +441,19 @@ const mostrarContaFinanceira =
   const titulo = (() => {
   if (form.tipo === "entrada") {
     if (["cartao_credito","boleto","aprazo"].includes(form.forma_recebimento))
-      return "📄 Nova Conta a Receber";
-    return "💰 Novo Lançamento Financeiro";
+      return t("novoLancamento.tituloNovaContaReceber", "📄 Nova Conta a Receber");
+    return t("novoLancamento.tituloNovoLancamentoFinanceiro", "💰 Novo Lançamento Financeiro");
   }
 
   if (form.tipo === "saida") {
     if (form.forma_pagamento === "cartao_credito")
-      return "💳 Nova Compra no Cartão";
+      return t("novoLancamento.tituloNovaCompraCartao", "💳 Nova Compra no Cartão");
     if (form.forma_pagamento === "aprazo")
-      return "📄 Nova Conta a Pagar";
-    return "💰 Novo Lançamento Financeiro";
+      return t("novoLancamento.tituloNovaContaPagar", "📄 Nova Conta a Pagar");
+    return t("novoLancamento.tituloNovoLancamentoFinanceiro", "💰 Novo Lançamento Financeiro");
   }
 
-  return "Novo Lançamento";
+  return t("novoLancamento.tituloNovoLancamento", "Novo Lançamento");
 })();
 
 
@@ -608,7 +610,7 @@ useEffect(() => {
     body: JSON.stringify(payload),
   });
 
-  alert("Salvo com sucesso!");
+  alert(t("novoLancamento.salvoSucesso", "Salvo com sucesso!"));
 
   window.dispatchEvent(new Event("contabil-atualizado"));
 
@@ -631,7 +633,7 @@ useEffect(() => {
 
   alert(
     err.message ||
-    "Erro inesperado ao salvar. Verifique os dados."
+    t("novoLancamento.erroSalvar", "Erro inesperado ao salvar. Verifique os dados.")
   );
 }
 
@@ -701,22 +703,22 @@ useEffect(() => {
 function validarAbrirModelo() {
 
   if (!form.tipo) {
-    alert("Selecione o Tipo primeiro.");
+    alert(t("novoLancamento.selecioneTipoPrimeiro", "Selecione o Tipo primeiro."));
     return false;
   }
 
   if (!form.classificacao) {
-    alert("Selecione a Classificação primeiro.");
+    alert(t("novoLancamento.selecioneClassificacaoPrimeiro", "Selecione a Classificação primeiro."));
     return false;
   }
 
   if (form.tipo === "entrada" && !form.forma_recebimento) {
-    alert("Selecione a Forma de Recebimento.");
+    alert(t("novoLancamento.selecioneFormaRecebimento", "Selecione a Forma de Recebimento."));
     return false;
   }
 
   if (form.tipo === "saida" && !form.forma_pagamento) {
-    alert("Selecione a Forma de Pagamento.");
+    alert(t("novoLancamento.selecioneFormaPagamento", "Selecione a Forma de Pagamento."));
     return false;
   }
 
@@ -771,16 +773,16 @@ const podeCriarModelo =
 const descricao = (() => {
   if (form.tipo === "entrada") {
     if (["cartao_credito","boleto","aprazo"].includes(form.forma_recebimento))
-      return "Registre um valor a receber no futuro";
-    return "Registre uma entrada financeira imediata";
+      return t("novoLancamento.descContaReceber", "Registre um valor a receber no futuro");
+    return t("novoLancamento.descEntradaFinanceira", "Registre uma entrada financeira imediata");
   }
 
   if (form.tipo === "saida") {
     if (form.forma_pagamento === "cartao_credito")
-      return "Registre uma compra realizada no cartão";
+      return t("novoLancamento.descCompraCartao", "Registre uma compra realizada no cartão");
     if (form.forma_pagamento === "aprazo")
-      return "Registre uma despesa futura da empresa";
-    return "Registre uma saída financeira imediata";
+      return t("novoLancamento.descContaPagar", "Registre uma despesa futura da empresa");
+    return t("novoLancamento.descSaidaFinanceira", "Registre uma saída financeira imediata");
   }
 
   return "";
@@ -858,25 +860,25 @@ useEffect(() => {
 
   <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-3">
     <div className="rounded-xl border bg-white px-3 py-2 shadow-sm">
-      <div className="text-xs font-black uppercase tracking-wide text-slate-400">Tipo</div>
+      <div className="text-xs font-black uppercase tracking-wide text-slate-400"> {t("novoLancamento.tipo", "Tipo")} </div>
       <div className="mt-1 text-sm font-black" style={{ color: form.tipo === "entrada" ? "#16a34a" : "#dc2626" }}>
-        {form.tipo === "entrada" ? "Receita" : "Despesa"}
+        {form.tipo === "entrada" ? t("novoLancamento.receita", "Receita") : t("novoLancamento.despesa", "Despesa")}
       </div>
     </div>
 
     <div className="rounded-xl border bg-white px-3 py-2 shadow-sm">
-      <div className="text-xs font-black uppercase tracking-wide text-slate-400">Forma</div>
+      <div className="text-xs font-black uppercase tracking-wide text-slate-400"> {t("novoLancamento.forma", "Forma")} </div>
       <div className="mt-1 text-sm font-black text-blue-900">
         {form.tipo === "entrada"
-          ? (form.forma_recebimento || "Escolha a forma")
-          : (form.forma_pagamento || "Escolha a forma")}
+          ? (form.forma_recebimento || t("novoLancamento.escolhaForma", "Escolha a forma"))
+          : (form.forma_pagamento || t("novoLancamento.escolhaForma", "Escolha a forma"))}
       </div>
     </div>
 
     <div className="rounded-xl border bg-white px-3 py-2 shadow-sm">
-      <div className="text-xs font-black uppercase tracking-wide text-slate-400">Destino</div>
+      <div className="text-xs font-black uppercase tracking-wide text-slate-400"> {t("novoLancamento.destino", "Destino")} </div>
       <div className="mt-1 text-sm font-black" style={{ color: corTitulo }}>
-        {modo === "financeiro" ? "Financeiro" : modo === "pagar" ? "Conta a Pagar" : modo === "receber" || modo === "receber_cartao" ? "Conta a Receber" : "Cartão"}
+        {modo === "financeiro" ? t("novoLancamento.financeiro", "Financeiro") : modo === "pagar" ? t("novoLancamento.contaPagar", "Conta a Pagar") : modo === "receber" || modo === "receber_cartao" ? t("novoLancamento.contaReceber", "Conta a Receber") : t("novoLancamento.cartao", "Cartão")}
       </div>
     </div>
   </div>
@@ -885,15 +887,15 @@ useEffect(() => {
     <div className="flex flex-col gap-4">
 
           {mostrarCartao && (   <div>      {/* Cartão */}
-              <label className="block label label-required">Meu Cartão</label>
+              <label className="block label label-required"> {t("novoLancamento.meuCartao", "Meu Cartão")} </label>
                   <div className="flex items-center gap-2"> 
               <select
                     className="input-premium w-full min-w-[360px]"
                 value={cartaoSelecionado}
                 onChange={(e) => setCartaoSelecionado(e.target.value)}
-                placeholder="Nome do Cartão"
+                placeholder={t("novoLancamento.nomeCartao", "Nome do Cartão")}
               >
-                <option value="">Selecione...</option>
+                <option value="">{t("novoLancamento.selecioneReticencias", "Selecione...")}</option>
                 {listaCartoes.map((c) => (
                   <option key={c.id} value={c.nome}>
                     {c.nome} - {c.bandeira}
@@ -916,26 +918,26 @@ useEffect(() => {
                           whitespace-nowrap
                           z-50
                         ">
-                        Adicionar novo cartão 
+                        {t("novoLancamento.adicionarNovoCartao", "Adicionar novo cartão")} 
                       </div>
                   </div>
             </div>
              
                 {cartaoInfo && (
                   <div className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] font-bold text-slate-700 shadow-sm">
-                    <span>Melhor dia: <b className="text-slate-950">{cartaoInfo.fechamento_dia || "-"}</b></span>
+                    <span>{t("novoLancamento.melhorDia", "Melhor dia")}: <b className="text-slate-950">{cartaoInfo.fechamento_dia || "-"}</b></span>
                     <span className="mx-2 text-slate-300">|</span>
 
-                    <span>Venc.: <b className="text-slate-950">{cartaoInfo.vencimento_dia || "-"}</b></span>
+                    <span>{t("novoLancamento.vencAbrev", "Venc.")}: <b className="text-slate-950">{cartaoInfo.vencimento_dia || "-"}</b></span>
                     <span className="mx-2 text-slate-300">|</span>
 
-                    <span>Limite: <b className="text-emerald-700">{formatarMoeda(cartaoInfo.limite_total)}</b></span>
+                    <span>{t("novoLancamento.limite", "Limite")}: <b className="text-emerald-700">{formatarMoeda(cartaoInfo.limite_total)}</b></span>
                     <span className="mx-2 text-slate-300">|</span>
 
-                    <span>Aberto: <b className="text-amber-700">{formatarMoeda(cartaoInfo.total_em_aberto)}</b></span>
+                    <span>{t("novoLancamento.aberto", "Aberto")}: <b className="text-amber-700">{formatarMoeda(cartaoInfo.total_em_aberto)}</b></span>
                     <span className="mx-2 text-slate-300">|</span>
 
-                  <span>Disp: <b className="text-blue-800">{formatarMoeda(cartaoInfo.limite_disponivel)}</b></span>
+                  <span>{t("novoLancamento.disp", "Disp")}: <b className="text-blue-800">{formatarMoeda(cartaoInfo.limite_disponivel)}</b></span>
                   </div>
                 )}
               
@@ -950,7 +952,7 @@ useEffect(() => {
                   {/* Tipo */}
                   <div hidden group-hover:block>
                     <label className="label label-required font-bold text-[#1e40af]">
-                     Receita ou Despesa?
+                     {t("novoLancamento.receitaOuDespesa", "Receita ou Despesa?")}
                     </label>
 
                     <select
@@ -961,8 +963,8 @@ useEffect(() => {
                       onChange={handleChange}
                       className="input-premium w-full"
                     >
-                      <option value="entrada">Receita</option>
-                      <option value="saida">Despesa</option>
+                      <option value="entrada"> {t("novoLancamento.receita", "Receita")}</option>
+                      <option value="saida"> {t("novoLancamento.despesa", "Despesa")}</option>
                     </select>
                   </div>
  
@@ -973,7 +975,7 @@ useEffect(() => {
                   {form.tipo === "entrada" && (
                     <div hidden group-hover:block>
                       <label className="label label-required font-bold text-[#1e40af]">
-                      Como será recebido?
+                      {t("novoLancamento.comoRecebido", "Como será recebido?")}
                       </label>
 
                       <select
@@ -983,13 +985,13 @@ useEffect(() => {
                         disabled={!!inicial?.forma_recebimento}
                         className="input-premium w-full"
                       >
-                        <option value="">Selecione</option>
-                        <option value="avista">💵 À vista</option>
+                        <option value="">{t("novoLancamento.selecione", "Selecione")}</option>
+                        <option value="avista">💵 {t("novoLancamento.aVista", "À vista")}</option>
                         <option value="pix">⚡ Pix</option>
-                        <option value="cartao_debito">💳 Cartão Débito</option>
-                        <option value="cartao_credito"> 💳 Cartão Crédito</option>
-                        <option value="boleto">📄 Boleto</option>
-                          <option value="aprazo">📆 A prazo</option>
+                        <option value="cartao_debito">💳 {t("novoLancamento.cartaoDebito", "Cartão Débito")}</option>
+                        <option value="cartao_credito"> 💳 {t("novoLancamento.cartaoCredito", "Cartão Crédito")}</option>
+                        <option value="boleto">📄 {t("novoLancamento.boleto", "Boleto")}</option>
+                          <option value="aprazo">📆 {t("novoLancamento.aPrazo", "A prazo")}</option>
                       </select>
                     </div>
                   )}
@@ -998,7 +1000,7 @@ useEffect(() => {
                   {form.tipo === "saida" && (
                     <div hidden group-hover:block>
                       <label className="label label-required font-bold text-[#1e40af]">
-                       Como será pago?
+                       {t("novoLancamento.comoPago", "Como será pago?")}
                       </label>
 
                       <select
@@ -1009,12 +1011,12 @@ useEffect(() => {
                            disabled={!!inicial?.forma_pagamento}
                         className="input-premium w-full"
                       >
-                        <option value="">Selecione</option>
-                        <option value="avista">💵 À vista</option>
+                        <option value="">{t("novoLancamento.selecione", "Selecione")}</option>
+                        <option value="avista">💵 {t("novoLancamento.aVista", "À vista")}</option>
                         <option value="pix"> ⚡ Pix</option>
-                        <option value="cartao_credito">💳 Cartão Crédito</option>
-                        <option value="boleto">📄 Boleto</option>
-                        <option value="aprazo">📆 A prazo</option>
+                        <option value="cartao_credito">💳 {t("novoLancamento.cartaoCredito", "Cartão Crédito")}</option>
+                        <option value="boleto">📄 {t("novoLancamento.boleto", "Boleto")}</option>
+                        <option value="aprazo">📆 {t("novoLancamento.aPrazo", "A prazo")}</option>
                       </select>
                     </div>
                   )}
@@ -1028,7 +1030,7 @@ useEffect(() => {
 
            {mostrarContaFinanceira && ( 
             <div>
-              <label  className="label label-required block font-bold text-[#1e40af]">Onde pagarei ou receberei? </label>
+              <label  className="label label-required block font-bold text-[#1e40af]">{t("novoLancamento.ondePagareiReceberei", "Onde pagarei ou receberei?")} </label>
                 <select
                     name="conta_id"
                     value={String(form.conta_id || "")}
@@ -1044,25 +1046,25 @@ useEffect(() => {
                     }}
                     className="input-premium"
                   >
-                    <option value="">Selecione</option> 
+                    <option value="">{t("novoLancamento.selecione", "Selecione")}</option> 
                     {contas.map((c) => (
                       <option key={c.id} value={String(c.id)}>
                         {c.nome}
                       </option>
                     ))} 
-                    <option value="__nova__">➕ Nova Conta Financeira</option>
+                    <option value="__nova__">➕ {t("novoLancamento.novaContaFinanceira", "Nova Conta Financeira")}</option>
                   </select> 
             </div> )}
 
 
             <div>
-              <label  className="label label-required block font-bold text-[#1e40af]">Valor</label>
+              <label  className="label label-required block font-bold text-[#1e40af]"> {t("novoLancamento.valor", "Valor")} </label>
               <input
                 type="number"
                 name="valor"
                 value={form.valor}
                 onChange={handleChange}
-                  placeholder="00,00"
+                  placeholder={t("novoLancamento.placeholderValor", "00,00")}
                    className="input-premium"
               />
             </div>
@@ -1071,7 +1073,7 @@ useEffect(() => {
          
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="label label-required font-bold block text-[#1e40af]">Data Movimento</label>
+              <label className="label label-required font-bold block text-[#1e40af]">{t("novoLancamento.dataMovimento", "Data Movimento")}</label>
               <input
                 type="date"
                 name="data"
@@ -1084,7 +1086,7 @@ useEffect(() => {
            <div>
                 <div hidden group-hover:block className="w-5/5">
                   <label className="label label-required font-bold block text-[#1e40af]">
-                    Como eu classifico isso?
+                    {t("novoLancamento.comoClassifico", "Como eu classifico isso?")}
                   </label>
 
                   <select
@@ -1095,7 +1097,7 @@ useEffect(() => {
                     required
                     
                   >
-                    <option value="">Selecione...</option>
+                    <option value="">{t("novoLancamento.selecioneReticencias", "Selecione...")}</option>
                     {getClassificacoes().map((item) => (
                       <option key={item.value} value={item.value}>
                         {item.label}
@@ -1117,7 +1119,7 @@ useEffect(() => {
                   name="descricao"
                   value={form.descricao}
                   onChange={handleChange}
-                  placeholder="Descricao"
+                  placeholder={t("novoLancamento.placeholderDescricao", "Descrição")}
                   className="input-premium w-full"
                 />
               </div>
@@ -1140,7 +1142,7 @@ useEffect(() => {
                   {/* FORNECEDOR */}
                {!mostrarCartao && (    <div>
                                           <label className="label label-required font-bold text-[#1e40af]">
-                                            Fornecedor
+                                              {t("novoLancamento.fornecedor", "Fornecedor")}
                                           </label>
 
                                             <select
@@ -1156,7 +1158,7 @@ useEffect(() => {
                                               }}
                                               className="input-premium w-full"
                                             >
-                                              <option value="">Nenhum</option>
+                                              <option value=""> {t("novoLancamento.nenhum", "Nenhum")}</option>
 
                                               {fornecedores.map((f) => (
                                                 <option key={f.id} value={String(f.id)}>
@@ -1164,14 +1166,14 @@ useEffect(() => {
                                                 </option>
                                               ))}
 
-                                              <option value="__novo__">➕ Novo Fornecedor / Cliente</option>
+                                              <option value="__novo__">➕ {t("novoLancamento.novoFornecedorCliente", "Novo Fornecedor / Cliente")}</option>
                                             </select>
                        </div>)}
 
                   {/* VENCIMENTO */}
                    {!mostrarCartao && (    <div>
-                                    <label className="label label-required font-bold text-[#1e40af]">
-                                      Vencimento
+                                   <label className="label label-required font-bold text-[#1e40af]">
+                                      {t("novoLancamento.vencimento", "Vencimento")}
                                     </label>
 
                                     <input
@@ -1191,7 +1193,7 @@ useEffect(() => {
             {/* PARCELAS */}
                 <div className="w-full">
                   <label className="label label-required font-bold text-[#1e40af]">
-                    Número de parcelas
+                    {t("novoLancamento.numeroParcelas", "Número de parcelas")}
                   </label>
                   <input
                     type="number"
@@ -1200,7 +1202,7 @@ useEffect(() => {
                     value={form.parcelas}
                     onChange={handleChange}
                     className="input-premium w-full"
-                    placeholder="parcelas"
+                    placeholder={t("novoLancamento.placeholderParcelas", "parcelas")}
                   />
                 </div>
 
@@ -1209,16 +1211,16 @@ useEffect(() => {
           {/* STATUS */}
             {!mostrarCartao && (  <div>
                           <div className="w-full">
-                            <label className="label label-required font-bold text-[#1e40af]">Status</label>
+                            <label className="label label-required font-bold text-[#1e40af]"> {t("novoLancamento.status", "Status")} </label>
                             <select
                               name="status"
                               value={form.status}
                               onChange={handleChange}
                               className="input-premium w-full"
-                              placeholder="status"
+                              placeholder={t("novoLancamento.placeholderStatus", "status")}
                             >
-                              <option value="aberto">Aberto</option>
-                              <option value="pago">Pago</option>
+                              <option value="aberto"> {t("novoLancamento.aberto", "Aberto")}</option>
+                              <option value="pago"> {t("novoLancamento.pago", "Pago")}</option>
                             </select>
                           </div>
                         </div> 
@@ -1231,12 +1233,12 @@ useEffect(() => {
                              
                            <div className="relative w-full md:w-[310px]">
                               <label className="mb-1 block text-[11px] font-bold text-[#1e40af]">
-                                Plano de contas
+                                {t("novoLancamento.planoContas", "Plano de contas")}
                               </label>
 
                               <input
                                 className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
-                                placeholder="Digite para buscar..."
+                                placeholder={t("novoLancamento.digiteParaBuscar", "Digite para buscar...")}
                                 value={form.contabil_texto || ""}
                                 onChange={(e) =>
                                   setForm((prev) => ({
@@ -1293,7 +1295,7 @@ useEffect(() => {
                                   ⚠️ Preencha os campos abaixo para configurar o modelo contábil:
                                   <ul className="list-disc ml-5 mt-1">
 
-                                    {!form.tipo && <li>Tipo</li>}
+                                    {!form.tipo && <li> {t("novoLancamento.tipo", "Tipo")} </li>}
 
                                     {!form.classificacao?.trim() && (
                                       <li>Classificação</li>
@@ -1413,7 +1415,7 @@ useEffect(() => {
                           <tr> 
                             <th className="p-2 text-left">Código</th>
                             <th className="p-2 text-left">Nome</th>
-                            <th className="p-2 text-left">Tipo</th>
+                            <th className="p-2 text-left"> {t("novoLancamento.tipo", "Tipo")} </th>
                             <th className="p-2 text-left">Natureza</th>
                             <th className="p-2 text-center">D/C</th>
                           </tr>
@@ -1450,7 +1452,7 @@ useEffect(() => {
                   onClick={handleSalvarGeral}
                   className="btn-pill btn-dark-blue flex items-center gap-2"
                 >
-                  Salvar
+                  {t("novoLancamento.salvar", "Salvar")}
                 </button>
 
                 <button
@@ -1464,7 +1466,7 @@ useEffect(() => {
                   }}
                   className="btn-pill btn-gray flex items-center gap-2"
                 >
-                  Voltar
+                  {t("novoLancamento.voltar", "Voltar")}
                 </button>
               </div>
              </div>
@@ -1489,7 +1491,7 @@ useEffect(() => {
         <ModalBase
             open={modalConta}
             onClose={() => setModalConta(false)}
-            title="Nova Conta Financeira"
+            title={t("novoLancamento.novaContaFinanceira", "Nova Conta Financeira")}
           >
             <FormConta
               empresa_id={empresa_id}
@@ -1522,7 +1524,7 @@ useEffect(() => {
            <ModalBase
               open={modalFornecedor}
               onClose={() => setModalFornecedor(false)}
-              title="Novo Fornecedor / Cliente"
+              title={t("novoLancamento.novoFornecedorCliente", "Novo Fornecedor / Cliente")}
             >
               <FormFornecedorModal
                 empresa_id={empresa_id}
@@ -1545,7 +1547,7 @@ useEffect(() => {
              <ModalBase
                   open={modalModelo}
                   onClose={() => setModalModelo(false)}
-                  title="Novo Modelo"
+                  title={t("novoLancamento.novoModelo", "Novo Modelo")}
                 >
                   <FormModeloContabil
                     empresa_id={empresa_id}
@@ -1565,7 +1567,7 @@ useEffect(() => {
                   <ModalBase
                  open={modalCartao}
                  onClose={() => setModalCartao(false)}
-                 title="Novo Cartão"
+                 title={t("novoLancamento.novoCartao", "Novo Cartão")}
                >
                  <FormCartaoModal
                    empresa_id={empresa_id}

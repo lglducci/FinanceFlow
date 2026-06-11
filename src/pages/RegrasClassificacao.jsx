@@ -1,9 +1,11 @@
-  import { useEffect, useMemo, useState } from "react";
+   import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { fetchSeguro } from "../utils/apiSafe";
+import { useTranslation } from "react-i18next";
 
 export default function RegrasClassificacao() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const empresa_id = localStorage.getItem("empresa_id") || "1";
   const [searchParams] = useSearchParams();
@@ -185,18 +187,18 @@ const [dropdownLoteAberto, setDropdownLoteAberto] = useState(false);
   function descricaoEntidade(l) {
     const origem = String(l.origem || l.tipo_operacao || "").toLowerCase();
     const mapa = {
-      conta_receber: "Conta a Receber",
-      contas_receber: "Conta a Receber",
-      conta_pagar: "Conta a Pagar",
-      contas_pagar: "Conta a Pagar",
-      transacao: "Lançamento Financeiro",
-      lancamento: "Lançamento Financeiro",
-      cartao_compra: "Compra Cartão",
-      compra_cartao: "Compra Cartão",
-      cartoes_transacoes: "Compra Cartão",
-      fatura_cartao: "Fatura Cartão",
-      cartao_fatura: "Fatura Cartão",
-      estorno: "Estorno",
+      conta_receber: t("regrasClassificacao.entidadeContaReceber", "Conta a Receber"),
+      contas_receber: t("regrasClassificacao.entidadeContaReceber", "Conta a Receber"),
+      conta_pagar: t("regrasClassificacao.entidadeContaPagar", "Conta a Pagar"),
+      contas_pagar: t("regrasClassificacao.entidadeContaPagar", "Conta a Pagar"),
+      transacao: t("regrasClassificacao.entidadeLancamentoFinanceiro", "Lançamento Financeiro"),
+      lancamento: t("regrasClassificacao.entidadeLancamentoFinanceiro", "Lançamento Financeiro"),
+      cartao_compra: t("regrasClassificacao.entidadeCompraCartao", "Compra Cartão"),
+      compra_cartao: t("regrasClassificacao.entidadeCompraCartao", "Compra Cartão"),
+      cartoes_transacoes: t("regrasClassificacao.entidadeCompraCartao", "Compra Cartão"),
+      fatura_cartao: t("regrasClassificacao.entidadeFaturaCartao", "Fatura Cartão"),
+      cartao_fatura: t("regrasClassificacao.entidadeFaturaCartao", "Fatura Cartão"),
+      estorno: t("regrasClassificacao.entidadeEstorno", "Estorno"),
     };
     return mapa[origem] || l.evento_codigo || l.tipo_operacao || l.origem || "-";
   }
@@ -218,7 +220,7 @@ const [dropdownLoteAberto, setDropdownLoteAberto] = useState(false);
 
   async function pesquisar() {
     if (!dataIni || !dataFim) {
-      alert("Informe o período.");
+      alert(t("regrasClassificacao.informePeriodo", "Informe o período."));
       return;
     }
 
@@ -243,7 +245,7 @@ const [dropdownLoteAberto, setDropdownLoteAberto] = useState(false);
       setLista(listaNormalizada);
     } catch (e) {
       console.error(e);
-      alert("Erro ao consultar lançamentos.");
+      alert(t("regrasClassificacao.erroConsultar", "Erro ao consultar lançamentos."));
       setLista([]);
     } finally {
       setCarregando(false);
@@ -259,7 +261,7 @@ const [dropdownLoteAberto, setDropdownLoteAberto] = useState(false);
       ...prev,
       [chave]: textoContaLinha(linha),
     }));
-    setMensagemSucesso("Esse movimento já foi processado contabilmente e não pode ser alterado.");
+    setMensagemSucesso(t("regrasClassificacao.movimentoProcessadoNaoAltera", "Esse movimento já foi processado contabilmente e não pode ser alterado."));
     setTimeout(() => setMensagemSucesso(""), 6000);
     return;
   }
@@ -292,7 +294,7 @@ const resultado = Array.isArray(ret)
       [chave]: textoContaLinha(linha),
     }));
 
-    setMensagemSucesso(resultado?.erro || "Erro ao salvar conta contábil.");
+    setMensagemSucesso(resultado?.erro || t("regrasClassificacao.erroSalvarConta", "Erro ao salvar conta contábil."));
     setTimeout(() => setMensagemSucesso(""), 6000);
     return;
   }
@@ -318,14 +320,14 @@ const resultado = Array.isArray(ret)
     setDropdownContaAberto(null);
 
     setMensagemSucesso(
-      `✅ ${descricaoEntidade(linha)} ${linha.id}: ${textoConta(conta)} salva com sucesso.`
+      `✅ ${descricaoEntidade(linha)} ${linha.id}: ${textoConta(conta)} ${t("regrasClassificacao.salvaComSucesso", "salva com sucesso.")}`
     );
 
     window.dispatchEvent(new Event("contabil-atualizado"));
 
     setTimeout(() => setMensagemSucesso(""), 4000);
   } catch (e) {
-    alert(e.message || "Erro ao salvar conta contábil.");
+    alert(e.message || t("regrasClassificacao.erroSalvarConta", "Erro ao salvar conta contábil."));
   } finally {
     setSalvandoChave("");
   }
@@ -387,39 +389,39 @@ async function aplicarContaLote() {
       <div className="max-w-8xl mx-auto bg-white rounded-3xl shadow-xl border p-5">
         <div className="flex justify-between items-start gap-4 mb-4">
           <div>
-            <h1 className="text-2xl font-black text-slate-800">🧾 Classificação Contábil dos Movimentos</h1>
+            <h1 className="text-2xl font-black text-slate-800">🧾 {t("regrasClassificacao.titulo", "Classificação Contábil dos Movimentos")}</h1>
             <p className="text-sm text-slate-500 font-bold">
-              Informe a conta contábil diretamente em cada entidade financeira.
+              {t("regrasClassificacao.subtitulo", "Informe a conta contábil diretamente em cada entidade financeira.")}
             </p>
           </div>
 
           <div className="max-w-xl rounded-2xl bg-blue-50 border border-blue-200 px-4 py-3 text-sm font-bold text-blue-800">
-            Escolheu a conta, salvou automaticamente. Movimentos já processados contabilmente ficam bloqueados.
+            {t("regrasClassificacao.avisoTopo", "Escolheu a conta, salvou automaticamente. Movimentos já processados contabilmente ficam bloqueados.")}
           </div>
 
-          <button onClick={() => navigate(-1)} className="btn-pill btn-black">↩ Sair</button>
+          <button onClick={() => navigate(-1)} className="btn-pill btn-black">↩ {t("regrasClassificacao.sair", "Sair")}</button>
         </div>
 
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <div>
-            <label className="block text-xs font-black text-slate-600 mb-1">Data inicial</label>
+            <label className="block text-xs font-black text-slate-600 mb-1">{t("regrasClassificacao.dataInicial", "Data inicial")}</label>
             <input type="date" value={dataIni} onChange={(e) => setDataIni(e.target.value)} className="border rounded-xl px-3 py-2 font-bold" />
           </div>
 
           <div>
-            <label className="block text-xs font-black text-slate-600 mb-1">Data final</label>
+            <label className="block text-xs font-black text-slate-600 mb-1">{t("regrasClassificacao.dataFinal", "Data final")}</label>
             <input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} className="border rounded-xl px-3 py-2 font-bold" />
           </div>
 
           <button type="button" onClick={pesquisar} disabled={carregando}   className="btn-pill btn-dark-blue">
-            {carregando ? "Pesquisando..." : "Pesquisar"}
+            {carregando ? t("regrasClassificacao.pesquisando", "Pesquisando...") : t("regrasClassificacao.pesquisar", "Pesquisar")}
           </button>
 
-          <input value={filtro} onChange={(e) => setFiltro(e.target.value)} placeholder="Pesquisar descrição, entidade, conta..." className="mt-5 w-[380px] border rounded-xl px-4 py-2 font-semibold" />
+          <input value={filtro} onChange={(e) => setFiltro(e.target.value)} placeholder={t("regrasClassificacao.placeholderPesquisar", "Pesquisar descrição, entidade, conta...")} className="mt-5 w-[380px] border rounded-xl px-4 py-2 font-semibold" />
 
           <label className="mt-5 flex items-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 py-2 text-sm font-bold text-slate-700 cursor-pointer">
             <input type="checkbox" checked={somenteNaoClassificados} onChange={(e) => setSomenteNaoClassificados(e.target.checked)} className="w-4 h-4" />
-            Só sem conta
+            {t("regrasClassificacao.soSemConta", "Só sem conta")}
           </label>
 
 
@@ -435,7 +437,7 @@ async function aplicarContaLote() {
               }}
               className="w-4 h-4"
             />
-            Modo lote
+            {t("regrasClassificacao.modoLote", "Modo lote")}
           </label>
 
 
@@ -446,7 +448,7 @@ async function aplicarContaLote() {
         {modoLote && (
   <div className="mb-4 flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-3">
     <div className="font-black text-blue-900">
-      {selecionados.length} selecionado(s)
+      {selecionados.length} {t("regrasClassificacao.selecionados", "selecionado(s)")}
     </div>
 
     <div className="relative w-[420px]">
@@ -457,7 +459,7 @@ async function aplicarContaLote() {
           setDropdownLoteAberto(true);
         }}
         onFocus={() => setDropdownLoteAberto(true)}
-        placeholder="Conta para aplicar no lote..."
+        placeholder={t("regrasClassificacao.placeholderContaLote", "Conta para aplicar no lote...")}
         className="w-full border rounded-xl px-3 py-2 font-bold"
       />
 
@@ -487,7 +489,7 @@ async function aplicarContaLote() {
       disabled={!contaLote || selecionados.length === 0}
       className="btn-pill btn-green"
     >
-      Aplicar nos selecionados
+      {t("regrasClassificacao.aplicarSelecionados", "Aplicar nos selecionados")}
     </button>
   </div>
 )}
@@ -513,20 +515,20 @@ async function aplicarContaLote() {
                         }
                       }}
                       className="w-4 h-4"
-                      title="Selecionar todos"
+                      title={t("regrasClassificacao.selecionarTodos", "Selecionar todos")}
                     />
                   )}
                 </div>
-              <div>ID</div>
-              <div>Entidade</div>
-              <div>Data</div>
-              <div>Vencimento</div>
-              <div>Descrição</div>
-              <div>Tipo</div>
-              <div>Forma</div>
-              <div>Parcela</div>
-              <div>Valor</div>
-              <div>Conta Contábil</div>
+              <div>{t("regrasClassificacao.id", "ID")}</div>
+              <div>{t("regrasClassificacao.entidade", "Entidade")}</div>
+              <div>{t("regrasClassificacao.data", "Data")}</div>
+              <div>{t("regrasClassificacao.vencimento", "Vencimento")}</div>
+              <div>{t("regrasClassificacao.descricao", "Descrição")}</div>
+              <div>{t("regrasClassificacao.tipo", "Tipo")}</div>
+              <div>{t("regrasClassificacao.forma", "Forma")}</div>
+              <div>{t("regrasClassificacao.parcela", "Parcela")}</div>
+              <div>{t("regrasClassificacao.valor", "Valor")}</div>
+              <div>{t("regrasClassificacao.contaContabil", "Conta Contábil")}</div>
             </div>
 
             {filtradas.map((l) => {
@@ -567,7 +569,7 @@ async function aplicarContaLote() {
                     )}
                   </div>
 
-                  <div className="font-bold">{l.tipo === "entrada" ? "Entrada" : l.tipo === "saida" ? "Saída" : l.tipo || "-"}</div>
+                  <div className="font-bold">{l.tipo === "entrada" ? t("regrasClassificacao.entrada", "Entrada") : l.tipo === "saida" ? t("regrasClassificacao.saida", "Saída") : l.tipo || "-"}</div>
                   <div className="font-bold">{l.forma || "-"}</div>
                   <div className="font-bold">{l.parcelas && l.parcela_total ? `${l.parcelas}/${l.parcela_total}` : "-"}</div>
 
@@ -586,7 +588,7 @@ async function aplicarContaLote() {
                         setDropdownContaAberto(chave);
                       }}
                       onFocus={() => !bloqueado && setDropdownContaAberto(chave)}
-                      placeholder={bloqueado ? "Processado contabilmente" : "Digite: despesa, receita, banco..."}
+                      placeholder={bloqueado ? t("regrasClassificacao.processadoContabilmente", "Processado contabilmente") : t("regrasClassificacao.placeholderConta", "Digite: despesa, receita, banco...")}
                       className={`w-full border rounded-lg px-3 py-2 font-semibold ${bloqueado ? "bg-slate-100 cursor-not-allowed" : "bg-white"}`}
                     />
 
@@ -604,7 +606,7 @@ async function aplicarContaLote() {
                         ))}
 
                         {buscarContasProfundo(textoBuscaConta).length === 0 && (
-                          <div className="px-3 py-2 text-sm font-bold text-slate-400">Nenhuma conta encontrada</div>
+                          <div className="px-3 py-2 text-sm font-bold text-slate-400">{t("regrasClassificacao.nenhumaContaEncontrada", "Nenhuma conta encontrada")}</div>
                         )}
                       </div>
                     )}
@@ -613,13 +615,13 @@ async function aplicarContaLote() {
               );
             })}
 
-            {filtradas.length === 0 && <div className="p-6 text-center text-slate-400 font-black">Nenhum movimento encontrado.</div>}
+            {filtradas.length === 0 && <div className="p-6 text-center text-slate-400 font-black">{t("regrasClassificacao.nenhumMovimentoEncontrado", "Nenhum movimento encontrado.")}</div>}
           </div>
         </div>
 
         <div className="mt-3 flex justify-between text-sm font-bold text-slate-600">
-          <div>Total: {filtradas.length} movimento(s)</div>
-          <div>Soma: {formatarMoeda(total)}</div>
+          <div>{t("regrasClassificacao.total", "Total")}: {filtradas.length} {t("regrasClassificacao.movimentos", "movimento(s)")}</div>
+          <div>{t("regrasClassificacao.soma", "Soma")}: {formatarMoeda(total)}</div>
         </div>
       </div>
     </div>

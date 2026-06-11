@@ -1,9 +1,22 @@
  import { useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LineChart, Line } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  LineChart,
+  Line,
+} from "recharts";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardContabil() {
+  const { t, i18n } = useTranslation();
+
   const empresa_id =
     localStorage.getItem("empresa_id") ||
     localStorage.getItem("id_empresa") ||
@@ -20,7 +33,7 @@ export default function DashboardContabil() {
   const [erro, setErro] = useState("");
 
   function formatarMoeda(valor) {
-    return Number(valor || 0).toLocaleString("pt-BR", {
+    return Number(valor || 0).toLocaleString(i18n.language || "pt-BR", {
       style: "currency",
       currency: "BRL",
     });
@@ -45,6 +58,7 @@ export default function DashboardContabil() {
   const totalAtivo = somarGrupo(balanco, "ATIVO");
   const totalPassivo = somarGrupo(balanco, "PASSIVO");
   const totalPL = somarGrupo(balanco, "PATRIMONIO LIQUIDO");
+
   const resultadoLiquido =
     dre.find((l) => l.grupo === "RESULTADO_LIQUIDO")?.valor_periodo || 0;
 
@@ -102,102 +116,167 @@ export default function DashboardContabil() {
       setHistorico(Array.isArray(jsonHistorico) ? jsonHistorico : []);
     } catch (e) {
       console.error(e);
-      setErro("Erro ao carregar dashboard.");
+      setErro(t("dashboardContabil.erroCarregar"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="p-6 bg-blue-100 min-h-screen">
-      <div className="bg-white text-blue-900 rounded-xl p-6 mb-6 shadow">
-        <h1 className="text-2xl font-bold">📊 Dashboard Contábil</h1>
+     <div className="p-4 bg-blue-100 min-h-screen">
+  <div className="bg-white text-blue-900 rounded-2xl px-5 py-4 mb-5 shadow border border-blue-100">
+    <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-4">
+      
+      <div>
+        <h1 className="text-2xl font-black leading-tight">
+          📊 {t("dashboardContabil.titulo")}
+        </h1>
 
-        <div className="text-blue-900 font-bold text-base px-3 py-2 rounded-lg mt-2">
-          Período: {diasPeriodo} dias
+        <div className="text-sm text-blue-700 font-bold mt-1">
+          {t("dashboardContabil.periodo", { dias: diasPeriodo })}
         </div>
+      </div>
 
-        <div className="flex gap-4 mt-4 flex-wrap">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col">
+          <label className="text-xs font-black text-slate-600 mb-1">
+            Data início
+          </label>
           <input
             type="date"
-            className="input-premium"
+            className="h-10 w-40 rounded-xl border-2 border-blue-200 bg-white px-3 text-sm font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-300"
             value={dataIni}
             onChange={(e) => setDataIni(e.target.value)}
           />
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-xs font-black text-slate-600 mb-1">
+            Data fim
+          </label>
           <input
             type="date"
-            className="input-premium"
+            className="h-10 w-40 rounded-xl border-2 border-blue-200 bg-white px-3 text-sm font-bold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-300"
             value={dataFim}
             onChange={(e) => setDataFim(e.target.value)}
           />
-          <button
-            onClick={carregar}
-            className="px-5 py-2 rounded-full font-bold text-sm tracking-wide text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800 border-2 border-black shadow-[0_4px_12px_rgba(0,0,0,0.4)] hover:brightness-110 hover:scale-105 active:scale-95 transition-all duration-200 inline-flex items-center gap-2"
-          >
-            Atualizar
-          </button>
         </div>
 
-        {erro && (
-          <div className="mt-4 text-red-700 font-semibold">{erro}</div>
-        )}
+        <button
+          onClick={carregar}
+          className="h-10 px-5 rounded-xl font-black text-sm tracking-wide text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800 border border-blue-900 shadow hover:brightness-110 active:scale-95 transition-all inline-flex items-center gap-2"
+        >
+          {t("dashboardContabil.atualizar")}
+        </button>
+      </div>
+    </div>
+
+    {erro && (
+      <div className="mt-3 rounded-xl bg-red-50 border border-red-200 px-4 py-2 text-red-700 font-bold text-sm">
+        {erro}
+      </div>
+    )}
+  </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+        <Kpi
+          titulo={t("dashboardContabil.ativo")}
+          valor={formatarMoeda(totalAtivo)}
+          cor="blue"
+        />
+
+        <Kpi
+          titulo={t("dashboardContabil.passivo")}
+          valor={formatarMoeda(totalPassivo)}
+          cor="red"
+        />
+
+        <Kpi
+          titulo={t("dashboardContabil.patrimonioLiquido")}
+          valor={formatarMoeda(totalPL)}
+          cor="green"
+        />
+
+        <Kpi
+          titulo={t("dashboardContabil.resultadoLiquido")}
+          valor={formatarMoeda(resultadoLiquido)}
+          cor="purple"
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        <Kpi titulo="Ativo" valor={formatarMoeda(totalAtivo)} cor="blue" />
-        <Kpi titulo="Passivo" valor={formatarMoeda(totalPassivo)} cor="red" />
-        <Kpi titulo="Patrimônio Líquido" valor={formatarMoeda(totalPL)} cor="green" />
-        <Kpi titulo="Resultado Líquido" valor={formatarMoeda(resultadoLiquido)} cor="purple" />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <AlertaCard
-          titulo="Ativos negativos"
+          titulo={t("dashboardContabil.ativosNegativos")}
           valor={ativosNegativos.length}
-          detalhe={ativosNegativos.length > 0 ? "Verificar saldos invertidos" : "Nenhum problema"}
+          detalhe={
+            ativosNegativos.length > 0
+              ? t("dashboardContabil.verificarSaldos")
+              : t("dashboardContabil.nenhumProblema")
+          }
           cor={ativosNegativos.length > 0 ? "red" : "green"}
         />
+
         <AlertaCard
-          titulo="Passivos invertidos"
+          titulo={t("dashboardContabil.passivosInvertidos")}
           valor={passivosInvertidos.length}
-          detalhe={passivosInvertidos.length > 0 ? "Verificar passivos devedores" : "Nenhum problema"}
+          detalhe={
+            passivosInvertidos.length > 0
+              ? t("dashboardContabil.verificarPassivos")
+              : t("dashboardContabil.nenhumProblema")
+          }
           cor={passivosInvertidos.length > 0 ? "red" : "green"}
         />
+
         <AlertaCard
-          titulo="Diferença Ativo - Passivo - PL"
+          titulo={t("dashboardContabil.diferencaAtivo")}
           valor={formatarMoeda(totalAtivo - totalPassivo - totalPL)}
-          detalhe="Idealmente deve ser zero"
-          cor={Number(totalAtivo - totalPassivo - totalPL) === 0 ? "green" : "yellow"}
+          detalhe={t("dashboardContabil.idealZero")}
+          cor={
+            Number(totalAtivo - totalPassivo - totalPL) === 0
+              ? "green"
+              : "yellow"
+          }
         />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
-        <Card titulo="Demonstração do Resultado (DRE)">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
+        <Card titulo={t("dashboardContabil.dre")}>
           {dre.length === 0 ? (
-            <p className="text-gray-500">Sem dados.</p>
+            <p className="text-gray-500">
+              {t("dashboardContabil.semDados")}
+            </p>
           ) : (
             <div style={{ width: "100%", height: 280 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dre}>
                   <XAxis dataKey="grupo" />
-                  <YAxis tickFormatter={(v) => Number(v).toLocaleString("pt-BR")} />
+
+                  <YAxis
+                    tickFormatter={(v) =>
+                      Number(v).toLocaleString(i18n.language || "pt-BR")
+                    }
+                  />
+
                   <Tooltip
                     formatter={(v) =>
-                      Number(v).toLocaleString("pt-BR", {
+                      Number(v).toLocaleString(i18n.language || "pt-BR", {
                         style: "currency",
                         currency: "BRL",
                       })
                     }
                   />
+
                   <Bar dataKey="valor_periodo" radius={[4, 4, 0, 0]}>
                     {dre.map((entry, index) => {
                       let cor = "#061f4aff";
+
                       if (entry.grupo?.includes("RECEITA")) cor = "#16a34a";
                       if (entry.grupo?.includes("CUSTO")) cor = "#dc2626";
                       if (entry.grupo?.includes("DESPESA")) cor = "#f59e0b";
                       if (entry.grupo?.includes("RESULTADO_BRUTO")) cor = "#2563eb";
                       if (entry.grupo?.includes("RESULTADO_OPERACIONAL")) cor = "#0ea5e9";
                       if (entry.grupo?.includes("RESULTADO_LIQUIDO")) cor = "#7c3aed";
+
                       return <Cell key={index} fill={cor} />;
                     })}
                   </Bar>
@@ -207,29 +286,34 @@ export default function DashboardContabil() {
           )}
         </Card>
 
-        <Card titulo="Evolução do Resultado">
+        <Card titulo={t("dashboardContabil.evolucaoResultado")}>
           {historicoFormatado.length === 0 ? (
-            <p className="text-gray-500">Sem dados.</p>
+            <p className="text-gray-500">
+              {t("dashboardContabil.semDados")}
+            </p>
           ) : (
             <div style={{ width: "100%", height: 280 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={historicoFormatado}>
                   <XAxis dataKey="mes_ano" />
+
                   <YAxis
                     tickFormatter={(v) =>
-                      Number(v).toLocaleString("pt-BR", {
+                      Number(v).toLocaleString(i18n.language || "pt-BR", {
                         maximumFractionDigits: 0,
                       })
                     }
                   />
+
                   <Tooltip
                     formatter={(v) =>
-                      Number(v).toLocaleString("pt-BR", {
+                      Number(v).toLocaleString(i18n.language || "pt-BR", {
                         style: "currency",
                         currency: "BRL",
                       })
                     }
                   />
+
                   <Line
                     type="monotone"
                     dataKey="resultado"
@@ -245,7 +329,9 @@ export default function DashboardContabil() {
       </div>
 
       {loading && (
-        <div className="text-center text-blue-700 font-bold">Carregando...</div>
+        <div className="text-center text-blue-700 font-bold">
+          {t("dashboardContabil.carregando")}
+        </div>
       )}
     </div>
   );

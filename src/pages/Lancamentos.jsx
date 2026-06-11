@@ -1,4 +1,4 @@
-    import { useState, useEffect } from "react";
+      import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
 import ModalBase from "../components/ModalBase";
@@ -18,8 +18,10 @@ import { Funnel } from "lucide-react";
 import NovoLancamentoDrawer from "./NovoLancamento";
 import TransferenciaDrawer from "./app/AppTransferencia.jsx";
 import { BarChart3 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Lancamentos() {
+  const { t } = useTranslation();
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [lista, setLista] = useState([]);
@@ -355,7 +357,7 @@ useEffect(() => {
   }
 
   if (!dataIniLocal || !dataFimLocal) {
-    alert("Informe o período.");
+    alert(t("lancamentos.informePeriodo", "Informe o período."));
     return;
   }
 
@@ -447,7 +449,7 @@ setCarregando(true);
        
     } catch (e) {
       console.error(e);
-      alert("Erro ao consultar lançamentos.");
+      alert(t("lancamentos.erroConsultarLancamentos", "Erro ao consultar lançamentos."));
     }
     setCarregando(false);
 
@@ -584,7 +586,7 @@ function calcularPeriodoDias(inicio, fim) {
 
 
 async function Estornar(id) {
-   if (!confirm("Tem certeza que deseja estornar este lancamento?")) return;
+   if (!confirm(t("lancamentos.confirmarEstorno", "Tem certeza que deseja estornar este lançamento?"))) return;
 
   try {
     const url = buildWebhookUrl("estornarlancto");
@@ -607,7 +609,7 @@ async function Estornar(id) {
     if (sucesso) {
      //wait carregarSaldoConta(contaId);
         setRefreshKey(prev => prev + 1);
-        alert("Lancamento estornado com sucesso!"); 
+        alert(t("lancamentos.lancamentoEstornadoSucesso", "Lançamento estornado com sucesso!")); 
 
         
 
@@ -616,11 +618,11 @@ async function Estornar(id) {
       }
 
     // Se não entrou no sucesso, então deu erro (provavelmente FK)
-    alert(json[0]?.message || "Erro ao Estornar. Verifique vínculos (FK).");
+    alert(json[0]?.message || t("lancamentos.erroEstornarVinculos", "Erro ao estornar. Verifique vínculos (FK)."));
 
   } catch (e) {
     console.log("ERRO Estornar:", e);
-    alert("Erro ao estornar.");
+    alert(t("lancamentos.erroEstornar", "Erro ao estornar."));
   }
 }
  useEffect(() => {
@@ -634,7 +636,7 @@ async function executarTitulos(titulos, conta_id) {
   if (loading) return;
 
   if (!conta_id || Number(conta_id) === 0) {
-    alert("Selecione a conta bancária.");
+    alert(t("lancamentos.selecioneContaBancaria", "Selecione a conta bancária."));
     contaRef.current?.focus();
     return;
   }
@@ -669,11 +671,11 @@ async function executarTitulos(titulos, conta_id) {
     const data = await resp.json();
 
     if (!resp.ok || data?.ok === false) {
-      alert(data?.message || "Erro ao executar títulos.");
+      alert(data?.message || t("lancamentos.erroExecutarTitulos", "Erro ao executar títulos."));
       return;
     }
  
-    alert("Processado com sucesso!");
+    alert(t("lancamentos.processadoSucesso", "Processado com sucesso!"));
     setSelecionados([]);
     window.dispatchEvent(new Event("contabil-atualizado"));
     pesquisar(tipoOperacao || "");
@@ -681,7 +683,7 @@ async function executarTitulos(titulos, conta_id) {
     await carregarQtdVencidos();
 
   } catch (e) {
-    alert("Erro ao processar títulos.");
+    alert(t("lancamentos.erroProcessarTitulos", "Erro ao processar títulos."));
   } finally {
     setLoading(false);
   }
@@ -708,7 +710,7 @@ function executarSelecionados() {
 //}, [dataIni, dataFim]);
 
  async function excluirCompra(compra_id) {
-  if (!window.confirm("Excluir compra do cartão?")) return;
+  if (!window.confirm(t("lancamentos.confirmarExcluirCompraCartao", "Excluir compra do cartão?"))) return;
 
   try {
 
@@ -724,24 +726,24 @@ function executarSelecionados() {
       }
     );
 
-    alert("Compra excluída com sucesso.");
+    alert(t("lancamentos.compraExcluidaSucesso", "Compra excluída com sucesso."));
        window.dispatchEvent(new Event("contabil-atualizado"));
     pesquisar(tipoOperacao || ""); // recarrega lista
 
   } catch (e) {
-    alert("Erro ao excluir compra: " + e.message);
+    alert(t("lancamentos.erroExcluirCompra", "Erro ao excluir compra: ") + e.message);
   }
 }
 
 const temTransacao = lista.some(l => l.tipo_operacao === "transacao");
 
 const formaLabel = {
-  avista: "À vista",
+  avista: t("lancamentos.aVista", "À vista"),
   pix: "Pix",
-  cartao_debito: "Cartão Débito",
-  cartao_credito: "Cartão Crédito",
+  cartao_debito: t("lancamentos.cartaoDebito", "Cartão Débito"),
+  cartao_credito: t("lancamentos.cartaoCredito", "Cartão Crédito"),
   boleto: "Boleto",
-  aprazo: "A prazo"
+  aprazo: t("lancamentos.aPrazo", "A prazo")
 };
  
 const listaFiltrada = lista.filter((l) => {
@@ -803,33 +805,44 @@ useEffect(() => {
 
 
 function RelatorioEscolhido(tipo) {
- 
-    tipo = (tipo ?? "").trim();
+  tipo = (tipo ?? "").trim();
+
   switch (tipo) {
     case "vencidos":
-      return "Vencidos"; 
-      case "vence_hoje":
-      return "Vence Hoje"; 
+      return t("lancamentos.vencidos", "Vencidos");
+
+    case "vence_hoje":
+      return t("lancamentos.venceHoje", "Vence Hoje");
+
     case "transacao":
-      return "À vista";
+      return t("lancamentos.aVista", "À vista");
+
     case "conta_pagar":
-      return "Contas a Pagar";
+      return t("lancamentos.contasAPagar", "Contas a Pagar");
+
     case "conta_receber":
-      return "Contas a Receber";
+      return t("lancamentos.contasAReceber", "Contas a Receber");
+
     case "fatura_cartao":
-      return "Faturas no Cartão";
-         case "cartao_compra":
-      return "Compras no Cartão";
-      case "titulos_pagos":
-      return "Titulos Baixados";
-       case "vence_sete_dias":
-        return "Vence em sete dias.";
-        case "estorno":
-      return "Operações Estornadas";
-        case "todos":
-      return "Todos";
+      return t("lancamentos.faturasNoCartao", "Faturas no Cartão");
+
+    case "cartao_compra":
+      return t("lancamentos.comprasNoCartao", "Compras no Cartão");
+
+    case "titulos_pagos":
+      return t("lancamentos.titulosBaixados", "Títulos Baixados");
+
+    case "vence_sete_dias":
+      return t("lancamentos.venceEmSeteDias", "Vence em sete dias.");
+
+    case "estorno":
+      return t("lancamentos.operacoesEstornadas", "Operações Estornadas");
+
+    case "todos":
+      return t("lancamentos.todos", "Todos");
+
     default:
-      return tipo || "Todos";
+      return tipo || t("lancamentos.todos", "Todos");
   }
 }
 
@@ -861,7 +874,7 @@ function executarSelecionados() {
   );
 
   if (itens.length === 0) {
-    alert("Selecione ao menos um item.");
+    alert(t("lancamentos.selecioneAoMenosUmItem", "Selecione ao menos um item."));
     return;
   }
 
@@ -881,7 +894,7 @@ function executarSelecionados() {
 
 
 async function estornarSelecionados(itens) {
-  if (!confirm(`Confirma estornar ${itens.length} lançamento(s)?`)) return;
+  if (!confirm(t("lancamentos.confirmaEstornarQuantidade", "Confirma estornar {{qtd}} lançamento(s)?", { qtd: itens.length }))) return;
 
   try {
     setLoading(true);
@@ -900,20 +913,20 @@ async function estornarSelecionados(itens) {
     const data = await resp.json();
 
     if (!resp.ok || data?.ok === false) {
-      alert(data?.message || "Erro ao estornar selecionados.");
+      alert(data?.message || t("lancamentos.erroEstornarSelecionados", "Erro ao estornar selecionados."));
       return;
     }
 
-    alert("Estorno realizado com sucesso!");
+    alert(t("lancamentos.estornoRealizadoSucesso", "Estorno realizado com sucesso!"));
  
-   mostrarMensagemTela(  "Operação excluída com sucesso. Quando o estorno é feito no mesmo dia, ele não gera movimentação financeira adicional.",10000);
+   mostrarMensagemTela(t("lancamentos.operacaoExcluidaMesmaData", "Operação excluída com sucesso. Quando o estorno é feito no mesmo dia, ele não gera movimentação financeira adicional."), 10000);
            
 
     setSelecionados([]);
     window.dispatchEvent(new Event("contabil-atualizado"));
     pesquisar(tipoOperacao || "");
   } catch (e) {
-    alert("Erro ao estornar selecionados.");
+    alert(t("lancamentos.erroEstornarSelecionados", "Erro ao estornar selecionados."));
   } finally {
     setLoading(false);
   }
@@ -926,24 +939,24 @@ async function estornarSelecionados(itens) {
   switch ((tipoOperacao || "").trim()) {
     case "transacao":
     case "titulos_pagos":
-      return `Estornar Selecionados${sufixo}`;
+      return `${t("lancamentos.estornarSelecionados", "Estornar Selecionados")}${sufixo}`;
 
     case "conta_pagar":
-      return `Pagar Seleção${sufixo}`;
+      return `${t("lancamentos.pagarSelecao", "Pagar Seleção")}${sufixo}`;
 
     case "conta_receber":
-      return `Receber Seleção${sufixo}`;
+      return `${t("lancamentos.receberSelecao", "Receber Seleção")}${sufixo}`;
 
     case "fatura_cartao":
-      return `Pagar Faturas${sufixo}`;
+      return `${t("lancamentos.pagarFaturas", "Pagar Faturas")}${sufixo}`;
 
     case "vencidos":
     case "vence_hoje":
     case "vence_sete_dias":
-      return `Baixar Selecionados${sufixo}`;
+      return `${t("lancamentos.baixarSelecionados", "Baixar Selecionados")}${sufixo}`;
 
     default:
-      return `Baixar Selecionados${sufixo}`;
+      return `${t("lancamentos.baixarSelecionados", "Baixar Selecionados")}${sufixo}`;
   }
 }
 
@@ -988,7 +1001,7 @@ function corBotaoSelecionado() {
 }
 
 async function excluirPagar(id) {
-    if (!confirm("Confirmar exclusão?")) return;
+    if (!confirm(t("lancamentos.confirmarExclusao", "Confirmar exclusão?"))) return;
 
     try {
       const url = buildWebhookUrl("exclui_conta_pagar"); // <<< trocar pelo webhook real
@@ -1007,22 +1020,22 @@ async function excluirPagar(id) {
       } catch {}
 
       if (texto.includes("foreign key") || texto.includes("violates")) {
-        alert("Não é possível excluir: esta conta possui vínculos.");
+        alert(t("lancamentos.naoPossivelExcluirVinculos", "Não é possível excluir: esta conta possui vínculos."));
         return;
       }
 
-      alert(json?.message || "Excluído com sucesso!");
+      alert(json?.message || t("lancamentos.excluidoSucesso", "Excluído com sucesso!"));
  
       pesquisar(tipoOperacao || "");
     } catch (e) {
       console.log("ERRO EXCLUIR:", e);
-      alert("Erro ao excluir");
+      alert(t("lancamentos.erroExcluir", "Erro ao excluir"));
     }
   }
 
 
   async function excluirReceber(id) {
-    if (!confirm("Confirmar exclusão?")) return;
+    if (!confirm(t("lancamentos.confirmarExclusao", "Confirmar exclusão?"))) return;
 
     try {
       const url = buildWebhookUrl("exclui_conta_receber"); // <<< trocar pelo webhook real
@@ -1041,15 +1054,15 @@ async function excluirPagar(id) {
       } catch {}
 
       if (texto.includes("foreign key") || texto.includes("violates")) {
-        alert("Não é possível excluir: esta conta possui vínculos.");
+        alert(t("lancamentos.naoPossivelExcluirVinculos", "Não é possível excluir: esta conta possui vínculos."));
         return;
       }
 
-      alert(json?.message || "Excluído com sucesso!");
+      alert(json?.message || t("lancamentos.excluidoSucesso", "Excluído com sucesso!"));
         pesquisar(tipoOperacao || "");
     } catch (e) {
       console.log("ERRO EXCLUIR:", e);
-      alert("Erro ao excluir");
+      alert(t("lancamentos.erroExcluir", "Erro ao excluir"));
     }
   }
 
@@ -1058,24 +1071,24 @@ function labelBotaoPorTipo(tipo) {
   switch ((tipo || "").trim()) {
     case "transacao":
     case "titulos_pagos":
-      return "Estornar Selecionados";
+      return t("lancamentos.estornarSelecionados", "Estornar Selecionados");
 
     case "conta_pagar":
-      return "Pagar Seleção";
+      return t("lancamentos.pagarSelecao", "Pagar Seleção");
 
     case "conta_receber":
-      return "Receber Seleção";
+      return t("lancamentos.receberSelecao", "Receber Seleção");
 
     case "fatura_cartao":
-      return "Pagar Faturas";
+      return t("lancamentos.pagarFaturas", "Pagar Faturas");
 
     case "vencidos":
     case "vence_hoje":
     case "vence_sete_dias":
-      return "Baixar Selecionados";
+      return t("lancamentos.baixarSelecionados", "Baixar Selecionados");
 
     default:
-      return "Baixar Selecionados";
+      return t("lancamentos.baixarSelecionados", "Baixar Selecionados");
   }
 }
 
@@ -1099,52 +1112,52 @@ function escolherFiltro(tipo) {
     transacao: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, estorno."
+      msg: mensagensAcaoPorTipo.transacao
     },
     conta_receber: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, baixar recebimentos."
+      msg: mensagensAcaoPorTipo.conta_receber
     },
     conta_pagar: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, baixar pagamentos."
+      msg: mensagensAcaoPorTipo.conta_pagar
     },
     cartao_compra: {
       limparSelecao: true,
       tempo: 5000,
-      msg: "Ação permitida, excluir compras no cartão."
+      msg: mensagensAcaoPorTipo.cartao_compra
     },
     fatura_cartao: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, pagar faturas do cartão."
+      msg: mensagensAcaoPorTipo.fatura_cartao
     },
     vence_hoje: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+      msg: mensagensAcaoPorTipo.vence_hoje
     },
     vencidos: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+      msg: mensagensAcaoPorTipo.vence_hoje
     },
     vence_sete_dias: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+      msg: mensagensAcaoPorTipo.vence_hoje
     },
     estorno: {
       limparSelecao: false,
       tempo: 5000,
-      msg: "Ação permitida, estornar operações financeiras."
+      msg: mensagensAcaoPorTipo.estorno
     },
     titulos_pagos: {
       limparSelecao: false,
       tempo: 8000,
-      msg: "Ação permitida, baixar pagamentos ou recebimentos."
+      msg: mensagensAcaoPorTipo.vence_hoje
     }
   };
 
@@ -1162,12 +1175,25 @@ function escolherFiltro(tipo) {
 
   mostrarMensagemTela(
     cfg.msg +
-      " Selecione os registros e clique no botão " +
+      " " + t("lancamentos.selecioneRegistrosCliqueBotao", "Selecione os registros e clique no botão") + " " +
       labelBotaoPorTipo(tipo) +
       ".",
     cfg.tempo
   );
 }
+
+const mensagensAcaoPorTipo = {
+  transacao: t("lancamentos.msgAcaoEstorno", "Ação permitida, estorno."),
+  conta_receber: t("lancamentos.msgAcaoBaixarRecebimentos", "Ação permitida, baixar recebimentos."),
+  conta_pagar: t("lancamentos.msgAcaoBaixarPagamentos", "Ação permitida, baixar pagamentos."),
+  cartao_compra: t("lancamentos.msgAcaoExcluirComprasCartao", "Ação permitida, excluir compras no cartão."),
+  fatura_cartao: t("lancamentos.msgAcaoPagarFaturasCartao", "Ação permitida, pagar faturas do cartão."),
+  vence_hoje: t("lancamentos.msgAcaoBaixarPagamentosRecebimentos", "Ação permitida, baixar pagamentos ou recebimentos."),
+  vencidos: t("lancamentos.msgAcaoBaixarPagamentosRecebimentos", "Ação permitida, baixar pagamentos ou recebimentos."),
+  vence_sete_dias: t("lancamentos.msgAcaoBaixarPagamentosRecebimentos", "Ação permitida, baixar pagamentos ou recebimentos."),
+  estorno: t("lancamentos.msgAcaoEstornarOperacoes", "Ação permitida, estornar operações financeiras."),
+  titulos_pagos: t("lancamentos.msgAcaoBaixarPagamentosRecebimentos", "Ação permitida, baixar pagamentos ou recebimentos."),
+};
 
 const contaSelecionada = contas.find((c) => {
   const idConta = String(c.conta_id ?? c.id ?? "");
@@ -1201,9 +1227,9 @@ return (
 
     {mostrarAlerta && (
   <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-yellow-100 text-red px-6 py-3 rounded shadow-lg animate-bounce z-50">
-    ⚠️ Após finalizar todos lançamentos do dia, não esqueça de realizar o processamento contábil —{" "}
+    ⚠️ {t("lancamentos.alertaProcessamentoContabil", "Após finalizar todos lançamentos do dia, não esqueça de realizar o processamento contábil")}{" — "}
     <a href="/processar-diario" className="underline font-bold">
-      Acesse aqui
+      {t("lancamentos.acesseAqui", "Acesse aqui")}
     </a>
   </div>
 )}
@@ -1211,7 +1237,7 @@ return (
     {/* HEADER */}
    <div className="flex justify-between items-start">
   
-    <h1 className="text-2xl font-bold text-blue-800">Transações Financeiras</h1>
+    <h1 className="text-2xl font-bold text-blue-800">{t("lancamentos.titulo", "Transações Financeiras")}</h1>
   <div>
 
   
@@ -1245,9 +1271,9 @@ return (
     <div className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-bold text-blue-800 whitespace-nowrap">
   {RelatorioEscolhido(tipoOperacao || "transacao")} • {dataIni || "--"} até {dataFim || "--"} • Conta:{" "}
   {filtroContaId
-    ? contas.find((c) => String(c.id) === String(filtroContaId))?.nome || "Selecionada"
-    : "Todas"}{" "}
-  • Busca: {busca || "Sem busca"}
+    ? contas.find((c) => String(c.id) === String(filtroContaId))?.nome || t("lancamentos.selecionada", "Selecionada")
+    : t("lancamentos.todas", "Todas")}{" "}
+  • {t("lancamentos.busca", "Busca")}: {busca || t("lancamentos.semBusca", "Sem busca")}
         </div>     
           
             <button
@@ -1265,7 +1291,7 @@ return (
           className="btn-pill btn-white flex items-center gap-2"
         >
           <Funnel size={16} />
-          Filtros
+          {t("lancamentos.filtros", "Filtros")}
         </button> 
  
           
@@ -1274,7 +1300,7 @@ return (
       title="Mostra saldo atual, contas abertas, vencidos e projeção dos próximos 30 dias"
       className="btn-pill btn-white"
     >
-      <BarChart3 size={17} /> Visão Financeira
+      <BarChart3 size={17} /> {t("lancamentos.visaoFinanceira", "Visão Financeira")}
 </button>
 
           
@@ -1283,7 +1309,7 @@ return (
        title="Gerar e revisar contas fixas ou recorrentes, como aluguel, internet e assinaturas"
        className="btn-pill btn-white"
    >
-      <Repeat size={16} /> Conta Recorrente
+      <Repeat size={16} /> {t("lancamentos.transacoesRecorrentes", "Transações recorrentes")}
     </button>
 
      <button
@@ -1291,7 +1317,7 @@ return (
        title="Revisar lançamentos sem classificação contábil correta"
        className="btn-pill btn-white"
    >
-        <ScrollText size={16} /> Reclassificação 
+        <ScrollText size={16} /> {t("lancamentos.reclassificacao", "Reclassificação")} 
     </button>
 
 
@@ -1301,7 +1327,7 @@ return (
         title="Importar extrato bancário para conciliação e lançamento automático"
        className="btn-pill btn-white"
    >
-        <FilePlus size={16} /> Importar 
+        <FilePlus size={16} /> {t("lancamentos.importar", "Importar")} 
     </button>
 
 
@@ -1313,7 +1339,7 @@ return (
       }}
        className="btn-pill btn-emerald"
                     >
-      + Novo lançamento
+      + {t("lancamentos.novoLancamento", "Novo lançamento")}
     </button>
 
      {/*} <button
@@ -1328,7 +1354,7 @@ return (
       onClick={() => window.print()}
               className="btn-pill btn-black"
                     >
-      🖨️ Imprimir
+      🖨️ {t("lancamentos.imprimir", "Imprimir")}
     </a>
   </div>
 </div>
@@ -1371,7 +1397,7 @@ return (
       <div className="flex flex-wrap items-end gap-2">
 
          <div hidden={true}>
-          <label className="text-sm font-semibold text-gray-700">Data início</label>
+          <label className="text-sm font-semibold text-gray-700">{t("lancamentos.dataInicio", "Data início")}</label>
           <input
             type="date"
             value={dataIni}
@@ -1383,7 +1409,7 @@ return (
         </div>
 
         <div hidden={true}>
-          <label className="text-sm font-semibold text-gray-700">Data fim</label>
+          <label className="text-sm font-semibold text-gray-700">{t("lancamentos.dataFim", "Data fim")}</label>
           <input
             type="date"
             value={dataFim}
@@ -1401,7 +1427,7 @@ return (
          <div className="flex items-end gap-2">
              <div>
             <label className="text-sm font-semibold text-gray-700">
-              Conta Bancária
+              {t("lancamentos.contaBancaria", "Conta Bancária")}
             </label>
 
             {(() => {
@@ -1437,7 +1463,7 @@ return (
           }}
           className="block border rounded-lg px-3 py-2 text-base text-blue-900 font-bold min-w-[320px]"
         >
-          <option value="">Selecione</option>
+          <option value="">{t("lancamentos.selecione", "Selecione")}</option>
 
           {contas.map((c) => {
             const id = c.id ?? c.conta_id;
@@ -1449,7 +1475,7 @@ return (
             );
           })}
 
-          <option value="__nova__">➕ Nova Conta Financeira</option>
+          <option value="__nova__">➕ {t("lancamentos.novaContaFinanceira", "Nova Conta Financeira")}</option>
         </select>
       </div>
     );
@@ -1458,7 +1484,7 @@ return (
         {dadosConta && (
             <div className="flex flex-col">
               <label className="text-sm font-bold text-blue-800">
-                Saldo Conta
+                {t("lancamentos.saldoConta", "Saldo Conta")}
               </label>
 
               <div className="rounded-lg border-2 border-blue-700 bg-white px-4 py-2 text-sm font-black whitespace-nowrap text-blue-700">
@@ -1475,12 +1501,12 @@ return (
         {/* BUSCA */}
           <div className="flex flex-col">
             <label className="text-sm font-semibold text-gray-700  mt-4">
-              Busca
+              {t("lancamentos.busca", "Busca")}
             </label>
 
             <input
               type="text"
-              placeholder="🔎 Buscar transação..."
+              placeholder={t("lancamentos.placeholderBusca", "🔎 Buscar transação...")}
               value={busca}
               onChange={(e) => setBusca(e.target.value.toLowerCase())}
               className="px-3 py-2 border rounded-lg w-64"
@@ -1498,17 +1524,17 @@ return (
                       onChange={(e) => escolherFiltro(e.target.value)}
                       className="px-5 py-3 rounded-full border-2 border-blue-500 bg-white text-sm font-bold text-blue-700 shadow hover:bg-blue-250"
                     >
-                      <option value="">Escolha uma consulta</option>
-                      <option value="transacao">💰 À vista</option>
-                      <option value="conta_receber">📥 A receber</option>
-                      <option value="conta_pagar">📤 A pagar</option>
-                      <option value="cartao_compra">💳 Compras cartão</option>
-                      <option value="fatura_cartao">💳 Faturas</option>
-                      <option value="vence_hoje">⏰ Vencimentos</option>
-                      <option value="vencidos">🔴 Vencidos</option>
-                      <option value="vence_sete_dias">📅 Vence 7 dias</option>
-                      <option value="estorno">🔁 Estornados</option>
-                      <option value="titulos_pagos">✅ Baixados</option>
+                      <option value="">{t("lancamentos.escolhaConsulta", "Escolha uma consulta")}</option>
+                      <option value="transacao">💰 {t("lancamentos.aVista", "À vista")}</option>
+                      <option value="conta_receber">📥 {t("lancamentos.aReceber", "A receber")}</option>
+                      <option value="conta_pagar">📤 {t("lancamentos.aPagar", "A pagar")}</option>
+                      <option value="cartao_compra">💳 {t("lancamentos.comprasCartao", "Compras cartão")}</option>
+                      <option value="fatura_cartao">💳 {t("lancamentos.faturas", "Faturas")}</option>
+                      <option value="vence_hoje">⏰ {t("lancamentos.vencimentos", "Vencimentos")}</option>
+                      <option value="vencidos">🔴 {t("lancamentos.vencidos", "Vencidos")}</option>
+                      <option value="vence_sete_dias">📅 {t("lancamentos.venceSeteDias", "Vence 7 dias")}</option>
+                      <option value="estorno">🔁 {t("lancamentos.estornados", "Estornados")}</option>
+                      <option value="titulos_pagos">✅ {t("lancamentos.baixados", "Baixados")}</option>
                     </select>
 
                 </div>
@@ -1517,7 +1543,7 @@ return (
                   onClick={() => pesquisar(tipoOperacao || "")}
                   className="btn-pill btn-dark-blue"
                 >
-                  🔎 Consultar
+                  🔎 {t("lancamentos.consultar", "Consultar")}
                 </button>
 
                  <button
@@ -1530,7 +1556,7 @@ return (
                   `}
                 >
                   {tipoOperacao === "estorno"
-                    ? "Somente consulta"
+                    ? t("lancamentos.somenteConsulta", "Somente consulta")
                     : labelBotaoSelecionados()}
                 </button>
             
@@ -1545,7 +1571,7 @@ return (
     {/* TABELA */}
     <div className="bg-gray-650 rounded-xl shadow-sm overflow-x-auto">
       {listaFiltrada.length === 0 ? (
-        <p className="p-4 text-sm text-gray-50">Nenhum lançamento encontrado.</p>
+        <p className="p-4 text-sm text-gray-50">{t("lancamentos.nenhumLancamento", "Nenhum lançamento encontrado.")}</p>
       ) : (
         <table className="w-full text-sm ">
           <thead className="bg-gray-200 text-gray-600 text-black">
@@ -1565,41 +1591,41 @@ return (
                 />
               </th> )}
                <th className="px-3 py-2 text-left text-black">id</th>
-              <th className="px-3 py-2 text-left text-balck">Descrição</th>
-               <th className="px-3 py-2 text-center  font-bold text-black">Data Movimento</th> 
+              <th className="px-3 py-2 text-left text-balck">{t("lancamentos.descricao", "Descrição")}</th>
+               <th className="px-3 py-2 text-center  font-bold text-black">{t("lancamentos.dataMovimento", "Data Movimento")}</th> 
 
               {lista.some(l => l.tipo_operacao === "fatura_cartao") ? (
                 <>
-                  <th className="px-3 py-2 text-left text-black">Nome</th>
-                  <th className="px-3 py-2 text-left text-black">Número</th>
+                  <th className="px-3 py-2 text-left text-black">{t("lancamentos.nome", "Nome")}</th>
+                  <th className="px-3 py-2 text-left text-black">{t("lancamentos.numero", "Número")}</th>
                 </>
               ) : (
                 <>
                 {/*}  <th className="px-3 py-2 text-left text-white">Categoria</th>*/}
-                  <th className="px-3 py-2 text-left text-black">Conta</th>
+                  <th className="px-3 py-2 text-left text-black">{t("lancamentos.conta", "Conta")}</th>
                 </>
               )}
-              <th className="px-3 py-2 text-left text-black">Tipo</th> 
+              <th className="px-3 py-2 text-left text-black">{t("lancamentos.tipo", "Tipo")}</th> 
                 {temTransacao && (
-                    <th className="px-3 py-2 text-left text-black">Origem</th>
+                    <th className="px-3 py-2 text-left text-black">{t("lancamentos.origem", "Origem")}</th>
                   )}
 
-                <th className="px-3 py-2 text-left text-black">Classsificação</th>
-                  <th className="px-3 py-2 text-left text-black">Forma Pagamento</th>
+                <th className="px-3 py-2 text-left text-black">{t("lancamentos.classificacao", "Classificação")}</th>
+                  <th className="px-3 py-2 text-left text-black">{t("lancamentos.formaPagamento", "Forma Pagamento")}</th>
                 
               
                  {!temTransacao && (
-               <>   <th className="px-3 py-2 text-left">Parcela</th>
-                  <th className="px-3 py-2 text-left">Parcela Total</th> </> )}
-                <th className="px-3 py-2 text-left">Vencimento</th>
+               <>   <th className="px-3 py-2 text-left">{t("lancamentos.parcela", "Parcela")}</th>
+                  <th className="px-3 py-2 text-left">{t("lancamentos.parcelaTotal", "Parcela Total")}</th> </> )}
+                <th className="px-3 py-2 text-left">{t("lancamentos.vencimento", "Vencimento")}</th>
               {!temTransacao && (
-               <>     <th className="px-3 py-2 text-left">Vencido</th>
-                 <th className="px-3 py-2 text-left">Status</th> </> )}
-              <th className="px-3 py-2 text-right">Valor</th>
+               <>     <th className="px-3 py-2 text-left">{t("lancamentos.vencido", "Vencido")}</th>
+                 <th className="px-3 py-2 text-left">{t("lancamentos.status", "Status")}</th> </> )}
+              <th className="px-3 py-2 text-right">{t("lancamentos.valor", "Valor")}</th>
               {temTransacao && (
-                 <>  <th className="px-3 py-2 text-right"> Estorno</th> </> )}
-                <th className="px-3 py-2 text-left "> Tipo Evento</th>
-                 <th className="px-3 py-2 text-left "> Ação</th>
+                 <>  <th className="px-3 py-2 text-right">{t("lancamentos.estorno", "Estorno")}</th> </> )}
+                <th className="px-3 py-2 text-left ">{t("lancamentos.tipoEvento", "Tipo Evento")}</th>
+                 <th className="px-3 py-2 text-left ">{t("lancamentos.acao", "Ação")}</th>
               
             </tr>
           </thead>  
@@ -1665,16 +1691,16 @@ return (
                         }`} 
                       >
                         {l.origem === "conta_pagar"
-                          ? "Pagar"
+                          ? t("lancamentos.pagar", "Pagar")
                           : l.origem === "conta_receber"
-                          ? "Receber"
+                          ? t("lancamentos.receber", "Receber")
                           : l.origem === "fatura_cartao"
-                          ? "Pagar Fatura "
+                          ? t("lancamentos.pagarFatura", "Pagar Fatura")
                           : l.origem === "estorno"
-                          ? "Estorno operação"
+                          ? t("lancamentos.estornoOperacao", "Estorno operação")
                            : l.origem === "compra_cartao"
-                           ? "Cartão"
-                          : "Financeiro"}
+                           ? t("lancamentos.cartao", "Cartão")
+                          : t("lancamentos.financeiro", "Financeiro")}
                       </span>
                     </td> )}
 
@@ -1704,9 +1730,9 @@ return (
                                   }`}
                                 >
                                   {l.vencido === "sim"
-                                    ? "Sim"
+                                    ? t("lancamentos.sim", "Sim")
                                     : l.vencido === "nao"
-                                    ? "Não" 
+                                    ? t("lancamentos.nao", "Não") 
                                     : ""}
                                 </span> 
                       </td> )}
@@ -1744,14 +1770,14 @@ return (
                       }`}
                     >
                       {l.tipo_operacao === "conta_pagar"
-                        ? "A pagar"
+                        ? t("lancamentos.aPagar", "A pagar")
                         : l.tipo_operacao === "conta_receber"
-                        ? "A receber"
+                        ? t("lancamentos.aReceber", "A receber")
                         : l.tipo_operacao === "cartao_compra"
-                        ? "Compra cartão"
+                        ? t("lancamentos.compraCartao", "Compra cartão")
                         : l.tipo_operacao === "fatura_cartao"
-                        ? "Fatura cartão"
-                        : "Financeiro"}
+                        ? t("lancamentos.faturaCartao", "Fatura cartão")
+                        : t("lancamentos.financeiro", "Financeiro")}
                     </span>
                     </td>
                   
@@ -1796,7 +1822,7 @@ return (
                                 ? "Aberto"
                                 : "Fatura paga"
                               : l.status === "aberto" || l.status === "aberta"
-                              ? "Pagar"
+                              ? t("lancamentos.pagar", "Pagar")
                               : "Pago"}
                           </button>
                         )}*/}
@@ -1823,7 +1849,7 @@ return (
                           : "text-red-600 hover:underline font-semibold"
                       }
                     >
-                      Excluir
+                      {t("lancamentos.excluir", "Excluir")}
                     </button>
                   )}
 
@@ -1840,7 +1866,7 @@ return (
  <ModalBase
             open={modalConta}
             onClose={() => setModalConta(false)}
-            title="Nova Conta Financeira"
+            title={t("lancamentos.novaContaFinanceira", "Nova Conta Financeira")}
           >
             <FormConta
               empresa_id={empresa_id}
@@ -1870,14 +1896,14 @@ return (
           <ModalBase
             open={modalFiltro}
             onClose={() => setModalFiltro(false)}
-            title="Filtros"
+            title={t("lancamentos.filtros", "Filtros")}
           >
             <div className="space-y-4">
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-semibold text-gray-700">
-                  Data início
+                  {t("lancamentos.dataInicio", "Data início")}
                 </label>
                 <input
                   type="date"
@@ -1892,7 +1918,7 @@ return (
 
                 <div>
                   <label className="text-sm font-semibold text-gray-700">
-                    Data fim
+                    {t("lancamentos.dataFim", "Data fim")}
                   </label>
                   <input
                     type="date"
@@ -1907,7 +1933,7 @@ return (
 
                 <div>
                   <label className="text-sm font-semibold text-gray-700">
-                    Conta bancária
+                    {t("lancamentos.contaBancaria", "Conta bancária")}
                   </label>
                   <select
                    value={filtroTemp.filtroContaId}
@@ -1916,7 +1942,7 @@ return (
                     }
                     className="w-full border rounded-lg px-3 py-2 text-sm"
                   >
-                    <option value="">Todas</option>
+                    <option value="">{t("lancamentos.todas", "Todas")}</option>
                     {contas.map((c) => (
                       <option key={c.id} value={String(c.id)}>
                         {labelContaDrop(c)}
@@ -1927,7 +1953,7 @@ return (
 
               <div>
                 <label className="text-sm font-semibold text-gray-700">
-                  Tipo de consulta
+                  {t("lancamentos.tipoConsulta", "Tipo de consulta")}
                 </label>
                 <select
                   value={filtroTemp.tipoOperacao}
@@ -1936,22 +1962,22 @@ return (
                   }
                   className="w-full border rounded-lg px-3 py-2 text-sm"
                 >
-                  <option value="transacao">À vista</option>
-                  <option value="conta_receber">A receber</option>
-                  <option value="conta_pagar">A pagar</option>
-                  <option value="cartao_compra">Compras cartão</option>
-                  <option value="fatura_cartao">Faturas</option>
-                  <option value="vence_hoje">Vencimentos hoje</option>
-                  <option value="vencidos">Vencidos</option>
-                  <option value="vence_sete_dias">Vence 7 dias</option>
-                  <option value="estorno">Estornados</option>
-                  <option value="titulos_pagos">Baixados</option>
+                  <option value="transacao">{t("lancamentos.aVista", "À vista")}</option>
+                  <option value="conta_receber">{t("lancamentos.aReceber", "A receber")}</option>
+                  <option value="conta_pagar">{t("lancamentos.aPagar", "A pagar")}</option>
+                  <option value="cartao_compra">{t("lancamentos.comprasCartao", "Compras cartão")}</option>
+                  <option value="fatura_cartao">{t("lancamentos.faturas", "Faturas")}</option>
+                  <option value="vence_hoje">{t("lancamentos.vencimentosHoje", "Vencimentos hoje")}</option>
+                  <option value="vencidos">{t("lancamentos.vencidos", "Vencidos")}</option>
+                  <option value="vence_sete_dias">{t("lancamentos.venceSeteDias", "Vence 7 dias")}</option>
+                  <option value="estorno">{t("lancamentos.estornados", "Estornados")}</option>
+                  <option value="titulos_pagos">{t("lancamentos.baixados", "Baixados")}</option>
                 </select>
               </div>
 
               <div>
                 <label className="text-sm font-semibold text-gray-700">
-                  Buscar no histórico
+                  {t("lancamentos.buscarHistorico", "Buscar no histórico")}
                 </label>
                 <input
                   type="text"
@@ -1959,7 +1985,7 @@ return (
                   onChange={(e) =>
                     setFiltroTemp((p) => ({ ...p, busca: e.target.value }))
                   }
-                  placeholder="Ex: pix, carne, gasolina..."
+                  placeholder={t("lancamentos.placeholderHistorico", "Ex: pix, carne, gasolina...")}
                   className="w-full border rounded-lg px-3 py-2 text-sm"
                 />
               </div>
@@ -1978,7 +2004,7 @@ return (
               }}
               className="btn-pill btn-white"
             >
-              Limpar
+              {t("lancamentos.limpar", "Limpar")}
             </button>
 
       <button
@@ -1998,7 +2024,7 @@ return (
           }}
         className="btn-pill btn-dark-blue"
       >
-        Aplicar filtros
+        {t("lancamentos.aplicarFiltros", "Aplicar filtros")}
       </button>
     </div>
   </div>
@@ -2025,7 +2051,7 @@ return (
       </button>
 
       <span className="text-sm font-black text-blue-900">
-        {!tipoNovo ? "Novo lançamento" : tipoNovo.titulo}
+        {!tipoNovo ? t("lancamentos.novoLancamento", "Novo lançamento") : tipoNovo.titulo}
       </span>
 
       <button
@@ -2044,21 +2070,21 @@ return (
       {!tipoNovo && (
         <div className="space-y-3">
           <h2 className="px-2 text-base font-black text-blue-900">
-            O que deseja registrar?
+            {t("lancamentos.oQueDesejaRegistrar", "O que deseja registrar?")}
           </h2>
 
           <div className="rounded-2xl border bg-white p-2 shadow-sm">
             <div className="mb-2 text-sm font-black text-emerald-700">
-              📥 Recebimento
+              📥 {t("lancamentos.recebimento", "Recebimento")}
             </div>
 
             <div className="space-y-1.5">
               {[
-                ["À vista", "avista", "Recebimento à vista"],
-                ["Pix", "pix", "Recebimento via Pix"],
-                ["Cartão débito", "cartao_debito", "Recebimento no cartão de débito"],
-                ["Cartão crédito", "cartao_credito", "Recebimento no cartão de crédito"],
-                ["A prazo", "aprazo", "Conta a receber"],
+                [t("lancamentos.aVista", "À vista"), "avista", t("lancamentos.recebimentoAVista", "Recebimento à vista")],
+                ["Pix", "pix", t("lancamentos.recebimentoViaPix", "Recebimento via Pix")],
+                [t("lancamentos.cartaoDebito", "Cartão débito"), "cartao_debito", t("lancamentos.recebimentoCartaoDebito", "Recebimento no cartão de débito")],
+                [t("lancamentos.cartaoCredito", "Cartão crédito"), "cartao_credito", t("lancamentos.recebimentoCartaoCredito", "Recebimento no cartão de crédito")],
+                [t("lancamentos.aPrazo", "A prazo"), "aprazo", t("lancamentos.contaAReceber", "Conta a receber")],
               ].map(([label, forma, titulo]) => (
                 <button
                   key={forma}
@@ -2084,16 +2110,16 @@ return (
 
           <div className="rounded-2xl border bg-white p-2 shadow-sm">
             <div className="mb-2 text-sm font-black text-red-700">
-              📤 Pagamento
+              📤 {t("lancamentos.pagamento", "Pagamento")}
             </div>
 
             <div className="space-y-1.5">
               {[
-                ["À vista", "avista", "Pagamento à vista"],
-                ["Pix", "pix", "Pagamento via Pix"],
-                ["Cartão débito", "cartao_debito", "Pagamento no cartão de débito"],
-                ["Cartão crédito", "cartao_credito", "Pagamento no cartão de crédito"],
-                ["A prazo", "aprazo", "Conta a pagar"],
+                [t("lancamentos.aVista", "À vista"), "avista", t("lancamentos.pagamentoAVista", "Pagamento à vista")],
+                ["Pix", "pix", t("lancamentos.pagamentoViaPix", "Pagamento via Pix")],
+                [t("lancamentos.cartaoDebito", "Cartão débito"), "cartao_debito", t("lancamentos.pagamentoCartaoDebito", "Pagamento no cartão de débito")],
+                [t("lancamentos.cartaoCredito", "Cartão crédito"), "cartao_credito", t("lancamentos.pagamentoCartaoCredito", "Pagamento no cartão de crédito")],
+                [t("lancamentos.aPrazo", "A prazo"), "aprazo", t("lancamentos.contaAPagar", "Conta a pagar")],
               ].map(([label, forma, titulo]) => (
                 <button
                   key={forma}
@@ -2121,7 +2147,7 @@ return (
             type="button"
             onClick={() =>
               setTipoNovo({
-                titulo: "Transferência entre contas",
+                titulo: t("lancamentos.transferenciaEntreContas", "Transferência entre contas"),
                 tipo: "transferencia",
               })
             }
@@ -2129,10 +2155,10 @@ return (
           >
             <div>
               <div className="text-sm font-black text-blue-800">
-                🔄 Transferência
+                🔄 {t("lancamentos.transferencia", "Transferência")}
               </div>
               <div className="text-xs font-bold text-slate-500">
-                Movimentar valor entre contas bancárias
+                {t("lancamentos.transferenciaDescricao", "Movimentar valor entre contas bancárias")}
               </div>
             </div>
 

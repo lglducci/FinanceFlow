@@ -567,460 +567,404 @@ function carregarLancamentoTela(dados) {
 }
 
 /* ================== UI ================== */
-  return (
-    <div className="max-w-2xl mx-auto p-2">
-      
-      <div className="min-h-screen py-6 px-4 bg-bgSoft"> 
-      
-      <div className="bg-[#061f4aff] rounded-xl p-3 mb-4 text-white text-center"> 
+ return (
+  <div className="min-h-screen bg-slate-100 px-4 py-6">
+    <div className="fixed inset-0 bg-black/55" />
 
-   
-       
-            <h2 className="text-2xl font-bold mb-6 text-center text-white"> 
-          ⚡ Lançamento Contábil Rápido (Edição) </h2>
-  
+    <div className="relative z-10 w-full max-w-3xl mx-auto">
+      <div className="bg-white rounded-[22px] shadow-2xl border border-slate-200 overflow-hidden">
 
-      <div className="bg-white rounded-xl p-6 space-y-4">
+        {/* CABEÇALHO */}
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-black text-[#08233d]">
+              Editar Lançamento Contábil
+            </h1>
+            <p className="text-xs font-semibold text-slate-500 mt-1">
+              Ajuste as contas, histórico, valor e data do lançamento.
+            </p>
+          </div>
 
-        {helperMsg && (
-                    <div className="bg-yellow-50 border border-yellow-300 text-yellow-900 rounded-lg p-3 text-sm">
-                      <div className="font-bold mb-1">{helperMsg.titulo}</div>
-                      <div>{helperMsg.mensagem}</div>
-                    </div>
-                  )}
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-400 text-2xl leading-none"
+          >
+            ×
+          </button>
+        </div>
 
-        {/* MODO */}
-        <label className="flex items-center gap-2 font-bold text-[#1e40af]">
-          <input
-            type="checkbox"
-            checked={usarModelo}
-            onChange={(e) => setUsarModelo(e.target.checked)}
-          />
-          Usar modelo (token)
-        </label>
-
-        {/* TOKEN */}
-         <div className="flex items-center gap-2"> 
-        {usarModelo && (
-          <input
-            list="tokens"
-            className="input-premium"
-            placeholder="Token do modelo"
-            value={modeloCodigo}
-            onChange={(e) => selecionarModelo(e.target.value)}
-          />
-        )}
-        <datalist id="tokens">
-          {modelos.map((m) => (
-            <option key={m.id} value={m.codigo} />
-          ))}
-        </datalist>
-          {usarModelo && ( 
-            
-              <div className="relative group"> 
-              <button
-              type="button"
-              onClick={() => {
-                console.log("CLICOU MODELO");
-                setModalModelo(true);
-              }}
-               className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
-            >
-              ➕  
-            </button> 
-            <div className="
-                        absolute left-1/2 -translate-x-1/2 top-10
-                        hidden group-hover:block
-                        bg-black text-white text-xs
-                        px-2 py-1 rounded
-                        whitespace-nowrap
-                        z-50
-                      ">
-                      Adicionar Modelo
-                    </div>
-                   
-            
-             </div>) }  
+        {/* CORPO */}
+        <div className="max-h-[70vh] overflow-y-auto px-6 py-5 space-y-6">
+          {helperMsg && (
+            <div className="rounded-xl border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm text-yellow-900">
+              <div className="font-black mb-1">{helperMsg.titulo}</div>
+              <div className="font-semibold">{helperMsg.mensagem}</div>
             </div>
+          )}
 
-                      {/* ================= BLOCO MODELO (SÓ SE TOKEN) ================= */}
-              {usarModelo && modeloSelecionado && (
-                <div className="space-y-3">
+          {/* MODO */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Tipo de edição
+            </h2>
 
-                  <div className="bg-gray-300 text-[#003ba2] p-3 rounded font-bold">
-                    Nome: {modeloSelecionado.nome}
-                  </div>
+            <label className="flex items-center gap-2 text-sm font-black text-slate-700">
+              <input
+                type="checkbox"
+                checked={usarModelo}
+                onChange={(e) => setUsarModelo(e.target.checked)}
+              />
+              Usar modelo contábil
+            </label>
 
-                  <table className="tabela tabela-mapeamento w-full border-collapse">
-                    <thead>
-                      <tr className="bg-gray-900 text-white">
-                        <th>ID</th>
-                        <th>Conta</th>
-                        <th>Nome</th>
-                        <th>Tipo</th>
-                        <th>Natureza</th>
-                        <th>D/C</th>
+            {usarModelo && (
+              <div className="flex items-center gap-2">
+                <input
+                  list="tokens"
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  placeholder="Token do modelo"
+                  value={modeloCodigo}
+                  onChange={(e) => selecionarModelo(e.target.value)}
+                />
+
+                <datalist id="tokens">
+                  {modelos.map((m) => (
+                    <option key={m.id} value={m.codigo} />
+                  ))}
+                </datalist>
+
+                <button
+                  type="button"
+                  onClick={() => setModalModelo(true)}
+                  className="h-10 w-10 rounded-lg bg-[#082f4f] text-white font-black"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </section>
+
+          {usarModelo && modeloSelecionado && (
+            <>
+              <div className="border-t border-slate-200" />
+
+              <section className="space-y-4">
+                <h2 className="text-sm font-black text-[#08233d]">
+                  Modelo selecionado
+                </h2>
+
+                <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-black text-[#08233d]">
+                  {modeloSelecionado.nome}
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border border-slate-200">
+                  <table className="w-full text-sm">
+                    <thead className="bg-[#082f4f] text-white">
+                      <tr>
+                        <th className="px-3 py-2 text-left">Conta</th>
+                        <th className="px-3 py-2 text-left">Nome</th>
+                        <th className="px-3 py-2 text-center">D/C</th>
                       </tr>
                     </thead>
                     <tbody>
                       {linhasModelo.map((l, i) => (
                         <tr
                           key={i}
-                          className={i % 2 === 0 ? "bg-gray-100" : "bg-gray-200"}
+                          className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}
                         >
-                          <td   className="text-[#061f4aff]">{l.conta_id}</td>
-                          <td className="text-[#061f4aff]">{l.codigo}</td>
-                          <td className="text-[#061f4aff]">{l.nome}</td>
-                          <td className="text-[#061f4aff]">{l.tipo}</td>
-                          <td className="text-[#061f4aff]">{l.natureza}</td>
-                          <td className="font-bold text-[#061f4aff]">{l.dc}</td>
+                          <td className="px-3 py-2 font-bold text-slate-700">
+                            {l.codigo}
+                          </td>
+                          <td className="px-3 py-2 font-semibold text-slate-600">
+                            {l.nome}
+                          </td>
+                          <td className="px-3 py-2 text-center font-black text-[#08233d]">
+                            {l.dc}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
-
                 </div>
-              )}
+              </section>
+            </>
+          )}
 
+          {!usarModelo && (
+            <>
+              <div className="border-t border-slate-200" />
 
-        {/* MANUAL */}
-        {!usarModelo && (
-          <>
-          <div className="mb-4">  
+              <section className="space-y-4">
+                <h2 className="text-sm font-black text-[#08233d]">
+                  Partida contábil
+                </h2>
 
-              <label className="flex items-center gap-2 text-sm font-bold text-[#061f4aff] mb-1 relative">
-                  Entrada (Débito)
-
-                  {debitoId && (
-                    <div className="group relative">
-                      {/* ÍCONE */}
-                      <span
-                        className="inline-flex items-center justify-center
-                                  w-5 h-5 rounded-full
-                                  bg-[#061f4a] text-white
-                                  text-xs font-bold cursor-pointer"
-                      >
+                {/* DÉBITO */}
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-black text-slate-600 mb-1">
+                    Entrada — Débito
+                    {debitoId && (
+                      <span className="group relative inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#082f4f] text-white text-xs cursor-pointer">
                         ?
+                        <span className="absolute left-1/2 -translate-x-1/2 top-7 hidden group-hover:block bg-black text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap z-50 shadow-lg">
+                          {explicacaoContatooltip(
+                            contas.find((c) => c.id == debitoId)?.codigo
+                          )}
+                        </span>
                       </span>
+                    )}
+                  </label>
 
-                      {/* TOOLTIP */}
-                      <div
-                        className="absolute left-1/2 -translate-x-1/2 top-7
-                                  hidden group-hover:block
-                                  bg-black text-white text-xs
-                                  px-3 py-2 rounded-lg
-                                  whitespace-nowrap z-50 shadow-lg"
-                      >
-                        {explicacaoContatooltip(
-                          contas.find(c => c.id == debitoId)?.codigo
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </label>
- 
-               
-             <div className="flex items-center gap-2"> 
-             <input
-                list="contasDebito"
-                className="input-premium"
-                placeholder="Digite código ou nome da conta"
-                value={debitoTexto}
-                onChange={(e) => {
-                  const texto = e.target.value;
-                  setDebitoTexto(texto);
+                  <div className="flex items-center gap-2">
+                    <input
+                      list="contasDebito"
+                      className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                      placeholder="Digite código ou nome da conta"
+                      value={debitoTexto}
+                      onChange={(e) => {
+                        const texto = e.target.value;
+                        setDebitoTexto(texto);
 
-                  // 🔍 resolve conta pelo código digitado
-                  const conta = contas.find(
-                    c => `${c.codigo} - ${c.nome}` === texto
-                        || c.codigo === texto
-                  );
+                        const conta = contas.find(
+                          (c) =>
+                            `${c.codigo} - ${c.nome}` === texto ||
+                            c.codigo === texto
+                        );
 
-                  if (conta) {
-                    setDebitoId(conta.id);          // ID interno
-                    setDebitoConta(conta);          // objeto completo
+                        if (conta) {
+                          setDebitoId(conta.id);
+                          setDebitoConta(conta);
 
-                    const novoHist = montarHistorico(conta.id, creditoId);
-                    if (novoHist) setHistorico(novoHist);
-                  }
-                }}
-              />
+                          const novoHist = montarHistorico(conta.id, creditoId);
+                          if (novoHist) setHistorico(novoHist);
+                        }
+                      }}
+                    />
 
-              <datalist id="contasDebito">
-                {contas.map((c) => (
-                  <option
-                    key={c.id}
-                    value={`${c.codigo} - ${c.nome}`}
-                  />
-                ))}
-              </datalist>  
+                    <datalist id="contasDebito">
+                      {contas.map((c) => (
+                        <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
+                      ))}
+                    </datalist>
 
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                {/* seu input + datalist aqui (igual acima) */}
-              </div>
-
-              <div className="relative group">
                     <button
                       type="button"
                       onClick={() => {
                         setCampoOrigemConta("debito");
                         setModalContaContabil(true);
                       }}
-                      className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                      className="h-10 w-10 rounded-lg bg-[#082f4f] text-white font-black"
                     >
                       +
                     </button>
+                  </div>
 
-                    <div className="
-                        absolute left-1/2 -translate-x-1/2 top-10
-                        hidden group-hover:block
-                        bg-black text-white text-xs
-                        px-2 py-1 rounded
-                        whitespace-nowrap
-                        z-50
-                      ">
-                      Adicionar nova conta
+                  {debitoConta && (
+                    <div className="mt-2 rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs font-semibold text-yellow-900">
+                      📌 {explicacaoConta(debitoConta.codigo)?.texto}
                     </div>
-                   
-                  </div>  
-             </div> 
-           
-            </div>
-               {debitoConta && (
-              <div className="mt-1 text-xs text-blue-900  bg-yellow-100 p-2 rounded">
-                📌 {explicacaoConta(debitoConta.codigo)?.texto}
-              </div>
-            )}  
+                  )}
+                </div>
 
-            </div>
-            
-            <div className="mb-4">
-             
-              <label className="flex items-center gap-2 text-sm font-bold text-[#061f4aff] mb-1 relative">
-                    Saida (Crédito)
-
+                {/* CRÉDITO */}
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-black text-slate-600 mb-1">
+                    Saída — Crédito
                     {creditoId && (
-                      <div className="group relative">
-                        {/* ÍCONE */}
-                        <span
-                          className="inline-flex items-center justify-center
-                                    w-5 h-5 rounded-full
-                                    bg-[#061f4a] text-white
-                                    text-xs font-bold cursor-pointer"
-                        >
-                          ?
-                        </span>
-
-                        {/* TOOLTIP */}
-                        <div
-                          className="absolute left-1/2 -translate-x-1/2 top-7
-                                    hidden group-hover:block
-                                    bg-black text-white text-xs
-                                    px-3 py-2 rounded-lg
-                                    whitespace-nowrap z-50 shadow-lg"
-                        >
+                      <span className="group relative inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#082f4f] text-white text-xs cursor-pointer">
+                        ?
+                        <span className="absolute left-1/2 -translate-x-1/2 top-7 hidden group-hover:block bg-black text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap z-50 shadow-lg">
                           {explicacaoContaCredito(
-                            contas.find(c => c.id == creditoId)?.codigo
+                            contas.find((c) => c.id == creditoId)?.codigo
                           )}
-                        </div>
-                      </div>
+                        </span>
+                      </span>
                     )}
                   </label>
-               
-             <div className="flex items-center gap-2"> 
-              <input
-                  list="contasCredito"
-                  className="input-premium"
-                  placeholder="Digite código ou nome da conta"
-                  value={creditoTexto}
-                  onChange={(e) => {
-                    const texto = e.target.value;
-                    setCreditoTexto(texto);
 
-                    // 🔍 resolve conta pelo texto digitado
-                    const conta = contas.find(
-                      c =>
-                        `${c.codigo} - ${c.nome}` === texto ||
-                        c.codigo === texto
-                    );
+                  <div className="flex items-center gap-2">
+                    <input
+                      list="contasCredito"
+                      className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                      placeholder="Digite código ou nome da conta"
+                      value={creditoTexto}
+                      onChange={(e) => {
+                        const texto = e.target.value;
+                        setCreditoTexto(texto);
 
-                    if (conta) {
-                      setCreditoId(conta.id);
-                      setCreditoConta(conta);
+                        const conta = contas.find(
+                          (c) =>
+                            `${c.codigo} - ${c.nome}` === texto ||
+                            c.codigo === texto
+                        );
 
-                      const novoHist = montarHistorico(debitoId, conta.id);
-                      if (novoHist) setHistorico(novoHist);
-                    }
-                  }}
-                />
+                        if (conta) {
+                          setCreditoId(conta.id);
+                          setCreditoConta(conta);
 
-                <datalist id="contasCredito">
-                  {contas.map((c) => (
-                    <option
-                      key={c.id}
-                      value={`${c.codigo} - ${c.nome}`}
+                          const novoHist = montarHistorico(debitoId, conta.id);
+                          if (novoHist) setHistorico(novoHist);
+                        }
+                      }}
                     />
-                  ))}
-                </datalist> 
-                  <div className="relative group">
+
+                    <datalist id="contasCredito">
+                      {contas.map((c) => (
+                        <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
+                      ))}
+                    </datalist>
+
                     <button
                       type="button"
                       onClick={() => {
                         setCampoOrigemConta("credito");
                         setModalContaContabil(true);
                       }}
-                      className="w-8 h-8 flex items-center justify-center rounded bg-[#061f4a] text-white text-sm"
+                      className="h-10 w-10 rounded-lg bg-[#082f4f] text-white font-black"
                     >
                       +
                     </button>
-
-                    <div className="
-                        absolute left-1/2 -translate-x-1/2 top-10
-                        hidden group-hover:block
-                        bg-black text-white text-xs
-                        px-2 py-1 rounded
-                        whitespace-nowrap
-                        z-50
-                      ">
-                      Adicionar nova conta
-                    </div>
                   </div>
 
-          </div>
-             {creditoConta && (
-              <div className="mt-1 text-xs text-blue-900 bg-yellow-100 p-2 rounded">
-                📌 {explicacaoConta(creditoConta.codigo)?.texto}
-              </div>
-            )}
-          </div>
-          </>
-        )}
-           
-        <div className="mb-4">
-              <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-              Histórico
-              </label>
-
-        <input
-          className="input-premium"
-          placeholder="Histórico"
-          value={historico}
-          onChange={(e) => {
-              setHistorico(e.target.value);
-              setHistoricoEditado(true);
-            }}
-        />
-         </div>
-
-          <div className="mb-4">
-              <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-              Valor
-              </label>
-
-        <input
-          type="number"
-          className="input-premium"
-          placeholder="00,00"
-          value={valor}
-          onChange={(e) => setValor(e.target.value)}
-        />
-         </div>
- 
-        <div className="mb-4">
-              <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-              Data Movimento
-              </label>
-        <input
-          type="date"
-          className="input-premium"
-          value={dataLancto}
-          onChange={(e) => setDataLancto(e.target.value)}
-        /> 
-         </div>
-
-
-
-        {/* LEMBRETE */}
-          <div className="flex items-center gap-2 mt-2">
-            <input
-              type="checkbox"
-              id="lembrar"
-              checked={lembrar}
-              onChange={(e) => setLembrar(e.target.checked)}
-            />
-            <label htmlFor="lembrar" className="text-sm font-semibold text-gray-700">
-              Lembrar este lançamento
-            </label>
-          </div>
-
-       {lembrar && (
-            <div className="mb-4">
-              <label className="block w-full text-left text-sm font-bold text-[#061f4aff] mb-1">
-                Vencimento
-              </label>
-              <input
-                type="date"
-                className="input-premium"
-                value={vencimento}
-                min={hoje}
-                onChange={(e) => setVencimento(e.target.value)}
-              />
-            </div>
+                  {creditoConta && (
+                    <div className="mt-2 rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs font-semibold text-yellow-900">
+                      📌 {explicacaoConta(creditoConta.codigo)?.texto}
+                    </div>
+                  )}
+                </div>
+              </section>
+            </>
           )}
 
-           
-        <button
-          onClick={salvar}
-          disabled={salvando}
-          className="w-full bg-[#061f4aff] text-white font-bold py-3 rounded"
-        >
-          {salvando ? "Salvando..." : "Salvar (Enter)"}
-        </button>
+          <div className="border-t border-slate-200" />
 
-        <button
-          onClick={() => navigate(-1)}
-          className="w-full bg-gray-600 text-white font-bold py-2 rounded"
-        >
-          Voltar
-        </button>
+          {/* DADOS DO LANÇAMENTO */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Dados do lançamento
+            </h2>
 
- 
-      </div>
-       </div>
+            <div>
+              <label className="block text-xs font-black text-slate-600 mb-1">
+                Histórico
+              </label>
+              <input
+                className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                placeholder="Histórico"
+                value={historico}
+                onChange={(e) => {
+                  setHistorico(e.target.value);
+                  setHistoricoEditado(true);
+                }}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Valor
+                </label>
+                <input
+                  type="number"
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  placeholder="00,00"
+                  value={valor}
+                  onChange={(e) => setValor(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Data Movimento
+                </label>
+                <input
+                  type="date"
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  value={dataLancto}
+                  onChange={(e) => setDataLancto(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700">
+              <input
+                type="checkbox"
+                id="lembrar"
+                checked={lembrar}
+                onChange={(e) => setLembrar(e.target.checked)}
+              />
+              Lembrar este lançamento
+            </label>
+
+            {lembrar && (
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Vencimento
+                </label>
+                <input
+                  type="date"
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  value={vencimento}
+                  min={hoje}
+                  onChange={(e) => setVencimento(e.target.value)}
+                />
+              </div>
+            )}
+          </section>
+        </div>
+
+        {/* RODAPÉ */}
+        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="h-11 px-6 rounded-lg border border-sky-200 bg-sky-50 text-[#08233d] text-sm font-black"
+          >
+            Voltar
+          </button>
+
+          <button
+            type="button"
+            onClick={salvar}
+            disabled={salvando}
+            className="h-11 px-7 rounded-lg bg-[#082f4f] text-white text-sm font-black shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {salvando ? "Salvando..." : "Salvar Alterações"}
+          </button>
+        </div>
       </div>
 
       <ModalBase
-          open={modalContaContabil}
-          onClose={() => setModalContaContabil(false)}
-          title="Nova Conta Contábil"
-        >
-           <FormContaContabilModal
-              empresa_id={empresa_id}
-              onSuccess={() => {
-                setModalContaContabil(false);
-                carregarContas(); // 🔥 REFRESH DO DROPDOWN
-              }}
-              onCancel={() => setModalContaContabil(false)}
-            /> 
-        </ModalBase>
+        open={modalContaContabil}
+        onClose={() => setModalContaContabil(false)}
+        title="Nova Conta Contábil"
+      >
+        <FormContaContabilModal
+          empresa_id={empresa_id}
+          onSuccess={() => {
+            setModalContaContabil(false);
+            carregarContas();
+          }}
+          onCancel={() => setModalContaContabil(false)}
+        />
+      </ModalBase>
 
-        <ModalBase
-          open={modalModelo}
-          onClose={() => setModalModelo(false)}
-          title="Novo Modelo"
-        >
-          <FormModeloContabil
-            empresa_id={empresa_id}
-            onSuccess={() => {
-              setModalModelo(false);
-              carregarModelos();
-            }} 
-
-            onCancel={() => setModalModelo(false)}
-          />
-        </ModalBase>
-
+      <ModalBase
+        open={modalModelo}
+        onClose={() => setModalModelo(false)}
+        title="Novo Modelo"
+      >
+        <FormModeloContabil
+          empresa_id={empresa_id}
+          onSuccess={() => {
+            setModalModelo(false);
+            carregarModelos();
+          }}
+          onCancel={() => setModalModelo(false)}
+        />
+      </ModalBase>
     </div>
-  );
+  </div>
+);
 }

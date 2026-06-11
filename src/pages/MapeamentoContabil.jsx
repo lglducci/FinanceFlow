@@ -136,222 +136,278 @@ const [filtro, setFiltro] = useState("");
   m.classificacao?.toLowerCase().includes(filtro.toLowerCase()) ||
   m.tipo_evento?.toLowerCase().includes(filtro.toLowerCase())
 );
+
  return (
-  <div className="p-4 w-full">
+  <div className="min-h-screen bg-slate-100 px-4 py-6"> 
+  <div className="w-full max-w-[1500px] mx-auto space-y-5">
 
-    {/* ===== HEADER / CONTEXTO ===== */}
-    <div className="bg-white rounded-xl border-l-4  shadow-sm p-4 mb-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-blue-800">
-          Modelo de Lançamentos Prontos.
-        </h2>
+      {/* CABEÇALHO */}
+      <div className="bg-white rounded-[22px] shadow-xl border border-slate-200 overflow-hidden">
+        <div className="px-6 py-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-black text-[#08233d]">
+              Modelos Contábeis
+            </h1>
+            <p className="text-xs font-semibold text-slate-500 mt-1">
+              Gerencie os modelos prontos de lançamentos contábeis.
+            </p>
+          </div>
 
-        <div className="flex gap-4">
-          <button
-            onClick={() => navigate("/novo-modelo")}
-              className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-            + Novo Modelo
-          </button>
- 
-         
-          <button
-            onClick={() => setModalContaContabil(true)}
-           
-            className="
-                        px-5 py-2 rounded-full
-                        font-bold text-sm tracking-wide
-                        text-white
-                        bg-gradient-to-b from-emerald-500 via-emerald-600 to-emerald-800
-                        border-2 border-black
-                        shadow-[0_4px_12px_rgba(0,0,0,0.4)]
-                        hover:brightness-110 hover:scale-105
-                        active:scale-95
-                        transition-all duration-200
-                        inline-flex items-center gap-2
-                      ">
-            ➕ Adicionar Conta
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/novo-modelo")}
+              className="h-10 px-5 rounded-lg bg-[#082f4f] text-white text-sm font-black shadow-md"
+            >
+              + Novo Modelo
+            </button>
 
+            <button
+              type="button"
+              onClick={() => setModalContaContabil(true)}
+              className="h-10 px-5 rounded-lg border border-sky-200 bg-sky-50 text-[#08233d] text-sm font-black"
+            >
+              + Adicionar Conta
+            </button>
+          </div>
+        </div>
 
-
+        {/* FILTRO */}
+        <div className="px-6 py-4 bg-white">
+          <label className="block text-xs font-black text-slate-600 mb-1">
+            Buscar modelo
+          </label>
+          <input
+            type="text"
+            placeholder="Token, descrição, classificação ou evento..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+          />
         </div>
       </div>
 
-      {selecionado && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          <div>
-            <p className="text-sm text-gray-500">Token</p>
-            <p className="font-semibold text-gray-800">{selecionado.codigo}</p>
+      {/* DETALHE DO MODELO */}
+      {selecionado && linhas.length > 0 && (
+        <div className="bg-white rounded-[22px] shadow-xl border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Estrutura do Modelo
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
+                <p className="text-xs font-black text-slate-500">Token</p>
+                <p className="text-sm font-black text-[#08233d]">
+                  {selecionado.codigo}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
+                <p className="text-xs font-black text-slate-500">Modelo</p>
+                <p className="text-sm font-black text-[#08233d]">
+                  {selecionado.nome}
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
+                <p className="text-xs font-black text-slate-500">
+                  Classificação
+                </p>
+                <p className="text-sm font-black text-[#08233d]">
+                  {selecionado.class || "-"}
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <p className="text-sm text-gray-500">Modelo</p>
-            <p className="font-semibold text-gray-800">{selecionado.nome}</p>
-          </div>
+          <div className="p-6 overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead className="bg-[#082f4f] text-white">
+                <tr>
+                  <th className="px-3 py-2 text-left">Conta</th>
+                  <th className="px-3 py-2 text-left">Código</th>
+                  <th className="px-3 py-2 text-left">Nome</th>
+                  <th className="px-3 py-2 text-left">Tipo</th>
+                  <th className="px-3 py-2 text-left">Natureza</th>
+                  <th className="px-3 py-2 text-center">D/C</th>
+                </tr>
+              </thead>
 
-          <div>
-            <p className="text-sm text-gray-500">Tipo de Automação</p>
-            <p className="font-semibold text-gray-800">{selecionado.tipo}</p>
+              <tbody>
+                {linhas.map((l, i) => (
+                  <tr
+                    key={i}
+                    className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}
+                  >
+                    <td className="px-3 py-2 font-bold text-slate-700">
+                      {l.conta_id}
+                    </td>
+                    <td className="px-3 py-2 font-bold text-slate-700">
+                      {l.codigo}
+                    </td>
+                    <td className="px-3 py-2 font-semibold text-slate-600">
+                      {l.nome}
+                    </td>
+                    <td className="px-3 py-2 font-semibold text-slate-600">
+                      {l.tipo}
+                    </td>
+                    <td className="px-3 py-2 font-semibold text-slate-600">
+                      {l.natureza}
+                    </td>
+                    <td className="px-3 py-2 text-center">
+                      <span className="inline-flex items-center justify-center min-w-8 h-7 rounded-full bg-sky-50 border border-sky-200 text-[#08233d] font-black">
+                        {l.dc}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
-    </div>
 
-    {/* ===== FILTRO ===== */}
-    <div className="bg-white rounded-xl shadow-sm p-4 mb-6 flex items-center gap-4">
-      <span className="font-semibold text-gray-700">Buscar:</span>
-      <input
-        type="text"
-        placeholder="Token, descrição ou tipo de automação…"
-        value={filtro}
-        onChange={(e) => setFiltro(e.target.value)}
-        className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-    </div>
+      {/* LISTA DE MODELOS */}
+      <div className="bg-white rounded-[32px] shadow-xl border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-black text-[#08233d]">
+              Lista de modelos
+            </h2>
+            <p className="text-xs font-semibold text-slate-500 mt-1">
+              {filtrados.length} modelo(s) encontrado(s)
+            </p>
+          </div>
+        </div>
 
-    {/* ===== DETALHE DO MODELO ===== */}
-    {linhas.length > 0 && (
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
-        <h3 className="font-bold text-gray-800 mb-3">
-          Estrutura do Modelo
-        </h3>
-
-        <table className="w-full text-sm border-collapse">
-          <thead className="bg-blue-150 text-gray-700">
-            <tr>
-              <th className="p-2 text-left">Conta</th>
-              <th className="p-2 text-left">Código</th>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-left">Tipo</th>
-              <th className="p-2 text-left">Natureza</th>
-              <th className="p-2 text-center">D/C</th>
-            </tr>
-          </thead>
-          <tbody>
-            {linhas.map((l, i) => (
-              <tr
-                key={i}
-                 className={i % 2 === 0 ? "bg-gray-150" : "bg-gray-50"}
-              >
-                <td className="p-2 font-bold" >{l.conta_id}</td>
-                <td className="p-2 font-bold">{l.codigo}</td>
-                <td className="p-2 font-bold">{l.nome}</td>
-                <td className="p-2 font-bold">{l.tipo}</td>
-                <td className="p-2 font-bold">{l.natureza}</td>
-                <td className="p-2 text-center font-bold">{l.dc}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border-collapse">
+            <thead className="bg-state-200 text-black">
+              <tr>
+                <th className="px-3 py-3 text-left">ID</th>
+                <th className="px-3 py-3 text-left">Token</th>
+                <th className="px-3 py-3 text-left">Descrição</th>
+                <th className="px-3 py-3 text-left">Classificação</th>
+                <th className="px-3 py-3 text-left">Evento</th>
+                <th className="px-3 py-3 text-center">Origem</th>
+                <th className="px-3 py-3 text-left">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}  A
+            </thead>
 
-    {/* ===== LISTA DE MODELOS ===== */}
-    <div className="bg-white rounded-xl shadow-sm p-4">
-      <table className="w-full text-sm border-collapse">
-        <thead className="bg-blue-200 text-blue-800">
-          <tr>
-            <th className="p-2 text-left">ID</th>
-            <th className="p-2 text-left">Token</th>
-            <th className="p-2 text-left">Descrição</th>
-          
-             <th className="p-2 text-left">Classificação</th>
-             <th className="p-2 text-left">Evento</th>
-               <th className="p-2 text-center">Origem</th>
-            <th className="p-2 text-left">Ações</th>
-           
-          </tr>
-        </thead>
-
-        <tbody>
-          {filtrados.map((m, i) => (
-            <tr
-              key={m.id}
-              className={i % 2 === 0 ? "bg-gray-150" : "bg-gray-200"}
-            >
-              <td className="p-2 font-semibold">{m.id}</td>
-              <td className="p-2 font-semibold">{m.codigo}</td>
-              <td className="p-2">{m.nome}</td>
-               
-              <td className="p-2">{m.classificacao}</td>
-               <td className="p-2">{m.tipo_evento}</td>
-
-                 <td className="p-2 text-center font-bold">
-                {m.sistema ? (
-                  <span className="text-red-600">Sistema</span>
-                ) : (
-                  <span className="text-blue-700">Usuário</span>
-                )}
-              </td>
-              <td className="p-2 flex gap-4">
-                <span
-                  onClick={() => visualizar(m.id)}
-                  className="text-emerald-700 font-semibold cursor-pointer"
+            <tbody>
+              {filtrados.map((m, i) => (
+                <tr
+                  key={m.id}
+                  className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}
                 >
-                  Visualizar
-                </span>
+                  <td className="px-3 py-3 font-black text-slate-700">
+                    {m.id}
+                  </td>
 
-                {!m.sistema && (
-                  <>
-                    <span
-                      onClick={() =>
-                        navigate("/editar-mapeamento", {
-                          state: {
-                            modelo_id: m.id,
-                            empresa_id,
-                            token: m.codigo,
-                            nome: m.nome,
-                            tipo: m.tipo_automacao,
-                          },
-                        })
-                      }
-                      className="text-blue-700 font-semibold cursor-pointer"
-                    >
-                      Editar
+                  <td className="px-3 py-3">
+                    <span className="inline-flex rounded-full bg-sky-50 border border-sky-200 px-3 py-1 text-xs font-black text-[#08233d]">
+                      {m.codigo}
                     </span>
+                  </td>
 
-                    <span
-                      onClick={() => Excluir(m.id)}
-                      className="text-red-700 font-semibold cursor-pointer"
-                    >
-                      Excluir
-                    </span>
-                  </>
-                )}
-              </td>
+                  <td className="px-3 py-3 font-semibold text-slate-700">
+                    {m.nome}
+                  </td>
 
-             
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-     
+                  <td className="px-3 py-3 font-semibold text-slate-600">
+                    {m.classificacao || "-"}
+                  </td>
+
+                  <td className="px-3 py-3 font-semibold text-slate-600">
+                    {m.tipo_evento || "-"}
+                  </td>
+
+                  <td className="px-3 py-3 text-center">
+                    {m.sistema ? (
+                      <span className="inline-flex rounded-full bg-red-50 border border-red-200 px-3 py-1 text-xs font-black text-red-700">
+                        Sistema
+                      </span>
+                    ) : (
+                      <span className="inline-flex rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-black text-blue-700">
+                        Usuário
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-3 py-3">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => visualizar(m.id)}
+                        className="h-8 px-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-black"
+                      >
+                        Visualizar
+                      </button>
+
+                      {!m.sistema && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate("/editar-mapeamento", {
+                                state: {
+                                  modelo_id: m.id,
+                                  empresa_id,
+                                  token: m.codigo,
+                                  nome: m.nome,
+                                  tipo: m.tipo_automacao,
+                                },
+                              })
+                            }
+                            className="h-8 px-3 rounded-lg border border-sky-200 bg-sky-50 text-[#08233d] text-xs font-black"
+                          >
+                            Editar
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => Excluir(m.id)}
+                            className="h-8 px-3 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-black"
+                          >
+                            Excluir
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {filtrados.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="px-6 py-10 text-center text-sm font-bold text-slate-400"
+                  >
+                    Nenhum modelo encontrado.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <ModalBase
-            open={modalContaContabil}
-            onClose={() => setModalContaContabil(false)}
-            title="Nova Conta Contábil"
-          >
-            <FormContaContabilModal
-                empresa_id={empresa_id}
-                onSuccess={() => {
-                  setModalContaContabil(false);
-                 
-                }}
-                onCancel={() => setModalContaContabil(false)}
-              /> 
-        </ModalBase>
+        open={modalContaContabil}
+        onClose={() => setModalContaContabil(false)}
+        title="Nova Conta Contábil"
+      >
+        <FormContaContabilModal
+          empresa_id={empresa_id}
+          onSuccess={() => {
+            setModalContaContabil(false);
+          }}
+          onCancel={() => setModalContaContabil(false)}
+        />
+      </ModalBase>
+    </div>
   </div>
 );
 

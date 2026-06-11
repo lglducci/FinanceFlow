@@ -258,140 +258,184 @@ async function carregar() {
     return <div className="p-6">Carregando...</div>;
   }
 
+return (
+  <div className="min-h-screen bg-slate-100 px-4 py-6">
+    <div className="fixed inset-0 bg-black/55" />
 
-  
-  //------------------------------------------------------------------
-  // LAYOUT
-  //------------------------------------------------------------------
- return (
-  <div className="min-h-screen bg-[#f3f7fb] px-4 py-6">
-    <div className="mx-auto w-full max-w-3xl rounded-3xl border border-slate-200 bg-white shadow-xl overflow-hidden">
-      
-      <div className="bg-gradient-to-r from-[#0f172a] to-[#1e3a8a] px-6 py-5">
-        <h1 className="text-2xl font-black text-white">
-          ✏️ Editar Conta a Pagar
-        </h1>
-        <p className="text-sm font-semibold text-blue-100 mt-1">
-          Atualize os dados principais da conta
-        </p>
-      </div>
-
-      <div className="p-6 space-y-5">
-        <div>
-          <label className="text-sm font-bold text-slate-700">Descrição</label>
-          <input
-            name="descricao"
-            value={form.descricao}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-bold text-slate-800 outline-none focus:border-blue-600"
-            placeholder="Descrição"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-bold text-slate-700">Fornecedor</label>
-          <select
-            name="fornecedor_id"
-            value={form.fornecedor_id}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 font-bold text-slate-800 outline-none focus:border-blue-600"
-          >
-            <option value="">Selecione</option>
-            {fornecedores.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.nome}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="relative z-10 w-full max-w-2xl mx-auto">
+      <div className="bg-white rounded-[22px] shadow-2xl border border-slate-200 overflow-hidden">
+        
+        {/* CABEÇALHO */}
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <label className="text-sm font-bold text-slate-700">Valor</label>
-            <input
-              type="number"
-              name="valor"
-              disabled
-              value={form.valor}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
-            />
+            <h1 className="text-xl font-black text-[#08233d]">
+              Editar Conta a Pagar
+            </h1>
+            <p className="text-xs font-semibold text-slate-500 mt-1">
+              Atualize os dados principais da conta.
+            </p>
           </div>
 
-          <div>
-            <label className="text-sm font-bold text-slate-700">Vencimento</label>
-            <input
-              type="date"
-              name="vencimento"
-              disabled
-              min={hojeMaisDias(1)}
-              value={form.vencimento}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-bold text-slate-700">Parcelas</label>
-            <input
-              type="number"
-              name="parcelas"
-              disabled
-              value={form.parcelas}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-bold text-slate-700">Status</label>
-            <select
-              name="status"
-              value={form.status}
-              disabled
-              onChange={handleChange}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 font-bold text-slate-500"
-            >
-              <option value="aberto">Aberto</option>
-              <option value="pago">Pago</option>
-            </select>
-          </div>
-        </div>
-
-        <div hidden>
-          <input
-            name="doc_ref"
-            value={form.doc_ref}
-            onChange={handleChange}
-          />
-          <input
-            name="modelo_codigo"
-            disabled
-            value={form.modelo_codigo}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="flex justify-end gap-3 pt-5 border-t border-slate-200">
           <button
+            type="button"
             onClick={() => navigate(-1)}
-               className="btn-pill btn-white"
+            className="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-400 text-2xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* CORPO */}
+        <div className="px-6 py-5 space-y-6">
+
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Dados principais
+            </h2>
+
+            <div>
+              <label className="block text-xs font-black text-slate-600 mb-1">
+                Descrição
+              </label>
+              <input
+                name="descricao"
+                value={form.descricao}
+                onChange={handleChange}
+                className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                placeholder="Descrição"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-600 mb-1">
+                Fornecedor
+              </label>
+              <select
+                name="fornecedor_id"
+                value={form.fornecedor_id}
+                onChange={handleChange}
+                className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+              >
+                <option value="">Selecione</option>
+                {fornecedores.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </section>
+
+          <div className="border-t border-slate-200" />
+
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Informações da parcela
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Valor
+                </label>
+                <input
+                  type="number"
+                  name="valor"
+                  disabled
+                  value={form.valor}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-black text-slate-500 outline-none cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Vencimento
+                </label>
+                <input
+                  type="date"
+                  name="vencimento"
+                  disabled
+                  min={hojeMaisDias(1)}
+                  value={form.vencimento}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-black text-slate-500 outline-none cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Parcelas
+                </label>
+                <input
+                  type="number"
+                  name="parcelas"
+                  disabled
+                  value={form.parcelas}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-black text-slate-500 outline-none cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={form.status}
+                  disabled
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-black text-slate-500 outline-none cursor-not-allowed"
+                >
+                  <option value="aberto">Aberto</option>
+                  <option value="pago">Pago</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <div hidden>
+            <input
+              name="doc_ref"
+              value={form.doc_ref}
+              onChange={handleChange}
+            />
+            <input
+              name="modelo_codigo"
+              disabled
+              value={form.modelo_codigo}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* RODAPÉ */}
+        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="h-11 px-6 rounded-lg border border-sky-200 bg-sky-50 text-[#08233d] text-sm font-black"
           >
             Cancelar
           </button>
 
           <button
+            type="button"
             onClick={salvar}
             disabled={salvando}
-             className="btn-pill btn-blue"
+            className="h-11 px-7 rounded-lg bg-[#082f4f] text-white text-sm font-black shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {salvando ? "Salvando..." : "Salvar"}
+            {salvando ? "Salvando..." : "Salvar Alterações"}
           </button>
         </div>
       </div>
     </div>
   </div>
 );
+  
+  //------------------------------------------------------------------
+  // LAYOUT
+  //------------------------------------------------------------------
+ 
 }

@@ -141,161 +141,210 @@ if (sucesso) {
   if (loading) {
     return <div className="p-6">Carregando...</div>;
   }
- return (
-  <div className="min-h-screen bg-gradient-to-b from-[#eef5fb] to-[#e8f1fa] px-4 py-5">
-    <div className="w-full max-w-lg mx-auto">
+ 
+return (
+  <div className="min-h-screen bg-slate-100 px-4 py-6">
+    <div className="fixed inset-0 bg-black/55" />
 
-      {/* TOPO */}
-      <div className="bg-gradient-to-br from-[#2744b8] to-[#08748f] rounded-t-[28px] shadow-lg px-5 py-4">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="bg-white/15 text-white px-4 py-2 rounded-full text-sm font-black mb-5"
-        >
-          ← Voltar
-        </button>
+    <div className="relative z-10 w-full max-w-2xl mx-auto">
+      <div className="bg-white rounded-[22px] shadow-2xl border border-slate-200 overflow-hidden">
 
-        <h1 className="text-2xl font-black text-white flex items-center gap-2">
-          💳 Editar Cartão
-        </h1>
-
-        <p className="text-blue-100 text-sm font-semibold mt-2">
-          Atualize os dados do cartão de crédito.
-        </p>
-      </div>
-
-      {/* FORM */}
-      <div className="bg-white rounded-b-[28px] shadow-xl border border-slate-200 p-5 space-y-4">
-        <div>
-          <label className="block text-[#0b1744] font-black mb-1">Nome</label>
-          <input
-            name="nome"
-            value={form.nome}
-            onChange={handleChange}
-            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div>
-          <label className="block text-[#0b1744] font-black mb-1">Bandeira</label>
-          <input
-            name="bandeira"
-            value={form.bandeira}
-            onChange={handleChange}
-            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div>
-          <label className="block text-[#0b1744] font-black mb-1">Limite Total</label>
-          <input
-            type="number"
-            name="limite_total"
-            value={form.limite_total}
-            onChange={handleChange}
-            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {/* CABEÇALHO */}
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <label className="block text-[#0b1744] font-black mb-1">
-              Fechamento
-            </label>
-            <input
-              type="number"
-              name="fechamento_dia"
-              value={form.fechamento_dia}
-              onChange={handleChange}
-              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-              placeholder="Dia"
-            />
+            <h1 className="text-xl font-black text-[#08233d]">
+              Editar Cartão
+            </h1>
+            <p className="text-xs font-semibold text-slate-500 mt-1">
+              Atualize os dados do cartão de crédito.
+            </p>
           </div>
-
-          <div>
-            <label className="block text-[#0b1744] font-black mb-1">
-              Venc. dia
-            </label>
-            <input
-              type="number"
-              name="vencimento_dia"
-              value={form.vencimento_dia}
-              onChange={handleChange}
-              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-              placeholder="Dia"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[#0b1744] font-black mb-1">
-              MM/AA
-            </label>
-            <input
-              name="vencimento"
-              value={form.vencimento}
-              onChange={handleChange}
-              className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-              placeholder="MM/AA"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-[#0b1744] font-black mb-1">
-            Número do Cartão
-          </label>
-          <input
-            name="numero"
-            value={form.numero}
-            onChange={handleChange}
-            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div>
-          <label className="block text-[#0b1744] font-black mb-1">
-            Nome no Cartão
-          </label>
-          <input
-            name="nomecartao"
-            value={form.nomecartao}
-            onChange={handleChange}
-            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-
-        <div>
-          <label className="block text-[#0b1744] font-black mb-1">Status</label>
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="w-full  h-8 rounded-2xl border border-slate-300 px-4 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-300"
-          >
-            <option value="ativo">Ativo</option>
-            <option value="cancelado">Cancelado</option>
-          </select>
-        </div>
-
-        <div className="flex gap-3 pt-5">
-          <button
-            type="button"
-            onClick={salvar}
-            className="flex-1  h-12 rounded-full bg-gradient-to-r from-[#2563eb] to-[#1e40af] text-white font-black shadow-lg"
-          >
-            Salvar
-          </button>
 
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex-1 h-12 rounded-full bg-slate-300 text-slate-700 font-black"
+            className="w-9 h-9 rounded-full hover:bg-slate-100 text-slate-400 text-2xl leading-none"
           >
-            Sair
+            ×
+          </button>
+        </div>
+
+        {/* CORPO */}
+        <div className="max-h-[70vh] overflow-y-auto px-6 py-5 space-y-6">
+
+          {/* DADOS DO CARTÃO */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Dados do cartão
+            </h2>
+
+            <div>
+              <label className="block text-xs font-black text-slate-600 mb-1">
+                Nome
+              </label>
+              <input
+                name="nome"
+                value={form.nome}
+                onChange={handleChange}
+                className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                placeholder="Ex: Nubank, Itaú, Bradesco"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Bandeira
+                </label>
+                <input
+                  name="bandeira"
+                  value={form.bandeira}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  placeholder="Visa / Mastercard"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={form.status}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                >
+                  <option value="ativo">Ativo</option>
+                  <option value="cancelado">Cancelado</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-600 mb-1">
+                Limite Total
+              </label>
+              <input
+                type="number"
+                name="limite_total"
+                value={form.limite_total}
+                onChange={handleChange}
+                className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                placeholder="0,00"
+              />
+            </div>
+          </section>
+
+          <div className="border-t border-slate-200" />
+
+          {/* FATURA */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Dados da fatura
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Dia fechamento
+                </label>
+                <input
+                  type="number"
+                  name="fechamento_dia"
+                  value={form.fechamento_dia}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  placeholder="Ex: 10"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Dia vencimento
+                </label>
+                <input
+                  type="number"
+                  name="vencimento_dia"
+                  value={form.vencimento_dia}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  placeholder="Ex: 15"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-slate-600 mb-1">
+                  Validade
+                </label>
+                <input
+                  name="vencimento"
+                  value={form.vencimento}
+                  onChange={handleChange}
+                  className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                  placeholder="MM/AA"
+                />
+              </div>
+            </div>
+          </section>
+
+          <div className="border-t border-slate-200" />
+
+          {/* IDENTIFICAÇÃO */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-black text-[#08233d]">
+              Identificação
+            </h2>
+
+            <div>
+              <label className="block text-xs font-black text-slate-600 mb-1">
+                Número / Final do cartão
+              </label>
+              <input
+                name="numero"
+                value={form.numero}
+                onChange={handleChange}
+                className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                placeholder="Final ou número do cartão"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-600 mb-1">
+                Nome impresso no cartão
+              </label>
+              <input
+                name="nomecartao"
+                value={form.nomecartao}
+                onChange={handleChange}
+                className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                placeholder="Nome impresso no cartão"
+              />
+            </div>
+          </section>
+        </div>
+
+        {/* RODAPÉ */}
+        <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="h-11 px-6 rounded-lg border border-sky-200 bg-sky-50 text-[#08233d] text-sm font-black"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="button"
+            onClick={salvar}
+            className="h-11 px-7 rounded-lg bg-[#082f4f] text-white text-sm font-black shadow-md"
+          >
+            Salvar Alterações
           </button>
         </div>
       </div>
     </div>
   </div>
 );
+
 }

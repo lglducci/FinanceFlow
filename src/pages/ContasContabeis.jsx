@@ -76,6 +76,25 @@ function exportarTemplateContas() {
     "template_contas_contabeis.xlsx"
   );
 }
+
+const [abertos, setAbertos] = useState({});
+
+const grupos = filtradas
+  .filter((c) => Number(c.nivel) === 1)
+  .map((pai) => ({
+    ...pai,
+    filhos: filtradas.filter(
+      (f) => f.codigo !== pai.codigo && String(f.codigo).startsWith(String(pai.codigo))
+    ),
+  }));
+
+function toggleGrupo(id) {
+  setAbertos((prev) => ({
+    ...prev,
+    [id]: !prev[id],
+  }));
+}
+
 return (
   <div className="p-4 space-y-6">
 
@@ -164,98 +183,114 @@ return (
     </div>
 
     {/* TABELA */}
-   <div id="print-area" className="bg-white rounded-xl shadow-sm overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-200 text-blue-800">
-          <tr>
-            <th className="px-3 py-2 text-left">ID</th>
-            <th className="px-3 py-2 text-left">Código</th>
-            <th className="px-3 py-2 text-left">Nome</th>
-            <th className="px-3 py-2 text-left">Tipo</th>
-            <th className="px-3 py-2 text-left">Natureza</th>
-            <th className="px-3 py-2 text-left">Nível</th>
-              <th className="px-3 py-2 text-left">Classificação</th>
-            <th className="px-3 py-2 text-left">Origem</th>
-            <th className="px-3 py-2 text-center">Ações</th>
-          </tr>
-        </thead>
+  <div id="print-area" className="space-y-4">
+  {grupos.map((g) => (
+    <div
+      key={g.id}
+      className="
+        bg-white rounded-2xl border border-sky-100
+        shadow-sm overflow-hidden
+      "
+    >
+      <button
+        onClick={() => toggleGrupo(g.id)}
+        className="
+          w-full flex items-center justify-between
+          px-6 py-5 text-left
+          hover:bg-slate-50 transition
+        "
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-blue-900">
+            📁
+          </div>
 
-        <tbody>
-          {filtradas.map((c, i) => (
-            <tr
+          <div>
+            <div className="font-black text-blue-950 text-base">
+              {g.codigo} - {g.nome}
+            </div>
+            <div className="text-xs font-semibold text-blue-700">
+              {g.filhos.length} subcontas
+            </div>
+          </div>
+        </div>
+
+        <div className="text-blue-900 text-xl font-black">
+          {abertos[g.id] ? "⌃" : "⌄"}
+        </div>
+      </button>
+
+      {abertos[g.id] && (
+        <div className="border-t border-slate-100 bg-slate-50 px-6 py-3">
+          {g.filhos.map((c, i) => (
+            <div
               key={c.id}
-              className={i % 2 === 0 ? "bg-white" : "bg-gray-250"}
+              className={`
+                grid grid-cols-[90px_1fr_120px_120px_120px]
+                gap-3 items-center
+                px-3 py-2 rounded-lg text-sm
+                ${i % 2 === 0 ? "bg-white" : "bg-slate-100"}
+              `}
             >
-              <td className="px-3 py-2 font-semibold">{c.id}</td>
-              <td className="px-3 py-2 font-mono">{c.codigo}</td>
-              <td className="px-3 py-2">{c.nome}</td>
-              <td className="px-3 py-2">{c.tipo}</td>
-                  <td className="px-3 py-2">{c.natureza}</td>
-               <td className="px-3 py-2">{c.nivel}</td>
-               <td className="px-3 py-2">
-  {(c.classificacao_gerencial || "-").replaceAll("_", " ")}
-</td>
-              <td className="px-3 py-2">{c.nivel}</td>
-              <td className="px-3 py-2">
+              <div className="font-mono font-bold text-slate-700">
+                {c.codigo}
+              </div>
+
+              <div className="font-semibold text-slate-800">
+                {c.nome}
+              </div>
+
+              <div className="text-slate-500">
+                Nível {c.nivel}
+              </div>
+
+              <div className="text-slate-500">
+                {(c.classificacao_gerencial || "-").replaceAll("_", " ")}
+              </div>
+
+              <div className="text-right">
                 {c.sistema ? (
-                  <span className="text-xs font-semibold text-slate-500">
+                  <span className="text-xs font-bold text-slate-400">
                     Sistema
                   </span>
                 ) : (
-                  <span className="text-xs font-semibold text-blue-600">
-                    Usuário
-                  </span>
-                )}
-              </td>
-
-              <td className="px-3 py-2 text-right space-x-4">
-                {c.sistema ? (
-                  <>
-                    <span className="text-slate-400 text-sm cursor-not-allowed">
-                      Editar
-                    </span>
-                    <span className="text-slate-400 text-sm cursor-not-allowed">
-                      Excluir
-                    </span>
-                  </>
-                ) : (
-                  <>
+                  <div className="space-x-3">
                     <span
                       onClick={() =>
                         navigate("/editar-conta-contabil", {
                           state: {
                             id: c.id,
-                            empresa_id:
-                              localStorage.getItem("empresa_id") || "1",
+                            empresa_id: localStorage.getItem("empresa_id") || "1",
                           },
                         })
                       }
-                      className="text-blue-600 text-sm font-semibold cursor-pointer hover:underline"
+                      className="text-blue-600 text-xs font-bold cursor-pointer hover:underline"
                     >
                       Editar
                     </span>
 
                     <span
                       onClick={() => excluirConta(c.id)}
-                      className="text-red-600 text-sm font-semibold cursor-pointer hover:underline"
+                      className="text-red-600 text-xs font-bold cursor-pointer hover:underline"
                     >
                       Excluir
                     </span>
-                  </>
+                  </div>
                 )}
-              </td>
-            </tr>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
-
-      {filtradas.length === 0 && (
-        <div className="p-4 text-sm text-gray-500">
-          Nenhuma conta contábil encontrada.
         </div>
       )}
     </div>
+  ))}
 
+  {grupos.length === 0 && (
+    <div className="bg-white rounded-xl p-4 text-sm text-gray-500">
+      Nenhuma conta contábil encontrada.
+    </div>
+  )}
+</div>
   </div>
 );
 
