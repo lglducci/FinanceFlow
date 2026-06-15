@@ -21,6 +21,8 @@ export default function RegrasClassificacao() {
   const [dataIni, setDataIni] = useState(searchParams.get("data_ini") || hojeLocal());
   const [dataFim, setDataFim] = useState(searchParams.get("data_fim") || hojeLocal());
 
+  const [ajudaAberta, setAjudaAberta] = useState(false);
+
   const [lista, setLista] = useState([]);
   const [contas, setContas] = useState([]);
   const [filtro, setFiltro] = useState("");
@@ -395,6 +397,16 @@ async function aplicarContaLote() {
             </p>
           </div>
 
+          <div className="flex items-center gap-2 mb-2">
+            <button
+              onClick={() => setAjudaAberta(true)}
+              className="btn-pill btn-blue"
+            >
+              ❓ O que pode ser reclassificado?
+            </button>
+          </div>
+ 
+
           <div className="max-w-xl rounded-2xl bg-blue-50 border border-blue-200 px-4 py-3 text-sm font-bold text-blue-800">
             {t("regrasClassificacao.avisoTopo", "Escolheu a conta, salvou automaticamente. Movimentos já processados contabilmente ficam bloqueados.")}
           </div>
@@ -624,6 +636,132 @@ async function aplicarContaLote() {
           <div>{t("regrasClassificacao.soma", "Soma")}: {formatarMoeda(total)}</div>
         </div>
       </div>
+
+      {ajudaAberta && (
+  <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+    <div className="bg-white rounded-3xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-auto">
+
+      <div className="bg-[#063452] text-white p-5 rounded-t-3xl">
+        <div className="text-xl font-black">
+          Regras de Reclassificação
+        </div>
+
+        <div className="text-sm opacity-90">
+          Entenda quais movimentos podem ou não ser reclassificados.
+        </div>
+      </div>
+
+      <div className="p-6 space-y-5">
+
+        <div className="rounded-2xl bg-green-50 border border-green-200 p-4">
+          <div className="font-black text-green-700 mb-2">
+            ✅ Pode reclassificar
+          </div>
+
+          <ul className="list-disc ml-5 space-y-2 text-sm">
+            <li>
+              <b>Contas a pagar</b> abertas e somente a primeira parcela.
+            </li>
+
+            <li>
+              <b>Contas a receber</b> abertas e somente a primeira parcela.
+            </li>
+
+            <li>
+              <b>Compras no cartão</b> ainda não liquidadas, apenas a primeira parcela.
+            </li>
+
+            <li>
+              <b>Transações à vista</b> sem vínculo com contas a pagar,
+              contas a receber ou faturas.
+            </li>
+          </ul>
+        </div>
+
+        <div className="rounded-2xl bg-red-50 border border-red-200 p-4">
+          <div className="font-black text-red-700 mb-2">
+            ❌ Não pode reclassificar
+          </div>
+
+          <ul className="list-disc ml-5 space-y-2 text-sm">
+            <li>Pagamento de contas a pagar.</li>
+
+            <li>Recebimento de contas a receber.</li>
+
+            <li>Pagamento de faturas de cartão.</li>
+
+            <li>Transferências entre contas.</li>
+
+            <li>Estornos.</li>
+
+            <li>Movimentos já processados contabilmente.</li>
+          </ul>
+        </div>
+
+        <div className="rounded-2xl bg-blue-50 border border-blue-200 p-4">
+          <div className="font-black text-[#063452] mb-2">
+            Exemplo 1 - Conta a pagar
+          </div>
+
+          <div className="text-sm">
+            Ao lançar uma conta de internet:
+          </div>
+
+          <div className="mt-2 font-mono text-sm">
+            Débito: Despesa de Internet
+            <br />
+            Crédito: Fornecedor
+          </div>
+
+          <div className="mt-2 text-sm">
+            Enquanto a conta estiver aberta, a despesa pode ser alterada.
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-blue-50 border border-blue-200 p-4">
+          <div className="font-black text-[#063452] mb-2">
+            Exemplo 2 - Pagamento da conta
+          </div>
+
+          <div className="mt-2 font-mono text-sm">
+            Débito: Fornecedor
+            <br />
+            Crédito: Banco
+          </div>
+
+          <div className="mt-2 text-sm">
+            Neste momento a despesa já foi definida anteriormente.
+            O pagamento é apenas uma liquidação financeira e não deve ser
+            reclassificado.
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
+          <div className="font-black text-amber-700 mb-2">
+            💡 Regra geral
+          </div>
+
+          <div className="text-sm">
+            A reclassificação sempre deve ocorrer no fato econômico original
+            (conta a pagar, conta a receber, compra no cartão ou transação à vista).
+            Movimentos de liquidação financeira não devem ser alterados.
+          </div>
+        </div>
+
+      </div>
+
+      <div className="border-t p-4 flex justify-end">
+        <button
+          onClick={() => setAjudaAberta(false)}
+          className="btn-pill btn-black"
+        >
+          Fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   );
 }

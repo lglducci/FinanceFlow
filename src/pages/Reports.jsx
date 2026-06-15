@@ -184,6 +184,16 @@ export default function Reports() {
     },
     
 
+       
+    {
+      title: "Diagnóstico Financeiro",
+      desc: "Diagnóstico Financeiro",
+      path: "/diagnostico-financeiro" ,
+      icon: <IconReport />,
+    },
+    
+
+    
       
   ];
 

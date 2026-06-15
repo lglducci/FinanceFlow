@@ -457,7 +457,7 @@ setCarregando(true);
   }   
    
    function VisaoFinanceira() {
-  navigate("/app/dashboard");
+  navigate("/diagnostico-financeiro");
 }
   
    function ContaRecorrente() {
