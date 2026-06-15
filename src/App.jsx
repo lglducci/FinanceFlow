@@ -198,6 +198,9 @@ import RegrasClassificacao from "./pages/RegrasClassificacao";
 
 import ContasRecorrentes  from  "./pages/ContasRecorrentes";
 
+import DiagnosticoFinanceiro  from  "./pages/DiagnosticoFinanceiro";
+
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -648,7 +651,8 @@ const rotaAtual = window.location.pathname;
         />
 
       <Route path="/conta-recorrente" element={<ContasRecorrentes />} />
-
+       
+      <Route path="/diagnostico-financeiro" element={<DiagnosticoFinanceiro />} />
  
  
 </Routes>
