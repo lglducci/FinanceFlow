@@ -154,9 +154,9 @@ dados.forEach(l => {
 
       <div
         id="print-area"
-        className="rounded-2xl border border-cyan-200 bg-white shadow-sm overflow-hidden"
+        className="rounded-3xl border border-cyan-200 bg-white shadow-sm overflow-hidden"
       >
-        <div className="max-h-[680px] overflow-auto">
+        <div className="max-h-[880px] overflow-auto">
           <table className="w-full min-w-[900px] text-sm">
             <thead className="sticky top-0 z-10 bg-[#e7f5fc] text-[#063452] shadow-sm">
               <tr>

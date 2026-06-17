@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Brain,
@@ -169,43 +169,48 @@ if (percentualTop3 >= 70) {
 
 
   return (
-    <div className="min-h-screen bg-[#f3f7fb] px-1 py-5">
-       <div id="print-area" className="w-full max-w-7xl mx-auto space-y-5">
+    <div className="min-h-screen bg-gradient-to-br from-[#eef5ff] via-[#f8fbff] to-[#eaf2ff] px-3 py-1">
+       <div id="print-area" className="w-full max-w-[1900px] mx-auto space-y-5 pr-4">
 
-        <div className="bg-white rounded-[28px] border shadow-sm p-1">
-          
-        <div className="bg-white rounded-[28px] border shadow-sm p-1">
-              <div className="flex justify-end items-center gap-3">
-                <button onClick={() => navigate(-1)} className="btn-pill">
-                  ← Voltar
-                </button>
+        <div className="rounded-[30px] border border-blue-200 bg-gradient-to-r from-[#0f172a] via-[#1e3a8a] to-[#2563eb] shadow-xl p-5 text-white">
+          <div className="flex justify-end items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="rounded-full bg-white/15 px-4 py-2 text-sm font-black text-white hover:bg-white/25"
+            >
+              ← Voltar
+            </button>
 
-                <button onClick={carregar} className="btn-pill">
-                  Atualizar
-                </button>
+            <button
+              onClick={carregar}
+              className="rounded-full bg-white/15 px-4 py-2 text-sm font-black text-white hover:bg-white/25"
+            >
+              Atualizar
+            </button>
 
-                <button
-                  onClick={() => window.print()}
-                  className="btn-pill btn-black"
-                >
-                  🖨️ Imprimir
-                </button>
-              </div>
+            <button
+              onClick={() => window.print()}
+              className="rounded-full bg-white px-4 py-2 text-sm font-black text-[#0f172a] hover:bg-blue-50"
+            >
+              🖨️ Imprimir
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4 mt-5">
+            <div className="rounded-2xl bg-white/15 p-3">
+              <Brain size={36} />
             </div>
 
-          <div className="flex items-center gap-3 mt-5">
-            <Brain size={34} />
             <div>
-              <div className="text-3xl font-black">
+              <div className="text-4xl font-black tracking-tight">
                 Diagnóstico Financeiro
               </div>
-              <div className="text-slate-500">
-                Separando caixa atual, compromissos em aberto e resultado realizado.
+              <div className="text-blue-100 font-semibold">
+                Caixa atual, compromissos em aberto, projeção e resultado realizado.
               </div>
             </div>
           </div>
         </div>
-
         <div className="grid md:grid-cols-4 gap-4">
           <Card
             icone={<Wallet size={24} />}
@@ -250,7 +255,7 @@ if (percentualTop3 >= 70) {
           />
         </div>
 
-         <div className="bg-white rounded-3xl shadow p-5">
+         <div className="bg-white rounded-3xl shadow-lg border border-blue-100 p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="font-black text-lg">
@@ -331,7 +336,7 @@ if (percentualTop3 >= 70) {
 
 
 
-          <div className="bg-white rounded-3xl shadow p-5">
+          <div className="bg-white rounded-3xl shadow-lg border border-blue-100 p-5">
             <div className="font-black text-lg mb-3">
               🎯 Concentração de gastos
             </div>
@@ -379,7 +384,7 @@ if (percentualTop3 >= 70) {
 
  
          
-                  <div className="bg-white rounded-3xl shadow p-5">
+                  <div className="bg-white rounded-3xl shadow-lg border border-blue-100 p-5">
           <div className="font-black text-lg mb-4">
             🔮 Projeção de caixa dos próximos 30 dias
           </div>
@@ -477,7 +482,7 @@ if (percentualTop3 >= 70) {
 </div>
 
 
-     <div className="bg-white rounded-3xl shadow p-5">
+     <div className="bg-white rounded-3xl shadow-lg border border-blue-100 p-5">
   <div className="font-black text-lg mb-4">
     📈 O que mudou nos gastos?
   </div>
@@ -499,7 +504,7 @@ if (percentualTop3 >= 70) {
           
 
 
-        <div className="bg-white rounded-3xl shadow p-6">
+        <div className="bg-white rounded-3xl shadow-lg border border-blue-100 p-6">
           <div className="font-black text-xl mb-4">
             🧠 Resultado realizado dos últimos 30 dias
           </div>
@@ -540,7 +545,7 @@ if (percentualTop3 >= 70) {
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl shadow p-6">
+        <div className="bg-white rounded-3xl shadow-lg border border-blue-100 p-6">
           <div className="flex items-center gap-2 font-black text-xl mb-4">
             <AlertTriangle />
             Leitura do diagnóstico
@@ -595,7 +600,7 @@ if (percentualTop3 >= 70) {
           </div>
            
 
-           <div className="bg-white rounded-3xl shadow p-5">
+           <div className="bg-white rounded-3xl shadow-lg border border-blue-100 p-5">
             <div className="font-black text-lg mb-4">
               🧠 Resumo automático do diagnóstico
             </div>
@@ -621,15 +626,20 @@ if (percentualTop3 >= 70) {
 
 function Card({ icone, titulo, valor, subtitulo, cor }) {
   return (
-    <div className="bg-white rounded-2xl p-4 shadow">
-      {icone}
-      <div className="text-xs mt-2 text-slate-500 font-bold uppercase">
+    <div className="bg-white rounded-3xl p-5 shadow-lg border border-blue-100">
+      <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-900 flex items-center justify-center">
+        {icone}
+      </div>
+
+      <div className="text-xs mt-3 text-slate-500 font-black uppercase tracking-wide">
         {titulo}
       </div>
-      <div className={`text-xl font-black mt-1 ${cor}`}>
+
+      <div className={`text-2xl font-black mt-1 ${cor}`}>
         {valor}
       </div>
-      <div className="text-xs text-slate-500 mt-2">
+
+      <div className="text-xs text-slate-500 mt-2 font-semibold">
         {subtitulo}
       </div>
     </div>
@@ -638,14 +648,16 @@ function Card({ icone, titulo, valor, subtitulo, cor }) {
 
 function MiniCard({ titulo, valor, subtitulo, cor }) {
   return (
-    <div className="rounded-2xl bg-slate-50 border p-4">
-      <div className="text-xs font-black text-slate-500 uppercase">
+    <div className="rounded-3xl bg-gradient-to-br from-white to-blue-50 border border-blue-100 p-5 shadow-sm">
+      <div className="text-xs font-black text-slate-500 uppercase tracking-wide">
         {titulo}
       </div>
-      <div className={`text-2xl font-black mt-2 ${cor}`}>
+
+      <div className={`text-3xl font-black mt-2 ${cor}`}>
         {valor}
       </div>
-      <div className="text-xs text-slate-500 mt-2">
+
+      <div className="text-xs text-slate-500 mt-2 font-semibold">
         {subtitulo}
       </div>
     </div>

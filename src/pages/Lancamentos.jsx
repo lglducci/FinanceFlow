@@ -19,6 +19,9 @@ import NovoLancamentoDrawer from "./NovoLancamento";
 import TransferenciaDrawer from "./app/AppTransferencia.jsx";
 import { BarChart3 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import LancamentoContabilRapido from "./LancamentoContabilRapido";
+import { ClipboardEdit } from "lucide-react";
+
 
 export default function Lancamentos() {
   const { t } = useTranslation();
@@ -2164,6 +2167,38 @@ return (
 
             <span className="h-4 w-4 rounded-full border-2 border-blue-700" />
           </button>
+
+
+            <button
+                  type="button"
+                  onClick={() =>
+                    setTipoNovo({
+                      titulo: "Lançamento Livre",
+                      tipo: "livre",
+                      livre: true,
+                    })
+                  }
+                  className="flex w-full items-center justify-between rounded-2xl border bg-white px-4 py-3 text-left shadow-sm hover:bg-blue-50"
+                >
+                  <div>
+                    <div className="text-sm font-black text-blue-800">
+                      <ClipboardEdit size={18} /> Lançamento Livre
+                    </div>
+                    <div className="text-xs font-bold text-slate-500">
+                      Registre algo que aconteceu, mesmo sem movimentar dinheiro
+                    </div>
+                  </div>
+
+                  <span className="h-4 w-4 rounded-full border-2 border-blue-700" />
+                </button>
+
+
+
+
+
+
+
+
         </div>
       )}
 
@@ -2181,7 +2216,7 @@ return (
         />
       )}
 
-      {tipoNovo && tipoNovo.tipo !== "transferencia" && (
+       {tipoNovo && !["transferencia", "livre"].includes(tipoNovo.tipo) && (
         <NovoLancamentoDrawer
           inicial={tipoNovo}
           onBack={() => setTipoNovo(null)}
@@ -2194,8 +2229,25 @@ return (
             setTipoNovo(null);
             pesquisar(tipoOperacao || "");
           }}
-        />
+        /> 
       )}
+
+
+      {tipoNovo?.tipo === "livre" && (
+  <LancamentoContabilRapido
+    livre={true}
+    drawer={true}
+    onClose={() => {
+      setTipoNovo(null);
+      setDrawerNovo(false);
+    }}
+    onSuccess={() => {
+      setDrawerNovo(false);
+      setTipoNovo(null);
+      pesquisar(tipoOperacao || "");
+    }}
+  />
+)}
     </div>
   </aside>
 )}

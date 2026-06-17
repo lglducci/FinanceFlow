@@ -6,15 +6,30 @@ import ModalBase from "../components/ModalBase";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 import FormContaContabilModal from "../components/forms/FormContaContabilModal"; 
 import  FormModeloContabil from "../components/forms/FormModeloContabil"; 
+ 
+export default function LancamentoContabilRapido({
+  livre: livreProp = false,
+  drawer: drawerProp = false,
+  onClose,
+  onSuccess,
+}) {
 
-export default function LancamentoContabilRapido() {
+ 
+
   const navigate = useNavigate();
   const empresa_id =
     localStorage.getItem("empresa_id") ||
     localStorage.getItem("id_empresa");
  const [historicoEditado, setHistoricoEditado] = useState(false);
 
+ const params = new URLSearchParams(window.location.search);
  
+ 
+ const livre = livreProp || params.get("livre") === "true";
+const drawer = drawerProp || params.get("drawer") === "true";
+
+
+
  const [modalContaContabil, setModalContaContabil] = useState(false);
 
  const [modalModelo, setModalModelo] = useState(false);
@@ -350,6 +365,11 @@ function limparNomeConta(nome) {
 }
 
 useEffect(() => {
+
+    if (livre) {
+    setHelperMsg(null);
+    return;
+  }
   // só tenta validar quando os IDs existirem
   const deb = getContaById(debitoId);
   const cred = getContaById(creditoId);
@@ -511,22 +531,57 @@ if ((d === "ATIVO" || d === "PASSIVO" || d === "PL") && (c === "CUSTO" || c === 
 
 
   return null;
-}
-return (
-  <div className="min-h-screen bg-slate-100 px-4 py-6">
-    <div className="fixed inset-0 bg-black/55" />
 
-    <div className="relative z-10 w-full max-w-3xl mx-auto">
+ 
+
+}
+
+
+const labels = livre
+  ? {
+      titulo: "Lançamento Livre",
+      subtitulo: "Registre algo que aconteceu, mesmo sem movimentar dinheiro.",
+       debito: "Entrada — Débito",
+      credito: "Saída — Crédito",
+      historico: "Descreva o que aconteceu",
+    }
+  : {
+      titulo: "Lançamento Contábil Rápido",
+      subtitulo: "Faça lançamentos manuais ou utilize um modelo contábil salvo.",
+      debito: "Entrada — Débito",
+      credito: "Saída — Crédito",
+      historico: "Histórico",
+    };
+
+
+useEffect(() => {
+  if (livre) {
+    setLembrar(true);
+  }
+}, [livre]);
+
+
+return (
+  <div className={drawer ? "fixed inset-0 z-40 bg-black/40" : "min-h-screen bg-slate-100 px-4 py-6"}>
+    <div className="fixed inset-0 bg-black/40" />
+
+    <div
+        className={
+          drawer
+            ? "fixed right-0 top-0 z-50 h-screen w-full max-w-[520px] bg-white shadow-2xl"
+            : "relative z-10 w-full max-w-3xl mx-auto"
+        }
+      >
       <div className="bg-white rounded-[22px] shadow-2xl border border-slate-200 overflow-hidden">
 
         {/* CABEÇALHO */}
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-black text-[#08233d]">
-              Lançamento Contábil Rápido
+               {labels.titulo}
             </h1>
             <p className="text-xs font-semibold text-slate-500 mt-1">
-              Faça lançamentos manuais ou utilize um modelo contábil salvo.
+               {labels.subtitulo}
             </p>
           </div>
 
@@ -550,6 +605,8 @@ return (
           )}
 
           {/* MODO */}
+
+          {!livre && (
           <section className="space-y-4">
             <h2 className="text-sm font-black text-[#08233d]">
               Tipo de lançamento
@@ -589,7 +646,7 @@ return (
                 </button>
               </div>
             )}
-          </section>
+          </section>)}
 
           {usarModelo && modeloSelecionado && (
             <>
@@ -649,7 +706,7 @@ return (
                 {/* DÉBITO */}
                 <div>
                   <label className="flex items-center gap-2 text-xs font-black text-slate-600 mb-1">
-                    Entrada — Débito
+                     {labels.debito}
                     {debitoId && (
                       <span className="group relative inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#082f4f] text-white text-xs cursor-pointer">
                         ?
@@ -660,52 +717,50 @@ return (
                         </span>
                       </span>
                     )}
-                  </label>
+                  </label> 
+ 
+                   <div className="relative">
+                        <input
+                          className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                          placeholder="Digite código ou nome da conta"
+                          value={debitoTexto}
+                          onChange={(e) => {
+                            setDebitoTexto(e.target.value);
+                            setDebitoId("");
+                            setDebitoConta(null);
+                          }}
+                        />
 
-                  <div className="flex items-center gap-2">
-                    <input
-                      list="contasDebito"
-                      className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
-                      placeholder="Digite código ou nome da conta"
-                      value={debitoTexto}
-                      onChange={(e) => {
-                        const texto = e.target.value;
-                        setDebitoTexto(texto);
+                        {debitoTexto && (
+                          <div className="absolute z-[9999] mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl">
+                            {contas
+                              .filter((c) =>
+                                `${c.codigo} ${c.nome}`
+                                  .toLowerCase()
+                                  .includes(debitoTexto.toLowerCase())
+                              )
+                              .slice(0, 12)
+                              .map((c) => (
+                                <button
+                                  key={c.id}
+                                  type="button"
+                                  onClick={() => {
+                                    const texto = `${c.codigo} - ${c.nome}`;
+                                    setDebitoTexto(texto);
+                                    setDebitoId(c.id);
+                                    setDebitoConta(c);
 
-                        const conta = contas.find(
-                          (c) =>
-                            `${c.codigo} - ${c.nome}` === texto ||
-                            c.codigo === texto
-                        );
-
-                        if (conta) {
-                          setDebitoId(conta.id);
-                          setDebitoConta(conta);
-
-                          const novoHist = montarHistorico(conta.id, creditoId);
-                          if (novoHist) setHistorico(novoHist);
-                        }
-                      }}
-                    />
-
-                    <datalist id="contasDebito">
-                      {contas.map((c) => (
-                        <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
-                      ))}
-                    </datalist>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCampoOrigemConta("debito");
-                        setModalContaContabil(true);
-                      }}
-                      className="h-10 w-10 rounded-lg bg-[#082f4f] text-white font-black"
-                    >
-                      +
-                    </button>
-                  </div>
-
+                                    const novoHist = montarHistorico(c.id, creditoId);
+                                    if (novoHist) setHistorico(novoHist);
+                                  }}
+                                  className="block w-full px-3 py-2 text-left text-sm font-bold text-slate-700 hover:bg-blue-50"
+                                >
+                                  {c.codigo} - {c.nome}
+                                </button>
+                              ))}
+                          </div>
+                        )}
+                      </div>
                   {debitoConta && (
                     <div className="mt-2 rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs font-semibold text-yellow-900">
                       📌 {explicacaoConta(debitoConta.codigo)?.texto}
@@ -716,7 +771,7 @@ return (
                 {/* CRÉDITO */}
                 <div>
                   <label className="flex items-center gap-2 text-xs font-black text-slate-600 mb-1">
-                    Saída — Crédito
+                    {labels.credito}
                     {creditoId && (
                       <span className="group relative inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#082f4f] text-white text-xs cursor-pointer">
                         ?
@@ -728,50 +783,62 @@ return (
                       </span>
                     )}
                   </label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative w-full">
+                        <input
+                          className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
+                          placeholder="Digite código ou nome da conta"
+                          value={creditoTexto}
+                          onChange={(e) => {
+                            setCreditoTexto(e.target.value);
+                            setCreditoId("");
+                            setCreditoConta(null);
+                          }}
+                        />
 
-                  <div className="flex items-center gap-2">
-                    <input
-                      list="contasCredito"
-                      className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
-                      placeholder="Digite código ou nome da conta"
-                      value={creditoTexto}
-                      onChange={(e) => {
-                        const texto = e.target.value;
-                        setCreditoTexto(texto);
+                        {creditoTexto && !creditoId && (
+                          <div className="absolute z-[9999] mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl">
+                            {contas
+                              .filter((c) =>
+                                `${c.codigo} ${c.nome}`
+                                  .toLowerCase()
+                                  .includes(creditoTexto.toLowerCase())
+                              )
+                              .slice(0, 12)
+                              .map((c) => (
+                                <button
+                                  key={c.id}
+                                  type="button"
+                                  onClick={() => {
+                                    const texto = `${c.codigo} - ${c.nome}`;
+                                    setCreditoTexto(texto);
+                                    setCreditoId(c.id);
+                                    setCreditoConta(c);
 
-                        const conta = contas.find(
-                          (c) =>
-                            `${c.codigo} - ${c.nome}` === texto ||
-                            c.codigo === texto
-                        );
+                                    const novoHist = montarHistorico(debitoId, c.id);
+                                    if (novoHist) setHistorico(novoHist);
+                                  }}
+                                  className="block w-full px-3 py-2 text-left text-sm font-bold text-slate-700 hover:bg-blue-50"
+                                >
+                                  {c.codigo} - {c.nome}
+                                </button>
+                              ))}
+                          </div>
+                        )}
+                      </div>
 
-                        if (conta) {
-                          setCreditoId(conta.id);
-                          setCreditoConta(conta);
-
-                          const novoHist = montarHistorico(debitoId, conta.id);
-                          if (novoHist) setHistorico(novoHist);
-                        }
-                      }}
-                    />
-
-                    <datalist id="contasCredito">
-                      {contas.map((c) => (
-                        <option key={c.id} value={`${c.codigo} - ${c.nome}`} />
-                      ))}
-                    </datalist>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCampoOrigemConta("credito");
-                        setModalContaContabil(true);
-                      }}
-                      className="h-10 w-10 rounded-lg bg-[#082f4f] text-white font-black"
-                    >
-                      +
-                    </button>
-                  </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCampoOrigemConta("credito");
+                          setModalContaContabil(true);
+                        }}
+                        className="h-10 w-10 rounded-lg bg-[#082f4f] text-white font-black"
+                      >
+                        +
+                      </button>
+                    </div>
+                   
 
                   {creditoConta && (
                     <div className="mt-2 rounded-lg bg-yellow-50 border border-yellow-200 px-3 py-2 text-xs font-semibold text-yellow-900">
@@ -793,7 +860,7 @@ return (
 
             <div>
               <label className="block text-xs font-black text-slate-600 mb-1">
-                Histórico
+               {labels.historico}
               </label>
               <input
                 className="w-full h-10 rounded-lg border border-sky-200 bg-sky-50 px-3 text-sm font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-sky-200"
@@ -838,11 +905,17 @@ return (
                 type="checkbox"
                 id="lembrar"
                 checked={lembrar}
+                    disabled={livre}
                 onChange={(e) => setLembrar(e.target.checked)}
               />
               Lembrar este lançamento
             </label>
-
+                
+            {livre && (
+                <p className="text-xs font-semibold text-slate-500">
+                  No lançamento livre, o lembrete fica obrigatório para você acompanhar depois.
+                </p>
+              )}
             {lembrar && (
               <div>
                 <label className="block text-xs font-black text-slate-600 mb-1">
@@ -864,7 +937,13 @@ return (
         <div className="px-6 py-4 border-t border-slate-200 bg-white flex justify-end gap-3">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+  if (onClose) {
+    onClose();
+  } else {
+    navigate(-1);
+  }
+}}
             className="h-11 px-6 rounded-lg border border-sky-200 bg-sky-50 text-[#08233d] text-sm font-black"
           >
             Voltar
