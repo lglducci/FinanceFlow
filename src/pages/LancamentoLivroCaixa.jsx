@@ -713,13 +713,14 @@ function resolverContaPorCodigo(codigoImportado) {
 
   return null;
 }
+ 
 
- function parseNumeroBR(valor) {
-  if (valor == null) return 0;
+function parseNumeroBR(valor) {
+  if (valor == null || valor === "") return 0;
 
-  let txt = String(valor)
-    .trim()
-    .toUpperCase();
+  if (typeof valor === "number") return valor;
+
+  let txt = String(valor).trim().toUpperCase();
 
   const temCredito = /\bC\b$/.test(txt);
   const temDebito = /\bD\b$/.test(txt);
@@ -729,26 +730,46 @@ function resolverContaPorCodigo(codigoImportado) {
     .replace(/\s+/g, "")
     .replace(/[CD]$/g, "");
 
-  let negativo = false;
+  let negativo = txt.startsWith("-") || temDebito;
+  txt = txt.replace(/^-+/, "");
 
-  if (txt.startsWith("-")) {
-    negativo = true;
-    txt = txt.replace(/^-+/, "");
+  const temVirgula = txt.includes(",");
+  const temPonto = txt.includes(".");
+
+  if (temVirgula && temPonto) {
+    const ultimaVirgula = txt.lastIndexOf(",");
+    const ultimoPonto = txt.lastIndexOf(".");
+
+    if (ultimaVirgula > ultimoPonto) {
+      // BR: 1.500,25
+      txt = txt.replace(/\./g, "").replace(",", ".");
+    } else {
+      // US: 1,500.25
+      txt = txt.replace(/,/g, "");
+    }
+  } else if (temVirgula) {
+    // BR: 300,25
+    txt = txt.replace(",", ".");
+  } else if (temPonto) {
+    // US decimal: 300.25
+    // ou milhar: 1.500
+    const partes = txt.split(".");
+    const ultima = partes[partes.length - 1];
+
+    if (partes.length > 1 && ultima.length === 3) {
+      txt = txt.replace(/\./g, "");
+    }
   }
 
-  txt = txt
-    .replace(/\./g, "")
-    .replace(",", ".")
-    .replace(/[^\d.]/g, "");
+  txt = txt.replace(/[^\d.]/g, "");
 
   let numero = Number(txt) || 0;
 
-  if (temDebito || negativo) numero = -Math.abs(numero);
+  if (negativo) numero = -Math.abs(numero);
   if (temCredito) numero = Math.abs(numero);
 
   return numero;
 }
-  
 
 async function importarArquivoExcel(e) {
  
