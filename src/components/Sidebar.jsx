@@ -198,8 +198,8 @@ function podeVer(menuKey) {
              <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
            <SubItem icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />*/}
        {/*}    <SubItem icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/importacao-bancaria")}  />*/}
-               <SubItem icon={<IconDoc />} label="Extrato via Contábil" onClick={() => navigate("/livro-caixa")}  />
-                <SubItem icon={<IconDoc />} label="Extrato de Cartões" onClick={() => navigate("/importacao-cartao")}  />
+               <SubItem icon={<IconDoc />} label="Contábil" onClick={() => navigate("/livro-caixa")}  />
+                <SubItem icon={<IconDoc />} label="Cartões" onClick={() => navigate("/importacao-cartao")}  />
                
             
          </MenuGroup>
