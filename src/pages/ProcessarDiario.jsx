@@ -323,16 +323,16 @@ useEffect(() => {
 
 
   
-  <div className="min-h-screen bg-gray-50 p-6">
+  <div className="min-h-screen bg-gray-50 p-3">
 
     {/* HEADER */}
-    <div className="mb-6">
+    <div className="mb-2">
       <h2 className="text-2xl font-bold text-gray-800">
         📥 Geração Contábil
       </h2>
-      <p className="text-sm text-gray-500">
+   {  /* <p className="text-sm text-gray-500">
         1) Pré-Diário → 2) Diário → 3) Geração Contábil
-      </p>
+      </p>*/}
     </div>
 
     {/* CARD PROCESSAMENTO */}

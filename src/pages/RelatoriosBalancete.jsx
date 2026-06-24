@@ -72,130 +72,214 @@ useEffect(() => {
   );
 }
 
-
-
-  return (
-    <div className="p-6">
-
-        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2"> 
-      <h1 className="text-2xl font-bold mb-6">📒 Balancete</h1>
-
-      <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
-        <div>
-          <label className="block font-bold text-[#1e40af]"> Data inicial    </label>
-          <input
-            type="date"
-            value={dataIni}
-            onChange={(e) => setDataIni(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
-
-        <div>
-          <label className="block font-bold text-[#1e40af]"> Data final    </label>
-          <input
-            type="date"
-            value={dataFim}
-            onChange={(e) => setDataFim(e.target.value)}
-            className="border rounded-lg px-3 py-2 border-yellow-500"
-          />
-        </div>
-
-        <button
-          onClick={consultar}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
-        >
-          Consultar
-        </button>
-      
-      
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!mostrarZeradas}
-            onChange={() => setMostrarZeradas(!mostrarZeradas)}
-          />
-          Ocultar contas sem movimento
-        </label>
-
-
-        <button
-          onClick={() => window.print()}
-          className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
-        >
-          🖨️ Imprimir
-        </button> 
-
+return (
+  <div className="min-h-screen bg-slate-50 p-4 md:p-2">
+    <div className="mx-auto max-w-[1600px] space-y-5">
+      {/* HEADER / FILTROS */}
+      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-slate-800">
+              📒 Balancete
+            </h1>
+            <p className="mt-1 text-sm font-semibold text-slate-500">
+              Consulte saldos iniciais, débitos, créditos e saldo final por conta.
+            </p>
+          </div>
 
           <button
-          onClick={() =>   navigate("/reports") }
-          className="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold"
+            onClick={() => navigate("/reports")}
+            className="btn-pill btn-white flex items-center gap-2"
           >
-          Voltar 
+            ← Voltar
           </button>
-         </div>
-      </div>
+        </div>
 
-       <div id="print-area"> 
-       
-        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2"> 
+        <div className="p-5">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500">
+                  Data inicial
+                </label>
+                <input
+                  type="date"
+                  value={dataIni}
+                  onChange={(e) => setDataIni(e.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
 
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-blue-900 text-white">
-            <tr style={{ background: "#002b80", color: "white", height: 40 }}>
-              <th className="p-3 text-left">Código</th>
-              <th className="p-3 text-left">Conta</th>
-                  <th className="p-3 text-right">Saldo Inicial</th>
-              <th className="p-3 text-right">Débito</th>
-              <th className="p-3 text-right">Crédito</th>
-              <th className="p-3 text-right">Saldo Final</th>
-            </tr>
-          </thead>
-          <tbody>
-           {/*} {dados.map((l, idx) => (*/}
+              <div>
+                <label className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500">
+                  Data final
+                </label>
+                <input
+                  type="date"
+                  value={dataFim}
+                  onChange={(e) => setDataFim(e.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
+            </div>
 
-               { dados.filter((l) => mostrarZeradas || !linhaZerada(l)).map((l, idx) => (
-              <tr key={idx}   className={idx % 2 === 0 ? "bg-[#f2f2f2]" : "bg-[#e6e6e6]"}>
-                <td className="p-2 font-bold font-size: 16px">{l.codigo}</td>
-                <td className="p-2 font-bold font-size: 16px">{l.conta_nome}</td>
-                 <td
-                  className={`p-3 text-right font-bold font-size: 16px ${
-                    l.saldo < 0 ? "text-red-600" : "text-green-700"
-                  }`}
-                >
-                  {fmt.format(l.saldo_inicial)}
-                </td>
-                <td className="p-2 text-right font-bold font-size: 16px">{fmt.format(l.total_debito)}</td>
-                <td className="p-2 text-right font-bold font-size: 16px">{fmt.format(l.total_credito)}</td>
-                <td
-                  className={`p-3 text-right font-bold font-size: 16px ${
-                    l.saldo < 0 ? "text-red-600" : "text-green-700"
-                  }`}
-                >
-                  {fmt.format(l.saldo)}
-                </td>
-              </tr>
-            ))}
+            <div className="flex flex-wrap gap-2 lg:justify-end">
+              <button
+                onClick={consultar}
+                className="btn-pill btn-green flex items-center gap-2"
+              >
+                🔎 Consultar
+              </button>
 
-            {!loading && dados.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-400">
-                  Nenhum dado para o período selecionado.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        {loading && (
-          <div className="p-6 text-center text-blue-600 font-bold">
-            Carregando...
+              <button
+                onClick={() => window.print()}
+                className="btn-pill btn-white flex items-center gap-2"
+              >
+                🖨️ Imprimir
+              </button>
+            </div>
           </div>
-        )}
+
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <label className="flex cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-600">
+              <input
+                type="checkbox"
+                checked={!mostrarZeradas}
+                onChange={() => setMostrarZeradas(!mostrarZeradas)}
+              />
+              Ocultar contas sem movimento
+            </label>
+
+            <div className="text-sm font-bold text-slate-500">
+              {loading
+                ? "Carregando..."
+                : `${dados.filter((l) => mostrarZeradas || !linhaZerada(l)).length} conta(s)`}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* TABELA */}
+      <div
+        id="print-area"
+        className="rounded-3xl border border-slate-200 bg-white shadow-sm"
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <div>
+            <h2 className="text-lg font-black text-slate-800">
+              Resultado do Balancete
+            </h2>
+            <p className="text-sm font-semibold text-slate-500">
+              Saldos e movimentações no período selecionado.
+            </p>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1000px] border-separate border-spacing-0 text-sm">
+            <thead>
+              <tr className="bg-slate-900 text-white">
+                <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  Código
+                </th>
+                <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  Conta
+                </th>
+                <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                  Saldo inicial
+                </th>
+                <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                  Débito
+                </th>
+                <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                  Crédito
+                </th>
+                <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                  Saldo final
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {dados
+                .filter((l) => mostrarZeradas || !linhaZerada(l))
+                .map((l, idx) => {
+                  const saldoInicial = Number(l.saldo_inicial || 0);
+                  const debito = Number(l.total_debito || 0);
+                  const credito = Number(l.total_credito || 0);
+                  const saldo = Number(l.saldo || 0);
+
+                  return (
+                    <tr
+                      key={idx}
+                      className={`transition hover:bg-blue-50 ${
+                        idx % 2 === 0 ? "bg-white" : "bg-slate-50"
+                      }`}
+                    >
+                      <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 font-black text-slate-700">
+                        {l.codigo}
+                      </td>
+
+                      <td className="border-b border-slate-100 px-4 py-3 font-bold text-slate-700">
+                        <div className="max-w-[620px] truncate" title={l.conta_nome}>
+                          {l.conta_nome}
+                        </div>
+                      </td>
+
+                      <td
+                        className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                          saldoInicial < 0 ? "text-red-600" : "text-green-700"
+                        }`}
+                      >
+                        {fmt.format(saldoInicial)}
+                      </td>
+
+                      <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black text-blue-700">
+                        {fmt.format(debito)}
+                      </td>
+
+                      <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black text-red-600">
+                        {fmt.format(credito)}
+                      </td>
+
+                      <td
+                        className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                          saldo < 0 ? "text-red-600" : "text-green-700"
+                        }`}
+                      >
+                        {fmt.format(saldo)}
+                      </td>
+                    </tr>
+                  );
+                })}
+
+              {!loading && dados.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-14 text-center">
+                    <div className="mx-auto max-w-md rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8">
+                      <div className="text-4xl">📭</div>
+                      <div className="mt-3 text-lg font-black text-slate-700">
+                        Nenhum dado encontrado
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-slate-500">
+                        Selecione o período e clique em Consultar.
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {loading && (
+            <div className="border-t border-slate-100 p-6 text-center text-sm font-black text-blue-700">
+              Carregando balancete...
+            </div>
+          )}
+        </div>
       </div>
     </div>
-    </div>
-     </div>
-  );
+  </div>
+);
+ 
 }

@@ -121,194 +121,281 @@ if (ehPatrimonial) {
       setLoading(false);
     }
   }
+return (
+  <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+    <div className="mx-auto max-w-[1600px] space-y-5">
+      {/* HEADER / FILTROS */}
+      <div className="rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-slate-800">
+              📊 Balanço Patrimonial
+            </h1>
+            <p className="mt-1 text-sm font-semibold text-slate-500">
+              Consulte o balanço patrimonial ou compare saldos entre períodos.
+            </p>
+          </div>
 
-  return (
-    <div className="p-6">
-      <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-blue-800 mb-2">
-        <h1 className="text-2xl font-bold mb-6">📊 Balanço Patrimonial</h1>
+          <button
+            onClick={() => navigate("/reports")}
+            className="btn-pill btn-white flex items-center gap-2"
+          >
+            ← Voltar
+          </button>
+        </div>
 
-        <div className="bg-white rounded-xl p-4 shadow mb-6 flex gap-4 items-end">
-          <div className="bg-white rounded-xl shadow p-4 mb-4">
-            <div className="flex flex-wrap gap-6 items-center mb-4">
-              <label className="flex items-center gap-2 font-medium">
+        <div className="p-5">
+          <div className="mb-5 flex flex-wrap gap-2">
+            {[
+              ["patrimonial", "Balanço Patrimonial"],
+              ["comparativo", "Balanço Comparativo"],
+            ].map(([value, label]) => (
+              <label
+                key={value}
+                className={`cursor-pointer rounded-full px-4 py-2 text-sm font-black transition ${
+                  tipoRelatorio === value
+                    ? "bg-slate-900 text-white"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-blue-300"
+                }`}
+              >
                 <input
                   type="checkbox"
-                  checked={ehPatrimonial}
-                  onChange={() => marcarTipo("patrimonial")}
+                  checked={tipoRelatorio === value}
+                  onChange={() => marcarTipo(value)}
+                  className="hidden"
                 />
-                Balanço Patrimonial
+                {label}
               </label>
+            ))}
+          </div>
 
-              <label className="flex items-center gap-2 font-medium">
-                <input
-                  type="checkbox"
-                  checked={ehComparativo}
-                  onChange={() => marcarTipo("comparativo")}
-                />
-                Balanço Comparativo
-              </label>
-            </div>
-
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
             {!ehComparativo ? (
-              <div className="flex flex-wrap gap-4 items-end">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500">
                     Data de corte
                   </label>
                   <input
                     type="date"
                     value={dataCorte}
                     onChange={(e) => setDataCorte(e.target.value)}
-                    className="border rounded px-3 py-2"
+                    className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   />
                 </div>
-
-                <button
-                  onClick={consultar}
-                  className="px-4 py-2 rounded bg-blue-700 text-white font-semibold"
-                >
-                  Pesquisar
-                </button>
               </div>
             ) : (
-              <div className="flex flex-wrap gap-4 items-end">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500">
                     Data inicial
                   </label>
                   <input
                     type="date"
                     value={dataIni}
                     onChange={(e) => setDataIni(e.target.value)}
-                    className="border rounded px-3 py-2"
+                    className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500">
                     Data final
                   </label>
                   <input
                     type="date"
                     value={dataFim}
                     onChange={(e) => setDataFim(e.target.value)}
-                    className="border rounded px-3 py-2"
+                    className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                   />
                 </div>
-
-                <button
-                  onClick={consultar}
-                  className="px-4 py-2 rounded bg-blue-700 text-white font-semibold"
-                >
-                  Pesquisar
-                </button>
-
-                <button
-                  onClick={() => window.print()}
-                  className="bg-gray-700 text-white px-4 py-2 rounded-lg font-semibold"
-                >
-                  🖨️ Imprimir
-                </button>
-
-                <button
-                  onClick={() => navigate("/reports")}
-                  className="bg-gray-400 text-white px-4 py-2 rounded-lg font-bold"
-                >
-                  Voltar
-                </button>
               </div>
             )}
 
-            {erro && (
-              <div className="mt-3 text-red-600 font-medium">{erro}</div>
-            )}
+            <div className="flex flex-wrap gap-2 lg:justify-end">
+              <button
+                onClick={consultar}
+                className="btn-pill btn-green flex items-center gap-2"
+              >
+                🔎 Pesquisar
+              </button>
+
+              <button
+                onClick={() => window.print()}
+                className="btn-pill btn-white flex items-center gap-2"
+              >
+                🖨️ Imprimir
+              </button>
+            </div>
           </div>
+
+          {erro && (
+            <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-black text-red-700">
+              {erro}
+            </div>
+          )}
         </div>
       </div>
 
-      <div id="print-area">
-        <div className="max-w-full mx-auto bg-gray-100 rounded-xl shadow-lg p-5 border-[4px] border-gray-400 mb-2">
-          <div className="bg-white rounded-xl shadow overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-100">
-                <tr>
-                  <th className="px-3 py-2 text-left">Código</th>
-                  <th className="px-3 py-2 text-left">Conta</th>
-
-                  {ehComparativo ? (
-                    <>
-                      <th className="px-3 py-2 text-right">Saldo anterior</th>
-                      <th className="px-3 py-2 text-right">Saldo atual</th>
-                      <th className="px-3 py-2 text-right">Variação</th>
-                    </>
-                  ) : (
-                    <th className="px-3 py-2 text-right">Saldo</th>
-                  )}
-                </tr>
-              </thead>
-
-              <tbody>
-                {linhas.map((l, i) => {
-                  const nome = (l.conta_nome || "").toUpperCase().trim();
-                  const tipo = (l.tipo_linha || "").toUpperCase().trim();
-
-                  const destaqueResumo =
-                    tipo.includes("TOTAL") ||
-                    tipo === "FECHAMENTO" ||
-                    nome === "TOTAL ATIVO" ||
-                    nome === "TOTAL PASSIVO" ||
-                    nome === "DIFERENCA (ATIVO - PASSIVO - PL)";
-
-                  return (
-                    <tr
-                      key={i}
-                      className={destaqueResumo ? "bg-slate-50 font-bold border-t" : "border-t"}
-                    >
-                      <td className="px-3 py-2">{l.conta_codigo || ""}</td>
-                      <td className="px-3 py-2">{l.conta_nome || ""}</td>
-
-                      {ehComparativo ? (
-                        <>
-                          <td className="px-3 py-2 text-right">
-                            {moeda(l.saldo_anterior)}
-                          </td>
-                          <td className="px-3 py-2 text-right">
-                            {moeda(l.saldo_atual)}
-                          </td>
-                          <td className="px-3 py-2 text-right">
-                            {moeda(l.variacao)}
-                          </td>
-                        </>
-                      ) : (
-                        <td className="px-3 py-2 text-right">
-                          {moeda(l.saldo)}
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })}
-
-                {!loading && linhas.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={ehComparativo ? 5 : 3}
-                      className="px-3 py-6 text-center text-slate-500"
-                    >
-                      Nenhum dado encontrado.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-
-            {loading && (
-              <div className="p-6 text-center text-blue-600 font-semibold">
-                Carregando...
-              </div>
-            )}
+      {/* TABELA */}
+      <div
+        id="print-area"
+        className="rounded-3xl border border-slate-200 bg-white shadow-sm"
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <div>
+            <h2 className="text-lg font-black text-slate-800">
+              {ehComparativo ? "Balanço Comparativo" : "Balanço Patrimonial"}
+            </h2>
+            <p className="text-sm font-semibold text-slate-500">
+              {loading
+                ? "Carregando dados..."
+                : `${linhas.length} linha(s) encontradas`}
+            </p>
           </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[980px] border-separate border-spacing-0 text-sm">
+            <thead>
+              <tr className="bg-slate-900 text-white">
+                <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  Código
+                </th>
+                <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  Conta
+                </th>
+
+                {ehComparativo ? (
+                  <>
+                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                      Saldo anterior
+                    </th>
+                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                      Saldo atual
+                    </th>
+                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                      Variação
+                    </th>
+                  </>
+                ) : (
+                  <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                    Saldo
+                  </th>
+                )}
+              </tr>
+            </thead>
+
+            <tbody>
+              {linhas.map((l, i) => {
+                const nome = (l.conta_nome || "").toUpperCase().trim();
+                const tipo = (l.tipo_linha || "").toUpperCase().trim();
+
+                const destaqueResumo =
+                  tipo.includes("TOTAL") ||
+                  tipo === "FECHAMENTO" ||
+                  nome === "TOTAL ATIVO" ||
+                  nome === "TOTAL PASSIVO" ||
+                  nome === "DIFERENCA (ATIVO - PASSIVO - PL)";
+
+                return (
+                  <tr
+                    key={i}
+                    className={`transition hover:bg-blue-50 ${
+                      destaqueResumo
+                        ? "bg-blue-50 font-black text-slate-900"
+                        : i % 2 === 0
+                        ? "bg-white"
+                        : "bg-slate-50"
+                    }`}
+                  >
+                    <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 font-black text-slate-700">
+                      {l.conta_codigo || ""}
+                    </td>
+
+                    <td className="border-b border-slate-100 px-4 py-3 font-bold text-slate-700">
+                      <div className="max-w-[680px] truncate" title={l.conta_nome || ""}>
+                        {l.conta_nome || ""}
+                      </div>
+                    </td>
+
+                    {ehComparativo ? (
+                      <>
+                        <td
+                          className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                            Number(l.saldo_anterior || 0) < 0
+                              ? "text-red-600"
+                              : "text-green-700"
+                          }`}
+                        >
+                          {moeda(l.saldo_anterior)}
+                        </td>
+
+                        <td
+                          className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                            Number(l.saldo_atual || 0) < 0
+                              ? "text-red-600"
+                              : "text-green-700"
+                          }`}
+                        >
+                          {moeda(l.saldo_atual)}
+                        </td>
+
+                        <td
+                          className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                            Number(l.variacao || 0) < 0
+                              ? "text-red-600"
+                              : "text-green-700"
+                          }`}
+                        >
+                          {moeda(l.variacao)}
+                        </td>
+                      </>
+                    ) : (
+                      <td
+                        className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                          Number(l.saldo || 0) < 0
+                            ? "text-red-600"
+                            : "text-green-700"
+                        }`}
+                      >
+                        {moeda(l.saldo)}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+
+              {!loading && linhas.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={ehComparativo ? 5 : 3}
+                    className="px-6 py-14 text-center"
+                  >
+                    <div className="mx-auto max-w-md rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8">
+                      <div className="text-4xl">📭</div>
+                      <div className="mt-3 text-lg font-black text-slate-700">
+                        Nenhum dado encontrado
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-slate-500">
+                        Ajuste o período e clique em Pesquisar.
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {loading && (
+            <div className="border-t border-slate-100 p-6 text-center text-sm font-black text-blue-700">
+              Carregando balanço...
+            </div>
+          )}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+  
 }

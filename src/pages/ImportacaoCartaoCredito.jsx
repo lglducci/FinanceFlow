@@ -1,12 +1,19 @@
- import { useEffect, useState } from "react";
+      import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { buildWebhookUrl } from "../config/globals";
 import { fetchSeguro } from "../utils/apiSafe";
 
+import * as pdfjsLib from "pdfjs-dist";
+import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+
 export default function ImportacaoCartaoCredito() {
   const navigate = useNavigate();
   const empresa_id = localStorage.getItem("empresa_id");
+
+  const [senhaPDF, setSenhaPDF] = useState("");
 
   const [cartoes, setCartoes] = useState([]);
   const [cartaoId, setCartaoId] = useState("");
@@ -19,6 +26,8 @@ const [importacaoId, setImportacaoId] = useState(null);
 const [salvando, setSalvando] = useState(false);
 const [conciliando, setConciliando] = useState(false);
 const [statusEtapa, setStatusEtapa] = useState("importar");
+const [tipoArquivo, setTipoArquivo] = useState("");
+const [validacaoPDF, setValidacaoPDF] = useState(null);
  
   const botaoBase = `
     px-5 py-2 rounded-full
@@ -143,7 +152,19 @@ const [statusEtapa, setStatusEtapa] = useState("importar");
     const txt = String(valor).trim();
 
     const m = txt.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-    if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+    if (m) {
+      const p1 = Number(m[1]);
+      const p2 = Number(m[2]);
+      const ano = m[3];
+
+      // Quando o PDF vier como MM/DD/YYYY, exemplo 04/26/2026.
+      if (p2 > 12) {
+        return `${ano}-${String(p1).padStart(2, "0")}-${String(p2).padStart(2, "0")}`;
+      }
+
+      // Padrão brasileiro DD/MM/YYYY.
+      return `${ano}-${String(p2).padStart(2, "0")}-${String(p1).padStart(2, "0")}`;
+    }
 
     if (/^\d{4}-\d{2}-\d{2}$/.test(txt)) return txt;
 
@@ -186,6 +207,152 @@ const [statusEtapa, setStatusEtapa] = useState("importar");
 
     return "compra";
   }
+
+
+
+function deveIgnorarLinhaCartao(estabelecimento) {
+  const txt = normalizarTexto(estabelecimento);
+
+  return (
+    txt.includes("limite de credito") ||
+    txt.includes("limite total de credito") ||
+    txt.includes("resumo da sua fatura") ||
+    txt.includes("resumo de sua fatura") ||
+    txt.includes("total da fatura") ||
+    txt.includes("encargos da fatura") ||
+    txt.includes("aceite n carteira") ||
+    txt.includes("nosso numero") ||
+    txt.includes("uso do banco") ||
+    txt.includes("valor do documento") ||
+    txt === "pagamento total"
+  );
+}
+
+function limparDescricaoCartao(texto) {
+  return String(texto || "")
+    .replace(/\s+/g, " ")
+    .replace(/[-–]?\s*Parcela\s+\d+\s*\/\s*\d+/i, "")
+    .trim();
+}
+
+function extrairParcelaDescricao(texto) {
+  const txt = String(texto || "");
+
+  let m = txt.match(/Parcela\s+(\d+)\s*\/\s*(\d+)/i);
+  if (m) {
+    return {
+      parcela: `${m[1]}/${m[2]}`,
+      parcela_atual: Number(m[1]),
+      parcela_total: Number(m[2]),
+    };
+  }
+
+  m = txt.match(/\b(\d+)\s*de\s*(\d+)\b/i);
+  if (m) {
+    return {
+      parcela: `${m[1]}/${m[2]}`,
+      parcela_atual: Number(m[1]),
+      parcela_total: Number(m[2]),
+    };
+  }
+
+  return { parcela: null, parcela_atual: null, parcela_total: null };
+}
+
+function linhaPareceLancamentoCartao(l) {
+  const txt = normalizarTexto(l.estabelecimento);
+  const qtdPalavras = txt.split(/\s+/).filter(Boolean).length;
+
+  if (!l.data || !l.estabelecimento || !Number.isFinite(Number(l.valor)) || Number(l.valor) === 0) {
+    return false;
+  }
+
+  if (deveIgnorarLinhaCartao(l.estabelecimento)) return false;
+
+  // Linha administrativa costuma ser grande demais e cheia de termos bancários.
+  if (qtdPalavras > 10 && !txt.includes("*") && !txt.includes("parcela")) {
+    return false;
+  }
+
+  return true;
+}
+
+function valoresQuaseIguais(a, b) {
+  return Math.abs(Number(a || 0) - Number(b || 0)) <= 0.05;
+}
+
+function extrairTotalFaturaPDF(texto) {
+  const txt = String(texto || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const valor = "(-?\\s*(?:R\\$\\s*)?\\d{1,3}(?:\\.\\d{3})*,\\d{2}|-?\\s*(?:R\\$\\s*)?\\d+,\\d{2})";
+
+  const padroes = [
+    new RegExp(`saldo\\s+desta\\s+fatura.{0,80}?${valor}`, "i"),
+    new RegExp(`${valor}.{0,80}?saldo\\s+desta\\s+fatura`, "i"),
+    new RegExp(`total\\s+a\\s+pagar.{0,80}?${valor}`, "i"),
+    new RegExp(`${valor}.{0,80}?total\\s+a\\s+pagar`, "i"),
+    new RegExp(`pagamento\\s+total.{0,80}?${valor}`, "i"),
+    new RegExp(`${valor}.{0,80}?pagamento\\s+total`, "i"),
+    new RegExp(`total\\s+despesas\\s*\\/\\s*debitos\\s+no\\s+brasil.{0,80}?${valor}`, "i"),
+    new RegExp(`${valor}.{0,80}?total\\s+despesas\\s*\\/\\s*debitos\\s+no\\s+brasil`, "i"),
+    new RegExp(`despesas\\s+ate\\s+a\\s+emissao\\s+desta\\s+fatura.{0,80}?${valor}`, "i"),
+    new RegExp(`valor\\s+total\\s+devido.{0,80}?${valor}`, "i"),
+    new RegExp(`total\\s+(?:da\\s+)?fatura.{0,80}?${valor}`, "i"),
+    new RegExp(`valor\\s+total\\s+(?:da\\s+)?fatura.{0,80}?${valor}`, "i"),
+    new RegExp(`${valor}.{0,80}?total\\s+(?:da\\s+)?fatura`, "i"),
+  ];
+
+  for (const regex of padroes) {
+    const m = txt.match(regex);
+    if (m) {
+      const bruto = m[m.length - 1];
+      const n = parseNumeroBR(bruto);
+      if (n > 0) return n;
+    }
+  }
+
+  return null;
+}
+
+function montarValidacaoPDF({ linhasConvertidas, totalPDF }) {
+  const totalImportado = Number(
+    linhasConvertidas
+      .reduce((soma, l) => soma + Math.abs(Number(l.valor || 0)), 0)
+      .toFixed(2)
+  );
+
+  if (totalPDF == null) {
+    return {
+      origem: "PDF",
+      ok: false,
+      bloqueiaSalvar: false,
+      mensagem: `Não localizei com segurança o total da fatura no PDF. Total importado: ${formatarMoeda(totalImportado)}.`,
+      totalPDF: null,
+      totalImportado,
+      diferenca: null,
+    };
+  }
+
+  const diferenca = Number((totalImportado - totalPDF).toFixed(2));
+  const ok = valoresQuaseIguais(totalImportado, totalPDF);
+
+  return {
+    origem: "PDF",
+    ok,
+    bloqueiaSalvar: !ok,
+    mensagem: ok
+      ? "PDF validado: total importado bate com o total da fatura."
+      : `Divergência no PDF: total importado ${formatarMoeda(totalImportado)} x total da fatura ${formatarMoeda(totalPDF)}. Diferença ${formatarMoeda(diferenca)}.`,
+    totalPDF,
+    totalImportado,
+    diferenca,
+  };
+}
+
+
 
   function converterPlanilha(json) {
     if (!json.length) return [];
@@ -256,86 +423,198 @@ const [statusEtapa, setStatusEtapa] = useState("importar");
           dados_originais: row,
         };
       })
-      .filter((l) => l.data && l.estabelecimento && l.valor !== 0);
+      .filter(
+  (l) =>
+    l.data &&
+    l.estabelecimento &&
+    l.valor !== 0 &&
+    !deveIgnorarLinhaCartao(l.estabelecimento)
+);
   }
 
-  async function importarArquivo(e) {
+ async function importarArquivo(e) {
+  try {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const nome = file.name || "";
     const ext = nome.split(".").pop().toLowerCase();
-
     const buffer = await file.arrayBuffer();
 
-   let json = [];
+    console.log("ARQUIVO SELECIONADO:", { nome, ext, tamanho: file.size });
 
-if (["xlsx", "xls"].includes(ext)) {
-  const workbook = XLSX.read(buffer, { type: "array" });
-  const sheetName = workbook.SheetNames[0];
-  const sheet = workbook.Sheets[sheetName];
+    setImportacaoId(null);
+    setStatusEtapa("importar");
+    setTipoArquivo(ext.toUpperCase());
+    setValidacaoPDF(null);
 
-  json = XLSX.utils.sheet_to_json(sheet, {
-    defval: "",
-    raw: false,
-  });
-} else {
-  const texto = new TextDecoder("utf-8").decode(buffer);
-
-  const linhasTxt = texto
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean);
-
-  const headers = linhasTxt[0].split(";").map((h) => h.trim());
-
-  json = linhasTxt.slice(1).map((linha) => {
-    const cols = linha.split(";").map((c) => c.trim());
-    const obj = {};
-
-    headers.forEach((h, i) => {
-      obj[h] = cols[i] ?? "";
-    });
-
-    return obj;
-  });
-}
-
-console.log("JSON LIDO:", json.length);
-console.table(json);
-
-const linhasConvertidas = converterPlanilha(json);
-
-const sugestao = sugerirDataReferencia(linhasConvertidas);
-
-if (sugestao) {
-  setDataReferencia(sugestao);
-} else {
-  setDataReferencia("");
-  alert("Não consegui sugerir a competência. Informe manualmente.");
-}
-
-
-
+    let linhasConvertidas = [];
+    let validacao = null;
  
+    if (ext === "pdf") {
+  const retornoPDF = await importarPDFViaN8N(file, buffer);
 
-    let totalCompras = 0;
-    let totalCreditos = 0;
+  console.log("RETORNO PDF N8N:", retornoPDF);
+console.log("LINHAS N8N:", retornoPDF?.linhas);
 
-    linhasConvertidas.forEach((l) => {
-      if (l.valor >= 0) totalCompras += l.valor;
-      else totalCreditos += Math.abs(l.valor);
-    });
-
-    setLinhas(linhasConvertidas);
-
-    setResumo({
-      qtd: linhasConvertidas.length,
-      compras: totalCompras,
-      creditos: totalCreditos,
-      liquido: totalCompras - totalCreditos,
-    });
+  if (!retornoPDF?.ok) {
+    alert(retornoPDF?.mensagem || "Não consegui importar o PDF.");
+    return;
   }
+ 
+  linhasConvertidas = Array.isArray(retornoPDF?.linhas)
+  ? retornoPDF.linhas
+  : [];
+  setTipoArquivo(retornoPDF.origem || "PDF_N8N");
+
+   const referenciaPDF =
+  retornoPDF.data_referencia ||
+  retornoPDF.mes_referencia ||
+  mesReferenciaDaFatura(retornoPDF.vencimento) ||
+  mesReferenciaDaFatura(retornoPDF.vencimento_fatura) ||
+  mesReferenciaDaFatura(retornoPDF.data_vencimento) ||
+  null;
+
+  processarLinhasImportadas(
+    linhasConvertidas,
+    retornoPDF.validacao || null,
+    referenciaPDF
+  );
+
+  alert(`${linhasConvertidas.length} lançamentos carregados na tela.`);
+  e.target.value = "";
+  return;
+} else {
+      let json = [];
+
+      if (["xlsx", "xls"].includes(ext)) {
+        const workbook = XLSX.read(buffer, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+
+        json = XLSX.utils.sheet_to_json(sheet, {
+          defval: "",
+          raw: false,
+        });
+      } else {
+        const texto = new TextDecoder("utf-8").decode(buffer);
+
+        const linhasTxt = texto
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+
+        if (!linhasTxt.length) {
+          alert("Arquivo vazio ou sem linhas para importar.");
+          return;
+        }
+
+        const headers = linhasTxt[0].split(";").map((h) => h.trim());
+
+        json = linhasTxt.slice(1).map((linha) => {
+          const cols = linha.split(";").map((c) => c.trim());
+          const obj = {};
+
+          headers.forEach((h, i) => {
+            obj[h] = cols[i] ?? "";
+          });
+
+          return obj;
+        });
+      }
+
+      console.log("JSON LIDO:", json.length);
+      console.table(json);
+
+      linhasConvertidas = converterPlanilha(json);
+    }
+
+    if (!linhasConvertidas.length) {
+      alert("Arquivo lido, mas não consegui identificar lançamentos.");
+      return;
+    }
+
+    processarLinhasImportadas(linhasConvertidas, validacao);
+
+    if (validacao?.bloqueiaSalvar) {
+      alert(`${linhasConvertidas.length} lançamentos carregados, mas a importação ficou BLOQUEADA: ${validacao.mensagem}`);
+    } else {
+      alert(`${linhasConvertidas.length} lançamentos carregados na tela.`);
+    }
+
+    e.target.value = "";
+  } catch (err) {
+    console.error("ERRO AO IMPORTAR ARQUIVO:", err);
+    alert(err.message || "Erro ao importar arquivo.");
+  }
+}
+ 
+async function importarPDFViaN8N(file, buffer) {
+  const formData = new FormData();
+
+  formData.append("empresa_id", empresa_id);
+  formData.append("cartao_id", cartaoId || "");
+  formData.append("senha_pdf", senhaPDF || "");
+
+  // Se tiver senha, o React extrai o texto e manda texto_pdf.
+  if (senhaPDF.trim()) {
+    const textoPDF = await lerTextoPDF(buffer);
+
+    if (!textoPDF || textoPDF.trim().length < 50) {
+      throw new Error("Não consegui extrair texto do PDF com a senha informada.");
+    }
+
+    formData.append("texto_pdf", textoPDF);
+  } else {
+    // Sem senha, manda o arquivo puro para o N8N extrair melhor.
+    formData.append("arquivo", file);
+  }
+
+  const resp = await fetch(buildWebhookUrl("importar_fatura_cartao_pdf"), {
+    method: "POST",
+    body: formData,
+  });
+
+  const json = await resp.json();
+  return Array.isArray(json) ? json[0] : json;
+}
+
+
+function mesReferenciaDaFatura(data) {
+  if (!data) return null;
+
+  const iso = dataParaISO(data) || String(data).slice(0, 10);
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    return null;
+  }
+
+  return `${iso.slice(0, 7)}-01`;
+}
+
+function processarLinhasImportadas(linhasConvertidas, validacao = null, referenciaFatura = null) {
+  const sugestao = referenciaFatura || new Date().toISOString().slice(0, 10);
+
+  setDataReferencia(sugestao || "");
+
+  let totalCompras = 0;
+  let totalCreditos = 0;
+
+  linhasConvertidas.forEach((l) => {
+    if (l.valor >= 0) totalCompras += l.valor;
+    else totalCreditos += Math.abs(l.valor);
+  });
+
+  setLinhas(linhasConvertidas);
+  setValidacaoPDF(validacao);
+
+  setResumo({
+    qtd: linhasConvertidas.length,
+    compras: totalCompras,
+    creditos: totalCreditos,
+    liquido: totalCompras - totalCreditos,
+  });
+}
 
   async function salvarImportacao() {
     if (!cartaoId) {
@@ -345,6 +624,11 @@ if (sugestao) {
 
     if (!linhas.length) {
       alert("Nenhuma linha importada.");
+      return;
+    }
+
+    if (validacaoPDF?.bloqueiaSalvar) {
+      alert(validacaoPDF.mensagem || "Importação PDF bloqueada por divergência de total.");
       return;
     }
 
@@ -365,7 +649,7 @@ if (sugestao) {
     const payload = {
   empresa_id: Number(empresa_id),
   cartao_id: Number(cartaoId),
-  origem: "CARTAO",
+  origem: tipoArquivo?.startsWith("PDF") ? tipoArquivo : "CARTAO",
   ids,
   data_referencia:dataReferencia
 };
@@ -412,6 +696,8 @@ setStatusEtapa("conciliar");
   setStatusEtapa("importar");
   setSalvando(false);
   setConciliando(false);
+  setTipoArquivo("");
+  setValidacaoPDF(null);
 }
 
   async function conciliarImportacao() {
@@ -486,232 +772,386 @@ function sugerirDataReferencia(linhasConvertidas) {
 }
 
  
- 
+ function formatarMoeda(valor) {
+  return Number(valor || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
 
-  return (
-          <div className="flex justify-center bg-gray-200 min-h-screen  pb-3">
 
-      <div className="bg-gray-150 rounded-2xl border border-gray-300 w-[1200px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
-        <div className="bg-gray-650 rounded-lg p-3"> 
-        <div className="bg-gray-600 border-b rounded-t-xl p-2"> 
-       <div className="bg-gray-600 border-b rounded-t-xl p-4">  
-            <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
-              💳 Importação de Transações do Cartão
+const cartaoSelecionado =
+  cartoes.find((c) => String(c.id) === String(cartaoId)) || cartoes[0];
+
+function trocarCartao(direcao) {
+  if (!cartoes.length) return;
+
+  const indexAtual = cartoes.findIndex(
+    (c) => String(c.id) === String(cartaoSelecionado?.id)
+  );
+
+  const novoIndex =
+    direcao === "proximo"
+      ? (indexAtual + 1) % cartoes.length
+      : (indexAtual - 1 + cartoes.length) % cartoes.length;
+
+  setCartaoId(String(cartoes[novoIndex].id));
+}
+
+
+
+async function lerTextoPDF(buffer) {
+  try {
+    const loadingTask = pdfjsLib.getDocument({
+      data: buffer,
+      password: senhaPDF?.trim() || undefined,
+    });
+
+    const pdf = await loadingTask.promise;
+    let textoFinal = "";
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+
+      const textoPagina = content.items
+        .map((item) => item.str)
+        .join(" ");
+
+      textoFinal += "\n" + textoPagina;
+    }
+
+    return textoFinal;
+  } catch (err) {
+    console.error("ERRO PDF:", err);
+
+    const msg = String(err?.message || "");
+    const code = err?.code;
+
+    if (msg.includes("No password given") || code === 1) {
+      throw new Error("Este PDF exige senha. Preencha o campo 'Senha do PDF' e tente importar novamente.");
+    }
+
+    if (msg.includes("Incorrect Password") || code === 2) {
+      throw new Error("Senha do PDF incorreta. Confira a senha e tente novamente.");
+    }
+
+    throw new Error("Não consegui ler o PDF.");
+  }
+}
+
+
+
+
+   return (
+  <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-slate-200 px-4 py-4">
+    <div className="mx-auto w-full max-w-[1500px] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+
+      <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 px-6 py-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-black tracking-wide text-white">
+              💳 Central de Importação de Cartões
             </h2>
-
-            <div className="flex gap-3 mb-4">
-              <button
-                type="button"
-                onClick={() => setAbaAtiva("lancamentos")}
-                className={`px-5 py-2 rounded-full font-bold text-sm ${
-                  abaAtiva === "lancamentos"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-700"
-                }`}
-              >
-                💳 Lançamentos
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setAbaAtiva("layout")}
-                className={`px-5 py-2 rounded-full font-bold text-sm ${
-                  abaAtiva === "layout"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-700"
-                }`}
-              >
-                📄 Layout da Planilha
-              </button>
-            </div>
-
-            {abaAtiva === "layout" && (
-              <div className="bg-white rounded-xl p-6 border shadow mb-4">
-                <h3 className="text-xl font-black text-gray-800 mb-3">
-                  📄 Layout esperado da planilha de cartão
-                </h3>
-
-                <p className="text-sm text-gray-600 mb-4">
-                  A planilha deve conter as colunas abaixo. O arquivo pode ser Excel, CSV ou TXT separado por ponto e vírgula.
-                </p>
-
-                <table className="w-full text-sm border">
-                  <thead className="bg-blue-700 text-white">
-                    <tr>
-                      <th className="p-2 border">Data</th>
-                      <th className="p-2 border">Estabelecimento</th>
-                      <th className="p-2 border">Portador</th>
-                      <th className="p-2 border">Valor</th>
-                      <th className="p-2 border">Parcela</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    <tr>
-                      <td className="p-2 border">02/05/2026</td>
-                      <td className="p-2 border">HETZNER ONLINE GMBH</td>
-                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                      <td className="p-2 border text-red-700 font-bold">R$ 3,67</td>
-                      <td className="p-2 border">-</td>
-                    </tr>
-
-                    <tr>
-                      <td className="p-2 border">20/04/2026</td>
-                      <td className="p-2 border">Pagamentos Validos Normais</td>
-                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                      <td className="p-2 border text-green-700 font-bold">R$ -272,44</td>
-                      <td className="p-2 border">-</td>
-                    </tr>
-
-                    <tr>
-                      <td className="p-2 border">27/04/2026</td>
-                      <td className="p-2 border">MP*MERCADOLIVRE</td>
-                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                      <td className="p-2 border text-red-700 font-bold">R$ 10,68</td>
-                      <td className="p-2 border">1 de 7</td>
-                    </tr>
-
-                    <tr>
-                      <td className="p-2 border">27/07/2025</td>
-                      <td className="p-2 border">ASA*NO CODE START UP N</td>
-                      <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                      <td className="p-2 border text-red-700 font-bold">R$ 157,53</td>
-                      <td className="p-2 border">10 de 12</td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <div className="mt-4 text-sm text-gray-700 space-y-1">
-                  <p><b>Regras:</b></p>
-                  <p>• Data deve estar no formato DD/MM/AAAA.</p>
-                  <p>• Estabelecimento é obrigatório.</p>
-                  <p>• Portador é opcional, mas recomendado.</p>
-                  <p>• Valor positivo será tratado como compra.</p>
-                  <p>• Valor negativo será tratado como crédito/pagamento.</p>
-                  <p>• Parcela pode ser “-”, “1 de 7” ou “1/7”.</p>
-                </div>
-
-                <div className="mt-5 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={exportarLayout}
-                    className="btn-pill btn-blue"
-                  >
-                    📥 Exportar Layout
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {abaAtiva === "lancamentos" && (
-              <div className="grid grid-cols-[1fr_220px_220px] gap-4 items-end">
-              <div className="flex flex-col gap-1">
-                <label className="text-sm font-semibold text-gray-50">
-                  Cartão
-                </label>
-
-                <select
-                  value={cartaoId}
-                  onChange={(e) => setCartaoId(e.target.value)}
-                  className="block border rounded-lg px-3 py-2 text-sm"
-                >
-                  <option value="">Selecione</option>
-                  {cartoes.map((c) => (
-                    <option key={c.id} value={String(c.id)}>
-                      {c.nome || c.descricao || `Cartão ${c.id}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-               <div className="flex flex-col gap-1">
-                <label className="text-sm font-semibold text-gray-50">
-                  Data referência da fatura
-                </label>
-                <input
-                  type="date"
-                  value={dataReferencia}
-                  onChange={(e) => setDataReferencia(e.target.value)}
-                  className="border rounded-lg px-3 py-2 text-sm"
-                />
-
-                {dataReferencia && (
-                  <div className="text-xs text-yellow-100 font-bold mt-1">
-                    Competência sugerida automaticamente. Confira antes de conciliar.
-                  </div>
-                )}
-              </div>
-
-              <div className="text-right">
-                <div className="text-base text-gray-50">Total líquido</div>
-                <div
-                  className={`text-lg font-bold ${
-                    (resumo?.liquido || 0) >= 0
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
-                  {(resumo?.liquido || 0).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </div>
-              </div>
-            </div>
-            )}
+            <p className="text-sm text-sky-100 font-semibold mt-1">
+              Importe faturas por Excel, CSV, TXT ou PDF.
+            </p>
           </div>
-           </div>
 
-          {abaAtiva === "lancamentos" && resumo && (
-            <div className="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
-              ✔ {resumo.qtd} registros importados | Compras:{" "}
-              {resumo.compras.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}{" "}
-              | Créditos/Pagamentos:{" "}
-              {resumo.creditos.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}{" "}
-              | Líquido:{" "}
-              {resumo.liquido.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setAbaAtiva("lancamentos")}
+              className={`px-5 py-2 rounded-full font-black text-sm shadow ${
+                abaAtiva === "lancamentos"
+                  ? "bg-cyan-400 text-slate-950"
+                  : "bg-white/10 text-white hover:bg-white/20"
+              }`}
+            >
+              💳 Lançamentos
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setAbaAtiva("layout")}
+              className={`px-5 py-2 rounded-full font-black text-sm shadow ${
+                abaAtiva === "layout"
+                  ? "bg-cyan-400 text-slate-950"
+                  : "bg-white/10 text-white hover:bg-white/20"
+              }`}
+            >
+              📄 Layout da Planilha
+            </button>
+          </div>
+        </div>
+
+        {abaAtiva === "lancamentos" && (
+          <div className="mt-5 grid grid-cols-[520px_220px_1fr] gap-4 items-end">
+            <div className="flex flex-col">
+              <label className="text-sm font-bold text-white mb-1">
+                Cartão
+              </label>
+
+              <div className="flex items-center justify-start gap-2">
+                <button
+                  type="button"
+                  onClick={() => trocarCartao("anterior")}
+                  className="h-10 w-10 rounded-full bg-cyan-500 text-white text-sm font-black shadow hover:bg-cyan-600"
+                >
+                  {"<<"}
+                </button>
+
+                <div className="w-full max-w-[420px] rounded-2xl bg-white border-2 border-cyan-200 px-4 py-3 shadow-lg">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <div className="text-base font-black text-slate-900">
+                        {cartaoSelecionado?.nome || `Cartão ${cartaoSelecionado?.id || ""}`}
+                      </div>
+
+                      <div className="text-sm font-bold text-slate-500">
+                        Final {String(cartaoSelecionado?.numero || "").slice(-4)}
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-xs font-bold text-slate-400">
+                        Disponível
+                      </div>
+                      <div className="text-base font-black text-emerald-700">
+                        {formatarMoeda(cartaoSelecionado?.limite_disponivel)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                    <div className="rounded-xl bg-slate-100 px-3 py-2">
+                      <div className="text-slate-500 font-bold">Limite</div>
+                      <div className="text-slate-900 font-black">
+                        {formatarMoeda(cartaoSelecionado?.limite_total)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl bg-slate-100 px-3 py-2">
+                      <div className="text-slate-500 font-bold">Fecha</div>
+                      <div className="text-slate-900 font-black">
+                        Dia {cartaoSelecionado?.fechamento_dia || "-"}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl bg-slate-100 px-3 py-2">
+                      <div className="text-slate-500 font-bold">Vence</div>
+                      <div className="text-slate-900 font-black">
+                        Dia {cartaoSelecionado?.vencimento_dia || "-"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => trocarCartao("proximo")}
+                  className="h-10 w-10 rounded-full bg-cyan-500 text-white text-sm font-black shadow hover:bg-cyan-600"
+                >
+                  {">>"}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-bold text-white">
+                Referência da fatura
+              </label>
+              <input
+                type="date"
+                value={dataReferencia}
+                onChange={(e) => setDataReferencia(e.target.value)}
+                className="h-10 rounded-xl border border-sky-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-cyan-300"
+              />
+
+              {dataReferencia && (
+                <div className="text-xs text-yellow-100 font-bold mt-1">
+                  Mês/competência da fatura. A implantação contábil usa a data de hoje.
+                </div>
+              )}
+
+
+              <input
+              type="password"
+              value={senhaPDF}
+              onChange={(e) => setSenhaPDF(e.target.value)}
+              placeholder="Senha do PDF, se houver"
+              className="h-10 rounded-xl border border-sky-200 bg-white px-3 text-sm font-bold text-slate-700"
+            />
+            </div>
+
+            <div className="text-right justify-self-end">
+              <div className="text-sm font-bold text-sky-100">
+                Total líquido
+              </div>
+              <div
+                className={`text-2xl font-black ${
+                  (resumo?.liquido || 0) >= 0
+                    ? "text-green-300"
+                    : "text-red-300"
+                }`}
+              >
+                {(resumo?.liquido || 0).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="p-5 bg-slate-50">
+        {abaAtiva === "layout" && (
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow">
+              <h3 className="text-xl font-black text-slate-800 mb-3">
+                📄 Layout esperado da planilha de cartão
+              </h3>
+
+              <p className="text-sm text-slate-600 mb-4 font-semibold">
+                A planilha deve conter as colunas abaixo. O arquivo pode ser Excel, CSV ou TXT separado por ponto e vírgula.
+              </p>
+
+              <table className="w-full text-sm border border-slate-200 overflow-hidden rounded-xl">
+                <thead className="bg-slate-900 text-white">
+                  <tr>
+                    <th className="p-2 border border-slate-700">Data</th>
+                    <th className="p-2 border border-slate-700">Estabelecimento</th>
+                    <th className="p-2 border border-slate-700">Portador</th>
+                    <th className="p-2 border border-slate-700">Valor</th>
+                    <th className="p-2 border border-slate-700">Parcela</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr>
+                    <td className="p-2 border">02/05/2026</td>
+                    <td className="p-2 border font-semibold">HETZNER ONLINE GMBH</td>
+                    <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                    <td className="p-2 border text-red-700 font-black">R$ 3,67</td>
+                    <td className="p-2 border">-</td>
+                  </tr>
+
+                  <tr className="bg-slate-50">
+                    <td className="p-2 border">20/04/2026</td>
+                    <td className="p-2 border font-semibold">Pagamentos Validos Normais</td>
+                    <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                    <td className="p-2 border text-green-700 font-black">R$ -272,44</td>
+                    <td className="p-2 border">-</td>
+                  </tr>
+
+                  <tr>
+                    <td className="p-2 border">27/04/2026</td>
+                    <td className="p-2 border font-semibold">MP*MERCADOLIVRE</td>
+                    <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                    <td className="p-2 border text-red-700 font-black">R$ 10,68</td>
+                    <td className="p-2 border">1 de 7</td>
+                  </tr>
+
+                  <tr className="bg-slate-50">
+                    <td className="p-2 border">27/07/2025</td>
+                    <td className="p-2 border font-semibold">ASA*NO CODE START UP N</td>
+                    <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
+                    <td className="p-2 border text-red-700 font-black">R$ 157,53</td>
+                    <td className="p-2 border">10 de 12</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div className="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-700 space-y-1 font-semibold">
+                <p className="font-black text-slate-900">Regras:</p>
+                <p>• Data deve estar no formato DD/MM/AAAA.</p>
+                <p>• Estabelecimento é obrigatório.</p>
+                <p>• Portador é opcional, mas recomendado.</p>
+                <p>• Valor positivo será tratado como compra.</p>
+                <p>• Valor negativo será tratado como crédito/pagamento.</p>
+                <p>• Parcela pode ser “-”, “1 de 7” ou “1/7”.</p>
+              </div>
+
+              <div className="mt-5 flex justify-end">
+                <button
+                  type="button"
+                  onClick={exportarLayout}
+                  className="btn-pill btn-dark-blue"
+                >
+                  📥 Exportar Layout
+                </button>
+              </div>
             </div>
           )}
 
-          {abaAtiva === "lancamentos" && (
-          <div className="mt-4 max-h-[580px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
-            <div className="grid grid-cols-[110px_420px_220px_120px_130px_120px] gap-2 text-sm py-2 border-b border-gray-200 bg-gray-50">
-              <div className="text-left font-bold">Data</div>
-              <div className="text-left font-bold">Estabelecimento</div>
-              <div className="text-left font-bold">Portador</div>
-              <div className="text-center font-bold">Parcela</div>
-              <div className="text-right font-bold">Valor</div>
-              <div className="text-center font-bold">Tipo</div>
+        {abaAtiva === "lancamentos" && resumo && (
+          <div className="mb-4 bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-2xl text-sm font-black shadow-sm">
+            ✔ {resumo.qtd} registros importados | Compras:{" "}
+            {resumo.compras.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}{" "}
+            | Créditos/Pagamentos:{" "}
+            {resumo.creditos.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}{" "}
+            | Líquido:{" "}
+            {resumo.liquido.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </div>
+        )}
+
+        {abaAtiva === "lancamentos" && validacaoPDF && (
+          <div
+            className={`mb-4 px-4 py-3 rounded-2xl text-sm font-black shadow-sm border ${
+              validacaoPDF.ok
+                ? "bg-emerald-50 border-emerald-300 text-emerald-800"
+                : "bg-red-50 border-red-300 text-red-800"
+            }`}
+          >
+            {validacaoPDF.ok ? "✅" : "⛔"} {validacaoPDF.mensagem}
+          </div>
+        )}
+
+        {abaAtiva === "lancamentos" && (
+          <div className="max-h-[580px] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow">
+            <div className="sticky top-0 grid grid-cols-[110px_420px_220px_120px_130px_120px] gap-2 text-sm py-3 px-3 border-b border-slate-200 bg-slate-900 text-white z-10">
+              <div className="text-left font-black">Data</div>
+              <div className="text-left font-black">Estabelecimento</div>
+              <div className="text-left font-black">Portador</div>
+              <div className="text-center font-black">Parcela</div>
+              <div className="text-right font-black">Valor</div>
+              <div className="text-center font-black">Tipo</div>
             </div>
 
             {linhas.map((l) => (
               <div
                 key={l.linha}
-                className="grid grid-cols-[110px_420px_220px_120px_130px_120px] gap-2 text-sm border-b py-1 hover:bg-gray-50"
+                className="grid grid-cols-[110px_420px_220px_120px_130px_120px] gap-2 text-sm border-b border-slate-100 py-2 px-3 hover:bg-sky-50"
               >
-                <div>
+                <div className="font-semibold text-slate-700">
                   {String(l.data || "").includes("-")
                     ? l.data.split("-").reverse().join("/")
                     : l.data}
                 </div>
 
-                <div className="truncate font-semibold">{l.estabelecimento}</div>
+                <div className="truncate font-bold text-slate-800">
+                  {l.estabelecimento}
+                </div>
 
-                <div className="truncate text-gray-600">{l.portador || "-"}</div>
+                <div className="truncate text-slate-500 font-semibold">
+                  {l.portador || "-"}
+                </div>
 
-                <div className="text-center">{l.parcela || "-"}</div>
+                <div className="text-center font-semibold text-slate-600">
+                  {l.parcela || "-"}
+                </div>
 
                 <div
-                  className={`text-right font-mono font-bold ${
+                  className={`text-right font-mono font-black ${
                     l.valor >= 0 ? "text-red-700" : "text-green-700"
                   }`}
                 >
@@ -723,7 +1163,7 @@ function sugerirDataReferencia(linhasConvertidas) {
 
                 <div className="text-center">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    className={`px-3 py-1 rounded-full text-xs font-black ${
                       l.tipo_linha === "compra"
                         ? "bg-red-100 text-red-700"
                         : l.tipo_linha === "pagamento"
@@ -737,58 +1177,68 @@ function sugerirDataReferencia(linhasConvertidas) {
               </div>
             ))}
           </div>
-          )}
+        )}
 
-           {abaAtiva === "lancamentos" && (
-           <div className="flex justify-end gap-3 mt-4">
-              <label
-                className={`${botaoBase} text-white bg-gradient-to-b from-cyan-500 via-teal-600 to-teal-800 cursor-pointer ${
-                  statusEtapa !== "importar" ? "opacity-50 pointer-events-none" : ""
-                }`}
-              >
-                📥 Importar Excel
-                <input
-                  type="file"
-                  accept=".xlsx,.xls,.csv,.txt"
-                  onChange={importarArquivo}
-                  disabled={statusEtapa !== "importar"}
-                  className="hidden"
-                />
-              </label>
+         {abaAtiva === "lancamentos" && (
+          <div className="flex justify-end gap-3 mt-5">
+            <label
+              className={`btn-pill flex items-center gap-2 ${
+                statusEtapa === "importar"
+                  ? "btn-dark-black"
+                  : "btn-gray opacity-50 pointer-events-none"
+              }`}
+            >
+              📥 1. Importar Arquivo
+              <input
+                type="file"
+                accept=".pdf,.xlsx,.xls,.csv,.txt"
+                onChange={importarArquivo}
+                disabled={statusEtapa !== "importar"}
+                className="hidden"
+              />
+            </label>
 
-              <button
-                onClick={salvarImportacao}
-                disabled={salvando || statusEtapa !== "importar"}
-                className={`${botaoBase} text-white bg-gradient-to-b from-blue-500 via-blue-600 to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                💾 {salvando ? "Salvando..." : "Salvar prévia"}
-              </button>
+            <button
+              onClick={salvarImportacao}
+              disabled={salvando || statusEtapa !== "importar" || validacaoPDF?.bloqueiaSalvar}
+              className={`btn-pill flex items-center gap-2 ${
+                statusEtapa === "importar" && !validacaoPDF?.bloqueiaSalvar
+                  ? "btn-dark-blue"
+                  : "btn-gray opacity-50"
+              }`}
+            >
+              💾 2. {salvando ? "Salvando..." : "Salvar prévia"}
+            </button>
 
-              <button
-                onClick={conciliarImportacao}
-                disabled={conciliando || statusEtapa !== "conciliar"}
-                className={`${botaoBase} text-white bg-gradient-to-b from-emerald-500 via-green-600 to-green-800 disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                ✅ {conciliando ? "Conciliando..." : "Conciliar"}
-              </button>
+            <button
+              onClick={conciliarImportacao}
+              disabled={conciliando || statusEtapa !== "conciliar"}
+              className={`btn-pill flex items-center gap-2 ${
+                statusEtapa === "conciliar"
+                  ? "btn-green animate-pulse"
+                  : "btn-gray opacity-50"
+              }`}
+            >
+              ✅ 3. {conciliando ? "Conciliando..." : "Conciliar"}
+            </button>
 
-              <button
-                onClick={limpar}
-                className={`${botaoBase} text-white bg-gradient-to-b from-red-500 via-red-600 to-red-800`}
-              >
-                🗑 Limpar
-              </button>
+            <button
+              onClick={limpar}
+              className="btn-pill btn-gray flex items-center gap-2"
+            >
+              🗑 Limpar
+            </button>
 
-              <button
-                onClick={() => navigate("/contas-cartoes")}
-                className={`${botaoBase} text-white bg-gradient-to-b from-zinc-500 via-zinc-600 to-zinc-800`}
-              >
-                ↩ Sair
-              </button>
-            </div>
-           )}
-        </div>
+            <button
+              onClick={() => navigate("/contas-cartoes")}
+              className="btn-pill btn-dark-blue flex items-center gap-2"
+            >
+              ↩ Sair
+            </button>
+          </div>
+        )}
       </div>
     </div>
-  );
+  </div>
+);
 }

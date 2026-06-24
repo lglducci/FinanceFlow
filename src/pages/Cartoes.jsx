@@ -196,13 +196,13 @@ export default function AppContasCartoes() {
   };
 
   const icone = {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     borderRadius: 16,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: 20,
+    fontSize: 15,
     background: "#eef2ff",
   };
 
@@ -388,7 +388,7 @@ export default function AppContasCartoes() {
                   </div>
 
                   <button onClick={() => navigate(`/app/edit-card/${c.id}`)} style={botaoEditar}>
-                    ✏️ Editar
+                    ✏️ Editar   
                   </button>
                 </div>
               );
@@ -403,38 +403,43 @@ export default function AppContasCartoes() {
                 Nenhuma fatura aberta encontrada.
               </div>
             )}
-
-            {faturas.map((f, idx) => (
-              <div
-                key={f.id}
-                style={{
-                  ...linhaCartao,
-                  gridTemplateColumns: "50px 1fr auto",
-                  borderBottom: idx === faturas.length - 1 ? "0" : linhaCartao.borderBottom,
-                }}
-              >
-                <div style={{ ...icone, background: "#fff7ed" }}>💳</div>
-
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 900, color: "#1e1b4b" }}>
+           {faturas.map((f, idx) => (
+                <div
+                  key={f.id}
+                  style={{
+                    ...linhaCartao,
+                    gridTemplateColumns: "50px 1fr 120px 120px auto",
+                    padding: "6px 10px",
+                    gap: 8,
+                    borderBottom: idx === faturas.length - 1 ? "0" : linhaCartao.borderBottom,
+                  }}
+                >
+                  <div style={{ ...icone, background: "#fff7ed" }}>💳</div>
+                  
+                  <div style={{ fontSize: 14, fontWeight: 900, color: "#1e1b4b" }}>
                     {f.nome}
+                  </div> 
+                   <div style={{ fontSize: 12, color: "#64748b", fontWeight: 900 }}>
+                    {formatarDataBR(f.vencimento)}
                   </div>
 
-                  <div style={{ marginTop: 4, fontSize: 12, color: "#64748b", fontWeight: 800 }}>
-                    {f.bandeira || "Cartão"} • {f.status} • vence dia {formatarDataBR(f.vencimento)}
+
+                  <div style={{ fontSize: 12, color: "#64748b", fontWeight: 900 }}>
+                    {f.status}
+                  </div>
+
+                   
+
+                  <div style={{ fontSize: 15, fontWeight: 900, color: "#ef4444", whiteSpace: "nowrap" }}>
+                    {fmt.format(Number(f.valor_total || 0))}
                   </div>
                 </div>
-
-                <div style={{ fontSize: 16, fontWeight: 900, color: "#ef4444", whiteSpace: "nowrap" }}>
-                  {fmt.format(Number(f.valor_total || 0))}
-                </div>
-              </div>
-            ))}
+              ))}
           </>
         )}
 
         {abaCartao === "historico" && (
-          <div style={{ display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gap: 8 }}>
             <select
               value={cartaoHistoricoId}
               onChange={(e) => carregarHistoricoFaturas(e.target.value)}
@@ -442,7 +447,7 @@ export default function AppContasCartoes() {
                 width: "100%",
                 border: "1px solid #cbd5e1",
                 borderRadius: 14,
-                padding: "10px 12px",
+                padding: "8px 10px",
                 fontWeight: 800,
               }}
             >
@@ -462,7 +467,7 @@ export default function AppContasCartoes() {
                 width: "100%",
                 border: "1px solid #cbd5e1",
                 borderRadius: 14,
-                padding: "10px 12px",
+                padding: "8x 10px",
                 fontWeight: 800,
               }}
             >
@@ -491,36 +496,49 @@ export default function AppContasCartoes() {
                   );
                 })}
             </select>
-
+      
+       <div style={{ display: "grid", gap: 0 }}>
             {comprasFatura.map((t, idx) => (
               <div
                 key={t.id}
                 style={{
                   ...linhaCartao,
-                  gridTemplateColumns: "50px 1fr auto",
+                 gridTemplateColumns: "50px 120px 1fr 120px auto",
                   borderBottom: idx === comprasFatura.length - 1 ? "0" : linhaCartao.borderBottom,
                 }}
               >
-                <div style={{ ...icone, background: "#eef2ff" }}>🧾</div>
+                  <div style={{ ...icone, background: "#eef2ff" }}>🧾</div>
 
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 900, color: "#1e1b4b" }}>
-                    {t.descricao}
-                  </div>
+                    <div style={{ fontSize: 13, fontWeight: 900, color: "#334155" }}>
+                      {formatarDataBR(t.data_parcela)}
+                    </div>
 
-                  <div style={{ marginTop: 4, fontSize: 12, color: "#64748b", fontWeight: 800 }}>
-                    {formatarDataBR(t.data_parcela)} • Parcela {t.parcela_num}/{t.parcela_total}
-                  </div>
-                </div>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 900,
+                        color: "#1e1b4b",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {t.descricao}
+                    </div>
 
-                <div style={{ fontSize: 16, fontWeight: 900, color: "#ef4444", whiteSpace: "nowrap" }}>
-                  {fmt.format(Number(t.valor || 0))}
-                </div>
+                    <div style={{ fontSize: 12, color: "#64748b", fontWeight: 900 }}>
+                      Parcela {t.parcela_num}/{t.parcela_total}
+                    </div>
+
+                    <div style={{ fontSize: 13, fontWeight: 900, color: "#ef4444", whiteSpace: "nowrap" }}>
+                      {fmt.format(Number(t.valor || 0))}
+                    </div>
               </div>
             ))}
           </div>
+             </div>
         )}
-
+         
         {abaCartao === "cartoes" && cartoes.length === 0 && !carregando && (
           <div style={{ color: "#64748b", fontWeight: 700 }}>
             Nenhum cartão ativo encontrado.
