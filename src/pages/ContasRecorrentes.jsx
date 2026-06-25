@@ -1,7 +1,81 @@
- import { useEffect, useMemo, useState } from "react";
+  import { useEffect, useMemo, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
 import { useTranslation } from "react-i18next";
+
+
+function somenteValorVirgula(valor) {
+  let txt = String(valor ?? "").replace(/[^0-9,]/g, "");
+
+  const partes = txt.split(",");
+  let inteiro = (partes[0] || "").slice(0, 9);
+  let centavos = partes.length > 1 ? partes.slice(1).join("").slice(0, 2) : "";
+
+  if (partes.length > 1) return `${inteiro},${centavos}`;
+  return inteiro;
+}
+
+function bloquearTeclaValor(e) {
+  const liberadas = [
+    "Backspace",
+    "Delete",
+    "Tab",
+    "ArrowLeft",
+    "ArrowRight",
+    "Home",
+    "End",
+  ];
+
+  if (liberadas.includes(e.key) || e.ctrlKey || e.metaKey) return;
+
+  if (e.key === ".") {
+    e.preventDefault();
+    return;
+  }
+
+  if (!/^[0-9,]$/.test(e.key)) {
+    e.preventDefault();
+    return;
+  }
+
+  if (e.key === "," && e.currentTarget.value.includes(",")) {
+    e.preventDefault();
+  }
+}
+
+function parseValorBR(valor) {
+  if (valor === null || valor === undefined || valor === "") return null;
+
+  const limpo = somenteValorVirgula(valor);
+  if (!limpo) return null;
+
+  const numero = Number(limpo.replace(",", "."));
+  if (!Number.isFinite(numero)) return null;
+
+  return Number(numero.toFixed(2));
+}
+
+function valorParaTela(valor) {
+  if (valor === null || valor === undefined || valor === "") return "";
+
+  const numero = Number(String(valor).replace(",", "."));
+  if (!Number.isFinite(numero)) return somenteValorVirgula(valor);
+
+  return numero.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: false,
+  });
+}
+
+function mascaraDiaVencimento(valor) {
+  const digitos = String(valor ?? "").replace(/\D/g, "").slice(0, 2);
+  if (!digitos) return "";
+
+  const numero = Math.min(Math.max(Number(digitos), 1), 30);
+  return String(numero);
+}
+
 
 
 export default function ContasRecorrentes() {
@@ -105,7 +179,7 @@ async function carregar() {
         recorrente_id: recorrencia.id,
         competencia: form.competencia,
         conta_id: form.conta_id,
-        valor: form.valor,
+      valor: parseValorBR(form.valor),
       }),
     }); 
 
@@ -440,100 +514,97 @@ useEffect(() => {
     hoje.getMonth() + 1
   ).padStart(2, "0")}-01`;
 
- const contaContabilInicial = (contasDespesas || []).find(
-  (c) => String(c.id) === String(recorrencia?.contabil_id)
-);
-
- 
- const vencimentoInicial = calcularVencimento(competenciaInicial);
-
-const [form, setForm] = useState({
-  competencia: competenciaInicial,
-  data_pagamento:
-    recorrencia?.data_pagamento ||
-    recorrencia?.vencimento ||
-    vencimentoInicial,
-  valor: recorrencia?.valor_padrao || "",
-  conta_id: recorrencia?.conta_id || "",
-  contabil_id: recorrencia?.contabil_id || "",
-  contabil_label:
-    recorrencia?.contabil_label ||
-    contaContabilInicial?.label ||
-    (contaContabilInicial
-      ? `${contaContabilInicial.codigo} - ${contaContabilInicial.nome}`
-      : ""),
-});
-
-
-function calcularVencimento(competencia) {
-  const [ano, mes] = String(competencia).split("-").map(Number);
-  const dia = Number(recorrencia?.dia_vencimento || 1);
-  const ultimoDia = new Date(ano, mes, 0).getDate();
-  const diaFinal = Math.min(dia, ultimoDia);
-
-  return `${ano}-${String(mes).padStart(2, "0")}-${String(diaFinal).padStart(2, "0")}`;
-}
-
-  const vencimento = (() => {
-    const [ano, mes] = String(form.competencia).split("-").map(Number);
+  function calcularVencimento(competencia) {
+    const [ano, mes] = String(competencia).split("-").map(Number);
     const dia = Number(recorrencia?.dia_vencimento || 1);
     const ultimoDia = new Date(ano, mes, 0).getDate();
     const diaFinal = Math.min(dia, ultimoDia);
 
     return `${ano}-${String(mes).padStart(2, "0")}-${String(diaFinal).padStart(2, "0")}`;
-  })();
+  }
+
+  const contaContabilInicial = (contasDespesas || []).find(
+    (c) => String(c.id) === String(recorrencia?.contabil_id)
+  );
+
+  const vencimentoInicial = calcularVencimento(competenciaInicial);
+
+  const [form, setForm] = useState({
+    competencia: competenciaInicial,
+    data_pagamento:
+      recorrencia?.data_pagamento ||
+      recorrencia?.vencimento ||
+      vencimentoInicial,
+    valor: valorParaTela(recorrencia?.valor_padrao),
+    conta_id: recorrencia?.conta_id || "",
+    contabil_id: recorrencia?.contabil_id || "",
+    contabil_label:
+      recorrencia?.contabil_label ||
+      contaContabilInicial?.label ||
+      (contaContabilInicial
+        ? `${contaContabilInicial.codigo} - ${contaContabilInicial.nome}`
+        : ""),
+  });
+
+  const vencimento = calcularVencimento(form.competencia);
 
   async function gerar() {
-     if (!form.competencia || !form.valor || !form.conta_id || !form.contabil_id) {
-  alert(t("contasRecorrentes.informeCamposGerar", "Informe competência, valor, conta financeira e conta contábil."));
-  return;
-}
- 
+    const valorFinal = parseValorBR(form.valor);
+
+    if (!form.competencia || valorFinal === null || !form.conta_id || !form.contabil_id) {
+      alert(t("contasRecorrentes.informeCamposGerar", "Informe competência, valor, conta financeira e conta contábil."));
+      return;
+    }
+
+    const payload = {
+      empresa_id,
+      recorrente_id: recorrencia.id,
+      competencia: form.competencia,
+      conta_id: form.conta_id,
+      contabil_id: form.contabil_id,
+      valor: valorFinal,
+      data_pagamento: form.data_pagamento,
+    };
+
+    console.log("PAYLOAD GERAR RECORRENTE:", payload);
+
     const resp = await fetch(buildWebhookUrl("gera_lancamento_recorrente"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        empresa_id,
-        recorrente_id: recorrencia.id,
-        competencia: form.competencia,
-        conta_id: form.conta_id,
-        contabil_id: form.contabil_id,
-        valor: form.valor,
-        data_pagamento: form.data_pagamento,
-      }),
+      body: JSON.stringify(payload),
     });
+
     const txt = await resp.text();
-console.log("RETORNO GERAR:", txt);
+    console.log("RETORNO GERAR:", txt);
 
-let json = null;
-try {
-  json = JSON.parse(txt);
-} catch {
-  json = null;
-}
+    let json = null;
+    try {
+      json = JSON.parse(txt);
+    } catch {
+      json = null;
+    }
 
-const retorno = Array.isArray(json) ? json[0] : json;
+    const retorno = Array.isArray(json) ? json[0] : json;
 
-if (!resp.ok || retorno?.ok === false) {
-  alert(retorno?.message || t("contasRecorrentes.erroGerar", "Erro ao gerar conta recorrente."));
-  return;
-}
+    if (!resp.ok || retorno?.ok === false) {
+      alert(retorno?.message || t("contasRecorrentes.erroGerar", "Erro ao gerar conta recorrente."));
+      return;
+    }
 
-alert(retorno?.message || t("contasRecorrentes.contaRecorrenteGerada", "Conta recorrente gerada."));
-onSuccess();
+    alert(retorno?.message || t("contasRecorrentes.contaRecorrenteGerada", "Conta recorrente gerada."));
+    onSuccess();
   }
 
   const despesasFiltradas = (contasDespesas || [])
-  .filter((c) => {
-    const texto = String(form.contabil_label || "").toLowerCase();
-    const label = `${c.codigo || ""} ${c.nome || ""} ${c.label || ""}`.toLowerCase();
+    .filter((c) => {
+      const texto = String(form.contabil_label || "").toLowerCase();
+      const label = `${c.codigo || ""} ${c.nome || ""} ${c.label || ""}`.toLowerCase();
 
-    if (!texto) return false;
+      if (!texto || form.contabil_id) return false;
 
-    return label.includes(texto);
-  })
-  .slice(0, 8);
-
+      return label.includes(texto);
+    })
+    .slice(0, 8);
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
@@ -543,7 +614,7 @@ onSuccess();
             💸 {t("contasRecorrentes.gerarTransacaoRecorrente", "Pagar Transação Recorrente")}
           </h3>
 
-          <button onClick={onClose} className="font-black text-slate-500">
+          <button type="button" onClick={onClose} className="font-black text-slate-500">
             ✕
           </button>
         </div>
@@ -552,11 +623,6 @@ onSuccess();
           <div>
             <b>{t("contasRecorrentes.descricao", "Descrição")}:</b> {recorrencia?.descricao}
           </div>
-
-         {/*} <div>
-            <b>{t("contasRecorrentes.fornecedor", "Fornecedor")}:</b>{" "}
-            {recorrencia?.fornecedor_nome || recorrencia?.nome_fornecedor || recorrencia?.fornecedor_id || "-"}
-          </div>*/}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -573,7 +639,6 @@ onSuccess();
                 }
               />
             </div>
-
 
             <div>
               <label className="font-bold">{t("contasRecorrentes.dataPagamento", "Data pagamento")}</label>
@@ -598,11 +663,20 @@ onSuccess();
           </div>
 
           <input
+            type="text"
+            inputMode="decimal"
+            maxLength={12}
             className="w-full border rounded-xl px-3 py-2 font-bold"
             placeholder={t("contasRecorrentes.valor", "Valor")}
             value={form.valor}
+            onKeyDown={bloquearTeclaValor}
+            onPaste={(e) => {
+              e.preventDefault();
+              const texto = e.clipboardData.getData("text");
+              setForm((p) => ({ ...p, valor: somenteValorVirgula(texto) }));
+            }}
             onChange={(e) =>
-              setForm((p) => ({ ...p, valor: e.target.value }))
+              setForm((p) => ({ ...p, valor: somenteValorVirgula(e.target.value) }))
             }
           />
 
@@ -621,7 +695,6 @@ onSuccess();
             ))}
           </select>
 
-          
           <div className="relative">
             <input
               className="w-full border rounded-xl px-3 py-2 font-bold"
@@ -661,11 +734,11 @@ onSuccess();
               </div>
             )}
           </div>
-
         </div>
 
         <div className="flex justify-end gap-3 mt-6">
           <button
+            type="button"
             onClick={onClose}
             className="rounded-full px-5 py-2 bg-slate-500 text-white font-black"
           >
@@ -673,6 +746,7 @@ onSuccess();
           </button>
 
           <button
+            type="button"
             onClick={gerar}
             className="rounded-full px-5 py-2 bg-emerald-600 text-white font-black"
           >
@@ -683,8 +757,6 @@ onSuccess();
     </div>
   );
 }
-
-
 
 
 function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
@@ -814,92 +886,135 @@ function ModalHistoricoRecorrencia({ recorrencia, empresa_id, onClose }) {
 
  
   function NovaContaRecorrente({ empresa_id, contas, contasDespesas, fornecedores, recorrente, onClose, onSuccess }) {
-   const { t } = useTranslation();
-   const [form, setForm] = useState({
-  id: recorrente?.id || null,
-  descricao: recorrente?.descricao || "",
-  dia_vencimento: recorrente?.dia_vencimento || "",
-  tipo_valor: recorrente?.tipo_valor || "VARIAVEL",
-  valor_padrao: recorrente?.valor_padrao || "",
-  conta_id: recorrente?.conta_id || "",
-  ativo: recorrente?.ativo ?? true,
-  fornecedor_id: recorrente?.fornecedor_id || "",
-  contabil_id: recorrente?.contabil_id || "",
-contabil_label: recorrente?.contabil_label || "",
-});
+  const { t } = useTranslation();
 
- 
+  const contaContabilInicial = (contasDespesas || []).find(
+    (c) => String(c.id) === String(recorrente?.contabil_id)
+  );
+
+  const [form, setForm] = useState({
+    id: recorrente?.id || null,
+    descricao: recorrente?.descricao || "",
+    dia_vencimento: mascaraDiaVencimento(recorrente?.dia_vencimento || ""),
+    tipo_valor: recorrente?.tipo_valor || "VARIAVEL",
+    valor_padrao: valorParaTela(recorrente?.valor_padrao),
+    conta_id: recorrente?.conta_id || "",
+    ativo: recorrente?.ativo ?? true,
+    fornecedor_id: recorrente?.fornecedor_id || "",
+    contabil_id: recorrente?.contabil_id || "",
+    contabil_label:
+      recorrente?.contabil_label ||
+      contaContabilInicial?.label ||
+      (contaContabilInicial
+        ? `${contaContabilInicial.codigo} - ${contaContabilInicial.nome}`
+        : ""),
+  });
 
   async function salvar() {
-     
+    const descricao = String(form.descricao || "").trim();
+    const dia = Number(form.dia_vencimento);
+    const valorFinal = parseValorBR(form.valor_padrao);
 
-    const valorNumerico = Number(String(form.valor_padrao || "").replace(",", "."));
+    if (!descricao || !dia || !form.conta_id || !form.contabil_id) {
+      alert("Preencha descrição, dia de vencimento, conta financeira e conta contábil.");
+      return;
+    }
 
-if (!form.descricao || !form.dia_vencimento || !form.conta_id || !form.contabil_id) {
-  alert("Preencha descrição, dia de vencimento, conta financeira e conta contábil.");
-  return;
-}
+    if (dia < 1 || dia > 30) {
+      alert("O dia de vencimento deve estar entre 1 e 30.");
+      return;
+    }
 
-if (form.tipo_valor === "FIXO" && (!form.valor_padrao || valorNumerico <= 0)) {
-  alert("Para valor fixo, informe um valor maior que zero.");
-  return;
-}
+    if (form.tipo_valor === "FIXO" && (!valorFinal || valorFinal <= 0)) {
+      alert("Para valor fixo, informe um valor maior que zero.");
+      return;
+    }
 
     const webhook = form.id
-  ? "atualiza_conta_recorrente"
-  : "insere_conta_recorrente";
+      ? "atualiza_conta_recorrente"
+      : "insere_conta_recorrente";
 
+    const payload = {
+      empresa_id,
+      id: form.id || null,
+      descricao,
+      fornecedor_id: form.fornecedor_id || null,
+      conta_id: form.conta_id,
+      tipo_valor: form.tipo_valor,
+      valor: valorFinal,
+      valor_padrao: valorFinal,
+      dia_vencimento: dia,
+      contabil_id: form.contabil_id,
+      ativo: form.ativo,
+    };
+
+    console.log("PAYLOAD RECORRENTE:", payload);
 
     const resp = await fetch(buildWebhookUrl(webhook), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ empresa_id, ...form }),
-      });
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
     const txt = await resp.text();
     console.log("RETORNO INSERE:", txt);
 
-    alert(t("contasRecorrentes.contaRecorrenteCadastrada", "Conta recorrente cadastrada."));
+    let retorno = null;
+    try {
+      retorno = JSON.parse(txt);
+    } catch {
+      retorno = null;
+    }
+
+    const base = Array.isArray(retorno) ? retorno[0] : retorno;
+
+    if (!resp.ok || base?.ok === false) {
+      alert(base?.message || "Erro ao salvar a transação recorrente.");
+      return;
+    }
+
+    alert(
+      base?.message ||
+        t("contasRecorrentes.contaRecorrenteCadastrada", "Conta recorrente cadastrada.")
+    );
     onSuccess();
   }
 
   const despesasFiltradas = (contasDespesas || [])
-  .filter((c) => {
-    const texto = String(form.contabil_label || "").toLowerCase();
-    const label = `${c.codigo || ""} ${c.nome || ""} ${c.label || ""}`.toLowerCase();
+    .filter((c) => {
+      const texto = String(form.contabil_label || "").toLowerCase();
+      const label = `${c.codigo || ""} ${c.nome || ""} ${c.label || ""}`.toLowerCase();
 
-    if (!texto) return false;
+      if (!texto || form.contabil_id) return false;
 
-    return label.includes(texto);
-  })
-  .slice(0, 8);
+      return label.includes(texto);
+    })
+    .slice(0, 8);
 
-useEffect(() => {
-  if (!form.contabil_id || form.contabil_label || !contasDespesas.length) return;
+  useEffect(() => {
+    if (!form.contabil_id || form.contabil_label || !contasDespesas.length) return;
 
-  const conta = contasDespesas.find(
-    (c) => String(c.id) === String(form.contabil_id)
-  );
+    const conta = contasDespesas.find(
+      (c) => String(c.id) === String(form.contabil_id)
+    );
 
-  if (conta) {
-    setForm((p) => ({
-      ...p,
-      contabil_label: conta.label || `${conta.codigo} - ${conta.nome}`,
-    }));
-  }
-}, [form.contabil_id, form.contabil_label, contasDespesas]);
-
-
+    if (conta) {
+      setForm((p) => ({
+        ...p,
+        contabil_label: conta.label || `${conta.codigo} - ${conta.nome}`,
+      }));
+    }
+  }, [form.contabil_id, form.contabil_label, contasDespesas]);
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-2xl border w-[560px] p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-black text-slate-800">
-            ➕ {t("contasRecorrentes.novaTransacaoRecorrente", "Nova Transação Recorrente")}
+            ➕ {form.id ? t("contasRecorrentes.editar", "Editar") : t("contasRecorrentes.novaTransacaoRecorrente", "Nova Transação Recorrente")}
           </h3>
 
-          <button onClick={onClose} className="font-black text-slate-500">
+          <button type="button" onClick={onClose} className="font-black text-slate-500">
             ✕
           </button>
         </div>
@@ -913,30 +1028,48 @@ useEffect(() => {
               setForm((p) => ({ ...p, descricao: e.target.value }))
             }
           />
-  
-          <select
-                className="border rounded-xl px-3 py-2 font-bold"
-                value={form.fornecedor_id}
-                onChange={(e) =>
-                    setForm((p) => ({ ...p, fornecedor_id: e.target.value }))
-                }
-                >
-                <option value="">{t("contasRecorrentes.selecionefornecedor", "Selecione ")}</option>
-                {fornecedores.map((f) => (
-                    <option key={f.id} value={f.id}>
-                    {f.nome || f.razao_social || f.apelido || `Fornecedor ${f.id}`}
-                    </option>
-                ))}
-                </select>
+
+           <select
+            className="w-full max-w-full box-border border rounded-xl px-3 py-2 font-bold"
+            value={form.fornecedor_id}
+            onChange={(e) =>
+              setForm((p) => ({ ...p, fornecedor_id: e.target.value }))
+            }
+          >
+            <option value="" disabled hidden>
+              Fornecedor
+            </option>
+
+            {fornecedores.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.nome || f.razao_social || f.apelido || `Fornecedor ${f.id}`}
+              </option>
+            ))}
+           </select>
 
           <div className="grid grid-cols-2 gap-3">
             <input
-              type="number"
+              type="text"
+              inputMode="numeric"
+              maxLength={2}
               className="border rounded-xl px-3 py-2 font-bold"
               placeholder={t("contasRecorrentes.diaVencimento", "Dia vencimento")}
               value={form.dia_vencimento}
+              onKeyDown={(e) => {
+                const liberadas = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"];
+                if (liberadas.includes(e.key) || e.ctrlKey || e.metaKey) return;
+                if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const texto = e.clipboardData.getData("text");
+                setForm((p) => ({ ...p, dia_vencimento: mascaraDiaVencimento(texto) }));
+              }}
               onChange={(e) =>
-                setForm((p) => ({ ...p, dia_vencimento: e.target.value }))
+                setForm((p) => ({
+                  ...p,
+                  dia_vencimento: mascaraDiaVencimento(e.target.value),
+                }))
               }
             />
 
@@ -953,28 +1086,40 @@ useEffect(() => {
           </div>
 
           <input
+            type="text"
+            inputMode="decimal"
+            maxLength={12}
             className="border rounded-xl px-3 py-2 font-bold"
             placeholder={t("contasRecorrentes.valorPadrao", "Valor padrão")}
             value={form.valor_padrao}
+            onKeyDown={bloquearTeclaValor}
+            onPaste={(e) => {
+              e.preventDefault();
+              const texto = e.clipboardData.getData("text");
+              setForm((p) => ({ ...p, valor_padrao: somenteValorVirgula(texto) }));
+            }}
             onChange={(e) =>
-              setForm((p) => ({ ...p, valor_padrao: e.target.value }))
+              setForm((p) => ({ ...p, valor_padrao: somenteValorVirgula(e.target.value) }))
             }
           />
+           
+           <select
+                className="w-full max-w-full box-border border rounded-xl px-3 py-2 font-bold"
+                value={form.conta_id}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, conta_id: e.target.value }))
+                }
+              >
+                <option value="" disabled hidden>
+                  Conta corrente
+                </option>
 
-          <select
-            className="border rounded-xl px-3 py-2 font-bold"
-            value={form.conta_id}
-            onChange={(e) =>
-              setForm((p) => ({ ...p, conta_id: e.target.value }))
-            }
-          >
-            <option value="">{t("contasRecorrentes.selecioneconta", "Selecione")}</option>
-            {contas.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nome}
-              </option>
-            ))}
-          </select>
+                {contas.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome}
+                  </option>
+                ))}
+              </select>
 
           <div className="relative">
             <input
@@ -990,50 +1135,47 @@ useEffect(() => {
               }
             />
 
-  {despesasFiltradas.length > 0 && !form.contabil_id && (
-    <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border bg-white shadow-lg">
-      {despesasFiltradas.map((c) => {
-        const label = c.label || `${c.codigo} - ${c.nome}`;
+            {despesasFiltradas.length > 0 && !form.contabil_id && (
+              <div className="absolute z-50 mt-1 w-full max-h-48 overflow-y-auto rounded-xl border bg-white shadow-lg">
+                {despesasFiltradas.map((c) => {
+                  const label = c.label || `${c.codigo} - ${c.nome}`;
 
-        return (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() =>
-              setForm((p) => ({
-                ...p,
-                contabil_label: label,
-                contabil_id: c.id,
-              }))
-            }
-            className="w-full text-left px-3 py-2 text-sm font-bold hover:bg-blue-50"
-          >
-            {label}
-          </button>
-        );
-      })}
-    </div>
-  )}
-</div>
-          
-          
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() =>
+                        setForm((p) => ({
+                          ...p,
+                          contabil_label: label,
+                          contabil_id: c.id,
+                        }))
+                      }
+                      className="w-full text-left px-3 py-2 text-sm font-bold hover:bg-blue-50"
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end gap-3 mt-6">
-
-
           <label className="flex items-center gap-2 font-bold text-sm">
-              <input
-                type="checkbox"
-                checked={form.ativo}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, ativo: e.target.checked }))
-                }
-              />
-              {t("contasRecorrentes.contaRecorrenteAtiva", "Conta recorrente ativa")}
-            </label>
+            <input
+              type="checkbox"
+              checked={form.ativo}
+              onChange={(e) =>
+                setForm((p) => ({ ...p, ativo: e.target.checked }))
+              }
+            />
+            {t("contasRecorrentes.contaRecorrenteAtiva", "Conta recorrente ativa")}
+          </label>
 
           <button
+            type="button"
             onClick={onClose}
             className="rounded-full px-5 py-2 bg-slate-500 text-white font-black"
           >
@@ -1041,6 +1183,7 @@ useEffect(() => {
           </button>
 
           <button
+            type="button"
             onClick={salvar}
             className="rounded-full px-5 py-2 bg-blue-700 text-white font-black"
           >
