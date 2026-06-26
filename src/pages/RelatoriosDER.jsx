@@ -332,6 +332,20 @@ export default function RelatoriosDRE() {
                       </tr>
                     </React.Fragment>
                   ))}
+
+                  <tr className="border-t-2 border-[#063452] bg-[#063452] text-white">
+                    <td colSpan={3} className="px-4 py-4 text-right text-lg font-black">
+                      Resultado do Período
+                    </td>
+
+                    <td className="px-4 py-4 text-right text-lg font-black">
+                      R$ {fmt.format(Math.abs(resultado))}
+                    </td>
+
+                    <td className="px-4 py-4 text-right text-lg font-black">
+                      {perc(resultado)}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
