@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 import { fetchSeguro } from "../utils/apiSafe";
@@ -49,6 +49,8 @@ const [contaDestinoId, setContaDestinoId] = useState("");
 const [importacaoId, setImportacaoId] = useState(0);
  const [filtroSituacao, setFiltroSituacao] = useState("todos");
  
+const [contaLoteSelecionada, setContaLoteSelecionada] = useState(null);
+
 
  const linhasFiltradas =
   filtroSituacao === "rejeitado"
@@ -68,9 +70,45 @@ const [importacaoId, setImportacaoId] = useState(0);
             )
           : linhas;
 
+
+
+
+
+
+ 
+const [textoContaLote, setTextoContaLote] = useState("");
+const [contasLoteFiltradas, setContasLoteFiltradas] = useState([]);
+const [filtroTexto, setFiltroTexto] = useState("");
+
+const linhasFiltradasComTexto = linhasFiltradas.filter((l) => {
+  const texto = filtroTexto.toLowerCase().trim();
+
+  if (!texto) return true;
+
+  return (
+    String(l.historico || "").toLowerCase().includes(texto) ||
+    String(l.tipo_evento || "").toLowerCase().includes(texto) ||
+    String(l.conta_descricao || "").toLowerCase().includes(texto)
+  );
+});
+
+
+function filtrarContasLote(texto) {
+  const t = String(texto || "").toLowerCase();
+
+  const lista = contasContabeis
+    .filter((c) =>
+      String(c.codigo || "").toLowerCase().includes(t) ||
+      String(c.nome || "").toLowerCase().includes(t) ||
+      String(c.apelido || "").toLowerCase().includes(t)
+    )
+    .slice(0, 12);
+
+  setContasLoteFiltradas(lista);
+}
+
  
 
-    
   async function carregarDados() {
     try {
       setLoading(true);
@@ -142,7 +180,10 @@ if (lista.length > 0) {
     ? idsParam
     : idsParam
       ? [idsParam]
-      : selecionados;
+      : selecionados.filter((id) => {
+          const linha = linhas.find((l) => Number(l.id) === Number(id));
+          return linha && linha.situacao === "pendente" && linha.importar !== false;
+        });
 
       
 
@@ -415,7 +456,7 @@ const faltamContas = linhasValidasParaExecutar.filter(
 
 const podeExecutar =
   linhasValidasParaExecutar.length > 0 &&
-  faltamContas.length === 0 &&
+ 
   linhas.every((l) =>
     ["ok", "rejeitado", "executado"].includes(l.situacao)
   );
@@ -424,9 +465,10 @@ const podeExecutar =
 
   const pendentes = linhas.filter((l) => l.situacao === "pendente");
 
-const podeAceitar =
-  pendentes.length > 0 &&
-  pendentes.every((l) => selecionados.includes(l.id));
+const podeAceitar = selecionados.some((id) => {
+  const linha = linhas.find((l) => Number(l.id) === Number(id));
+  return linha && linha.situacao === "pendente" && linha.importar !== false;
+});
 
 
 
@@ -771,572 +813,659 @@ async function carregarContasContabeis() {
   setContasContabeis(Array.isArray(dados) ? dados : []);
 }
 
-  return (
-     <div className="min-h-screen bg-slate-100 px-2 pt-0 pb-2">
-      <div className="mx-auto max-w-[1700px]">
 
-         {!resultadoExecucao && (   
-          <div className="mb-6 rounded-3xl bg-white p-3 shadow-lg border border-slate-200">
-          <h1 className="text-2xl font-black text-slate-800">
-            Revisão da Conciliação
-          </h1>
+function idsSelecionaveisVisiveis() {
+  return linhasFiltradasComTexto
+    .filter(
+      (l) =>
+        l.importar !== false &&
+        l.situacao !== "executado" &&
+        l.situacao !== "rejeitado" &&
+        l.tipo_evento !== "transf_mesma_tit"
+    )
+    .map((l) => Number(l.id));
+}
 
-          <p className="mt-2 text-slate-600">
-            Confira os lançamentos importados. As linhas pendentes podem ser editadas antes da confirmação final.
-          </p>
+function toggleTodosSelecionadosVisiveis() {
+  const validos = idsSelecionaveisVisiveis();
+  const selecionadosNumeros = selecionados.map(Number);
 
- 
+  const todosMarcados =
+    validos.length > 0 && validos.every((id) => selecionadosNumeros.includes(id));
 
-        <div className="mt-2 text-sm font-bold text-slate-700">
-          Total: {linhas.length} |
-          Exibindo: {linhasFiltradas.length} |
-          Pendentes: {linhas.filter((l) => l.situacao === "pendente").length} |
-          Rejeitados: {linhas.filter((l) => l.situacao === "rejeitado").length} |
-          OK: {linhas.filter((l) => l.situacao === "ok").length}
-        </div>
+  setSelecionados(todosMarcados ? [] : validos);
+}
 
-        
-        
-          <div className="mt-4 flex gap-3">
 
-           <button
-             title=" Selecionar todos registros 'PENDENTES' serem aceitos."
-            onClick={aceitarTodosCheckbox}
-            className="
-              px-5 py-2 rounded-full
-              bg-gradient-to-r from-gray-500 to-gray-700
-              text-white font-bold text-sm shadow
-              hover:brightness-110
-            "
-          >
-            {selecionados.length > 0 ? "❌ Desselecionar todos" : "✅ Selecionar todos"}
-          </button>
 
-                <button
-                     title="Aceitar registos selecionados para status de ok. Preparação para execução da conciliação."
-                        onClick={() => aceitarSelecionados()}
-                        disabled={!podeAceitar}
-                        className={`
-                          px-5 py-2 rounded-full
-                          text-white font-bold text-sm shadow
-                          hover:brightness-110
-                          ${
-                            podeAceitar
-                              ? "bg-gradient-to-r from-emerald-500 to-green-700"
-                              : "bg-gradient-to-r from-slate-300 to-slate-500 cursor-not-allowed opacity-90"
-                          }
-                        `}
-                      >
-                        ✅ Aceitar selecionados
-                      </button>
-            
-             <button
-               title="Executar a conciliação. Finalizar o processo e realizar os lançamentos financeiros e pagamentos."
+async function aplicarContaEmLote() {
+  if (selecionados.length === 0) {
+    alert("Selecione ao menos uma linha.");
+    return;
+  }
+
+  const ids = selecionados.map(Number);
+
+  if (!contaLoteSelecionada) {
+    await aceitarSelecionados(ids);
+    return;
+  }
+
+  await Promise.all(
+    ids.map((id) =>
+      fetchSeguro(buildWebhookUrl("conciliacao_atualizar_conta"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id,
+          id,
+          conta_id: Number(contaLoteSelecionada.id),
+        }),
+      })
+    )
+  );
+
+  setLinhas((prev) =>
+    prev.map((l) =>
+      ids.includes(Number(l.id))
+        ? {
+            ...l,
+            conta_id: Number(contaLoteSelecionada.id),
+            conta_descricao: `${contaLoteSelecionada.codigo} - ${contaLoteSelecionada.nome}`,
+          }
+        : l
+    )
+  );
+
+  await aceitarSelecionados(ids);
+
+  setTextoContaLote("");
+  setContaLoteSelecionada(null);
+  setContasLoteFiltradas([]);
+
+  setFiltroSituacao("todos");
+setFiltroTexto("");
+}
+
+ return (
+   <div className="min-h-screen bg-slate-100 px-2 -mt-4 pb-2">
+    <div className="mx-auto max-w-[1700px]">
+
+      {!resultadoExecucao && (
+          <div className="mb-3 rounded-3xl bg-white p-3 shadow-lg border border-slate-200">
+           <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-black text-slate-800 whitespace-nowrap">
+              Revisão da Conciliação
+            </h1>
+
+            <div className="ml-12 text-sm font-bold text-slate-700">
+              Total: {linhas.length} | Exibindo: {linhasFiltradas.length} |
+              Pendentes: {linhas.filter((l) => l.situacao === "pendente").length} |
+              Rejeitados: {linhas.filter((l) => l.situacao === "rejeitado").length} |
+              OK: {linhas.filter((l) => l.situacao === "ok").length}
+            </div>
+
+            {podeExecutar && (
+                <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-800">
+                  ✅ Revisado. Pronto para executar.
+                </div>
+              )}
+
+               <button
+                title="Sair para janela de importação."
+                onClick={() => {
+                  localStorage.removeItem("resultado_conciliacao");
+                  navigate("/importacao-bancaria");
+                }}
+                className="ml-auto btn-pill btn-green text-xs px-4 py-2"
+              >
+                ← Sair
+              </button>
+          </div>
+
+          <div className="mt-2 rounded-4xl border border-slate-200 bg-slate-50 p-3">
+            <div className="flex flex-wrap items-center gap-2">
+
+              <button
+                title="Selecionar todos registros 'PENDENTES' serem aceitos."
+                onClick={aceitarTodosCheckbox}
+                className="btn-pill btn-white text-xs px-4 py-2"
+              >
+                {selecionados.length > 0 ? "❌ Desselecionar" : "✅ 1- Selecionar"}
+              </button>
+
+              <button
+                title="Aceitar registros selecionados para status de ok. Preparação para execução da conciliação."
+                onClick={() => aceitarSelecionados()}
+                disabled={!podeAceitar}
+                className={`btn-pill text-xs px-4 py-2 ${
+                  podeAceitar ? "btn-green" : "btn-white opacity-60 cursor-not-allowed"
+                }`}
+              >
+                ✅ 2- Aceitar
+              </button>
+
+              <button
+                title="Executar a conciliação. Finalizar o processo e realizar os lançamentos financeiros e pagamentos."
                 onClick={executarConciliacao}
                 disabled={!podeExecutar}
-                className={`
-                  px-5 py-2 rounded-full
-                  text-white font-bold text-sm shadow
-                  hover:brightness-110
-                 ${
-                    podeExecutar
-                      ? "bg-gradient-to-r from-blue-500 to-blue-700"
-                      : "bg-gradient-to-r from-slate-300 to-slate-500 cursor-not-allowed opacity-90"
-                  }
-                `}
+                  className={`btn-pill text-xs px-4 py-2 ${
+                  podeExecutar ? "btn-green" : "btn-white opacity-60 cursor-not-allowed"
+                }`}
               >
-                🚀 Executar Conciliação
+                ✅ 3- Executar
               </button>
-            
-                 
-            
-            <button
-                 title="Sair para janela de importação."
-                  onClick={() => {
-                    localStorage.removeItem("resultado_conciliacao");
-                    navigate("/importacao-bancaria");
-                  }}
-                className="
-                px-5 py-2 rounded-full
-                bg-gradient-to-r from-gray-600 to-gray-900
-                text-white font-bold text-sm shadow
-                hover:brightness-110
-                "
-            >
-                 ↩ Sair
-            </button> 
-            
-               <button
-                   title="Reverte o status de ok para pendente."
-                    onClick={Reverter}
-                    className="
-                      px-5 py-2 rounded-full
-                      bg-gradient-to-r from-red-500 to-red-700
-                      text-white font-bold text-sm shadow
-                      hover:brightness-110
-                    "
-                  >
-                    ✅ Reverter tudo 
-                  </button>
 
-               <select
-                  value={filtroSituacao}
-                  onChange={(e) => setFiltroSituacao(e.target.value)}
-                  className="px-4 py-2 rounded-full border border-slate-300 bg-white text-sm font-bold text-slate-700"
+              <button
+                title="Reverte o status de ok para pendente."
+                onClick={Reverter}
+                className="btn-pill btn-red text-xs px-4 py-2"
+              >
+                ↩ Reverter
+              </button>
+
+              
+
+              <div className="hidden md:block h-8 w-px bg-slate-300 mx-1" />
+
+              <select
+                value={filtroSituacao}
+                onChange={(e) => {
+                      setFiltroSituacao(e.target.value);
+
+                      setFiltroTexto("");
+                      setTextoContaLote("");
+                      setContaLoteSelecionada(null);
+                      setContasLoteFiltradas([]);
+                    }}
+                className="h-9 rounded-full border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
+              >
+                <option value="todos">Todos ({linhas.length})</option>
+                <option value="pendente">
+                  Pendentes ({linhas.filter((l) => l.situacao === "pendente").length})
+                </option>
+                <option value="rejeitado">
+                  Rejeitados ({linhas.filter((l) => l.situacao === "rejeitado").length})
+                </option>
+                <option value="ok">
+                  OK ({linhas.filter((l) => l.situacao === "ok").length})
+                </option>
+              {/*}  <option value="sem_conta">
+                  Sem Plano ({faltamContas.length})
+                </option>*/}
+              </select>
+
+              <input
+                value={filtroTexto}
+                onChange={(e) => setFiltroTexto(e.target.value)}
+                placeholder="Filtrar histórico..."
+                className="h-9 w-[200px] rounded-full border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
+              />
+
+              <div className="relative">
+                <input
+                      value={textoContaLote}
+                      onFocus={() => filtrarContasLote("")}
+                      onChange={(e) => {
+                        const texto = e.target.value;
+                        setTextoContaLote(texto);
+                        setContaLoteSelecionada(null);
+                        filtrarContasLote(texto);
+                      }}
+                      placeholder="Conta opcional em lote..."
+                      className="h-9 w-[280px] rounded-full border border-blue-200 bg-blue-50 px-3 text-xs font-bold text-slate-700"
+                    />
+
+                {contasLoteFiltradas.length > 0 && (
+                  <div className="absolute z-50 mt-2 max-h-72 w-[420px] overflow-y-auto rounded-2xl border bg-white shadow-xl">
+                    {contasLoteFiltradas.map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => {
+                          setContaLoteSelecionada(c);
+                          setTextoContaLote(`${c.codigo} - ${c.nome}`);
+                          setContasLoteFiltradas([]);
+                        }}
+                        className="block w-full px-4 py-2 text-left text-xs hover:bg-blue-50"
+                      >
+                        <span className="font-black">{c.codigo}</span> — {c.nome}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <button
+                  type="button"
+                  onClick={aplicarContaEmLote}
+                  disabled={!contaLoteSelecionada || selecionados.length === 0}
+                  className={`btn-pill text-xs px-4 py-2 ${
+                    contaLoteSelecionada && selecionados.length > 0
+                      ? "btn-blue"
+                      : "btn-white opacity-60 cursor-not-allowed"
+                  }`}
                 >
-                  <option value="todos">Todos ({linhas.length})</option>
-                  <option value="pendente">
-                    Pendentes ({linhas.filter((l) => l.situacao === "pendente").length})
-                  </option>
-                  <option value="rejeitado">
-                    Rejeitados ({linhas.filter((l) => l.situacao === "rejeitado").length})
-                  </option>
-                  <option value="ok">
-                    OK ({linhas.filter((l) => l.situacao === "ok").length})
-                  </option>
-
-                  <option value="sem_conta">
-                    Sem Plano de Contas ({faltamContas.length})
-                  </option>
-                </select>
-                  
-
+                  Aplicar Selecionados ({selecionados.length})
+                </button>
             </div>
-        {podeExecutar && (
-            <div className="mt-6 mb-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-5 py-4 text-emerald-800 font-bold shadow">
-              ✅ Todas as linhas foram revisadas. A conciliação já pode ser executada.
-            </div>
-          )}
-                
-      {aviso && (
-            <div className="mt-6 mb-5 rounded-2xl border border-amber-300 bg-amber-50 px-5 py-4 text-amber-800 font-bold shadow">
+          </div>
+ 
+          {aviso && (
+            <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-5 py-4 text-amber-800 font-bold shadow">
               {aviso}
             </div>
           )}
 
-
-         {faltamContas.length > 0 && (
-  <div className="mt-4 rounded-2xl border border-red-300 bg-red-50 px-5 py-3 text-red-700 font-bold">
-    ⚠️ Faltam {faltamContas.length} lançamento(s) para informar o Plano de Conta.
-  </div>
-)}
-
-        </div>)}
-
-       <div className="rounded-3xl bg-white shadow-lg border border-slate-200 overflow-hidden">
-
-          {resultadoExecucao && (
-  <div className="mb-6 rounded-3xl border border-emerald-300 bg-emerald-50 p-6 shadow-lg">
-    <h2 className="text-2xl font-black text-emerald-800">
-      ✅ Conciliação executada com sucesso
-    </h2>
-
-    <p className="mt-2 text-emerald-700 font-semibold">
-      Os lançamentos foram processados e não aparecerão mais na revisão.
-    </p>
-
-    <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-4">
-      <div className="rounded-2xl bg-white p-4 shadow border">
-        <div className="text-xs text-slate-500 font-bold">Lote</div>
-        <div className="text-xl font-black text-slate-800">
-          {resultadoExecucao.lote_conciliacao_id || "-"}
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-white p-4 shadow border">
-        <div className="text-xs text-slate-500 font-bold">Pagas</div>
-        <div className="text-xl font-black text-slate-800">
-          {resultadoExecucao.pagar || 0}
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-white p-4 shadow border">
-        <div className="text-xs text-slate-500 font-bold">Recebidas</div>
-        <div className="text-xl font-black text-slate-800">
-          {resultadoExecucao.receber || 0}
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-white p-4 shadow border">
-        <div className="text-xs text-slate-500 font-bold">Faturas</div>
-        <div className="text-xl font-black text-slate-800">
-          {resultadoExecucao.faturas || 0}
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-white p-4 shadow border">
-        <div className="text-xs text-slate-500 font-bold">Transações</div>
-        <div className="text-xl font-black text-slate-800">
-          {resultadoExecucao.transacoes || 0}
-        </div>
-      </div>
-    </div>
-
-    <div className="mt-6 flex gap-3">
-      <button
-        onClick={() => navigate("/importacao-bancaria")}
-        className="px-5 py-2 rounded-full bg-slate-800 text-white font-bold shadow hover:brightness-110"
-      >
-        Nova importação
-      </button>
-
-      <button
-            onClick={() => verOperacoesGeradas()}
-        className="px-5 py-2 rounded-full bg-blue-700 text-white font-bold shadow hover:brightness-110"
-      >
-        Ver transações geradas
-      </button>
-  
-     {/*} <button
-        onClick={excluirImportacao}
-        className="px-5 py-2 rounded-full bg-red-700 text-white font-bold shadow hover:brightness-110"
-      >
-        Estornar lote
-      </button>*/}
-       
-    </div>
-  </div>
-)}
-
-
-
-{mostrarOperacoes && (
-  <div className="mb-6 rounded-3xl bg-white border border-slate-200 shadow-lg overflow-hidden">
-    <div className="bg-slate-800 text-white px-6 py-4">
-      <h2 className="text-xl font-black">Operações geradas</h2>
-      <p className="text-sm text-slate-200">
-        Lote/importação nº {resultadoExecucao?.lote_conciliacao_id}
-      </p>
-    </div>
-
-    {loadingOperacoes ? (
-      <div className="p-6 text-center font-bold text-slate-500">
-        Carregando operações...
-      </div>
-    ) : operacoesGeradas.length === 0 ? (
-      <div className="p-6 text-center font-bold text-slate-500">
-        Nenhuma operação encontrada para este lote.
-      </div>
-     ) : (
-  <div className="max-h-[620px] overflow-y-auto">
-    <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
-            <tr>
-              <th className="px-3 py-2 text-left">ID</th>
-              <th className="px-3 py-2 text-left">Descrição</th>
-              <th className="px-3 py-2 text-center">Data</th>
-              <th className="px-3 py-2 text-left">Conta</th>
-              <th className="px-3 py-2 text-left">Tipo</th>
-              <th className="px-3 py-2 text-left">Origem</th>
-              <th className="px-3 py-2 text-left">Classificação</th>
-              <th className="px-3 py-2 text-left">Forma</th>
-              <th className="px-3 py-2 text-right">Valor</th>
-              <th className="px-3 py-2 text-left">Evento</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {operacoesGeradas.map((l) => (
-              <tr key={l.id} className="border-t hover:bg-blue-50/50">
-                <td className="px-3 py-2 font-bold">{l.id}</td>
-
-                <td className="px-3 py-2 whitespace-normal break-words max-w-[260px]">
-                  {l.descricao}
-                </td>
-
-                <td className="px-3 py-2 font-bold text-center">
-                  {String(l.data_movimento || "")
-                    .slice(0, 10)
-                    .split("-")
-                    .reverse()
-                    .join("/")}
-                </td>
-
-                <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
-                  {l.conta_nome || "-"}
-                </td>
-
-                <td
-                  className={`px-3 py-2 font-bold ${
-                    l.tipo === "entrada" ? "text-green-700" : "text-red-700"
-                  }`}
-                >
-                  {l.tipo === "entrada" ? "Entrada" : "Saída"}
-                </td>
-
-                <td className="px-3 py-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      l.origem === "conta_pagar"
-                        ? "bg-red-100 text-red-700"
-                        : l.origem === "conta_receber"
-                        ? "bg-green-100 text-green-700"
-                        : l.origem === "fatura_cartao"
-                        ? "bg-purple-100 text-purple-700"
-                        : l.origem === "estorno"
-                        ? "bg-gray-200 text-gray-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {l.origem === "conta_pagar"
-                      ? "Pagar"
-                      : l.origem === "conta_receber"
-                      ? "Receber"
-                      : l.origem === "fatura_cartao"
-                      ? "Fatura"
-                      : l.origem === "estorno"
-                      ? "Estorno"
-                      : "Financeiro"}
-                  </span>
-                </td>
-
-                <td className="px-3 py-2 font-medium">
-                  {l.classificacao || "-"}
-                </td>
-
-                <td className="px-3 py-2 font-medium">
-                  {l.forma || "-"}
-                </td>
-
-                <td className="px-3 py-2 text-right font-black">
-                  {Number(l.valor || 0).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </td>
-
-                <td className="px-3 py-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      l.tipo_operacao === "conta_pagar"
-                        ? "bg-red-100 text-red-700"
-                        : l.tipo_operacao === "conta_receber"
-                        ? "bg-green-100 text-green-700"
-                        : l.tipo_operacao === "fatura_cartao"
-                        ? "bg-purple-100 text-purple-700"
-                        : "bg-yellow-200 text-yellow-800"
-                    }`}
-                  >
-                    {l.tipo_operacao === "conta_pagar"
-                      ? "A pagar"
-                      : l.tipo_operacao === "conta_receber"
-                      ? "A receber"
-                      : l.tipo_operacao === "fatura_cartao"
-                      ? "Fatura cartão"
-                      : "Financeiro"}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
-  </div>
-)}
-   
-   
-      {!resultadoExecucao && loading ? (
-            <div className="p-10 text-center text-slate-500 font-bold">
-              Carregando dados importados...
+         {/*} {faltamContas.length > 0 && (
+            <div className="mt-4 rounded-2xl border border-red-300 bg-red-50 px-5 py-3 text-red-700 font-bold">
+              ⚠️ Faltam {faltamContas.length} lançamento(s) para informar o Plano de Conta.
             </div>
-          ) : linhas.length === 0 ? (
-            <div className="p-10 text-center text-slate-500 font-bold">
-              Nenhum dado encontrado.
+          )}*/}
+        </div>
+      )}
+
+      <div className="rounded-4xl bg-white shadow-lg border border-slate-200 overflow-hidden">
+
+        {resultadoExecucao && (
+          <div className="mb-6 rounded-3xl border border-emerald-300 bg-emerald-50 p-6 shadow-lg">
+            <h2 className="text-2xl font-black text-emerald-800">
+              ✅ Conciliação executada com sucesso
+            </h2>
+
+            <p className="mt-2 text-emerald-700 font-semibold">
+              Os lançamentos foram processados e não aparecerão mais na revisão.
+            </p>
+
+            <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="rounded-2xl bg-white p-4 shadow border">
+                <div className="text-xs text-slate-500 font-bold">Lote</div>
+                <div className="text-xl font-black text-slate-800">
+                  {resultadoExecucao.lote_conciliacao_id || "-"}
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-white p-4 shadow border">
+                <div className="text-xs text-slate-500 font-bold">Pagas</div>
+                <div className="text-xl font-black text-slate-800">
+                  {resultadoExecucao.pagar || 0}
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-white p-4 shadow border">
+                <div className="text-xs text-slate-500 font-bold">Recebidas</div>
+                <div className="text-xl font-black text-slate-800">
+                  {resultadoExecucao.receber || 0}
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-white p-4 shadow border">
+                <div className="text-xs text-slate-500 font-bold">Faturas</div>
+                <div className="text-xl font-black text-slate-800">
+                  {resultadoExecucao.faturas || 0}
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-white p-4 shadow border">
+                <div className="text-xs text-slate-500 font-bold">Transações</div>
+                <div className="text-xl font-black text-slate-800">
+                  {resultadoExecucao.transacoes || 0}
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="max-h-[720px] overflow-y-auto overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="sticky top-0 z-20 bg-slate-800 text-white">
-                  <tr>
-                  <th className="p-3 text-center">Sel.</th>
-                    <th className="p-3 text-left">Data</th>
-                    <th className="p-3 text-left">Histórico</th>
-                    <th className="p-3 text-right">Valor</th>
-                    <th className="p-3 text-center">Situação</th>
-                  {/*}   <th className="p-3 text-left">Conta Contábil</th> */}
-                    <th className="p-3 text-left">Plano de Conta</th> 
-                    <th className="p-3 text-center">Tipo Evento</th> 
-                    <th className="p-3 text-center">Ação</th>
-                    
-                  </tr>
-                </thead>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              <button
+                onClick={() => navigate("/importacao-bancaria")}
+                className="btn-pill btn-white"
+              >
+                Nova importação
+              </button>
+
+              <button
+                onClick={() => verOperacoesGeradas()}
+                className="btn-pill btn-blue"
+              >
+                Ver transações geradas
+              </button>
+            </div>
+          </div>
+        )}
+
+        {mostrarOperacoes && (
+          <div className="mb-6 rounded-3xl bg-white border border-slate-200 shadow-lg overflow-hidden">
+            <div className="bg-slate-800 text-white px-6 py-4">
+              <h2 className="text-xl font-black">Operações geradas</h2>
+              <p className="text-sm text-slate-200">
+                Lote/importação nº {resultadoExecucao?.lote_conciliacao_id}
+              </p>
+            </div>
+
+            {loadingOperacoes ? (
+              <div className="p-6 text-center font-bold text-slate-500">
+                Carregando operações...
+              </div>
+            ) : operacoesGeradas.length === 0 ? (
+              <div className="p-6 text-center font-bold text-slate-500">
+                Nenhuma operação encontrada para este lote.
+              </div>
+            ) : (
+              <div className="max-h-[620px] overflow-y-auto">
+                 <table className="w-full table-fixed text-sm">
+                  <thead className="bg-gray-50 text-gray-600">
+                    <tr>
+                      <th className="px-3 py-2 text-left">ID</th>
+                      <th className="px-3 py-2 text-left">Descrição</th>
+                      <th className="px-3 py-2 text-center">Data</th>
+                      <th className="px-3 py-2 text-left">Conta</th>
+                      <th className="px-3 py-2 text-left">Tipo</th>
+                      <th className="px-3 py-2 text-left">Origem</th>
+                      <th className="px-3 py-2 text-left">Classificação</th>
+                      <th className="px-3 py-2 text-left">Forma</th>
+                      <th className="px-3 py-2 text-right">Valor</th>
+                      <th className="px-3 py-2 text-left">Evento</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {operacoesGeradas.map((l) => (
+                      <tr key={l.id} className="border-t hover:bg-blue-50/50">
+                        <td className="px-3 py-2 font-bold">{l.id}</td>
+
+                        <td className="px-3 py-2 whitespace-normal break-words max-w-[260px]">
+                          {l.descricao}
+                        </td>
+
+                        <td className="px-3 py-2 font-bold text-center">
+                          {String(l.data_movimento || "")
+                            .slice(0, 10)
+                            .split("-")
+                            .reverse()
+                            .join("/")}
+                        </td>
+
+                        <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
+                          {l.conta_nome || "-"}
+                        </td>
+
+                        <td
+                          className={`px-3 py-2 font-bold ${
+                            l.tipo === "entrada" ? "text-green-700" : "text-red-700"
+                          }`}
+                        >
+                          {l.tipo === "entrada" ? "Entrada" : "Saída"}
+                        </td>
+
+                        <td className="px-3 py-2">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              l.origem === "conta_pagar"
+                                ? "bg-red-100 text-red-700"
+                                : l.origem === "conta_receber"
+                                  ? "bg-green-100 text-green-700"
+                                  : l.origem === "fatura_cartao"
+                                    ? "bg-purple-100 text-purple-700"
+                                    : l.origem === "estorno"
+                                      ? "bg-gray-200 text-gray-700"
+                                      : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {l.origem === "conta_pagar"
+                              ? "Pagar"
+                              : l.origem === "conta_receber"
+                                ? "Receber"
+                                : l.origem === "fatura_cartao"
+                                  ? "Fatura"
+                                  : l.origem === "estorno"
+                                    ? "Estorno"
+                                    : "Financeiro"}
+                          </span>
+                        </td>
+
+                        <td className="px-3 py-2 font-medium">
+                          {l.classificacao || "-"}
+                        </td>
+
+                        <td className="px-3 py-2 font-medium">
+                          {l.forma || "-"}
+                        </td>
+
+                        <td className="px-3 py-2 text-right font-black">
+                          {Number(l.valor || 0).toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </td>
+
+                        <td className="px-3 py-2">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-bold ${
+                              l.tipo_operacao === "conta_pagar"
+                                ? "bg-red-100 text-red-700"
+                                : l.tipo_operacao === "conta_receber"
+                                  ? "bg-green-100 text-green-700"
+                                  : l.tipo_operacao === "fatura_cartao"
+                                    ? "bg-purple-100 text-purple-700"
+                                    : "bg-yellow-200 text-yellow-800"
+                            }`}
+                          >
+                            {l.tipo_operacao === "conta_pagar"
+                              ? "A pagar"
+                              : l.tipo_operacao === "conta_receber"
+                                ? "A receber"
+                                : l.tipo_operacao === "fatura_cartao"
+                                  ? "Fatura cartão"
+                                  : "Financeiro"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!resultadoExecucao && loading ? (
+          <div className="p-10 text-center text-slate-500 font-bold">
+            Carregando dados importados...
+          </div>
+        ) : linhas.length === 0 ? (
+          <div className="p-10 text-center text-slate-500 font-bold">
+            Nenhum dado encontrado.
+          </div>
+        ) : (
+          <div className="max-h-[780px] overflow-y-auto overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 z-20 bg-slate-800 text-white">
+                <tr>
+
+                  <th className="p-3 text-center">
+                        <input
+                          type="checkbox"
+                          title="Selecionar todos para aplicar conta"
+                          checked={
+                            linhasFiltradasComTexto.filter(
+                              (l) =>
+                                l.importar !== false &&
+                                l.situacao !== "executado" &&
+                                l.situacao !== "rejeitado" &&
+                                l.tipo_evento !== "transf_mesma_tit"
+                            ).length > 0 &&
+                            linhasFiltradasComTexto
+                              .filter(
+                                (l) =>
+                                  l.importar !== false &&
+                                  l.situacao !== "executado" &&
+                                  l.situacao !== "rejeitado" &&
+                                  l.tipo_evento !== "transf_mesma_tit"
+                              )
+                              .every((l) => selecionados.map(Number).includes(Number(l.id)))
+                          }
+                          onChange={toggleTodosSelecionadosVisiveis}
+                          className="h-4 w-4 cursor-pointer rounded border-slate-300"
+                        />
+                      </th>
+                   
+                  <th className="p-3 text-left">Data</th>
+                   <th className="w-[460px] p-3 text-left">Histórico</th>
+                  <th className="p-3 text-right">Valor</th>
+                  <th className="p-3 text-center">Situação</th>
+                  <th className="p-3 text-left">Plano de Conta</th>
+                  <th className="p-3 text-center">Tipo Evento</th>
+                  <th className="p-3 text-center">Ação</th>
+                </tr>
+              </thead>
 
               <tbody>
-                  {linhasFiltradas.map((l) => {
-  const resolvido = !!l.destino_id;
+                {linhasFiltradasComTexto.map((l) => {
+                  const resolvido = !!l.destino_id;
 
-  return (
-                  
-                  <tr
-                    key={l.id}
-                    className="border-b border-slate-100 hover:bg-blue-50/60"
-                  >
-                    <td className="p-3 text-center">
-                         <input
+                  return (
+                    <tr
+                      key={l.id}
+                      className="border-b border-slate-100 hover:bg-blue-50/60"
+                    >
+                      <td className="p-3 text-center">
+                           <input
                           type="checkbox"
-                          checked={selecionados.includes(l.id)}
+                          checked={selecionados.map(Number).includes(Number(l.id))}
                           onChange={() => toggleSelecionado(l.id)}
-                          disabled={l.situacao === "ok" || l.situacao === "executado" || l.situacao === "rejeitado"}
+                          disabled={
+                            l.situacao === "executado" ||
+                            l.situacao === "rejeitado" ||
+                            l.tipo_evento === "transf_mesma_tit"
+                          }
+                          className="h-4 w-4 cursor-pointer rounded border-slate-300"
                         />
-                        </td>
-                   <td className="p-3 font-semibold text-slate-700">
+                          </td>
+
+                      <td className="p-3 font-semibold text-slate-700">
                         {String(l.data_mov || "").slice(0, 10).split("-").reverse().join("/")}
                       </td>
 
-                    <td className="p-3 text-slate-700 font-medium">
-                      {l.historico}
-                    </td>
+                       <td className="p-3 text-slate-700 font-medium truncate">
+                        {l.historico}
+                      </td>
 
-                    <td className="p-3 text-right font-black text-slate-800">
-                      {Number(l.valor || 0).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </td>
+                      <td className="p-3 text-right font-black text-slate-800">
+                        {Number(l.valor || 0).toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </td>
 
-                    <td className="p-3 text-center">
-                      <span
-                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusClasse(
-                          l.situacao
-                        )}`}
-                      >
-                        {l.situacao === "ok"
-                          ? "OK"
-                          : l.situacao === "rejeitado"
-                            ? "REJEITADO"
-                            : l.situacao === "executado"
-                              ? "EXECUTADO"
-                              : "PENDENTE"}
-                      </span>
-                    </td>
-
-        
-                    <td className="p-3 relative min-w-[260px]">
-                    <input
-                      value={
-                          l.tipo_evento === "transf_mesma_tit"
-                            ? "Conta contábil definida pela transferência"
-                            : textoContaBusca[l.id] ?? l.conta_descricao ?? l.conta_id ?? ""
-                        }
-                      onFocus={() => {
-                        setLinhaContaDropdown(l.id);
-                        filtrarContasContabeis("");
-                      }}
-                      onChange={(e) => {
-                        const texto = e.target.value;
-
-                        setTextoContaBusca((prev) => ({
-                          ...prev,
-                          [l.id]: texto,
-                        }));
-
-                        setLinhaContaDropdown(l.id);
-                        filtrarContasContabeis(texto);
-                      }}
-                      placeholder="Digite a conta..."
-                      className="w-full rounded-xl border px-3 py-2 text-xs font-bold"
-                      disabled={l.situacao === "executado" || l.tipo_evento === "transf_mesma_tit"}
-                    />
-
-                    {linhaContaDropdown === l.id && (
-                      <div className="absolute z-50 mt-1 max-h-64 w-[360px] overflow-y-auto rounded-xl border bg-white shadow-xl">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setLinhaContaNova(l);
-                            setModalContaAberto(true);
-                            setLinhaContaDropdown(null);
-                          }}
-                          className="w-full px-3 py-2 text-left text-xs font-black text-blue-700 hover:bg-blue-50"
+                      <td className="p-3 text-center">
+                        <span
+                          className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusClasse(
+                            l.situacao
+                          )}`}
                         >
-                          ➕ Criar nova conta para este histórico
-                        </button>
+                          {l.situacao === "ok"
+                            ? "OK"
+                            : l.situacao === "rejeitado"
+                              ? "REJEITADO"
+                              : l.situacao === "executado"
+                                ? "EXECUTADO"
+                                : "PENDENTE"}
+                        </span>
+                      </td>
 
-                        {contasFiltradasContabil.map((c) => (
-                          <button
-                            key={c.id}
-                            type="button"
-                            onClick={() => selecionarContaContabilLinha(l, c)}
-                            className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
-                          >
-                            <span className="font-black">{c.codigo}</span> — {c.nome}
-                          </button>
-                        ))}
+                      <td className="p-3 relative min-w-[260px]">
+                        <input
+                          value={
+                            l.tipo_evento === "transf_mesma_tit"
+                              ? "Conta contábil definida pela transferência"
+                              : textoContaBusca[l.id] ?? l.conta_descricao ?? l.conta_id ?? ""
+                          }
+                          onFocus={() => {
+                            setLinhaContaDropdown(l.id);
+                            filtrarContasContabeis("");
+                          }}
+                          onChange={(e) => {
+                            const texto = e.target.value;
 
-                        {contasFiltradasContabil.length === 0 && (
-                          <div className="px-3 py-2 text-xs font-bold text-slate-400">
-                            Nenhuma conta encontrada
+                            setTextoContaBusca((prev) => ({
+                              ...prev,
+                              [l.id]: texto,
+                            }));
+
+                            setLinhaContaDropdown(l.id);
+                            filtrarContasContabeis(texto);
+                          }}
+                          placeholder="Digite a conta..."
+                          className="w-full rounded-xl border px-3 py-2 text-xs font-bold"
+                          disabled={l.situacao === "executado" || l.tipo_evento === "transf_mesma_tit"}
+                        />
+
+                        {linhaContaDropdown === l.id && (
+                          <div className="absolute z-50 mt-1 max-h-64 w-[360px] overflow-y-auto rounded-xl border bg-white shadow-xl">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLinhaContaNova(l);
+                                setModalContaAberto(true);
+                                setLinhaContaDropdown(null);
+                              }}
+                              className="w-full px-3 py-2 text-left text-xs font-black text-blue-700 hover:bg-blue-50"
+                            >
+                              ➕ Criar nova conta para este histórico
+                            </button>
+
+                            {contasFiltradasContabil.map((c) => (
+                              <button
+                                key={c.id}
+                                type="button"
+                                onClick={() => selecionarContaContabilLinha(l, c)}
+                                className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
+                              >
+                                <span className="font-black">{c.codigo}</span> — {c.nome}
+                              </button>
+                            ))}
+
+                            {contasFiltradasContabil.length === 0 && (
+                              <div className="px-3 py-2 text-xs font-bold text-slate-400">
+                                Nenhuma conta encontrada
+                              </div>
+                            )}
                           </div>
                         )}
-                      </div>
-                    )}
-                  </td>
+                      </td>
 
-                     <td className="p-3 text-slate-600 font-semibold">
-                      {l.tipo_evento}
-                    </td>
+                      <td className="p-3 text-slate-600 font-semibold">
+                        {l.tipo_evento}
+                      </td>
 
-                    <td className="p-3 text-center">
-                       <div className="flex justify-center gap-2">
+                      <td className="p-3 text-center">
+                        <div className="flex justify-center gap-2">
                           {l.tipo_evento !== "transf_mesma_tit" && (
-                                  <button
-                                   title="Rejeita o registro da importação."
-                                    onClick={() => rejeitarLinha(l.id)}
-                                    disabled={
-                                      l.situacao === "ok" ||
-                                      l.situacao === "executado" ||
-                                      l.situacao === "rejeitado"
-                                    }
-                                    className="
-                                      px-2 py-1 rounded-full
-                                      border font-bold text-xs transition
-                                      enabled:bg-rose-100
-                                      enabled:text-rose-700
-                                      enabled:border-rose-300
-                                      enabled:hover:bg-rose-200
-                                      enabled:cursor-pointer
-                                      disabled:bg-gray-200
-                                      disabled:text-gray-400
-                                      disabled:border-gray-300
-                                      disabled:cursor-not-allowed
-                                      disabled:opacity-60
-                                    "
-                                  >
-                                    Rejeitar
-                                  </button>
-                                )}
-                               {l.tipo_evento === "transf_mesma_tit" ? (
-                                <>
-                                  <button
-                                    title="Aceita o registro da forma em que ele veio do arquivo."
-                                     
-                                    onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
-                                      className="
-                                          px-2 py-1 rounded-full border
-                                          text-[10px] leading-none font-bold
-                                          bg-emerald-500 text-white border-emerald-600
-                                          hover:bg-emerald-600
-                                        "
-                                      >
-                                     Aceitar
-                                  </button>
+                            <button
+                            title="Rejeita o registro da importação."
+                            onClick={() => rejeitarLinha(l.id)}
+                            disabled={
+                              l.situacao === "ok" ||
+                              l.situacao === "executado" ||
+                              l.situacao === "rejeitado"
+                            }
+                            className="text-[12px] font-bold text-red-600 hover:text-red-800 disabled:text-slate-300 disabled:cursor-not-allowed"
+                          >
+                            Rejeitar
+                          </button>
+                          )}
 
-                                 {/*} <button
-                                    onClick={() => resolverTransferencia(l)}
-                                                                        className="
-                                      px-2 py-1 rounded-full border
-                                      text-[10px] leading-none font-bold
-                                      bg-purple-600 text-white border-purple-700
-                                      hover:bg-purple-700
-                                    ">
-                                   Transferir
-                                  </button>*/}
+                          {l.tipo_evento === "transf_mesma_tit" ? (
+                            <>
+                              <button
+                                title="Aceita o registro da forma em que ele veio do arquivo."
+                                onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
+                                className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-800 hover:underline"
+                              >
+                                Aceitar
+                              </button>
 
-                                     
-
-                                <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                                  <button
+                              <div className="flex items-center justify-center gap-2 whitespace-nowrap">
+                                 <button
                                     title={
                                       resolvido
                                         ? "Linha já resolvida como transferência"
@@ -1350,178 +1479,169 @@ async function carregarContasContabeis() {
                                       setContaOrigemId(l.conta_financeira_id || "");
                                       setContaDestinoId(l.destino_id || "");
                                     }}
-                                    className={`px-3 py-1 rounded-full font-bold text-xs ${
+                                    className={`text-[12px] font-bold ${
                                       resolvido
-                                        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                                        : "bg-purple-700 text-white hover:bg-purple-800"
+                                        ? "text-slate-300 cursor-not-allowed"
+                                        : "text-purple-600 hover:text-purple-800"
                                     }`}
                                   >
                                     {resolvido ? "Resolvido" : "Resolver"}
                                   </button>
-                                </div>
-
-                                  
-                                </>
-                              ) : (
-                                <button
-                                  title={
-                                    l.situacao === "ok" || l.situacao === "executado"
-                                      ? "Lançamento já aceito"
-                                      : "Confirmar este lançamento. Use quando estiver correto"
-                                  }
-                                  onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
-                                  disabled={l.situacao === "ok" || l.situacao === "executado"}
-                                  className={`px-2 py-1 rounded-full border text-[10px] leading-none font-bold ${
-                                    l.situacao === "ok" || l.situacao === "executado"
-                                      ? "bg-gray-300 text-gray-600 border-gray-300 cursor-not-allowed"
-                                      : "bg-emerald-500 text-white border-emerald-600 hover:bg-emerald-600"
-                                  }`}
-                                >
-                                  {l.situacao === "ok" || l.situacao === "executado" ? "Aceito" : "Aceitar"}
-                                </button>
-                              )}
+                              </div>
+                            </>
+                          ) : (
+                            <button
+                                title={
+                                  l.situacao === "ok" || l.situacao === "executado"
+                                    ? "Lançamento já aceito"
+                                    : "Confirmar este lançamento. Use quando estiver correto"
+                                }
+                                onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
+                                disabled={l.situacao === "ok" || l.situacao === "executado"}
+                                className={`text-[12px] font-semibold underline-offset-2 ${
+                                  l.situacao === "ok" || l.situacao === "executado"
+                                    ? "text-slate-300 cursor-not-allowed"
+                                    : "text-emerald-600 hover:text-emerald-800 hover:underline"
+                                }`}
+                              >
+                                {l.situacao === "ok" || l.situacao === "executado" ? "Aceito" : "Aceitar"}
+                              </button>
+                          )}
                         </div>
                       </td>
                     </tr>
                   );
-})}
+                })}
               </tbody>
             </table>
-              </div>
-          )}
+          </div>
+        )}
+      </div>
+    </div>
 
+    {linhaEditando && (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-3xl p-6 w-[520px] shadow-2xl">
+          <h2 className="text-xl font-black text-slate-800 mb-4">
+            Resolver Transferência
+          </h2>
 
-        
+          <div className="mb-3 text-sm font-semibold text-slate-600">
+            {linhaEditando.historico}
+          </div>
+
+          <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <div className="text-xs font-bold text-slate-500">
+              Valor da transferência
+            </div>
+
+            <div
+              className={`text-xl font-black ${
+                Number(linhaEditando.valor || 0) >= 0
+                  ? "text-emerald-700"
+                  : "text-red-700"
+              }`}
+            >
+              {Number(linhaEditando.valor || 0).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </div>
+          </div>
+
+          <label className="block text-sm font-bold mb-1">Conta origem</label>
+          <select
+            value={contaOrigemId}
+            onChange={(e) => setContaOrigemId(e.target.value)}
+            className="w-full border rounded-xl px-3 py-2 mb-4"
+          >
+            <option value="">Selecione</option>
+            {contas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+
+          <label className="block text-sm font-bold mb-1">Conta destino</label>
+          <select
+            value={contaDestinoId}
+            onChange={(e) => setContaDestinoId(e.target.value)}
+            className="w-full border rounded-xl px-3 py-2 mb-5"
+          >
+            <option value="">Selecione</option>
+            {contas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setLinhaEditando(null)}
+              className="btn-pill btn-white"
+            >
+              Cancelar
+            </button>
+
+            <button
+              onClick={confirmarTransferencia}
+              className="btn-pill btn-purple"
+            >
+              Confirmar
+            </button>
+          </div>
         </div>
       </div>
+    )}
 
-      {linhaEditando && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-3xl p-6 w-[520px] shadow-2xl">
-      <h2 className="text-xl font-black text-slate-800 mb-4">
-        Resolver Transferência
-      </h2>
+    <ModalBase
+      open={modalContaAberto}
+      onClose={() => {
+        setModalContaAberto(false);
+        setLinhaContaNova(null);
+      }}
+      title="Nova Conta Contábil"
+    >
+      <FormContaContabilModal
+        empresa_id={empresa_id}
+        contas={contasContabeis}
+        nomeInicial={linhaContaNova?.historico || ""}
+        historicoRegra={linhaContaNova?.historico || ""}
+        tipoMovimento={linhaContaNova?.tipo || ""}
+        onSuccess={(contaCriada) => {
+          setModalContaAberto(false);
 
-      <div className="mb-3 text-sm font-semibold text-slate-600">
-        {linhaEditando.historico}
-      </div>
+          if (linhaContaNova && contaCriada?.id) {
+            setLinhas((prev) =>
+              prev.map((x) =>
+                x.id === linhaContaNova.id
+                  ? { ...x, conta_id: Number(contaCriada.id) }
+                  : x
+              )
+            );
 
-      <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-      <div className="text-xs font-bold text-slate-500">
-        Valor da transferência
-      </div>
+            fetchSeguro(buildWebhookUrl("conciliacao_atualizar_conta"), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                empresa_id,
+                id: linhaContaNova.id,
+                conta_id: Number(contaCriada.id),
+              }),
+            });
+          }
 
-      <div
-        className={`text-xl font-black ${
-          Number(linhaEditando.valor || 0) >= 0
-            ? "text-emerald-700"
-            : "text-red-700"
-        }`}
-      >
-        {Number(linhaEditando.valor || 0).toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        })}
-      </div>
-    </div>
-
-      <label className="block text-sm font-bold mb-1">Conta origem</label>
-      <select
-        value={contaOrigemId}
-        onChange={(e) => setContaOrigemId(e.target.value)}
-        className="w-full border rounded-xl px-3 py-2 mb-4"
-      >
-        <option value="">Selecione</option>
-        {contas.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.nome}
-          </option>
-        ))}
-      </select>
-
-      <label className="block text-sm font-bold mb-1">Conta destino</label>
-      <select
-        value={contaDestinoId}
-        onChange={(e) => setContaDestinoId(e.target.value)}
-        className="w-full border rounded-xl px-3 py-2 mb-5"
-      >
-        <option value="">Selecione</option>
-        {contas.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.nome}
-          </option>
-        ))}
-      </select>
-
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={() => setLinhaEditando(null)}
-          className="px-5 py-2 rounded-full bg-gray-500 text-white font-bold"
-        >
-          Cancelar
-        </button>
-
-        <button
-          onClick={confirmarTransferencia}
-          className="px-5 py-2 rounded-full bg-purple-700 text-white font-bold"
-        >
-          Confirmar
-        </button>
-      </div>
-    </div>
+          setLinhaContaNova(null);
+          carregarContasContabeis();
+        }}
+        onCancel={() => {
+          setModalContaAberto(false);
+          setLinhaContaNova(null);
+        }}
+      />
+    </ModalBase>
   </div>
-)}
-
-<ModalBase
-  open={modalContaAberto}
-  onClose={() => {
-    setModalContaAberto(false);
-    setLinhaContaNova(null);
-  }}
-  title="Nova Conta Contábil"
->
-  <FormContaContabilModal
-    empresa_id={empresa_id}
-     contas={contasContabeis}
-    nomeInicial={linhaContaNova?.historico || ""}
-    historicoRegra={linhaContaNova?.historico || ""}
-    tipoMovimento={linhaContaNova?.tipo || ""}
-    onSuccess={(contaCriada) => {
-      setModalContaAberto(false);
-
-      if (linhaContaNova && contaCriada?.id) {
-        setLinhas((prev) =>
-          prev.map((x) =>
-            x.id === linhaContaNova.id
-              ? { ...x, conta_id: Number(contaCriada.id) }
-              : x
-          )
-        );
-
-        fetchSeguro(buildWebhookUrl("conciliacao_atualizar_conta"), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            empresa_id,
-            id: linhaContaNova.id,
-            conta_id: Number(contaCriada.id)
-          })
-        });
-      }
-
-      setLinhaContaNova(null);
-      carregarContasContabeis();
-    }}
-    onCancel={() => {
-      setModalContaAberto(false);
-      setLinhaContaNova(null);
-    }}
-  />
-</ModalBase>
-
-
-    </div>
-
-    
-  );
+);
 }
