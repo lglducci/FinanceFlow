@@ -1,4 +1,4 @@
-  import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
  import { useNavigate } from "react-router-dom";
  import { buildWebhookUrl } from "../config/globals";
  
@@ -39,7 +39,16 @@ const toggleSub = (m) => setOpenSub(openSub === m ? null : m);
   setPerfil(json.codigo || "TOTAL");
 }
 
-   
+   const [sidebarAberta, setSidebarAberta] = useState(() => {
+  return localStorage.getItem("sidebarAberta") !== "false";
+});
+
+function alternarSidebar() {
+  setSidebarAberta((prev) => {
+    localStorage.setItem("sidebarAberta", String(!prev));
+    return !prev;
+  });
+}
  
  useEffect(() => {
   carregaPerfil();
@@ -64,38 +73,74 @@ function podeVer(menuKey) {
   return permitidos.includes(perfil);
 }
 
- 
+ function abrirSidebar() {
+  setSidebarAberta(true);
+}
+
+function fecharSidebar() {
+  setSidebarAberta(false);
+}
 
  
    return (
-     <aside className="w-60 bg-white text-blue-500 flex flex-col h-full border border-blue-800/100">
+      <aside
+  onMouseEnter={() => setSidebarAberta(true)}
+  onMouseLeave={() => setSidebarAberta(false)}
+  className={`transition-all duration-300 bg-white text-blue-500 flex flex-col h-full border border-blue-800/100 ${
+    sidebarAberta ? "w-60" : "w-16"
+  }`}
+>
+      
                                                                {/* #0D94E8*/} 
-       <div className="px-6 py-7 border-b border-blue-800/100 bg-[#061f4aff] text-white font-bold text-base">
-        
-  
-         <h2 className="text-xl font-bold">Contábil-Flow</h2>
-         <p className="text-xs text-blue-900 font-bold  text-white font-bold text-base">Painel pessoal</p>
-       </div>
+       <div
+        className={`
+          border-b border-blue-800/100 bg-[#061f4aff] text-white font-bold
+          ${sidebarAberta ? "px-6 py-5" : "px-2 py-4"}
+        `}
+      >
+        <div className={`flex items-center ${sidebarAberta ? "justify-between" : "justify-center"}`}>
+          {sidebarAberta && (
+            <div>
+              <h2 className="text-xl font-bold whitespace-nowrap">Contábil-Flow</h2>
+              <p className="text-xs text-white/80 font-bold whitespace-nowrap">Painel pessoal</p>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={alternarSidebar}
+            title={sidebarAberta ? "Recolher menu" : "Expandir menu"}
+            className="h-9 w-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-black"
+          >
+            {sidebarAberta ? "«" : "☰"}
+          </button>
+        </div>
+      </div>
  
-       <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold">
+       <nav
+        className={`flex-1 py-4 space-y-1 overflow-y-auto text-blue-900 text-sm font-bold ${
+          sidebarAberta ? "px-2" : "px-1"
+        }`}
+      >
         
  
         {podeVer("visao_geral") && (
-           <MenuItem icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboardfinanceiro")} />
+           <MenuItem compact={!sidebarAberta} icon={<IconHome />} label="DashBoard Financeiro" onClick={() => navigate("/dashboardfinanceiro")} />
               
              
            
         )}
-         <MenuItem icon={<IconHome />} label="DashBoard Financeiro 2" onClick={() => navigate("/dashboard-financeiro")} />
+         <MenuItem compact={!sidebarAberta} icon={<IconHome />} label="DashBoard Financeiro 2" onClick={() => navigate("/dashboard-financeiro")} />
 
-           {/*} <MenuItem icon={<IconHome />} label="DashBoard Financeiro 3" onClick={() => navigate("/app/dashboard")} />*/}
+           {/*} <MenuItem compact={!sidebarAberta} icon={<IconHome />} label="DashBoard Financeiro 3" onClick={() => navigate("/app/dashboard")} />*/}
             
-          <MenuItem icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
+          <MenuItem compact={!sidebarAberta} icon={<IconHome />} label="DashBoard Contábil" onClick={() => navigate("/dashboardcontabil")} />
 
           
           
           {podeVer("visao_geral") && (
          <MenuGroup
+           compact={!sidebarAberta}
            icon={<IconMoney />}
            label="Movimentacoes"
            open={open === "financeiro"}
@@ -103,8 +148,8 @@ function podeVer(menuKey) {
          >  
 
            
-          {/*} <SubItem icon={<IconDoc />} label="Lançamentos rápidos" onClick={() => navigate("/lancamento-rapido")}  />*/}
-           <SubItem icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
+          {/*} <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Lançamentos rápidos" onClick={() => navigate("/lancamento-rapido")}  />*/}
+           <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")}  />
             
               
            
@@ -127,14 +172,14 @@ function podeVer(menuKey) {
 
                 {openSub === "contas" && (
                   <div className="ml-6 space-y-1">
-                     <SubItem icon={<IconArrowUp />} label="A Pagar" onClick={() => navigate("/contas-pagar")} />
-           <SubItem icon={<IconArrowDown />} label="A Receber" onClick={() => navigate("/contas-receber")} /> 
+                     <SubItem compact={!sidebarAberta} icon={<IconArrowUp />} label="A Pagar" onClick={() => navigate("/contas-pagar")} />
+           <SubItem compact={!sidebarAberta} icon={<IconArrowDown />} label="A Receber" onClick={() => navigate("/contas-receber")} /> 
                   </div>
                 )}
               </div> 
            
             
-           <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
+           <SubItem compact={!sidebarAberta} icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
 
            <div className="ml-2">
                 <button
@@ -176,30 +221,32 @@ function podeVer(menuKey) {
 
        {/*} {podeVer("visao_geral") && (
          <MenuGroup
+           compact={!sidebarAberta}
            icon={<IconMoney />}
            label="Contas"
            open={open === "contas"}
            onClick={() => toggle("contas")}
          > 
-           <SubItem icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
-           <SubItem icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
-           <SubItem icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
+           <SubItem compact={!sidebarAberta} icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} />
+           <SubItem compact={!sidebarAberta} icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} />  
+           <SubItem compact={!sidebarAberta} icon={<IconBook />} label="Titulos Vencidos" onClick={() => navigate("/titulos-vencidos")} /> 
          </MenuGroup>
          )}*/}
 
          {podeVer("visao_geral") && (
          <MenuGroup
+           compact={!sidebarAberta}
            icon={<IconMoney />}
            label="Importações"
            open={open === "importacao"}
            onClick={() => toggle("importacao")}
          > 
-          {/*} <SubItem icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
-             <SubItem icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
-           <SubItem icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />*/}
-       {/*}    <SubItem icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/importacao-bancaria")}  />*/}
-               <SubItem icon={<IconDoc />} label="Contábil" onClick={() => navigate("/livro-caixa")}  />
-                <SubItem icon={<IconDoc />} label="Cartões" onClick={() => navigate("/importacao-cartao")}  />
+          {/*} <SubItem compact={!sidebarAberta} icon={<IconCard />} label="Faturas" onClick={() => navigate("/faturas-cartao")} />
+             <SubItem compact={!sidebarAberta} icon={<IconCardTransaction />} label="Transações Cartão" onClick={() => navigate("/cartao-transacoes")} />
+           <SubItem compact={!sidebarAberta} icon={<IconCardTransaction />} label="Compras no Cartão" onClick={() => navigate("/compras-cartao")} />*/}
+       {/*}    <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/importacao-bancaria")}  />*/}
+               <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Contábil" onClick={() => navigate("/livro-caixa")}  />
+                <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Cartões" onClick={() => navigate("/importacao-cartao")}  />
                
             
          </MenuGroup>
@@ -209,31 +256,32 @@ function podeVer(menuKey) {
          
        {(podeVer("diario_contabil") || podeVer("configuracoes")) && (
          <MenuGroup
+           compact={!sidebarAberta}
            icon={<IconBuilding />}
            label="Contábil"
            open={open === "contabil"}
            onClick={() => toggle("contabil")}
          >
-              {podeVer("visao_geral") && (<SubItem icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />)}
+              {podeVer("visao_geral") && (<SubItem compact={!sidebarAberta} icon={<IconClipboard  />} label="Diário Contábil" onClick={() => navigate("/diario")} />)}
             
-                {podeVer("visao_geral")  && ( <SubItem icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />)}
+                {podeVer("visao_geral")  && ( <SubItem compact={!sidebarAberta} icon={<IconRefresh />} label="Processar Contábil" onClick={() => navigate("/processar-diario")} />)}
                
-        {/*}   <SubItem icon={<IconDoc />} label="Lanctos Ctb - Saldo"
+        {/*}   <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Lanctos Ctb - Saldo"
              onClick={() => navigate("/lancamentos-contabeis")}
            /> */} 
              
-            <SubItem icon={<IconDoc />} label="Lanctos Contábeis"
+            <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Lanctos Contábeis"
              onClick={() => navigate("/relatorios/diario")}
            /> 
 
-            <SubItem icon={<IconDoc />} label="Saldos Iniciais"
+            <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Saldos Iniciais"
              onClick={() => navigate("/saldosiniciais")}
            /> 
             
-              <SubItem icon={<IconDoc />} label="Apura Resultado"
+              <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Apura Resultado"
              onClick={() => navigate("/apuracaoresultado")}
            /> 
-             <SubItem icon={<IconDoc />} label="Lembretes Contábeis"
+             <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Lembretes Contábeis"
              onClick={() => navigate("/lembretecontabil")}
            /> 
             
@@ -241,12 +289,13 @@ function podeVer(menuKey) {
         )}
  
         {/*} {podeVer("visao_geral") && (   <MenuGroup
+           compact={!sidebarAberta}
            icon={<IconBuilding />}
            label="Apurações/Obrigações"
            open={open === "tributos"}
            onClick={() => toggle("tributos")}
          >
-           <SubItem icon={<IconClipboard  />} label="Apuração de Tributos" onClick={() => navigate("/tributos/apuracao")} />
+           <SubItem compact={!sidebarAberta} icon={<IconClipboard  />} label="Apuração de Tributos" onClick={() => navigate("/tributos/apuracao")} />
           
                
           
@@ -254,49 +303,55 @@ function podeVer(menuKey) {
  
  
          <MenuGroup
+           compact={!sidebarAberta}
            icon={<IconFolder />}
            label="Cadastro"
            open={open === "cadastro"}
            onClick={() => toggle("cadastro")}
          >
-                {podeVer("visao_geral") &&  (<SubItem icon={<IconUsers />} label="Fornecedores/Clientes" onClick={() => navigate("/providers-clients")} />)}
+                {podeVer("visao_geral") &&  (<SubItem compact={!sidebarAberta} icon={<IconUsers />} label="Fornecedores/Clientes" onClick={() => navigate("/providers-clients")} />)}
 
-               {/*}  {podeVer("visao_geral") &&   (<SubItem icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)} 
-                 {podeVer("visao_geral") &&   (<SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
-                 {podeVer("visao_geral")  &&   ( <SubItem icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)} */}
+               {/*}  {podeVer("visao_geral") &&   (<SubItem compact={!sidebarAberta} icon={<IconTag />} label="Categorias Gerenciais" onClick={() => navigate("/contasgerenciais")} />)} 
+                 {podeVer("visao_geral") &&   (<SubItem compact={!sidebarAberta} icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/saldos")} />)}
+                 {podeVer("visao_geral")  &&   ( <SubItem compact={!sidebarAberta} icon={<IconCard />} label="Cartões" onClick={() => navigate("/cards")} />)} */}
    
-              <SubItem icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
-              <SubItem icon={<IconMap />} label="Modelos Prontos" onClick={() => navigate("/mapeamento-contabil")} />
+              <SubItem compact={!sidebarAberta} icon={<IconFile />} label="Contas Contábeis" onClick={() => navigate("/contascontabeis")} />
+              <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Modelos Prontos" onClick={() => navigate("/mapeamento-contabil")} />
          </MenuGroup>
  
-         {podeVer("diario_contabil") && ( <MenuItem icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
+         {podeVer("diario_contabil") && ( <MenuItem compact={!sidebarAberta} icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />)}
  
           {podeVer("diario_contabil") && (  <MenuGroup
+           compact={!sidebarAberta}
            icon={<IconBuilding />}
            label="Configurações"
            open={open === "Configurações"}
            onClick={() => toggle("Configurações")}
          > 
-           {/* {podeVer("visao_geral") && (  <SubItem icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />)}*/}
-         {/*{podeVer("visao_geral") && ( <SubItem icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> )}*/}
-            <SubItem icon={<IconMap />} label="Minha Empresa" onClick={() => navigate("/editar-empresa")} /> 
-              <SubItem icon={<IconMap />} label="Calculadora" onClick={() => navigate("/calculadora")} /> 
-             <SubItem icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
-            {/*} <SubItem icon={<IconMap />} label="Regras Classificação" onClick={() => navigate("/regras-classificacao")} /> 
-                <SubItem icon={<IconMap />} label="Contas Recorrentes" onClick={() => navigate("/conta-recorrente")} /> */}
+           {/* {podeVer("visao_geral") && (  <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Tributos" onClick={() => navigate("/tributos/tributos")} />)}*/}
+         {/*{podeVer("visao_geral") && ( <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Meu negócio" onClick={() => navigate("/meunegocio/meunegocio")} /> )}*/}
+            <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Minha Empresa" onClick={() => navigate("/editar-empresa")} /> 
+              <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Calculadora" onClick={() => navigate("/calculadora")} /> 
+             <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Escolha Plano" onClick={() => navigate("/escolhaplano")} /> 
+            {/*} <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Regras Classificação" onClick={() => navigate("/regras-classificacao")} /> 
+                <SubItem compact={!sidebarAberta} icon={<IconMap />} label="Contas Recorrentes" onClick={() => navigate("/conta-recorrente")} /> */}
 
            </MenuGroup> )}
        </nav>
       
 
-       <div className="px-4 py-3 border-t border-[#d4af37]/30 bg-white">
-  <button
-    onClick={logout}
-    className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-300 font-bold"
-  >
-    <IconLogout /> Sair
-  </button>
-</div>
+       <div className={`${sidebarAberta ? "px-4" : "px-2"} py-3 border-t border-[#d4af37]/30 bg-white`}>
+        <button
+          onClick={logout}
+          title="Sair"
+          className={`flex items-center gap-2 text-sm text-blue-600 hover:text-blue-300 font-bold ${
+            sidebarAberta ? "justify-start" : "justify-center w-full"
+          }`}
+        >
+          <IconLogout />
+          {sidebarAberta && <span>Sair</span>}
+        </button>
+      </div>
 
 
      </aside>
@@ -305,53 +360,62 @@ function podeVer(menuKey) {
  
  /* ====== COMPONENTES ====== */
  
- function MenuItem({ icon, label, onClick }) {
+ function MenuItem({ icon, label, onClick, compact = false }) {
    return (
-     <button onClick={onClick} className="flex items-left gap-3 px-3 py-2 rounded-lg hover:bg-blue-300 text-[#061f4aff] text-sm font-bold">
-       {icon}{label}
+     <button
+       onClick={onClick}
+       title={label}
+       className={`
+         flex items-center rounded-lg hover:bg-blue-300 text-[#061f4aff] text-sm font-bold
+         ${compact ? "justify-center px-2 py-3 w-full" : "gap-3 px-3 py-2 w-full text-left"}
+       `}
+     >
+       <span className="w-5 flex justify-center shrink-0">{icon}</span>
+       {!compact && <span className="truncate">{label}</span>}
      </button>
    );
  }
  
-  function MenuGroup({ icon, label, open, onClick, children }) {
+ function MenuGroup({ icon, label, open, onClick, children, compact = false }) {
    return (
      <div>
        <button
          onClick={onClick}
-         className="
-           flex items-center justify-between
-           w-full px-3 py-2
-           rounded-lg
-           hover:bg-blue-300
-           text-blue-900
-           text-sm font-bold
-           font-bold
-         "
+         title={label}
+         className={`
+           flex items-center rounded-lg hover:bg-blue-300 text-blue-900 text-sm font-bold w-full
+           ${compact ? "justify-center px-2 py-3" : "justify-between px-3 py-2"}
+         `}
        >
-         {/* ESQUERDA: ícone + texto juntos */}
-         <span className="flex items-center gap-3 text-blue-900 font-bold">
-           <span className="w-5 flex justify-center">
-             {icon}
-           </span>
-           <span>{label}</span>
+         <span className={`flex items-center text-blue-900 font-bold ${compact ? "justify-center" : "gap-3"}`}>
+           <span className="w-5 flex justify-center shrink-0">{icon}</span>
+           {!compact && <span className="truncate">{label}</span>}
          </span>
  
-         {/* DIREITA: seta */}
-         <span className="text-xs opacity-50">
-           {open ? "▲" : "▼"}
-         </span>
+         {!compact && (
+           <span className="text-xs opacity-50">
+             {open ? "▲" : "▼"}
+           </span>
+         )}
        </button>
  
-       {open && <div className="ml-6 space-y-1">{children}</div>}
+       {!compact && open && <div className="ml-6 space-y-1">{children}</div>}
      </div>
    );
  }
  
- 
- function SubItem({ icon, label, onClick }) {
+ function SubItem({ icon, label, onClick, compact = false }) {
    return (
-     <button onClick={onClick} className="flex items-center gap-3 px-3 py-1 text-base text-blue-900 hover:bg-blue-300 rounded text-blue-900 text-sm font-bold ">
-       {icon}{label}
+     <button
+       onClick={onClick}
+       title={label}
+       className={`
+         flex items-center rounded hover:bg-blue-300 text-blue-900 text-sm font-bold
+         ${compact ? "justify-center px-2 py-2 w-full" : "gap-3 px-3 py-1 w-full text-left"}
+       `}
+     >
+       <span className="w-5 flex justify-center shrink-0">{icon}</span>
+       {!compact && <span className="truncate">{label}</span>}
      </button>
    );
  }
