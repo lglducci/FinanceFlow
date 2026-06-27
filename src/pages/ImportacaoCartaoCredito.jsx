@@ -845,7 +845,7 @@ async function lerTextoPDF(buffer) {
 
    return (
   <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-slate-200 px-4 py-4">
-    <div className="mx-auto w-full max-w-[1500px] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+    <div className="mx-auto w-full max-w-[1700px] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
 
       <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 px-6 py-5">
         <div className="flex items-center justify-between gap-4">
@@ -1118,7 +1118,7 @@ async function lerTextoPDF(buffer) {
 
         {abaAtiva === "lancamentos" && (
           <div className="max-h-[580px] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow">
-            <div className="sticky top-0 grid grid-cols-[110px_420px_220px_120px_130px_120px] gap-2 text-sm py-3 px-3 border-b border-slate-200 bg-slate-900 text-white z-10">
+           <div className="sticky top-0 grid grid-cols-[110px_1.8fr_220px_120px_160px_150px] gap-5 text-sm py-3 px-4 border-b border-slate-200 bg-slate-900 text-white z-10">
               <div className="text-left font-black">Data</div>
               <div className="text-left font-black">Estabelecimento</div>
               <div className="text-left font-black">Portador</div>
@@ -1130,7 +1130,7 @@ async function lerTextoPDF(buffer) {
             {linhas.map((l) => (
               <div
                 key={l.linha}
-                className="grid grid-cols-[110px_420px_220px_120px_130px_120px] gap-2 text-sm border-b border-slate-100 py-2 px-3 hover:bg-sky-50"
+                className="grid grid-cols-[110px_1.8fr_220px_120px_160px_150px] gap-5 text-sm border-b border-slate-100 py-2 px-4 hover:bg-sky-50"
               >
                 <div className="font-semibold text-slate-700">
                   {String(l.data || "").includes("-")
@@ -1180,7 +1180,7 @@ async function lerTextoPDF(buffer) {
         )}
 
          {abaAtiva === "lancamentos" && (
-          <div className="flex justify-end gap-3 mt-5">
+           <div className="mt-5 flex items-center justify-end gap-3 pr-20">
             <label
               className={`btn-pill flex items-center gap-2 ${
                 statusEtapa === "importar"

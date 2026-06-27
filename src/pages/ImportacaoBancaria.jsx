@@ -1071,7 +1071,7 @@ const historicoCompleto = [memo, name]
      return (
     <div className="min-h-screen bg-[#eef7fd] px-1 py-1">
        
-        <div className="ml-0 mr-auto w-full max-w-[1520px]">
+         <div className="mx-auto w-full max-w-[1620px]">
         <div className="rounded-[28px] bg-[#f8fcff] border border-cyan-100 shadow-[0_8px_30px_rgba(15,23,42,0.08)] p-2">
           <div className="mb-5">
             <h2 className="text-3xl font-black tracking-tight text-[#063452]"></h2>
