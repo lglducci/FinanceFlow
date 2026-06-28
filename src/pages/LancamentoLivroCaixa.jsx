@@ -968,707 +968,658 @@ function exportarLayout() {
 
   XLSX.writeFile(wb, "layout_importacao_lancamentos.xlsx");
 }
-
-return (
-      <div className="flex justify-center bg-gray-100 min-h-screen  pb-3">
-
-      <div className="bg-white rounded-2xl border border-gray-300 w-[1400px] shadow-[0_25px_80px_rgba(0,0,0,0.45)]">
-        <div className="bg-gray-650 rounded-lg p-3"> 
-        <div className="bg-gray-600 border-b rounded-t-xl p-2"> 
-       <div className="bg-gray-600 border-b rounded-t-xl p-4">  
-        {/* TÍTULO */}
-        <h2 className="text-lg font-semibold tracking-wide mb-4 text-gray-50">
-          📘 Lançamento Contábil Inteligente  
-        </h2> 
-         
-         <div className="flex gap-3 mb-4">
-              <button
-                onClick={() => setAbaAtiva("lancamentos")}
-                className={`px-5 py-2 rounded-full font-bold text-sm ${
-                  abaAtiva === "lancamentos"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-700"
-                }`}
-              >
-                🧾 Lançamentos
-              </button>
-
-              <button
-                onClick={() => setAbaAtiva("layout")}
-                className={`px-5 py-2 rounded-full font-bold text-sm ${
-                  abaAtiva === "layout"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-700"
-                }`}
-              >
-                📄 Layout da Planilha
-              </button>
-            </div> 
-             
-                  {abaAtiva === "layout" && (
-                      <div className="bg-white rounded-xl p-6 border shadow mb-4">
-                          <h3 className="text-xl font-black text-gray-800 mb-3">
-                            📄 Layout esperado da planilha
-                          </h3>
-
-                          <p className="text-sm text-gray-600 mb-4">
-                            A planilha deve conter as colunas abaixo. Use este modelo para importar
-                            lançamentos no Livro Caixa / Lançamento Inteligente.
-                          </p>
-
-                          <table className="w-full text-sm border">
-                            <thead className="bg-blue-700 text-white">
-                              <tr>
-                                <th className="p-2 border">Data</th>
-                                <th className="p-2 border">Histórico</th>
-                                <th className="p-2 border">Conta</th>
-                                <th className="p-2 border">Valor</th>
-                              </tr>
-                            </thead>
-
-                            <tbody>
-                              <tr>
-                                <td className="p-2 border">24/04/2026</td>
-                                <td className="p-2 border">PIX RECEBIDO - OUTRA IF</td>
-                                <td className="p-2 border">1.1.1.01</td>
-                                <td className="p-2 border text-blue-700 font-bold">251,00 C</td>
-                              </tr>
-
-                              <tr>
-                                <td className="p-2 border">27/04/2026</td>
-                                <td className="p-2 border">PIX EMITIDO OUTRA IF - CEF</td>
-                                <td className="p-2 border">2.1.1.01</td>
-                                <td className="p-2 border text-red-600 font-bold">-6.300,00 D</td>
-                              </tr>
-
-                              <tr>
-                                <td className="p-2 border">29/04/2026</td>
-                                <td className="p-2 border">DEP.DINHEIRO</td>
-                                <td className="p-2 border"></td>
-                                <td className="p-2 border text-blue-700 font-bold">500,00 C</td>
-                              </tr>
-                            </tbody>
-                          </table>
-
-                          <div className="mt-4 text-sm text-gray-700 space-y-1">
-                            <p><b>Regras:</b></p>
-                            <p>• Data deve estar no formato DD/MM/AAAA.</p>
-                            <p>• Histórico é obrigatório.</p>
-                            <p>• Conta pode ser código contábil ou ficar em branco para classificação automática.</p>
-                            <p>• Valor positivo ou com C será tratado como entrada.</p>
-                            <p>• Valor negativo ou com D será tratado como saída.</p>
-                          </div>
-
-                          <div className="mt-5 flex justify-end">
-                              <button
-                                type="button"
-                                onClick={exportarLayout}
-                                className="btn-pill btn-blue"
-                              >
-                                📥 Exportar Layout
-                              </button>
-                            </div>
-                        </div> 
-                        
-                      )}
-
-    
-        {/* CONTA + SALDO */}
-         {abaAtiva === "lancamentos" && (
-         <div className="grid grid-cols-[1fr_200px] gap-6 items-end">
-
-          {/* CONTA */}
-          <div className="flex flex-col gap-1">
-
-            <label className="text-sm font-semibold text-gray-50">
-              Conta observada
-            </label>
-
-     
-            <div className="relative">
-
-                    <input
-                    className="w-full border rounded-lg p-1"
-                    placeholder="Digite conta (ex: banco, caixa, 1.1...)"
-                    value={conta}
-                    disabled={linhas.length > 0}
-                    onChange={(e)=>{
-                        const v = e.target.value;
-                        setConta(v);
-                        filtrarContas(v);
-                        setIndiceContaObs(-1);
-                        
-                    }}
-                   
-                  onKeyDown={(e)=>{
-
-                          if (e.key === "ArrowDown") {
-                            e.preventDefault();
-                            setIndiceContaObs(i =>
-                              Math.min(i + 1, contasFiltradas.length - 1)
-                            );
-                          }
-
-                          if (e.key === "ArrowUp") {
-                            e.preventDefault();
-                            setIndiceContaObs(i =>
-                              Math.max(i - 1, 0)
-                            );
-                          }
-
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-
-                            // 👉 se está navegando na lista
-                            if (indiceContaObs >= 0) {
-                              const c = contasFiltradas[indiceContaObs];
-
-                              setConta(c.nome);
-                              setContaId(c.id);
-                              setContasFiltradas([]);
-
-                              carregarSaldoConta(c.id);
-                            }
-
-                            // 👉 independente de ter selecionado ou não → vai pro DATA
-                            setTimeout(() => {
-                              dataRef.current?.focus();
-                            }, 0);
-                          }
-                        }}
-                         />
-                         
  
-                    {contasFiltradas.length > 0 && (
-                    <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-30 overflow-y-auto z-50">
+return (
+  <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-slate-200 px-4 py-4">
+    <div className="mx-auto w-full max-w-[1700px] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
 
-                       {contasFiltradas.map((c,i) => ( 
-                        <div
-                            key={c.id}
-                            className={`p-2 cursor-pointer ${
-                                i === indiceContaObs
-                                  ? "bg-blue-200"
-                                  : "hover:bg-gray-200"
-                              }`}
-                            onClick={()=>{
-
-                            setConta(c.nome);
-                            setContaId(c.id);
-                            setContasFiltradas([]);
-
-                            carregarSaldoConta(c.id);
-                            }}
-                        >
-                            {c.codigo} - {c.nome}
-                        </div>
-                        ))}
-
-                    </div>
-                    )}  
-             </div>
-       
-    </div> 
-    
-            <select
-          value={modoImportacao}
-          onChange={(e) => setModoImportacao(e.target.value)}
-          disabled={linhas.length > 0}
-          className="border rounded-lg px-3 py-2 font-bold"
-        >
-          <option value="contabil">📘 Contábil normal</option>
-          <option value="cartao">💳 Fatura cartão</option>
-        </select>
-            {/* SALDO */}
-            <div className="text-right">
-
-              <div className="text-base text-gray-50">
-                Saldo atual
-              </div>
-            <div
-          className={`text-lg font-bold ${
-            saldo > 0
-              ? "text-green-600"
-              : saldo < 0
-              ? "text-red-400"
-              : "text-gray-200"
-          }`}
-        >
-          {carregandoSaldo
-            ? "Carregando..."
-            : saldo.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL"
-              })
-          }
-                </div> 
-                
-            </div> 
-          </div>  
-          )}
-          </div> 
-          
+      <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 px-6 py-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-black tracking-wide text-white">
+              📘 Lançamento Contábil Inteligente
+            </h2>
+            <p className="text-sm text-sky-100 font-semibold mt-1">
+              Lance, cole ou importe movimentos contábeis com classificação inteligente.
+            </p>
           </div>
 
-     
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setAbaAtiva("lancamentos")}
+              className={`px-5 py-2 rounded-full font-black text-sm shadow ${
+                abaAtiva === "lancamentos"
+                  ? "bg-cyan-400 text-slate-950"
+                  : "bg-white/10 text-white hover:bg-white/20"
+              }`}
+            >
+              🧾 Lançamentos
+            </button>
 
-          {/* TABELA */}
-              {abaAtiva === "lancamentos" && resumoImportacao && (
-                <div className="mt-2 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-lg text-base font-bold">
-                  ✔ {resumoImportacao.qtd} registros importados | 
-                  Entradas: {resumoImportacao.entrada.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} | 
-                  Saídas: {resumoImportacao.saida.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-                </div>
-              )}
-                 
-              {abaAtiva === "lancamentos" && (
-             <div className="mt-4 max-h-[680px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
-                
-               <div className="sticky top-0 z-20 grid grid-cols-[120px_500px_120px_120px_320px_120px_60px] gap-2 text-sm py-2 border-b border-gray-200 bg-white">     
-                <div>Data</div>
-                <div>Histórico</div>
-                
-               <div className="text-center">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
-                      Tipo
-                    </span>
-                  </div>
+            <button
+              type="button"
+              onClick={() => setAbaAtiva("layout")}
+              className={`px-5 py-2 rounded-full font-black text-sm shadow ${
+                abaAtiva === "layout"
+                  ? "bg-cyan-400 text-slate-950"
+                  : "bg-white/10 text-white hover:bg-white/20"
+              }`}
+            >
+              📄 Layout da Planilha
+            </button>
+          </div>
+        </div>
 
-                  <div className="text-right">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-white text-gray-700">
-                      Valor
-                    </span>
-                  </div>
-                <div className="text-left">Contra Conta</div>
-                <div className="text-right">Saldo</div>
-                <div className="text-center">Ação</div>
-                </div>
+        {abaAtiva === "lancamentos" && (
+          <div className="mt-5 grid grid-cols-[1fr_220px_220px] gap-4 items-end">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-bold text-white">
+                Conta observada
+              </label>
 
-                {/* LINHAS */}
-
-                  {linhas.map((l) => (
-                  <div
-                    key={l._id}
-                    className="grid grid-cols-[120px_500px_120px_120px_220px_120px_90px] gap-2 text-sm border-b py-1"
-                  >
-                    <div>
-                      {String(l.data || "").includes("-")
-                        ? l.data.split("-").reverse().join("/")
-                        : l.data}
-                    </div>
-
-                    <div className="truncate font-semibold">{l.historico}</div>
-
-                    <div className="text-center font-semibold">
-                      {l.tipo === "entrada" ? (
-                        <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-100 text-green-800 font-semibold text-xs">
-                          <span className="w-2 h-2 bg-green-600 rounded-sm"></span>
-                          Entrada
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-red-100 text-red-800 font-semibold text-xs">
-                          <span className="w-2 h-2 bg-red-600 rounded-sm"></span>
-                          Saída
-                        </span>
-                      )}
-                    </div>
-
-                    <div
-                      className={`text-right font-mono font-semibold ${
-                        l.tipo === "entrada" ? "text-green-700" : "text-red-700"
-                      }`}
-                    >
-                       {normalizarValor(l.valor).toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL"
-                        })}
-                    </div>
-
-                    <div className="relative">
-                        <input
-                          className={`border rounded p-1 w-full text-sm ${
-                            !l.conta_id ? "bg-red-50 border-red-400" : "bg-white"
-                          }`}
-                          value={l.contra || ""}
-                          placeholder="Conta contra"
-                          onChange={(e) => {
-                            const v = e.target.value;
-
-                            setLinhas((prev) =>
-                              prev.map((x) =>
-                                x._id === l._id
-                                  ? {
-                                      ...x,
-                                      contra: v,
-                                      conta_id: null,
-                                    }
-                                  : x
-                              )
-                            );
-
-                            filtrarContasContra(v);
-                            setIndiceSelecionado(-1);
-                            setEditandoId(l._id);
-                          }}
-                          onFocus={() => {
-                            setLinhaDropdownAberta(l._id);
-                            filtrarContasContra(l.contra || "");
-                          }}
-                        />
-
-                      {/*  {!l.conta_id && (
-                          <button
-                            type="button"
-                            onClick={() => abrirNovaContaParaLinha(l)}
-                            className="mt-1 text-xs font-bold text-blue-600 hover:text-blue-800"
-                          >
-                            ➕ Conta não existe? Cadastrar
-                          </button>
-                        )}*/}
-
-
-                        {linhaDropdownAberta === l._id && contasFiltradasContra.length > 0 && (
-                          <div className="absolute top-full left-0 w-full bg-white border rounded shadow max-h-64 overflow-y-auto z-[9999]">
-                            {contasFiltradasContra.map((c) => (
-                              <div
-                                key={c.id}
-                                className="p-2 cursor-pointer hover:bg-blue-100"
-                                onClick={() => {
-                                  const listaAtualizada = linhas.map((x) =>
-                                    x._id === l._id
-                                      ? {
-                                          ...x,
-                                          contra: `${c.codigo} - ${c.nome}`,
-                                          conta_id: c.id,
-                                        }
-                                      : x
-                                  );
-
-                                  recalcularLinhas(listaAtualizada);
-                                  setContasFiltradasContra([]);
-                                  setLinhaDropdownAberta(null);
-                                }}
-                              >
-                                {c.codigo} - {c.nome}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                    <div
-                      className={`border rounded p-2 text-right font-semibold ${
-                        Number(l.saldo || 0) >= 0
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {Number(l.saldo || 0).toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL"
-                      })}
-                    </div>
-
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        className="text-blue-600 hover:text-blue-800 text-lg"
-                        onClick={() => editarLinha(l._id)}
-                        title="Editar linha"
-                      >
-                        ✏️
-                      </button>
-
-                      <button
-                        type="button"
-                        className="text-red-600 hover:text-red-800 text-lg"
-                        onClick={() => removerLinha(l._id)}
-                        title="Excluir linha"
-                      >
-                        🗑
-                      </button>
-                    </div>
-                    
-                  </div> 
-                ))} </div> 
-                )}          {/* NOVA LINHA */}
-          
-            {mostrarNovaLinha && (
-         <div className="sticky bottom-0 z-20 grid grid-cols-[120px_500px_120px_120px_320px_120px_60px] gap-2 border-t bg-white p-2">
-         
-                 <input
-                        ref={dataRef}
-                        type="date"
-                        min={dataMin}
-                        className="border rounded p-2"
-                        value={nova.data || ""}
-                        onChange={(e) => {
-                          const valor = e.target.value;
-
-                          if (!valor) {
-                            setNova(prev => ({ ...prev, data: "" }));
-                            return;
-                          }
-
-                          setNova(prev => ({ ...prev, data: valor }));
-                        }}
-                         onBlur={(e) => {
-                            const valor = e.target.value;
-
-                            if (valor && valor < dataMin) {
-                              alert(`Não pode ser menor que ${dataMin}`);
-                              setNova(prev => ({ ...prev, data: dataMin }));
-                            }
-                          }}
-                        onKeyDown={handleEnter(historicoRef)}
-                      />
-
-
-
-               
-                   <input
-                    ref={historicoRef}
-                    className="border rounded p-2"
-                    placeholder="Histórico"
-                    value={nova.historico}
-                    onChange={(e)=> setNova(prev => ({ ...prev, historico: e.target.value }))}
-                   onKeyDown={handleEnter(tipoRef)} 
-
-                  /> 
-
-                 <select
-                         ref={tipoRef}
-                        className="border rounded p-2"
-                        value={nova.tipo}
-                        onChange={(e)=> setNova(prev => ({ ...prev, tipo: e.target.value }))}
-                         onKeyDown={handleEnter(valorRef)}
-                      >
-                        <option value="entrada">Entrada</option>
-                        <option value="saida">Saída</option>
-                      </select>
-
-                    <input
-                             ref={valorRef}
-                          className="border rounded p-2 text-right"
-                          placeholder="Valor"
-                          value={nova.valor}
-                          onChange={(e) => {
-                            const v = e.target.value.replace(/[^\d.,]/g, "");
-                             setNova(prev => ({ ...prev, valor: v }));
-                          }}
-                           onKeyDown={handleEnter(contraRef)}
-                        />
-                   <div className="relative">
-
-                   <input
-                     ref={contraRef}
-                    className="border rounded p-2 w-full"
-                    placeholder="Contra conta"
-                    value={nova.contra}
-                    onChange={(e)=>{
-                        const v = e.target.value;
-                        setLinhaDropdownAberta("nova");
-                         setNova(prev => ({ ...prev, contra: v }));
-                         filtrarContasContra(v);
-                        setIndiceSelecionado(-1);
-                    }}
-                    onKeyDown={(e) => {
-
-                  if (e.key === "ArrowDown") {
-                    e.preventDefault();
-                    setIndiceSelecionado(i =>
-                      Math.min(i + 1, contasFiltradasContra.length - 1)
-                    );
-                  }
-
-                  if (e.key === "ArrowUp") {
-                    e.preventDefault();
-                    setIndiceSelecionado(i =>
-                      Math.max(i - 1, 0)
-                    );
-                  }
-
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-
-                    // 👉 seleciona item do dropdown
-                    if (indiceSelecionado >= 0) {
-                      const c = contasFiltradasContra[indiceSelecionado];
-
-                      setNova({
-                        ...nova,
-                        contra: c.nome,
-                        conta_id: c.id
-                      });
-
-                      setContasFiltradasContra([]);
-                      setIndiceSelecionado(-1);
-
-                      return;
+              <div className="relative">
+                <input
+                  className="h-10 w-full rounded-xl border border-sky-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-cyan-300"
+                  placeholder="Digite conta (ex: banco, caixa, 1.1...)"
+                  value={conta}
+                  disabled={linhas.length > 0}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setConta(v);
+                    filtrarContas(v);
+                    setIndiceContaObs(-1);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown") {
+                      e.preventDefault();
+                      setIndiceContaObs((i) =>
+                        Math.min(i + 1, contasFiltradas.length - 1)
+                      );
                     }
 
-                    // 👉 AQUI É O QUE VOCÊ QUER
-                    adicionarLinha();
+                    if (e.key === "ArrowUp") {
+                      e.preventDefault();
+                      setIndiceContaObs((i) => Math.max(i - 1, 0));
+                    }
 
-                    // 👉 foco volta pro início (data ou histórico)
-                    setTimeout(() => {
-                      dataRef.current?.focus(); 
-                      // ou historicoRef.current?.focus(); (se preferir)
-                    }, 0);
-                  }
-                }}
-                    />
-                   {linhaDropdownAberta === "nova" && contasFiltradasContra.length > 0 && (
-                         
-                            <div className="absolute bottom-full left-0 w-full bg-white border rounded shadow max-h-64 overflow-y-auto z-[9999]">
-                            {contasFiltradasContra.map((c, i) => (
-                              <div
-                                key={c.id}
-                                className={`p-2 cursor-pointer ${
-                                  i === indiceSelecionado
-                                    ? "bg-blue-200"
-                                    : "hover:bg-gray-200"
-                                }`}
-                                onClick={() => {
-                                  if (Number(c.id) === Number(contaId)) {
-                                          alert("A conta contra não pode ser igual à conta observada.");
-                                          return;
-}
-                                   setNova(prev => ({ ...prev, contra: c.nome, conta_id: c.id }));
-                                  setContasFiltradasContra([]);
-                                  setIndiceSelecionado(-1);
-                                }}
-                              >
-                                {c.codigo} - {c.nome}
-                              </div>
-                            ))}
+                    if (e.key === "Enter") {
+                      e.preventDefault();
 
-                          </div>
-                        )}
+                      if (indiceContaObs >= 0) {
+                        const c = contasFiltradas[indiceContaObs];
 
+                        setConta(c.nome);
+                        setContaId(c.id);
+                        setContasFiltradas([]);
+
+                        carregarSaldoConta(c.id);
+                      }
+
+                      setTimeout(() => {
+                        dataRef.current?.focus();
+                      }, 0);
+                    }
+                  }}
+                />
+
+                {contasFiltradas.length > 0 && (
+                  <div className="absolute top-full left-0 w-full bg-white border rounded-xl shadow max-h-60 overflow-y-auto z-50">
+                    {contasFiltradas.map((c, i) => (
+                      <div
+                        key={c.id}
+                        className={`p-2 cursor-pointer text-sm font-semibold ${
+                          i === indiceContaObs
+                            ? "bg-cyan-100 text-slate-900"
+                            : "hover:bg-sky-50"
+                        }`}
+                        onClick={() => {
+                          setConta(c.nome);
+                          setContaId(c.id);
+                          setContasFiltradas([]);
+                          carregarSaldoConta(c.id);
+                        }}
+                      >
+                        {c.codigo} - {c.nome}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-bold text-white">
+                Modo
+              </label>
+
+              <select
+                value={modoImportacao}
+                onChange={(e) => setModoImportacao(e.target.value)}
+                disabled={linhas.length > 0}
+                className="h-10 rounded-xl border border-sky-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-cyan-300"
+              >
+                <option value="contabil">📘 Contábil normal</option>
+                <option value="cartao">💳 Fatura cartão</option>
+              </select>
+            </div>
+
+            <div className="text-right justify-self-end">
+              <div className="text-sm font-bold text-sky-100">
+                Saldo atual
+              </div>
+
+              <div
+                className={`text-2xl font-black ${
+                  saldo > 0
+                    ? "text-green-300"
+                    : saldo < 0
+                    ? "text-red-300"
+                    : "text-slate-200"
+                }`}
+              >
+                {carregandoSaldo
+                  ? "Carregando..."
+                  : saldo.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="p-5 bg-slate-50">
+        {abaAtiva === "layout" && (
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow">
+            <h3 className="text-xl font-black text-slate-800 mb-3">
+              📄 Layout esperado da planilha
+            </h3>
+
+            <p className="text-sm text-slate-600 mb-4 font-semibold">
+              A planilha deve conter as colunas abaixo. Use este modelo para importar
+              lançamentos no Livro Caixa / Lançamento Inteligente.
+            </p>
+
+            <table className="w-full text-sm border border-slate-200 overflow-hidden rounded-xl">
+              <thead className="bg-slate-900 text-white">
+                <tr>
+                  <th className="p-2 border border-slate-700">Data</th>
+                  <th className="p-2 border border-slate-700">Histórico</th>
+                  <th className="p-2 border border-slate-700">Conta</th>
+                  <th className="p-2 border border-slate-700">Valor</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td className="p-2 border">24/04/2026</td>
+                  <td className="p-2 border font-semibold">PIX RECEBIDO - OUTRA IF</td>
+                  <td className="p-2 border">1.1.1.01</td>
+                  <td className="p-2 border text-green-700 font-black">251,00 C</td>
+                </tr>
+
+                <tr className="bg-slate-50">
+                  <td className="p-2 border">27/04/2026</td>
+                  <td className="p-2 border font-semibold">PIX EMITIDO OUTRA IF - CEF</td>
+                  <td className="p-2 border">2.1.1.01</td>
+                  <td className="p-2 border text-red-700 font-black">-6.300,00 D</td>
+                </tr>
+
+                <tr>
+                  <td className="p-2 border">29/04/2026</td>
+                  <td className="p-2 border font-semibold">DEP.DINHEIRO</td>
+                  <td className="p-2 border"></td>
+                  <td className="p-2 border text-green-700 font-black">500,00 C</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-700 space-y-1 font-semibold">
+              <p className="font-black text-slate-900">Regras:</p>
+              <p>• Data deve estar no formato DD/MM/AAAA.</p>
+              <p>• Histórico é obrigatório.</p>
+              <p>• Conta pode ser código contábil ou ficar em branco para classificação automática.</p>
+              <p>• Valor positivo ou com C será tratado como entrada.</p>
+              <p>• Valor negativo ou com D será tratado como saída.</p>
+            </div>
+
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                onClick={exportarLayout}
+                className="btn-pill btn-dark-blue"
+              >
+                📥 Exportar Layout
+              </button>
+            </div>
+          </div>
+        )}
+
+        {abaAtiva === "lancamentos" && resumoImportacao && (
+          <div className="mb-4 bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-2xl text-sm font-black shadow-sm">
+            ✔ {resumoImportacao.qtd} registros importados | Entradas:{" "}
+            {resumoImportacao.entrada.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}{" "}
+            | Saídas:{" "}
+            {resumoImportacao.saida.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </div>
+        )}
+
+        {abaAtiva === "lancamentos" && (
+          <div className="max-h-[680px] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow">
+            <div className="sticky top-0 z-20 grid grid-cols-[120px_1.6fr_130px_140px_360px_150px_90px] gap-3 text-sm py-3 px-4 border-b border-slate-200 bg-slate-900 text-white">
+              <div className="font-black">Data</div>
+              <div className="font-black">Histórico</div>
+              <div className="text-center font-black">Tipo</div>
+              <div className="text-right font-black">Valor</div>
+              <div className="font-black">Contra Conta</div>
+              <div className="text-right font-black">Saldo</div>
+              <div className="text-center font-black">Ação</div>
+            </div>
+
+            {linhas.map((l) => (
+              <div
+                key={l._id}
+                className="grid grid-cols-[120px_1.6fr_130px_140px_360px_150px_90px] gap-3 text-sm border-b border-slate-100 py-2 px-4 hover:bg-sky-50"
+              >
+                <div className="font-semibold text-slate-700">
+                  {String(l.data || "").includes("-")
+                    ? l.data.split("-").reverse().join("/")
+                    : l.data}
+                </div>
+
+                <div className="truncate font-bold text-slate-800">
+                  {l.historico}
+                </div>
+
+                <div className="text-center">
+                  {l.tipo === "entrada" ? (
+                    <span className="inline-block min-w-[82px] px-3 py-1 rounded-full bg-green-100 text-green-700 font-black text-xs">
+                      Entrada
+                    </span>
+                  ) : (
+                    <span className="inline-block min-w-[82px] px-3 py-1 rounded-full bg-red-100 text-red-700 font-black text-xs">
+                      Saída
+                    </span>
+                  )}
+                </div>
+
+                <div
+                  className={`text-right font-mono font-black ${
+                    l.tipo === "entrada" ? "text-green-700" : "text-red-700"
+                  }`}
+                >
+                  {normalizarValor(l.valor).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </div>
+
+                <div className="relative">
+                  <input
+                    className={`h-9 rounded-xl border px-3 w-full text-sm font-semibold outline-none ${
+                      !l.conta_id
+                        ? "bg-red-50 border-red-300 text-red-700"
+                        : "bg-white border-slate-200 text-slate-700"
+                    }`}
+                    value={l.contra || ""}
+                    placeholder="Conta contra"
+                    onChange={(e) => {
+                      const v = e.target.value;
+
+                      setLinhas((prev) =>
+                        prev.map((x) =>
+                          x._id === l._id
+                            ? {
+                                ...x,
+                                contra: v,
+                                conta_id: null,
+                              }
+                            : x
+                        )
+                      );
+
+                      filtrarContasContra(v);
+                      setIndiceSelecionado(-1);
+                      setEditandoId(l._id);
+                    }}
+                    onFocus={() => {
+                      setLinhaDropdownAberta(l._id);
+                      filtrarContasContra(l.contra || "");
+                    }}
+                  />
+
+                  {linhaDropdownAberta === l._id && contasFiltradasContra.length > 0 && (
+                    <div className="absolute top-full left-0 w-full bg-white border rounded-xl shadow max-h-64 overflow-y-auto z-[9999]">
+                      {contasFiltradasContra.map((c) => (
+                        <div
+                          key={c.id}
+                          className="p-2 cursor-pointer hover:bg-sky-50 text-sm font-semibold"
+                          onClick={() => {
+                            const listaAtualizada = linhas.map((x) =>
+                              x._id === l._id
+                                ? {
+                                    ...x,
+                                    contra: `${c.codigo} - ${c.nome}`,
+                                    conta_id: c.id,
+                                  }
+                                : x
+                            );
+
+                            recalcularLinhas(listaAtualizada);
+                            setContasFiltradasContra([]);
+                            setLinhaDropdownAberta(null);
+                          }}
+                        >
+                          {c.codigo} - {c.nome}
+                        </div>
+                      ))}
                     </div>
-                 <input
-                  className={`border rounded p-2 text-right font-semibold ${
-                    saldo > 0
+                  )}
+                </div>
+
+                <div
+                  className={`rounded-xl px-3 py-2 text-right font-black ${
+                    Number(l.saldo || 0) >= 0
                       ? "bg-green-100 text-green-700"
                       : "bg-red-100 text-red-700"
                   }`}
-                   value={saldoLinhaAtual.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL"
-                    })}
+                >
+                  {Number(l.saldo || 0).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </div>
+
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    className="text-blue-600 hover:text-blue-800 text-lg"
+                    onClick={() => editarLinha(l._id)}
+                    title="Editar linha"
+                  >
+                    ✏️
+                  </button>
+
+                  <button
+                    type="button"
+                    className="text-red-600 hover:text-red-800 text-lg"
+                    onClick={() => removerLinha(l._id)}
+                    title="Excluir linha"
+                  >
+                    🗑
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {mostrarNovaLinha && (
+              <div className="sticky bottom-0 z-20 grid grid-cols-[120px_1.6fr_130px_140px_360px_150px_90px] gap-3 border-t border-slate-200 bg-white p-4 shadow-[0_-8px_20px_rgba(15,23,42,0.08)]">
+                <input
+                  ref={dataRef}
+                  type="date"
+                  min={dataMin}
+                  className="h-10 rounded-xl border border-slate-200 px-3 text-sm font-bold outline-none focus:ring-2 focus:ring-cyan-300"
+                  value={nova.data || ""}
+                  onChange={(e) => {
+                    const valor = e.target.value;
+
+                    if (!valor) {
+                      setNova((prev) => ({ ...prev, data: "" }));
+                      return;
+                    }
+
+                    setNova((prev) => ({ ...prev, data: valor }));
+                  }}
+                  onBlur={(e) => {
+                    const valor = e.target.value;
+
+                    if (valor && valor < dataMin) {
+                      alert(`Não pode ser menor que ${dataMin}`);
+                      setNova((prev) => ({ ...prev, data: dataMin }));
+                    }
+                  }}
+                  onKeyDown={handleEnter(historicoRef)}
+                />
+
+                <input
+                  ref={historicoRef}
+                  className="h-10 rounded-xl border border-slate-200 px-3 text-sm font-bold outline-none focus:ring-2 focus:ring-cyan-300"
+                  placeholder="Histórico"
+                  value={nova.historico}
+                  onChange={(e) =>
+                    setNova((prev) => ({ ...prev, historico: e.target.value }))
+                  }
+                  onKeyDown={handleEnter(tipoRef)}
+                />
+
+                <select
+                  ref={tipoRef}
+                  className="h-10 rounded-xl border border-slate-200 px-3 text-sm font-bold outline-none focus:ring-2 focus:ring-cyan-300"
+                  value={nova.tipo}
+                  onChange={(e) =>
+                    setNova((prev) => ({ ...prev, tipo: e.target.value }))
+                  }
+                  onKeyDown={handleEnter(valorRef)}
+                >
+                  <option value="entrada">Entrada</option>
+                  <option value="saida">Saída</option>
+                </select>
+
+                <input
+                  ref={valorRef}
+                  className="h-10 rounded-xl border border-slate-200 px-3 text-sm font-bold text-right outline-none focus:ring-2 focus:ring-cyan-300"
+                  placeholder="Valor"
+                  value={nova.valor}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/[^\d.,]/g, "");
+                    setNova((prev) => ({ ...prev, valor: v }));
+                  }}
+                  onKeyDown={handleEnter(contraRef)}
+                />
+
+                <div className="relative">
+                  <input
+                    ref={contraRef}
+                    className="h-10 rounded-xl border border-slate-200 px-3 w-full text-sm font-bold outline-none focus:ring-2 focus:ring-cyan-300"
+                    placeholder="Contra conta"
+                    value={nova.contra}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setLinhaDropdownAberta("nova");
+                      setNova((prev) => ({ ...prev, contra: v }));
+                      filtrarContasContra(v);
+                      setIndiceSelecionado(-1);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        setIndiceSelecionado((i) =>
+                          Math.min(i + 1, contasFiltradasContra.length - 1)
+                        );
+                      }
+
+                      if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        setIndiceSelecionado((i) => Math.max(i - 1, 0));
+                      }
+
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+
+                        if (indiceSelecionado >= 0) {
+                          const c = contasFiltradasContra[indiceSelecionado];
+
+                          setNova({
+                            ...nova,
+                            contra: c.nome,
+                            conta_id: c.id,
+                          });
+
+                          setContasFiltradasContra([]);
+                          setIndiceSelecionado(-1);
+
+                          return;
+                        }
+
+                        adicionarLinha();
+
+                        setTimeout(() => {
+                          dataRef.current?.focus();
+                        }, 0);
+                      }
+                    }}
+                  />
+
+                  {linhaDropdownAberta === "nova" && contasFiltradasContra.length > 0 && (
+                    <div className="absolute bottom-full left-0 w-full bg-white border rounded-xl shadow max-h-64 overflow-y-auto z-[9999]">
+                      {contasFiltradasContra.map((c, i) => (
+                        <div
+                          key={c.id}
+                          className={`p-2 cursor-pointer text-sm font-semibold ${
+                            i === indiceSelecionado
+                              ? "bg-cyan-100"
+                              : "hover:bg-sky-50"
+                          }`}
+                          onClick={() => {
+                            if (Number(c.id) === Number(contaId)) {
+                              alert("A conta contra não pode ser igual à conta observada.");
+                              return;
+                            }
+
+                            setNova((prev) => ({
+                              ...prev,
+                              contra: c.nome,
+                              conta_id: c.id,
+                            }));
+                            setContasFiltradasContra([]);
+                            setIndiceSelecionado(-1);
+                          }}
+                        >
+                          {c.codigo} - {c.nome}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  className={`h-10 rounded-xl border px-3 text-right font-black ${
+                    saldo > 0
+                      ? "bg-green-100 text-green-700 border-green-200"
+                      : "bg-red-100 text-red-700 border-red-200"
+                  }`}
+                  value={saldoLinhaAtual.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                   disabled
                 />
-                 <div className="flex items-center justify-center">
+
+                <div className="flex items-center justify-center">
                   <button
-                        className="text-gray-400 hover:text-red-600 text-lg"
-                        onClick={cancelarNovaLinha}
-                      >
-                        🗑
-                      </button>
-                </div>     
-
-                </div>)}
-          
-          {/* BOTÕES */}
-
-            <div className="flex justify-end gap-5 mt-8">
-
-         
-                 <button
-                  onClick={adicionarLinha} 
-                  className="btn-pill btn-black"
-                    >
-                    ➕ Linha
-                </button>
-
-                  <button
-                      onClick={salvarLancamentos} 
-                      className="btn-pill btn-blue"
-                              >
-                      💾 Salvar
+                    className="text-gray-400 hover:text-red-600 text-lg"
+                    onClick={cancelarNovaLinha}
+                  >
+                    🗑
                   </button>
- 
-                {/*} <button
-                onClick={() => setModalContaAberto(true)}
-                 
-                className="btn-pill btn-emerald"
-                        >
-                ➕ Nova Conta
-              </button>*/}
- 
-
-                <label className="btn-pill btn-green cursor-pointer">
-                  📥 Importar Excel
-                  <input
-                    type="file"
-                    accept=".xlsx,.xls,.csv,.txt"
-                    onChange={importarArquivoExcel}
-                    className="hidden"
-                  />
-                </label>
-
-              <button
-                    onClick={limparEdicao}
-                    className="btn-pill btn-red"
-                        >
-                    🗑 Limpar
-                  </button>
-               
-
-
-                 <button
-                  onClick={() => navigate("/relatorios/diario")}
-                   className="btn-pill btn-black"
-                   >
-                  ↩ Sair
-                </button>
-
                 </div>
-      
-        </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {abaAtiva === "lancamentos" && (
+          <div className="mt-5 flex items-center justify-end gap-3 pr-20">
+            <button
+              onClick={adicionarLinha}
+              className="btn-pill btn-dark-black flex items-center gap-2"
+            >
+              ➕ Linha
+            </button>
+
+            <button
+              onClick={salvarLancamentos}
+              className="btn-pill btn-dark-blue flex items-center gap-2"
+            >
+              💾 Salvar
+            </button>
+
+            <label className="btn-pill btn-green cursor-pointer flex items-center gap-2">
+              📥 Importar Excel
+              <input
+                type="file"
+                accept=".xlsx,.xls,.csv,.txt"
+                onChange={importarArquivoExcel}
+                className="hidden"
+              />
+            </label>
+
+            <button
+              onClick={limparEdicao}
+              className="btn-pill btn-gray flex items-center gap-2"
+            >
+              🗑 Limpar
+            </button>
+
+            <button
+              onClick={() => navigate("/relatorios/diario")}
+              className="btn-pill btn-dark-blue flex items-center gap-2"
+            >
+              ↩ Sair
+            </button>
+          </div>
+        )}
       </div>
- 
-  <ModalBase
-  open={modalContaAberto}
-  onClose={() => {
-    setModalContaAberto(false);
-    setLinhaContaNova(null);
-  }}
-  title="Nova Conta Contábil"
->
-  <FormContaContabilModal
-    empresa_id={empresa_id}
-    contas={contas}
-    nomeInicial={linhaContaNova?.historico || ""}
-    historicoRegra={linhaContaNova?.historico || ""}
-    tipoMovimento={linhaContaNova?.tipo || ""}
-    onSuccess={(contaCriada) => {
-      setModalContaAberto(false);
-
-      if (linhaContaNova && contaCriada?.id) {
-        const listaAtualizada = linhas.map((x) =>
-          x._id === linhaContaNova._id
-            ? {
-                ...x,
-                contra: `${contaCriada.codigo} - ${contaCriada.nome}`,
-                conta_id: Number(contaCriada.id),
-              }
-            : x
-        );
-
-        recalcularLinhas(listaAtualizada);
-      }
-
-      setLinhaContaNova(null);
-      carregarContas();
-    }}
-    onCancel={() => {
-      setModalContaAberto(false);
-      setLinhaContaNova(null);
-    }}
-  />
-</ModalBase>
- 
     </div>
-  );
+
+    <ModalBase
+      open={modalContaAberto}
+      onClose={() => {
+        setModalContaAberto(false);
+        setLinhaContaNova(null);
+      }}
+      title="Nova Conta Contábil"
+    >
+      <FormContaContabilModal
+        empresa_id={empresa_id}
+        contas={contas}
+        nomeInicial={linhaContaNova?.historico || ""}
+        historicoRegra={linhaContaNova?.historico || ""}
+        tipoMovimento={linhaContaNova?.tipo || ""}
+        onSuccess={(contaCriada) => {
+          setModalContaAberto(false);
+
+          if (linhaContaNova && contaCriada?.id) {
+            const listaAtualizada = linhas.map((x) =>
+              x._id === linhaContaNova._id
+                ? {
+                    ...x,
+                    contra: `${contaCriada.codigo} - ${contaCriada.nome}`,
+                    conta_id: Number(contaCriada.id),
+                  }
+                : x
+            );
+
+            recalcularLinhas(listaAtualizada);
+          }
+
+          setLinhaContaNova(null);
+          carregarContas();
+        }}
+        onCancel={() => {
+          setModalContaAberto(false);
+          setLinhaContaNova(null);
+        }}
+      />
+    </ModalBase>
+  </div>
+);
 }
