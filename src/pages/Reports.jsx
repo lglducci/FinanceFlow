@@ -192,7 +192,15 @@ export default function Reports() {
       icon: <IconReport />,
     },
     
-
+       
+    {
+      title: "Extrato Bancário",
+      desc: "Extrato Bancário",
+      path: "/extrato-bancario" ,
+      icon: <IconReport />,
+    },
+    
+ 
     
       
   ];
