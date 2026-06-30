@@ -67,10 +67,7 @@ async function consultarComParams({  webhook, empresa_id, data_ini, data_fim, fi
 }
 
   setLoading(true);
-  setDados([]);
-
- 
-
+  setDados([]); 
 
   try {
     const resp = await fetch(buildWebhookUrl(webhook), {
