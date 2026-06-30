@@ -143,6 +143,9 @@ export default function ExtratoBancario() {
 
   const contaAtual = contas[indiceConta] || null;
 
+
+  
+
   useEffect(() => {
     carregarContas();
   }, []);
@@ -331,19 +334,92 @@ export default function ExtratoBancario() {
   saldoFinal: Number(contaAtual?.saldo_final || 0),
 };
 
-  const resumoRazao = {
-   saldoInicial: Number(extrato?.saldo_inicial || 0),
-entradas: Number(extrato?.entradas || 0),
-saidas: Number(extrato?.saidas || 0),
-saldoFinal: Number(extrato?.saldo_final || 0),
-  };
+ const resumoRazao = {
+  saldoInicial: Number(primeiraLinhaRazao.saldo_inicial || 0),
+  qtd: Number(razao?.qtd_registros || linhasRazao.length || 0),
+  entradas: entradasRazao,
+  saidas: saidasRazao,
+  saldoFinal: Number(
+    ultimaLinhaRazao.saldo_final ||
+    primeiraLinhaRazao.saldo_final ||
+    0
+  ),
+};
+
+  
+
 
   const diferenca = resumoBanco.saldoFinal - resumoRazao.saldoFinal;
   const diferencaRegistros = resumoBanco.qtd - resumoRazao.qtd;
   const diferencaEntradas = resumoBanco.entradas - resumoRazao.entradas;
   const diferencaSaidas = resumoBanco.saidas - resumoRazao.saidas;
 
- 
+
+  const conciliacaoLinhaLinha = useMemo(() => {
+  const usadosRazao = new Set();
+  const resultado = [];
+
+  linhasExtrato.forEach((banco, idxBanco) => {
+    const valorBanco = Number(banco.valor || 0);
+
+    const idxRazao = linhasRazao.findIndex((razao, idx) => {
+      if (usadosRazao.has(idx)) return false;
+
+     const valorRazao = Number(razao.valor || 0);
+
+return Math.abs(Math.abs(valorBanco) - Math.abs(valorRazao)) < 0.01;
+    });
+
+    if (idxRazao >= 0) {
+      usadosRazao.add(idxRazao);
+
+      resultado.push({
+        id: `ok-${idxBanco}-${idxRazao}`,
+        status: "ok",
+        banco,
+        razao: linhasRazao[idxRazao],
+      });
+    } else {
+      resultado.push({
+        id: `banco-${idxBanco}`,
+        status: "banco",
+        banco,
+        razao: null,
+      });
+    }
+  });
+
+  linhasRazao.forEach((razao, idxRazao) => {
+    if (!usadosRazao.has(idxRazao)) {
+      resultado.push({
+        id: `razao-${idxRazao}`,
+        status: "razao",
+        banco: null,
+        razao,
+      });
+    }
+  });
+
+  return resultado;
+}, [linhasExtrato, linhasRazao]);
+
+ const totalConciliacao = conciliacaoLinhaLinha.length;
+
+const qtdConciliados = conciliacaoLinhaLinha.filter(
+  (x) => x.status === "ok"
+).length;
+
+const qtdSoBanco = conciliacaoLinhaLinha.filter(
+  (x) => x.status === "banco"
+).length;
+
+const qtdSoRazao = conciliacaoLinhaLinha.filter(
+  (x) => x.status === "razao"
+).length;
+
+const percentualConciliado = totalConciliacao
+  ? (qtdConciliados * 100) / totalConciliacao
+  : 100;
 
   return (
     <div className="min-h-screen bg-[#eef7fd] px-1 py-1">
@@ -475,6 +551,9 @@ saldoFinal: Number(extrato?.saldo_final || 0),
           <Aba ativo={aba === "extrato"} onClick={() => setAba("extrato")}>Extrato Bancário</Aba>
           <Aba ativo={aba === "razao"} onClick={() => setAba("razao")}>Razão Contábil</Aba>
           <Aba ativo={aba === "comparacao"} onClick={() => setAba("comparacao")}>Comparação</Aba>
+         <Aba ativo={aba === "conciliacao"} onClick={() => setAba("conciliacao")}> Conciliação </Aba>
+         <Aba ativo={aba === "linha"} onClick={() => setAba("linha")}>  Linha a Linha </Aba>
+
         </div>
 
         {loading && <div className="mt-4 rounded-xl bg-white p-4 font-bold text-slate-500">Carregando...</div>}
@@ -483,6 +562,29 @@ saldoFinal: Number(extrato?.saldo_final || 0),
         {!loading && aba === "razao" && <TabelaRazao linhas={linhasRazao} />}
         {!loading && aba === "comparacao" && (
           <Comparacao resumoBanco={resumoBanco} resumoRazao={resumoRazao} diferenca={diferenca} diferencaRegistros={diferencaRegistros} diferencaEntradas={diferencaEntradas} diferencaSaidas={diferencaSaidas} contaAtual={contaAtual} />
+        )}
+
+        {!loading && aba === "conciliacao" && (
+            <Conciliacao
+              resumoBanco={resumoBanco}
+              resumoRazao={resumoRazao}
+              diferenca={diferenca}
+              diferencaRegistros={diferencaRegistros}
+              diferencaEntradas={diferencaEntradas}
+              diferencaSaidas={diferencaSaidas}
+            />
+          )}
+
+
+          {!loading && aba === "linha" && (
+          <ConciliacaoLinhaLinha
+            dados={conciliacaoLinhaLinha}
+            total={totalConciliacao}
+            conciliados={qtdConciliados}
+            soBanco={qtdSoBanco}
+            soRazao={qtdSoRazao}
+            percentual={percentualConciliado}
+          />
         )}
       </div>
     </div>
@@ -636,6 +738,234 @@ function LinhaDiferenca({ label, valor, tipo = "moeda", destaque = false }) {
     </div>
   );
 }
+
+
+function ConciliacaoLinhaLinha({
+  dados,
+  total,
+  conciliados,
+  soBanco,
+  soRazao,
+  percentual,
+}) {
+  return (
+    <div className="mt-3 space-y-4">
+      <div className="rounded-3xl border bg-white p-5 shadow-sm">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="text-sm font-black uppercase text-slate-500">
+              Conciliação Linha a Linha
+            </div>
+            <div className="mt-1 text-3xl font-black text-[#061f4a]">
+              {percentual.toFixed(1)}%
+            </div>
+            <div className="text-sm font-bold text-slate-500">
+              dos movimentos conciliados automaticamente
+            </div>
+          </div>
+
+          <div className="w-72">
+            <div className="h-4 overflow-hidden rounded-full bg-slate-200">
+              <div
+                className="h-full rounded-full bg-emerald-500"
+                style={{ width: `${Math.min(100, percentual)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <MiniCard titulo="Total" valor={total} />
+        <MiniCard titulo="Conciliados" valor={conciliados} verde />
+        <MiniCard titulo="Só no Banco" valor={soBanco} vermelho />
+        <MiniCard titulo="Só no Razão" valor={soRazao} vermelho />
+      </div>
+
+      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+        <div className="grid grid-cols-[140px_1fr_1fr] gap-2 bg-gray-200 px-4 py-2 text-sm font-black text-slate-700">
+          <div>Status</div>
+          <div>Banco</div>
+          <div>Razão</div>
+        </div>
+
+        <div className="max-h-[620px] overflow-y-auto">
+          {dados.map((item) => (
+            <div
+              key={item.id}
+              className="grid grid-cols-[140px_1fr_1fr] gap-2 border-b px-4 py-3 text-sm hover:bg-sky-50"
+            >
+              <div className="font-black">
+                {item.status === "ok" && (
+                  <span className="text-emerald-700">✅ Conciliado</span>
+                )}
+                {item.status === "banco" && (
+                  <span className="text-red-600">❌ Só Banco</span>
+                )}
+                {item.status === "razao" && (
+                  <span className="text-red-600">❌ Só Razão</span>
+                )}
+              </div>
+
+              <MovimentoResumo mov={item.banco} />
+              <MovimentoResumo mov={item.razao} />
+            </div>
+          ))}
+
+          {dados.length === 0 && (
+            <div className="p-8 text-center font-bold text-slate-400">
+              Nenhum movimento para conciliar.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MovimentoResumo({ mov }) {
+  if (!mov) {
+    return <div className="font-bold text-slate-400">—</div>;
+  }
+
+  return (
+    <div>
+      <div className="font-black text-slate-800">
+        {mov.descricao || mov.historico || "Sem histórico"}
+      </div>
+      <div className="mt-1 text-xs font-bold text-slate-500">
+        {dataBR(mov.data_movimento || mov.data_mov || mov.data_lanc || mov.data)}
+      </div>
+      <div
+        className={`mt-1 font-black ${
+          Number(mov.valor || 0) < 0 ? "text-red-600" : "text-emerald-700"
+        }`}
+      >
+        {moeda(mov.valor || 0)}
+      </div>
+    </div>
+  );
+}
+
+function MiniCard({ titulo, valor, verde = false, vermelho = false }) {
+  return (
+    <div className="rounded-2xl border bg-white p-5 shadow-sm">
+      <div className="text-xs font-black uppercase text-slate-400">{titulo}</div>
+      <div
+        className={`mt-2 text-3xl font-black ${
+          verde ? "text-emerald-700" : vermelho ? "text-red-600" : "text-[#061f4a]"
+        }`}
+      >
+        {valor}
+      </div>
+    </div>
+  );
+}
+
+function Conciliacao({
+  resumoBanco,
+  resumoRazao,
+  diferenca,
+  diferencaRegistros,
+  diferencaEntradas,
+  diferencaSaidas,
+}) {
+  const okSaldo = Math.abs(Number(diferenca || 0)) < 0.01;
+  const okEntradas = Math.abs(Number(diferencaEntradas || 0)) < 0.01;
+  const okSaidas = Math.abs(Number(diferencaSaidas || 0)) < 0.01;
+  const okRegistros = Number(diferencaRegistros || 0) === 0;
+
+  const tudoOk = okSaldo && okEntradas && okSaidas && okRegistros;
+
+  return (
+    <div className="mt-3 space-y-4">
+      <div
+        className={`rounded-3xl border p-6 shadow-sm ${
+          tudoOk
+            ? "bg-emerald-50 border-emerald-200"
+            : "bg-red-50 border-red-200"
+        }`}
+      >
+        <div className={`text-2xl font-black ${tudoOk ? "text-emerald-700" : "text-red-700"}`}>
+          {tudoOk ? "✅ CONCILIAÇÃO OK" : "🔴 CONCILIAÇÃO COM DIVERGÊNCIAS"}
+        </div>
+
+        <div className="mt-2 text-sm font-bold text-slate-600">
+          Comparação entre conta corrente e razão contábil no período selecionado.
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <CardStatus titulo="Saldo Final" ok={okSaldo} detalhe={moeda(diferenca)} />
+        <CardStatus titulo="Entradas" ok={okEntradas} detalhe={moeda(diferencaEntradas)} />
+        <CardStatus titulo="Saídas" ok={okSaidas} detalhe={moeda(diferencaSaidas)} />
+        <CardStatus titulo="Registros" ok={okRegistros} detalhe={diferencaRegistros} tipo="numero" />
+      </div>
+
+      <div className="rounded-2xl border bg-white p-5 shadow-sm">
+        <div className="text-sm font-black uppercase text-slate-500">
+          Diagnóstico da Conciliação
+        </div>
+
+        <div className="mt-4 space-y-3">
+          <LinhaDiagnostico ok={okSaldo} texto="Saldo final confere" />
+          <LinhaDiagnostico ok={okEntradas} texto="Entradas conferem" />
+          <LinhaDiagnostico ok={okSaidas} texto="Saídas conferem" />
+          <LinhaDiagnostico ok={okRegistros} texto="Quantidade de registros confere" />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border bg-white p-5 shadow-sm">
+        <div className="text-sm font-black uppercase text-slate-500">
+          Possíveis causas
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+          <Causa texto="Movimento financeiro ainda não contabilizado" />
+          <Causa texto="Lançamento contábil sem movimento financeiro" />
+          <Causa texto="Diferença de período entre banco e razão" />
+          <Causa texto="Estorno ou lançamento duplicado" />
+          <Causa texto="Valor divergente entre financeiro e contábil" />
+          <Causa texto="Conta contábil vinculada incorretamente" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CardStatus({ titulo, ok, detalhe, tipo = "moeda" }) {
+  return (
+    <div className="rounded-2xl border bg-white p-5 shadow-sm">
+      <div className="text-xs font-black uppercase text-slate-400">{titulo}</div>
+      <div className={`mt-2 text-xl font-black ${ok ? "text-emerald-700" : "text-red-600"}`}>
+        {ok ? "OK" : "Divergente"}
+      </div>
+      <div className="mt-1 text-sm font-bold text-slate-500">
+        Diferença: {tipo === "numero" ? detalhe : detalhe}
+      </div>
+    </div>
+  );
+}
+
+function LinhaDiagnostico({ ok, texto }) {
+  return (
+    <div className="flex items-center justify-between border-b pb-2 text-sm">
+      <span className="font-bold text-slate-600">{texto}</span>
+      <span className={`font-black ${ok ? "text-emerald-700" : "text-red-600"}`}>
+        {ok ? "✔ OK" : "✘ Verificar"}
+      </span>
+    </div>
+  );
+}
+
+function Causa({ texto }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
+      ☐ {texto}
+    </div>
+  );
+}
+
 
 function CardComparacao({ titulo, subtitulo, itens }) {
   return (
