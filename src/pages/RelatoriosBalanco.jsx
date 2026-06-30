@@ -121,6 +121,7 @@ if (ehPatrimonial) {
       setLoading(false);
     }
   }
+  
 return (
   <div className="min-h-screen bg-slate-50 p-4 md:p-6">
     <div className="mx-auto max-w-[1600px] space-y-5">
@@ -256,30 +257,36 @@ return (
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] border-separate border-spacing-0 text-sm">
+          <table
+                className={`w-full border-separate border-spacing-0 ${
+                  ehComparativo
+                    ? "min-w-[860px] text-xs print:min-w-0 print:text-[7px]"
+                    : "min-w-[760px] text-sm print:min-w-0 print:text-[8px]"
+                }`}
+              >
             <thead>
               <tr className="bg-slate-900 text-white">
-                <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                <th className="sticky top-0 px-2 py-2 text-left text-xs font-black uppercase tracking-wide">
                   Código
                 </th>
-                <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                <th className="sticky top-0 px-2 py-2 text-left text-xs font-black uppercase tracking-wide">
                   Conta
                 </th>
 
                 {ehComparativo ? (
                   <>
-                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                    <th className="sticky top-0 px-2 py-2 text-right text-xs font-black uppercase tracking-wide">
                       Saldo anterior
                     </th>
-                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                    <th className="sticky top-0 px-2 py-2 text-right text-xs font-black uppercase tracking-wide">
                       Saldo atual
                     </th>
-                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                    <th className="sticky top-0 px-2 py-2 text-right text-xs font-black uppercase tracking-wide">
                       Variação
                     </th>
                   </>
                 ) : (
-                  <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-2 text-right text-xs font-black uppercase tracking-wide">
                     Saldo
                   </th>
                 )}
@@ -314,7 +321,10 @@ return (
                     </td>
 
                     <td className="border-b border-slate-100 px-4 py-3 font-bold text-slate-700">
-                      <div className="max-w-[680px] truncate" title={l.conta_nome || ""}>
+                     <div
+                            className={`${ehComparativo ? "max-w-[360px]" : "max-w-[680px]"} truncate print:max-w-[260px]`}
+                            title={l.conta_nome || ""}
+                          >
                         {l.conta_nome || ""}
                       </div>
                     </td>
