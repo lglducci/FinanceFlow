@@ -178,7 +178,9 @@ export default function Sidebar() {
             {openSub === "dinheiro" && (
               <div className="ml-8 space-y-1">
                 <SubItem icon={<IconCardTransaction />} label="Cartões" onClick={() => navigate("/cartoes")} />
-                <SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/contacorrente")} />
+                <SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/contacorrente")} /> 
+                  <SubItem  icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/extrato-bancario" )} />
+
               </div>
             )}
           </MenuGroup>
