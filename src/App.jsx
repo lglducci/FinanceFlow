@@ -200,6 +200,9 @@ import ContasRecorrentes  from  "./pages/ContasRecorrentes";
 
 import DiagnosticoFinanceiro  from  "./pages/DiagnosticoFinanceiro";
 
+import ExtratoBancario  from  "./pages/ExtratoBancario";
+
+  
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -653,8 +656,12 @@ const rotaAtual = window.location.pathname;
       <Route path="/conta-recorrente" element={<ContasRecorrentes />} />
        
       <Route path="/diagnostico-financeiro" element={<DiagnosticoFinanceiro />} />
+       <Route path="/extrato-bancario" element={<ExtratoBancario />} />
  
- 
+  
+
+
+
 </Routes>
 
  
