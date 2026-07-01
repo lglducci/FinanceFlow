@@ -138,6 +138,9 @@ export default function RelatoriosDRE() {
     ExcelExport.exportar(dadosAnalitico, `dre_n${nivel}.xlsx`);
   }
 
+  function imprimir() {
+  window.print();
+}
   return (
     <div className="min-h-screen bg-[#eef7fd] px-4 py-5">
       <div className="mx-auto w-full max-w-[1500px] space-y-4">
@@ -192,6 +195,13 @@ export default function RelatoriosDRE() {
                 Excel
               </button>
 
+              <button
+                onClick={imprimir}
+                className="btn-pill bg-slate-700 text-white"
+              >
+                🖨️ Imprimir
+              </button>
+
               <button onClick={() => navigate("/reports")} className="btn-pill btn-white">
                 Sair
               </button>
@@ -201,36 +211,39 @@ export default function RelatoriosDRE() {
 
         {nivel === 1 && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-              <Card titulo="Receita" valor={receita} cor="text-emerald-700" />
-              <Card titulo="Custos" valor={custos} cor="text-red-600" />
-              <Card titulo="Despesas" valor={despesas} cor="text-red-600" />
-              <Card titulo="Resultado" valor={resultado} cor={resultado >= 0 ? "text-emerald-700" : "text-red-600"} />
-              <Card titulo="Margem" valor={`${margem.toFixed(2)}%`} cor={margem >= 0 ? "text-blue-700" : "text-red-600"} texto />
-            </div>
+            <div id="dre-print">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                  <Card titulo="Receita" valor={receita} cor="text-emerald-700" />
+                  <Card titulo="Custos" valor={custos} cor="text-red-600" />
+                  <Card titulo="Despesas" valor={despesas} cor="text-red-600" />
+                  <Card titulo="Resultado" valor={resultado} cor={resultado >= 0 ? "text-emerald-700" : "text-red-600"} />
+                  <Card titulo="Margem" valor={`${margem.toFixed(2)}%`} cor={margem >= 0 ? "text-blue-700" : "text-red-600"} texto />
+                </div>
 
-            <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
-              <table className="w-full text-sm">
-                <thead className="bg-[#e7f5fc] text-[#063452]">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-black">Indicador</th>
-                    <th className="px-4 py-3 text-right font-black">Valor</th>
-                    <th className="px-4 py-3 text-right font-black">% Receita</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <Linha nome="Receita Bruta" valor={receita} percentual={perc(receita)} positivo />
-                  <Linha nome="(-) Custos" valor={custos} percentual={perc(custos)} negativo />
-                  <Linha nome="Lucro Bruto" valor={lucroBruto} percentual={perc(lucroBruto)} destaque />
-                  <Linha nome="(-) Despesas Operacionais" valor={despesas} percentual={perc(despesas)} negativo />
-                  <Linha nome="Resultado do Período" valor={resultado} percentual={perc(resultado)} final />
-                </tbody>
-              </table>
+                <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
+                  <table className="w-full text-sm">
+                    <thead className="bg-[#e7f5fc] text-[#063452]">
+                      <tr>
+                        <th className="px-4 py-3 text-left font-black">Indicador</th>
+                        <th className="px-4 py-3 text-right font-black">Valor</th>
+                        <th className="px-4 py-3 text-right font-black">% Receita</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <Linha nome="Receita Bruta" valor={receita} percentual={perc(receita)} positivo />
+                      <Linha nome="(-) Custos" valor={custos} percentual={perc(custos)} negativo />
+                      <Linha nome="Lucro Bruto" valor={lucroBruto} percentual={perc(lucroBruto)} destaque />
+                      <Linha nome="(-) Despesas Operacionais" valor={despesas} percentual={perc(despesas)} negativo />
+                      <Linha nome="Resultado do Período" valor={resultado} percentual={perc(resultado)} final />
+                    </tbody>
+                  </table>
+                </div>
             </div>
           </>
         )}
 
         {nivel === 2 && (
+           <div id="dre-print">
           <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
             <table className="w-full text-sm">
               <thead className="bg-[#e7f5fc] text-[#063452]">
@@ -273,12 +286,14 @@ export default function RelatoriosDRE() {
               </tbody>
             </table>
           </div>
+            </div>
         )}
 
         {nivel === 3 && (
+           <div id="dre-print">
           <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
-            <div className="max-h-[680px] overflow-auto">
-              <table className="w-full min-w-[950px] text-sm">
+           <div className="max-h-[680px] overflow-auto print:max-h-none print:overflow-visible">
+              <table className="w-full min-w-[950px] text-sm print:min-w-0 print:text-[10px]">
                 <thead className="sticky top-0 bg-[#e7f5fc] text-[#063452]">
                   <tr>
                     <th className="px-4 py-3 text-left font-black">Código</th>
@@ -350,6 +365,7 @@ export default function RelatoriosDRE() {
               </table>
             </div>
           </div>
+           </div>
         )}
 
         {loading && (
