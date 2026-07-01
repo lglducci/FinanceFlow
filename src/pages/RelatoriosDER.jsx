@@ -69,11 +69,7 @@ export default function RelatoriosDRE() {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    if (!empresaId) return;
-    consultar();
-  }, [empresaId, dataIni, dataFim]);
+ 
 
   const receita = Number(
     dadosSintetico.find((d) => d.grupo === "RECEITA_BRUTA")?.valor_periodo || 0
