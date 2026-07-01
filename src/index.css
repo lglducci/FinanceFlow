@@ -193,3 +193,27 @@ body {
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
+
+
+@media print {
+  #print-area .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  #print-area table {
+    width: 100% !important;
+    table-layout: fixed !important;
+  }
+
+  #print-area th,
+  #print-area td {
+    padding: 3px !important;
+    white-space: normal !important;
+  }
+
+  #print-area .truncate {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+}
