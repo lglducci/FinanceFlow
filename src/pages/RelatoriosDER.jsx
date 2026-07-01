@@ -141,6 +141,15 @@ export default function RelatoriosDRE() {
   function imprimir() {
   window.print();
 }
+
+
+function dataBR(data) {
+  if (!data) return "";
+  const [ano, mes, dia] = data.split("-");
+  return `${dia}/${mes}/${ano}`;
+}
+
+
   return (
     <div className="min-h-screen bg-[#eef7fd] px-4 py-5">
       <div className="mx-auto w-full max-w-[1500px] space-y-4">
@@ -212,6 +221,16 @@ export default function RelatoriosDRE() {
         {nivel === 1 && (
           <>
             <div id="dre-print">
+
+              <div className="mb-4 border-b border-slate-300 pb-3 print:block">
+                  <h2 className="text-xl font-black text-[#063452]">
+                    DRE Gerencial - N{nivel}
+                  </h2>
+
+                  <div className="text-sm font-bold text-slate-600">
+                    Período: {dataBR(dataIni)} até {dataBR(dataFim)}
+                  </div>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                   <Card titulo="Receita" valor={receita} cor="text-emerald-700" />
                   <Card titulo="Custos" valor={custos} cor="text-red-600" />
@@ -244,6 +263,16 @@ export default function RelatoriosDRE() {
 
         {nivel === 2 && (
            <div id="dre-print">
+
+            <div className="mb-4 border-b border-slate-300 pb-3 print:block">
+              <h2 className="text-xl font-black text-[#063452]">
+                DRE Gerencial - N{nivel}
+              </h2>
+
+              <div className="text-sm font-bold text-slate-600">
+               Período: {dataBR(dataIni)} até {dataBR(dataFim)}
+              </div>
+            </div>
           <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
             <table className="w-full text-sm">
               <thead className="bg-[#e7f5fc] text-[#063452]">
@@ -291,6 +320,16 @@ export default function RelatoriosDRE() {
 
         {nivel === 3 && (
            <div id="dre-print">
+
+            <div className="mb-4 border-b border-slate-300 pb-3 print:block">
+                <h2 className="text-xl font-black text-[#063452]">
+                  DRE Gerencial - N{nivel}
+                </h2>
+
+                <div className="text-sm font-bold text-slate-600">
+                    Período: {dataBR(dataIni)} até {dataBR(dataFim)}
+                </div>
+              </div>
           <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
            <div className="max-h-[680px] overflow-auto print:max-h-none print:overflow-visible">
               <table className="w-full min-w-[950px] text-sm print:min-w-0 print:text-[10px]">
