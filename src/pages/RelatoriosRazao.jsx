@@ -373,7 +373,8 @@ return (
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] border-separate border-spacing-0 text-sm">
+          
+            <table className="w-full min-w-[980px] print:min-w-0 border-separate border-spacing-0 text-sm print:text-[9px]">
             <thead>
               <tr className="bg-slate-900 text-white">
                 {tipo !== "m" && (
