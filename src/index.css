@@ -7,75 +7,32 @@ body {
   @apply bg-[#f5f5f5];
 }
 
-
 /* Classe padrão para inputs premium */
-.input-premium {
-  @apply  
-    px-3
-    py-1
-    text-base 
-    rounded-lg
-    border-2
-    border-gray-400
-    bg-black
-    text-black
-    shadow-sm
-    focus:outline-none
-    focus:ring-1
-    focus:ring-yellow-500
-    focus:border-gray-600;
-}
-
-
 .input-premium {
   @apply w-full rounded-lg border-2 border-gray-300 bg-white text-black shadow-sm 
          focus:outline-none focus:ring-1 focus:ring-yellow-300 focus:border-yellow-600;
 }
 
-/* ➜ classe PARA TAMANHO (você controla aqui) */
+/* ➜ classe PARA TAMANHO */
 .input-size {
-  height: 36px;      /* altura do campo */
-  font-size: 16px;   /* tamanho da letra */
-  padding: 6px 8px; /* padding vertical e horizontal */
-  
+  height: 36px;
+  font-size: 16px;
+  padding: 6px 8px;
 }
-
 
 .input-campo {
-  @apply 
-    w-full          /* ocupa toda a largura */
-    h-10            /* 🔥 altura IGUAL para todos (40px) */
-    px-3            /* padding interno horizontal */
-    rounded-lg      
-    border 
-    border-gray-300
-    text-black
-    bg-gray-300
-    focus:outline-none
-    focus:ring-2
-    focus:ring-blue-300
-    focus:border-blue-500;
+  @apply w-full h-10 px-3 rounded-lg border border-gray-300 text-black bg-gray-300
+         focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500;
 }
-
 
 .input-base {
-  @apply 
-    p-2
-    rounded-lg
-    border
-    border-gray-300
-    text-black
-    bg-white
-    focus:outline-none
-    focus:ring-2
-    focus:ring-blue-300
-    focus:border-blue-500;
+  @apply p-2 rounded-lg border border-gray-300 text-black bg-white
+         focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500;
 }
 
-
 .tabela-mapeamento {
-  font-size: 14px;       /* tamanho padrão */
-  font-weight: 700;      /* meio bold */
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .tabela-mapeamento th {
@@ -84,24 +41,23 @@ body {
   background: #1b317f;
   color: white;
   padding: 6px;
-   text-align: left;
+  text-align: left;
 }
 
 .tabela-mapeamento td {
   padding: 10px;
-    text-align: left;
-
+  text-align: left;
 }
 
 .tabela-mapeamento tr:nth-child(even) {
   background: #ffffff;
-  padding: 10px;
 }
 
 .tabela-mapeamento tr:nth-child(odd) {
   background: #d5defaff;
 }
 
+/* PRINT ANTIGO */
 @media print {
   body * {
     visibility: hidden;
@@ -119,12 +75,54 @@ body {
     width: 100%;
   }
 
-  /* remove botões */
   button {
     display: none !important;
   }
 }
 
+/* PRINT DRE */
+@media print {
+  body:has(#dre-print) * {
+    visibility: hidden !important;
+  }
+
+  body:has(#dre-print) #dre-print,
+  body:has(#dre-print) #dre-print * {
+    visibility: visible !important;
+  }
+
+  body:has(#dre-print) #dre-print {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    background: white !important;
+    padding: 8mm !important;
+  }
+
+  body:has(#dre-print) #dre-print .grid {
+    display: none !important;
+  }
+
+  body:has(#dre-print) #dre-print table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 11px !important;
+  }
+
+  body:has(#dre-print) #dre-print th,
+  body:has(#dre-print) #dre-print td {
+    padding: 6px 8px !important;
+    border-bottom: 1px solid #ddd !important;
+  }
+
+  body:has(#dre-print) #dre-print .rounded-3xl {
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
 
 /* Label padrão */
 .label {
@@ -132,39 +130,25 @@ body {
   color: #1e40af;
 }
 
-/* Campo obrigatório */
 .label-required::after {
   content: " *";
-  color: #dc2626; /* vermelho */
+  color: #dc2626;
   font-weight: bold;
 }
 
-
 .input-desativado {
-  background-color: #adb7cd;      /* cinza claro */
-  color: #0b285b;                 /* texto cinza */
+  background-color: #adb7cd;
+  color: #0b285b;
   border-color: #234c8a;
   cursor: not-allowed;
-  
 }
-
 
 .btn-pill {
-  @apply
-    h-10
-    px-4
-    rounded-xl
-    font-bold text-sm
-    border
-    shadow-sm
-    hover:brightness-105
-    active:scale-95
-    transition-all duration-200
-    inline-flex items-center justify-center gap-2
-    select-none;
+  @apply h-10 px-4 rounded-xl font-bold text-sm border shadow-sm hover:brightness-105
+         active:scale-95 transition-all duration-200 inline-flex items-center justify-center gap-2 select-none;
 }
 
- .btn-blue {
+.btn-blue {
   @apply bg-cyan-50 text-[#063452] border-cyan-200 hover:bg-cyan-100;
 }
 
@@ -194,6 +178,7 @@ body {
 .btn-dark-blue {
   @apply bg-[#063452] text-white border-[#063452] hover:brightness-110;
 }
+
 @keyframes fade-in {
   from {
     opacity: 0;
