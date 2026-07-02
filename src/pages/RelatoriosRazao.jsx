@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+ import { useState, useEffect } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
  
@@ -360,11 +360,11 @@ return (
       </div>
 
       {/* TABELA */}
-      <div id="print-area" className="rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <div id="print-area" className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-100 px-2 py-1">
           <div>
-            <h2 className="text-lg font-black text-slate-800">Resultado</h2>
-            <p className="text-sm font-semibold text-slate-500">
+            <h2 className="text-xl font-black text-slate-800">Resultado</h2>
+            <p className="text-xs font-semibold leading-none text-slate-500">
               {loading
                 ? "Carregando dados..."
                 : `${dados.filter((l) => mostrarZeradas || !linhaZerada(l)).length} registro(s)`}
@@ -374,78 +374,78 @@ return (
 
         <div className="overflow-x-auto">
           
-            <table className="w-full min-w-[980px] print:min-w-0 border-separate border-spacing-0 text-sm print:text-[9px]">
+             <table className="w-full min-w-[980px] print:min-w-0 border-separate border-spacing-0 text-[15px]">
             <thead>
               <tr className="bg-slate-900 text-white">
                 {tipo !== "m" && (
-                  <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-1.5 text-left text-[13px] font-black uppercase tracking-wide">
                     Data
                   </th>
                 )}
 
                 {tipo === "m" && (
-                  <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-1.5 text-left text-[13px] font-black uppercase tracking-wide">
                     Mês/Ano
                   </th>
                 )}
 
                 {tipo !== "c" && (
-                  <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-1.5 text-left text-[13px] font-black uppercase tracking-wide">
                     Conta
                   </th>
                 )}
 
                 {tipo === "c" && (
-                  <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-1.5 text-left text-[13px] font-black uppercase tracking-wide">
                     Contrapartida
                   </th>
                 )}
 
                 {tipo !== "m" && (
-                  <th className="sticky top-0 px-4 py-3 text-left text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-1.5 text-left text-[13px] font-black uppercase tracking-wide">
                     Histórico
                   </th>
                 )}
 
                 {tipo !== "c" && (
-                  <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-1.5 text-right text-[13px] font-black uppercase tracking-wide">
                     Saldo inicial
                   </th>
                 )}
 
                 {!["r", "c", "m"].includes(tipo) && (
                   <>
-                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                    <th className="sticky top-0 px-2 py-1.5 text-right text-[13px] font-black uppercase tracking-wide">
                       Débito
                     </th>
-                    <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                    <th className="sticky top-0 px-2 py-1.5 text-right text-[13px] font-black uppercase tracking-wide">
                       Crédito
                     </th>
                   </>
                 )}
 
                 {["r", "c", "m"].includes(tipo) && (
-                  <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                  <th className="sticky top-0 px-2 py-1.5 text-right text-[13px] font-black uppercase tracking-wide">
                     Valor
                   </th>
                 )}
 
-                <th className="sticky top-0 px-4 py-3 text-right text-xs font-black uppercase tracking-wide">
+                <th className="sticky top-0 px-2 py-1.5 text-right text-[13px] font-black uppercase tracking-wide">
                   Saldo
                 </th>
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="leading-tight">
               {dados.length > 0 && tipo === "c" && (
                 <tr>
-                  <td colSpan={8} className="border-b border-blue-100 bg-blue-50 px-4 py-3">
+                  <td colSpan={8} className="border-b border-blue-100 bg-blue-150 px-2 py-1">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="font-black text-blue-900">
                         {dados[0].conta_codigo} — {dados[0].conta_nome}
                       </div>
 
-                      <div className="rounded-full bg-white px-4 py-2 text-sm font-black shadow-sm">
+                      <div className="rounded bg-white px-2 py-0.5 text-sm font-black shadow-sm">
                         Saldo inicial:{" "}
                         <span
                           className={
@@ -479,14 +479,14 @@ return (
                       }`}
                     >
                       {tipo !== "m" && (
-                        <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 font-bold text-slate-700">
+                        <td className="whitespace-nowrap border-b border-slate-100 px-2 py-1 font-bold text-slate-700">
                           {formatarData(l.data_mov || l.data)}
                         </td>
                       )}
 
                       {tipo === "m" && (
                         <td
-                          className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 font-black ${
+                          className={`whitespace-nowrap border-b border-slate-100 px-2 py-1 font-black ${
                             totalConta ? "text-green-700" : "text-slate-700"
                           }`}
                         >
@@ -496,7 +496,7 @@ return (
 
                       {tipo !== "c" && (
                         <td
-                          className={`border-b border-slate-100 px-4 py-3 font-bold ${
+                          className={`border-b border-slate-100 px-2 py-1 font-bold ${
                             totalConta ? "text-green-700" : "text-slate-700"
                           }`}
                         >
@@ -508,7 +508,7 @@ return (
 
                       {tipo === "c" && (
                         <td
-                          className={`border-b border-slate-100 px-4 py-3 font-bold ${
+                          className={`border-b border-slate-100 px-2 py-1 font-bold ${
                             totalConta ? "text-green-700" : "text-slate-700"
                           }`}
                         >
@@ -520,7 +520,7 @@ return (
 
                       {tipo !== "m" && (
                         <td
-                          className={`border-b border-slate-100 px-4 py-3 font-semibold ${
+                          className={`border-b border-slate-100 px-2 py-1 font-semibold ${
                             totalConta ? "text-green-700" : "text-slate-600"
                           }`}
                         >
@@ -532,7 +532,7 @@ return (
 
                       {tipo !== "c" && (
                         <td
-                          className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                          className={`whitespace-nowrap border-b border-slate-100 px-2 py-1 text-right font-black ${
                             Number(l.saldo_inicial || 0) < 0
                               ? "text-red-600"
                               : "text-green-700"
@@ -544,11 +544,11 @@ return (
 
                       {!["r", "c", "m"].includes(tipo) && (
                         <>
-                          <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black text-blue-700">
+                          <td className="whitespace-nowrap border-b border-slate-100 px-2 py-1 text-right font-black text-blue-700">
                             {fmt.format(l.debito || 0)}
                           </td>
 
-                          <td className="whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black text-red-600">
+                          <td className="whitespace-nowrap border-b border-slate-100 px-2 py-1 text-right font-black text-red-600">
                             {fmt.format(l.credito || 0)}
                           </td>
                         </>
@@ -556,7 +556,7 @@ return (
 
                       {["r", "c", "m"].includes(tipo) && (
                         <td
-                          className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                          className={`whitespace-nowrap border-b border-slate-100 px-2 py-1 text-right font-black ${
                             Number(l.valor || 0) < 0
                               ? "text-red-600"
                               : "text-green-700"
@@ -567,7 +567,7 @@ return (
                       )}
 
                       <td
-                        className={`whitespace-nowrap border-b border-slate-100 px-4 py-3 text-right font-black ${
+                        className={`whitespace-nowrap border-b border-slate-100 px-2 py-1 text-right font-black ${
                           Number(tipo === "c" ? l.saldo_final : l.saldo) < 0
                             ? "text-red-600"
                             : "text-green-700"
