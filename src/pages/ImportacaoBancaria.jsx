@@ -67,9 +67,7 @@
     }, 4000);
   }
   
-  function normalizarValor(valor) {
-    return parseFloat(String(valor || "0").replace(",", ".")) || 0;
-  }
+ 
   
   function recalcularLinhas(lista, base = saldoBase) {
     let acumulado = Number(base || 0);
@@ -420,7 +418,7 @@
     setContasFiltradasContra(filtradas.slice(0,10));
   }
   
-   const valorAtual = parseFloat((nova.valor || "0").replace(",", "."));
+ const valorAtual = parseNumeroMoney(nova.valor);
   
   let saldoLinhaAtual = saldo;
   
@@ -625,16 +623,7 @@
     return [];
   }
   
-  function parseNumeroBR(valor) {
-    if (valor == null) return 0;
-  
-    return Number(
-      String(valor)
-        .trim()
-        .replace(/\./g, "")   // remove milhar
-        .replace(",", ".")    // decimal
-    ) || 0;
-  }
+ 
   
   function parseTextoParaLinhas(texto) {
     const linhasTexto = String(texto || "")
@@ -714,41 +703,80 @@
     return null;
   }
   
-   function parseNumeroBR(valor) {
-    if (valor == null) return 0;
-  
-    let txt = String(valor)
-      .trim()
-      .toUpperCase();
-  
-    const temCredito = /\bC\b$/.test(txt);
-    const temDebito = /\bD\b$/.test(txt);
-  
-    txt = txt
-      .replace(/R\$/g, "")
-      .replace(/\s+/g, "")
-      .replace(/[CD]$/g, "");
-  
-    let negativo = false;
-  
-    if (txt.startsWith("-")) {
-      negativo = true;
-      txt = txt.replace(/^-+/, "");
-    }
-  
-    txt = txt
-      .replace(/\./g, "")
-      .replace(",", ".")
-      .replace(/[^\d.]/g, "");
-  
-    let numero = Number(txt) || 0;
-  
-    if (temDebito || negativo) numero = -Math.abs(numero);
-    if (temCredito) numero = Math.abs(numero);
-  
-    return numero;
+ 
+  function parseNumeroMoney(valor) {
+  if (valor == null) return 0;
+
+  let txt = String(valor)
+    .trim()
+    .toUpperCase()
+    .replace(/R\$/g, "")
+    .replace(/\s+/g, "");
+
+  const temCredito = /\bC\b$/.test(txt);
+  const temDebito = /\bD\b$/.test(txt);
+
+  txt = txt.replace(/[CD]$/g, "");
+
+  let negativo = false;
+
+  if (txt.startsWith("-")) {
+    negativo = true;
+    txt = txt.substring(1);
   }
-  
+
+  txt = txt.replace(/[^\d.,]/g, "");
+
+  const temVirgula = txt.includes(",");
+  const temPonto = txt.includes(".");
+
+  if (temVirgula && temPonto) {
+
+    // BR -> 1.234,56
+    if (txt.lastIndexOf(",") > txt.lastIndexOf(".")) {
+      txt = txt.replace(/\./g, "");
+      txt = txt.replace(",", ".");
+    }
+
+    // EUA -> 1,234.56
+    else {
+      txt = txt.replace(/,/g, "");
+    }
+
+  } else if (temVirgula) {
+
+    // 100,00
+    txt = txt.replace(",", ".");
+
+  } else if (temPonto) {
+
+    const partes = txt.split(".");
+    const ultima = partes[partes.length - 1];
+
+    // decimal
+    if (ultima.length !== 2) {
+      txt = txt.replace(/\./g, "");
+    }
+
+  }
+
+  let numero = Number(txt);
+
+  if (!Number.isFinite(numero))
+    numero = 0;
+
+  if (temDebito || negativo)
+    numero = -Math.abs(numero);
+
+  if (temCredito)
+    numero = Math.abs(numero);
+
+  return numero;
+}
+
+// Compatibilidade com o restante do código
+const parseNumeroBR = parseNumeroMoney;
+const normalizarValor = parseNumeroMoney;
     
   async function colarLancamentos() {
     try {
@@ -1008,7 +1036,7 @@ const historicoCompleto = [memo, name]
     let totalSaida = 0;
   
     novasLinhas.forEach((l) => {
-      const v = Number(String(l.valor).replace(",", "."));
+     const v = parseNumeroMoney(l.valor);
       if (v >= 0) totalEntrada += v;
       else totalSaida += Math.abs(v);
     });
@@ -1072,9 +1100,11 @@ const historicoCompleto = [memo, name]
     <div className="min-h-screen bg-[#eef7fd] px-1 py-1">
        
          <div className="mx-auto w-full max-w-[1620px]">
-        <div className="rounded-[28px] bg-[#f8fcff] border border-cyan-100 shadow-[0_8px_30px_rgba(15,23,42,0.08)] p-2">
+        <div className="rounded-[28px]  bg-gradient-to-b from-[#061f4a] via-[#061f4a] to-[#061f4a]  border border-cyan-100 shadow-[0_8px_30px_rgba(15,23,42,0.08)] p-2">
           <div className="mb-5">
-            <h2 className="text-3xl font-black tracking-tight text-[#063452]"></h2>
+           <h2 className="text-xl font-bold tracking-tight text-white mb-4">
+              📘 Importação Bancária
+            </h2>
   
             <div className="flex items-start justify-between mb-4 ">
             <div className="flex gap-3"> 
@@ -1107,7 +1137,7 @@ const historicoCompleto = [memo, name]
   
               {abaAtiva === "layout" && (
                 <div className="bg-white rounded-xl p-16 border shadow mb-4">
-                  <h3 className="text-xl font-black text-gray-800 mb-3">
+                  <h3 className="text-xl font-black text-white mb-3">
                     📄 {t("importacaoBancaria.layoutEsperado", "Layout esperado da planilha")}
                   </h3>
   
@@ -1167,7 +1197,7 @@ const historicoCompleto = [memo, name]
                 </div>
               )}
               
-                <div className="text-right">
+                <div className="text-right text-white">
                     <div className="text-base text-gray-550">{t("importacaoBancaria.saldoAtual", "Saldo atual")}</div>
   
                     <div
@@ -1192,7 +1222,7 @@ const historicoCompleto = [memo, name]
               {abaAtiva === "lancamentos" && (
                  <div className="space-y-3">
                   <div className="flex flex-col gap-1">
-                    <label className="text-sm font-semibold text-gray-750">
+                    <label className="text-sm font-bold text-white">
                       {t("importacaoBancaria.contaBancaria", "Conta Bancária")}
                     </label>
   
