@@ -51,7 +51,7 @@ const [mensagem, setMensagem] = useState("");
 
   const userId = data.user.id;
 
- {/* // 3️⃣ grava no SaaS
+  // 3️⃣ grava no SaaS
   const { error: err } = await supabase
     .schema("saas_vendas")
     .from("usuarios")
@@ -85,7 +85,7 @@ const { data: empresaId, error: erroBootstrap } =
 if (erroBootstrap) {
   setErro("Erro ao inicializar o sistema: " + erroBootstrap.message);
   return;
-}*/}
+} 
 
    alert("Cadastro realizado com sucesso");
   navigate("/login");
