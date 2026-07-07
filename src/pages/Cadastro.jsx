@@ -15,6 +15,20 @@ const [telefone, setTelefone] = useState("");
 const [erro, setErro] = useState("");
 const [mensagem, setMensagem] = useState("");
 
+
+function hojeLocalISODate() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+
+function hojeMaisDiasISODate(dias) {
+  const d = new Date();
+  d.setDate(d.getDate() + dias);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+
   
   async function cadastrar(e) {
   e.preventDefault();
@@ -63,9 +77,9 @@ const [mensagem, setMensagem] = useState("");
       telefone,
       status: "trial",
       plano: "trial",
-      ativo: true,
-      trial_inicio: new Date().toISOString(),
-      trial_fim: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      ativo: true, 
+      trial_inicio: hojeLocalISODate(),
+      trial_fim: hojeMaisDiasISODate(7),
     });
 
   if (err) {
@@ -109,6 +123,7 @@ function maskTelefone(value) {
 
   return v;
 }
+
 
 
 
