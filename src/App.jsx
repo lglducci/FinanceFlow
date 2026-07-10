@@ -202,7 +202,9 @@ import DiagnosticoFinanceiro  from  "./pages/DiagnosticoFinanceiro";
 
 import ExtratoBancario  from  "./pages/ExtratoBancario";
 
-  
+import Landing from "./pages/Landing";
+
+import PagamentosBaixados from "./pages/PagamentosBaixados";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -385,6 +387,7 @@ const rotaAtual = window.location.pathname;
   return (
     <Routes>
       <Route path="/" element={<Index />} />
+      <Route path="/landing" element={<Landing />} />
       <Route path="/login" element={<Login onLogin={() => window.location.reload()} />} />
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       <Route path="/planos" element={<Planos />} />
@@ -657,8 +660,8 @@ const rotaAtual = window.location.pathname;
        
       <Route path="/diagnostico-financeiro" element={<DiagnosticoFinanceiro />} />
        <Route path="/extrato-bancario" element={<ExtratoBancario />} />
- 
-  
+   <Route path="/pagamentos-baixados" element={<PagamentosBaixados />} />
+    
 
 
 
