@@ -363,7 +363,16 @@ return (
       <div id="print-area" className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-100 px-2 py-1">
           <div>
-            <h2 className="text-xl font-black text-slate-800">Resultado</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <h2 className="text-xl font-black text-slate-800">
+                Resultado
+              </h2>
+
+              <span className="text-sm font-black text-slate-600">
+                — Período: {formatarData(dataIni)} a {formatarData(dataFim)}
+              </span>
+            </div>
+
             <p className="text-xs font-semibold leading-none text-slate-500">
               {loading
                 ? "Carregando dados..."
@@ -374,7 +383,7 @@ return (
 
         <div className="overflow-x-auto">
           
-             <table className="w-full min-w-[980px] print:min-w-0 border-separate border-spacing-0 text-[15px]">
+             <table className="w-full min-w-[980px] print:w-full print:min-w-[980px] border-separate border-spacing-0 text-[15px]">
             <thead>
               <tr className="bg-slate-900 text-white">
                 {tipo !== "m" && (
@@ -402,7 +411,7 @@ return (
                 )}
 
                 {tipo !== "m" && (
-                  <th className="sticky top-0 px-2 py-1.5 text-left text-[13px] font-black uppercase tracking-wide">
+                   <th className="sticky top-0 w-[38%] px-2 py-1.5 text-left text-[13px] font-black uppercase tracking-wide">
                     Histórico
                   </th>
                 )}
@@ -524,7 +533,10 @@ return (
                             totalConta ? "text-green-700" : "text-slate-600"
                           }`}
                         >
-                          <div className="max-w-[520px] truncate" title={l.historico}>
+                           <div
+                            className="max-w-[520px] print:max-w-none print:whitespace-normal print:break-words"
+                            title={l.historico}
+                          >
                             {l.historico}
                           </div>
                         </td>

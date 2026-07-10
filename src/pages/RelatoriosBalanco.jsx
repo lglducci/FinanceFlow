@@ -121,6 +121,17 @@ if (ehPatrimonial) {
       setLoading(false);
     }
   }
+
+  function formatarData(data) {
+  if (!data) return "";
+
+  const apenasData = String(data).split("T")[0];
+  const [ano, mes, dia] = apenasData.split("-");
+
+  if (!ano || !mes || !dia) return data;
+
+  return `${dia}/${mes}/${ano}`;
+}
   
 return (
   <div className="min-h-screen bg-slate-50 p-4 md:p-6">
@@ -243,18 +254,27 @@ return (
         id="print-area"
         className="rounded-3xl border border-slate-200 bg-white shadow-sm"
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-          <div>
-            <h2 className="text-lg font-black text-slate-800">
-              {ehComparativo ? "Balanço Comparativo" : "Balanço Patrimonial"}
-            </h2>
-            <p className="text-sm font-semibold text-slate-500">
-              {loading
-                ? "Carregando dados..."
-                : `${linhas.length} linha(s) encontradas`}
-            </p>
+         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-lg font-black text-slate-800">
+                  {ehComparativo ? "Balanço Comparativo" : "Balanço Patrimonial"}
+                </h2>
+
+                <span className="text-sm font-black text-slate-600">
+                  {ehComparativo
+                    ? `— Período: ${formatarData(dataIni)} a ${formatarData(dataFim)}`
+                    : `— Período: até ${formatarData(dataCorte)}`}
+                </span>
+              </div>
+
+              <p className="text-sm font-semibold text-slate-500">
+                {loading
+                  ? "Carregando dados..."
+                  : `${linhas.length} linha(s) encontradas`}
+              </p>
+            </div>
           </div>
-        </div>
 
         <div className="overflow-x-auto">
           <table
