@@ -1,11 +1,32 @@
- import React, { useEffect, useState } from "react";
+  import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals.js'; // ✅ Import correto no topo
     
-export default function EditarConta() {
+export default function EditarConta({
+  modoModal = false,
+  contaId: contaIdProp = null,
+  empresaId: empresaIdProp = null,
+  onClose,
+  onSuccess,
+} = {}) {
   const navigate = useNavigate();
-  const { state } = useLocation(); // recebe id e empresa_id
-  const empresa_id = state.empresa_id || localStorage.getItem('id_empresa');
+  const location = useLocation();
+  const state = location.state || {}; // recebe id e empresa_id quando usado como página
+
+  const empresa_id =
+    empresaIdProp ||
+    state.empresa_id ||
+    localStorage.getItem("empresa_id") ||
+    localStorage.getItem("id_empresa");
+
+  const fechar = () => {
+    if (modoModal) {
+      onClose?.();
+      return;
+    }
+
+    navigate(-1);
+  };
 
   const [loading, setLoading] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(true);
@@ -22,7 +43,7 @@ export default function EditarConta() {
     conta: "",
     conjunta: false,
     juridica: false,
-    padrao: false,
+    padrao: false ,
   });
 
  /* 🎨 Tema azul coerente com Login/KDS (fora escuro, dentro mais claro) */
@@ -52,11 +73,15 @@ const THEME = {
 
   // 🔵 1) RETRIEVE — BUSCA NO BANCO
   useEffect(() => {
-    const id = state.id || state.conta_id || state.id_conta;
+    const id = contaIdProp || state.id || state.conta_id || state.id_conta;
 
     if (!id) {
       alert("ID inválido");
-      navigate("/saldos");
+      if (modoModal) {
+        onClose?.();
+      } else {
+        navigate("/saldos");
+      }
       return;
     }
 
@@ -97,7 +122,8 @@ const THEME = {
               conjunta: conta.conjunta || false,
               juridica: conta.juridica || false,
               padrao: conta.padrao || false,
-              icone_url:conta.icone_url
+              icone_url:conta.icone_url,
+              conta_contabil_nome: conta.conta_contabil_nome || "",
             });
 
       } catch (e) {
@@ -109,7 +135,7 @@ const THEME = {
     };
 
     buscar();
-  }, [state, navigate]);
+  }, [contaIdProp, empresa_id, modoModal, onClose, state.id, state.conta_id, state.id_conta, navigate]);
 
   // 🔵 Atualiza estado dos inputs
   const handleChange = (e) => {
@@ -149,7 +175,13 @@ const THEME = {
       }
 
       alert("Conta atualizada com sucesso!");
-      navigate(-1);
+
+      if (modoModal) {
+        onSuccess?.();
+        onClose?.();
+      } else {
+        navigate(-1);
+      }
 
     } catch (e) {
       console.log(e);
@@ -162,7 +194,7 @@ const THEME = {
 
   if (carregandoDados) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-100">
+    <div className={modoModal ? "flex items-center justify-center p-6" : "min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-blue-100"}>
       <div className="text-blue-900 font-black">Carregando dados...</div>
     </div>
   );
@@ -186,7 +218,7 @@ const inputCls =
   const fieldFocus = { boxShadow: `0 0 0 2px ${THEME.focusRing}55` };
 
 return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-150 via-blue-150 to-slate-100 px-3 py-4 flex items-start justify-center">
+    <div className={modoModal ? "px-1 py-1 flex items-start justify-center" : "min-h-screen bg-gradient-to-br from-slate-150 via-blue-150 to-slate-100 px-3 py-4 flex items-start justify-center"}>
      <div className="w-full max-w-[620px] rounded-2xl bg-white shadow-2xl border border-slate-300 overflow-hidden">
 
        {/* TOPO */}
@@ -195,7 +227,7 @@ return (
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={fechar}
             className="text-3xl font-black text-white"
           >
             ←
@@ -327,6 +359,21 @@ return (
           </div>
         </div>
 
+
+           <div className="col-span-2">
+            <label className={labelCls}>
+              Conta contábil correspondente
+            </label>
+
+            <input
+              name="conta_contabil_nome"
+              value={form.conta_contabil_nome || "Nenhuma conta contábil vinculada"}
+              readOnly
+              className={`${inputCls} bg-slate-100 text-slate-500 cursor-not-allowed`}
+            />
+          </div>
+
+
         <div className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3">
             <label  className={labelCls}>
             <input type="checkbox" name="conjunta" checked={form.conjunta} onChange={handleChange} />
@@ -348,7 +395,7 @@ return (
           <div className="border-t border-slate-200 pt-4 flex justify-end gap-3">
            <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={fechar}
             className="px-6 py-3 rounded-xl bg-cyan-50 border border-cyan-200 text-slate-700 font-bold shadow-sm hover:bg-cyan-100"
           >
             Cancelar

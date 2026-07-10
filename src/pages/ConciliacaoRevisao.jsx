@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchSeguro } from "../utils/apiSafe";
 import ModalBase from "../components/ModalBase";
 import FormContaContabilModal from "../components/forms/FormContaContabilModal";
-
+import PagamentosBaixados from "./PagamentosBaixados";
 
 
 export default function ConciliacaoRevisao() {
@@ -30,9 +30,20 @@ const [linhaContaDropdown, setLinhaContaDropdown] = useState(null);
 const [textoContaBusca, setTextoContaBusca] = useState({});
 const [contasFiltradasContabil, setContasFiltradasContabil] = useState([]);
 
+const [modalAjudaAberto, setModalAjudaAberto] = useState(false);
+
 // Reclassificacao de conta contabil
 const [contasContabeis, setContasContabeis] = useState([]);
 
+
+const mensagensPainel = [
+  "Analise o extrato  ➜  Classifique com aconta contábil  ➜  1) Selecione  2) Aceite  3) Execute",
+  "Filtre registros parecidos e aplique a mesma conta contábil em lote",
+  "Revise transferências entre contas antes de executar a conciliação",
+  "Use rejeitar apenas quando o lançamento não deve entrar no financeiro",
+  "Depois de executar, confira transações geradas e pagamentos baixados",
+  "Faça na sequência  ➜  1) Selecionar 2) Aceitar  3) Executar"
+];
 
 
  const [resultadoExecucao, setResultadoExecucao] = useState(null);
@@ -71,7 +82,8 @@ const [contaLoteSelecionada, setContaLoteSelecionada] = useState(null);
           : linhas;
 
 
-
+const [modalPagamentosAberto, setModalPagamentosAberto] = useState(false);
+const [lotePagamentos, setLotePagamentos] = useState(null);
 
 
 
@@ -470,6 +482,18 @@ const podeAceitar = selecionados.some((id) => {
   return linha && linha.situacao === "pendente" && linha.importar !== false;
 });
 
+ 
+const verPagamentoBaixados = () => {
+  const lote =
+    resultadoExecucao?.lote_conciliacao_id ||
+    resultadoExecucao?.importacao_id ||
+    resultadoExecucao?.lote_id ||
+    importacaoId ||
+    null;
+
+  setLotePagamentos(lote);
+  setModalPagamentosAberto(true);
+};
 
 
  async function verOperacoesGeradas(importacaoIdParam = null) {
@@ -887,6 +911,24 @@ async function aplicarContaEmLote() {
 setFiltroTexto("");
 }
 
+
+useEffect(() => {
+  function fecharDropdownConta(event) {
+    const clicouDentro = event.target.closest("[data-dropdown-conta]");
+
+    if (!clicouDentro) {
+      setLinhaContaDropdown(null);
+    }
+  }
+
+  document.addEventListener("mousedown", fecharDropdownConta);
+
+  return () => {
+    document.removeEventListener("mousedown", fecharDropdownConta);
+  };
+}, []);
+
+
  return (
    <div className="min-h-screen bg-slate-100 px-2 -mt-4 pb-2">
     <div className="mx-auto max-w-[1700px]">
@@ -910,6 +952,16 @@ setFiltroTexto("");
                   ✅ Revisado. Pronto para executar.
                 </div>
               )}
+
+               <div className="flex-1 min-w-[320px] max-w-[620px] overflow-hidden rounded-xl border border-orange-300 bg-orange-50 px-3 py-2">
+                <div className="marquee-single text-sm italic font-semibold text-slate-900">
+                  {mensagensPainel.map((m, i) => (
+                    <span key={i} className="marquee-msg">
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
                <button
                 title="Sair para janela de importação."
@@ -1048,6 +1100,15 @@ setFiltroTexto("");
                 >
                   Aplicar Selecionados ({selecionados.length})
                 </button>
+
+                <button
+                type="button"
+                onClick={() => setModalAjudaAberto(true)}
+                className="h-9 w-9 rounded-full bg-blue-600 text-white font-black shadow hover:bg-blue-700"
+                title="Ajuda da conciliação"
+              >
+                ?
+              </button>
             </div>
           </div>
  
@@ -1115,12 +1176,7 @@ setFiltroTexto("");
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              <button
-                onClick={() => navigate("/importacao-bancaria")}
-                className="btn-pill btn-white"
-              >
-                Nova importação
-              </button>
+             
 
               <button
                 onClick={() => verOperacoesGeradas()}
@@ -1128,144 +1184,131 @@ setFiltroTexto("");
               >
                 Ver transações geradas
               </button>
+
+               <button
+                onClick={() => verPagamentoBaixados()}
+                className="btn-pill btn-blue"
+              >
+                Ver Pagamentos Baixados
+              </button>
+
+                <button
+                onClick={() => navigate("/importacao-bancaria")}
+                className="btn-pill btn-white"
+              >
+                Sair 
+              </button>
+
             </div>
           </div>
         )}
+            
 
         {mostrarOperacoes && (
-          <div className="mb-6 rounded-3xl bg-white border border-slate-200 shadow-lg overflow-hidden">
-            <div className="bg-slate-800 text-white px-6 py-4">
-              <h2 className="text-xl font-black">Operações geradas</h2>
-              <p className="text-sm text-slate-200">
-                Lote/importação nº {resultadoExecucao?.lote_conciliacao_id}
-              </p>
-            </div>
+            <div className="mb-6 rounded-3xl bg-white border border-slate-200 shadow-lg overflow-hidden">
+              <div className="bg-slate-800 text-white px-6 py-4 flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-black">Operações geradas</h2>
+                  <p className="text-sm text-slate-200">
+                    Lote/importação nº {resultadoExecucao?.lote_conciliacao_id}
+                  </p>
+                </div>
 
-            {loadingOperacoes ? (
-              <div className="p-6 text-center font-bold text-slate-500">
-                Carregando operações...
+                <div className="text-right">
+                  <div className="text-xs text-slate-300 font-bold">Conta Corrente</div>
+                  <div className="text-base font-black">
+                    {operacoesGeradas[0]?.conta_nome || "-"}
+                  </div>
+                </div>
               </div>
-            ) : operacoesGeradas.length === 0 ? (
-              <div className="p-6 text-center font-bold text-slate-500">
-                Nenhuma operação encontrada para este lote.
-              </div>
-            ) : (
-              <div className="max-h-[620px] overflow-y-auto">
-                 <table className="w-full table-fixed text-sm">
-                  <thead className="bg-gray-50 text-gray-600">
-                    <tr>
-                      <th className="px-3 py-2 text-left">ID</th>
-                      <th className="px-3 py-2 text-left">Descrição</th>
-                      <th className="px-3 py-2 text-center">Data</th>
-                      <th className="px-3 py-2 text-left">Conta</th>
-                      <th className="px-3 py-2 text-left">Tipo</th>
-                      <th className="px-3 py-2 text-left">Origem</th>
-                      <th className="px-3 py-2 text-left">Classificação</th>
-                      <th className="px-3 py-2 text-left">Forma</th>
-                      <th className="px-3 py-2 text-right">Valor</th>
-                      <th className="px-3 py-2 text-left">Evento</th>
-                    </tr>
-                  </thead>
 
-                  <tbody>
-                    {operacoesGeradas.map((l) => (
-                      <tr key={l.id} className="border-t hover:bg-blue-50/50">
-                        <td className="px-3 py-2 font-bold">{l.id}</td>
+              {loadingOperacoes ? (
+                <div className="p-6 text-center font-bold text-slate-500">
+                  Carregando operações...
+                </div>
+              ) : operacoesGeradas.length === 0 ? (
+                <div className="p-6 text-center font-bold text-slate-500">
+                  Nenhuma operação encontrada para este lote.
+                </div>
+              ) : (
+                <div className="max-h-[620px] overflow-y-auto overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="sticky top-0 bg-slate-200 text-black z-10">
+                      <tr>
+                        <th className="px-2 py-2 text-left w-[70px]">ID</th>
+                        <th className="px-3 py-2 text-left min-w-[520px]">Histórico</th>
+                        <th className="px-3 py-2 text-center w-[110px]">Data</th>
+                        <th className="px-2 py-2 text-center w-[80px]">Tipo</th>
+                        <th className="px-2 py-2 text-center w-[90px]">Origem</th>
+                        <th className="px-2 py-2 text-center w-[110px]">Classe</th>
+                        <th className="px-2 py-2 text-center w-[90px]">Forma</th>
+                        <th className="px-3 py-2 text-right w-[130px]">Valor</th>
+                      </tr>
+                    </thead>
 
-                        <td className="px-3 py-2 whitespace-normal break-words max-w-[260px]">
-                          {l.descricao}
-                        </td>
+                    <tbody>
+                      {operacoesGeradas.map((l) => (
+                        <tr key={l.id} className="border-t hover:bg-blue-50/50">
+                          <td className="px-2 py-2 font-bold text-slate-600">
+                            #{l.id}
+                          </td>
 
-                        <td className="px-3 py-2 font-bold text-center">
-                          {String(l.data_movimento || "")
-                            .slice(0, 10)
-                            .split("-")
-                            .reverse()
-                            .join("/")}
-                        </td>
+                          <td className="px-3 py-2 font-semibold text-slate-800 whitespace-normal break-words">
+                            {l.descricao}
+                          </td>
 
-                        <td className="px-3 py-2 whitespace-normal break-words max-w-[200px]">
-                          {l.conta_nome || "-"}
-                        </td>
+                          <td className="px-3 py-2 font-bold text-center whitespace-nowrap">
+                            {String(l.data_movimento || "")
+                              .slice(0, 10)
+                              .split("-")
+                              .reverse()
+                              .join("/")}
+                          </td>
 
-                        <td
-                          className={`px-3 py-2 font-bold ${
-                            l.tipo === "entrada" ? "text-green-700" : "text-red-700"
-                          }`}
-                        >
-                          {l.tipo === "entrada" ? "Entrada" : "Saída"}
-                        </td>
-
-                        <td className="px-3 py-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              l.origem === "conta_pagar"
-                                ? "bg-red-100 text-red-700"
-                                : l.origem === "conta_receber"
+                          <td className="px-2 py-2 text-center">
+                            <span
+                              className={`px-2 py-1 rounded-full text-[11px] font-black ${
+                                l.tipo === "entrada"
                                   ? "bg-green-100 text-green-700"
-                                  : l.origem === "fatura_cartao"
-                                    ? "bg-purple-100 text-purple-700"
-                                    : l.origem === "estorno"
-                                      ? "bg-gray-200 text-gray-700"
-                                      : "bg-yellow-100 text-yellow-700"
-                            }`}
-                          >
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {l.tipo === "entrada" ? "Ent." : "Saída"}
+                            </span>
+                          </td>
+
+                          <td className="px-2 py-2 text-center text-xs font-bold text-slate-600">
                             {l.origem === "conta_pagar"
                               ? "Pagar"
                               : l.origem === "conta_receber"
                                 ? "Receber"
                                 : l.origem === "fatura_cartao"
                                   ? "Fatura"
-                                  : l.origem === "estorno"
-                                    ? "Estorno"
-                                    : "Financeiro"}
-                          </span>
-                        </td>
+                                  : "Fin."}
+                          </td>
 
-                        <td className="px-3 py-2 font-medium">
-                          {l.classificacao || "-"}
-                        </td>
+                          <td className="px-2 py-2 text-center text-xs font-bold text-slate-600">
+                            {l.classificacao || "-"}
+                          </td>
 
-                        <td className="px-3 py-2 font-medium">
-                          {l.forma || "-"}
-                        </td>
+                          <td className="px-2 py-2 text-center text-xs font-bold text-slate-600">
+                            {l.forma || "-"}
+                          </td>
 
-                        <td className="px-3 py-2 text-right font-black">
-                          {Number(l.valor || 0).toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </td>
-
-                        <td className="px-3 py-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-bold ${
-                              l.tipo_operacao === "conta_pagar"
-                                ? "bg-red-100 text-red-700"
-                                : l.tipo_operacao === "conta_receber"
-                                  ? "bg-green-100 text-green-700"
-                                  : l.tipo_operacao === "fatura_cartao"
-                                    ? "bg-purple-100 text-purple-700"
-                                    : "bg-yellow-200 text-yellow-800"
-                            }`}
-                          >
-                            {l.tipo_operacao === "conta_pagar"
-                              ? "A pagar"
-                              : l.tipo_operacao === "conta_receber"
-                                ? "A receber"
-                                : l.tipo_operacao === "fatura_cartao"
-                                  ? "Fatura cartão"
-                                  : "Financeiro"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+                          <td className="px-3 py-2 text-right font-black whitespace-nowrap">
+                            {Number(l.valor || 0).toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
 
         {!resultadoExecucao && loading ? (
           <div className="p-10 text-center text-slate-500 font-bold">
@@ -1313,7 +1356,8 @@ setFiltroTexto("");
                   <th className="p-3 text-right">Valor</th>
                   <th className="p-3 text-center">Situação</th>
                   <th className="p-3 text-left">Plano de Conta</th>
-                  <th className="p-3 text-center">Tipo Evento</th>
+                      <th className="p-3 text-left">Plano de Conta</th>
+                  {/*<th className="p-3 text-center">Tipo Evento</th>*/}
                   <th className="p-3 text-center">Ação</th>
                 </tr>
               </thead>
@@ -1372,32 +1416,43 @@ setFiltroTexto("");
                         </span>
                       </td>
 
-                      <td className="p-3 relative min-w-[260px]">
-                        <input
-                          value={
-                            l.tipo_evento === "transf_mesma_tit"
-                              ? "Conta contábil definida pela transferência"
-                              : textoContaBusca[l.id] ?? l.conta_descricao ?? l.conta_id ?? ""
-                          }
-                          onFocus={() => {
-                            setLinhaContaDropdown(l.id);
-                            filtrarContasContabeis("");
-                          }}
-                          onChange={(e) => {
-                            const texto = e.target.value;
+                        <td    data-dropdown-conta
+                              className="p-3 relative min-w-[260px]"
+                            >
+                              <input
+                                value={
+                                  l.tipo_evento === "transf_mesma_tit"
+                                    ? "Conta contábil definida pela transferência"
+                                    : textoContaBusca[l.id] ??
+                                      l.conta_descricao ??
+                                      l.conta_id ??
+                                      ""
+                                }
+                                onFocus={() => {
+                                  setLinhaContaDropdown(l.id);
+                                  filtrarContasContabeis("");
+                                }}
+                                onChange={(e) => {
+                                  const texto = e.target.value;
 
-                            setTextoContaBusca((prev) => ({
-                              ...prev,
-                              [l.id]: texto,
-                            }));
+                                  setTextoContaBusca((prev) => ({
+                                    ...prev,
+                                    [l.id]: texto,
+                                  }));
 
-                            setLinhaContaDropdown(l.id);
-                            filtrarContasContabeis(texto);
-                          }}
-                          placeholder="Digite a conta..."
-                          className="w-full rounded-xl border px-3 py-2 text-xs font-bold"
-                          disabled={l.situacao === "executado" || l.tipo_evento === "transf_mesma_tit"}
-                        />
+                                  setLinhaContaDropdown(l.id);
+                                  filtrarContasContabeis(texto);
+                                }}
+                                placeholder="Digite a conta..."
+                                className="w-full rounded-xl border px-3 py-2 text-xs font-bold"
+                                disabled={
+                                  l.situacao === "executado" ||
+                                  l.tipo_evento === "transf_mesma_tit"
+                                }
+                              />                                       
+                                                  
+
+
 
                         {linhaContaDropdown === l.id && (
                           <div className="absolute z-50 mt-1 max-h-64 w-[360px] overflow-y-auto rounded-xl border bg-white shadow-xl">
@@ -1433,9 +1488,13 @@ setFiltroTexto("");
                         )}
                       </td>
 
-                      <td className="p-3 text-slate-600 font-semibold">
-                        {l.tipo_evento}
+                      <td className="p-3 text-slate-700 font-semibold  text-blue-900 truncate">
+                        {l.mensagem}
                       </td>
+ 
+                    {/*}  <td className="p-3 text-slate-600 font-semibold">
+                        {l.tipo_evento}
+                      </td>*/}
 
                       <td className="p-3 text-center">
                         <div className="flex justify-center gap-2">
@@ -1642,6 +1701,159 @@ setFiltroTexto("");
         }}
       />
     </ModalBase>
+
+   <style>{`
+  .marquee-single {
+    position: relative;
+    height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .marquee-msg {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    opacity: 0;
+    white-space: nowrap;
+    animation: marqueeMsg 60s linear infinite;
+  }
+
+  .marquee-msg:nth-child(1) { animation-delay: 0s; }
+  .marquee-msg:nth-child(2) { animation-delay: 10s; }
+  .marquee-msg:nth-child(3) { animation-delay: 20s; }
+  .marquee-msg:nth-child(4) { animation-delay: 30s; }
+  .marquee-msg:nth-child(5) { animation-delay: 40s; }
+  .marquee-msg:nth-child(6) { animation-delay: 50s; }
+
+  @keyframes marqueeMsg {
+    0%   { transform: translateX(0); opacity: 0; }
+    2%   { opacity: 1; }
+    12%  { opacity: 1; }
+    16%  { transform: translateX(-950px); opacity: 0; }
+    100% { transform: translateX(-950px); opacity: 0; }
+  }
+`}</style>
+
+{modalPagamentosAberto && (
+  <div className="fixed inset-0 z-[999] bg-black/50 flex items-center justify-center p-4">
+    <div className="w-full max-w-[1500px] max-h-[92vh] overflow-y-auto rounded-[28px] bg-white shadow-2xl">
+      <PagamentosBaixados
+        modoModal={true}
+        loteInicialProp={lotePagamentos}
+        onClose={() => setModalPagamentosAberto(false)}
+      />
+    </div>
+  </div>
+)}
+
+
+  {modalAjudaAberto && (
+  <div className="fixed inset-0 z-[999] bg-black/50 flex items-center justify-center p-4">
+    <div className="w-full max-w-[760px] rounded-[28px] bg-white shadow-2xl overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-900 to-cyan-700 px-6 py-5 text-white flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-black">
+            Como revisar a conciliação
+          </h2>
+
+          <p className="text-sm text-cyan-100 font-semibold">
+            Siga a ordem abaixo para evitar lançamentos errados.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setModalAjudaAberto(false)}
+          aria-label="Fechar ajuda"
+          className="h-9 w-9 rounded-full bg-white/15 border border-white/25 font-black hover:bg-white/25"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="p-6 space-y-4">
+        {[
+          {
+            num: "1",
+            titulo: "Analise as linhas do extrato",
+            texto: "Confira data, histórico, valor e tipo de evento antes de aceitar.",
+            video: "https://www.youtube.com/watch?v=2OINCdmffck",
+          },
+          {
+            num: "2",
+            titulo: "Classifique as contas",
+            texto: "Pesquise pelo histórico e atribua a conta contábil correta.",
+            video: "https://youtu.be/Jd1eAf-1Rd4",
+          },
+          {
+            num: "3",
+            titulo: "Use filtro e conta em lote",
+            texto: "Quando vários registros forem parecidos, filtre e aplique a mesma conta contábil.",
+            video: "https://youtu.be/ry2hD-z0mIQ",
+          },
+          {
+            num: "4",
+            titulo: "Selecione os registros",
+            texto: "Marque os lançamentos que estão corretos para conciliação.",
+            video: "https://youtu.be/Jd1eAf-1Rd4",
+          },
+          {
+            num: "5",
+            titulo: "Aceite ou rejeite",
+            texto: "Aceite o que será conciliado e rejeite o que não deve entrar no financeiro.",
+            video: "https://youtu.be/RWCQyqPxbq0",
+          },
+          {
+            num: "6",
+            titulo: "Execute a conciliação",
+            texto: "Finalize somente quando tudo estiver OK. Depois confira transações geradas e pagamentos baixados.",
+            video: "https://youtu.be/bdMmFBjgUHI",
+          },
+
+         {
+            num: "7",
+            titulo: "Utilize o filtro de revisão",
+            texto: "Use este filtro para visualizar apenas os registros Pendentes, Rejeitados ou já Revisados (OK). Isso facilita a conferência e evita que algum lançamento fique sem análise.",
+            video: "https://youtu.be/4rVUiW9Kh-4",
+          },
+        ].map((passo) => (
+          <div
+            key={passo.num}
+            className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+          >
+            <div className="h-10 w-10 shrink-0 rounded-full bg-blue-700 text-white flex items-center justify-center font-black">
+              {passo.num}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="font-black text-slate-800">
+                {passo.titulo}
+              </div>
+
+              <div className="text-sm font-semibold text-slate-600">
+                {passo.texto}
+              </div>
+            </div>
+
+            <a
+              href={passo.video}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 inline-flex items-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm text-white font-black shadow hover:bg-red-400 transition-colors"
+            >
+              <span>Ver vídeo</span>
+              <span aria-hidden="true">▶</span>
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
   </div>
 );
+ 
+
 }
