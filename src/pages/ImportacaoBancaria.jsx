@@ -1461,7 +1461,7 @@ const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
    
                  
                    <div className="text-right font-bold">{t("importacaoBancaria.saldo", "Saldo")}</div>
-                   <div className="text-center font-bold">{t("importacaoBancaria.acao", "Ação")}</div>
+                   {/*<div className="text-center font-bold">{t("importacaoBancaria.acao", "Ação")}</div>*/}
                  </div>
    
                  {linhas.map((l) => (
@@ -1522,14 +1522,14 @@ const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
                      </div>
    
                      <div className="flex items-center justify-center gap-2">
-                       <button
+                      {/*} <button
                          type="button"
                          className="text-blue-600 hover:text-blue-800 text-lg"
                          onClick={() => editarLinha(l._id)}
                          title={t("importacaoBancaria.editarLinha", "Editar linha")}
                        >
                          ✏️
-                       </button>
+                       </button>*/}
    
                         <button
                        type="button"
@@ -1538,7 +1538,7 @@ const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
                        title={t("importacaoBancaria.excluirLinha", "Excluir linha")}
                      >
                        ✕
-                     </button>
+                     </button> 
                      </div>
                    </div>
                  ))}
@@ -1621,14 +1621,14 @@ const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
                        disabled
                      />
    
-                     <div className="flex items-center justify-center">
+                     {/*<div className="flex items-center justify-center">
                        <button
                          className="text-gray-400 hover:text-red-600 text-lg"
                          onClick={cancelarNovaLinha}
                        >
                          🗑
                        </button>
-                     </div>
+                     </div>*/}
                    </div>
                  )}
                </div>

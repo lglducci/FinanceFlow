@@ -51,9 +51,16 @@ const [operacoesGeradas, setOperacoesGeradas] = useState([]);
 const [mostrarOperacoes, setMostrarOperacoes] = useState(false);
 const [loadingOperacoes, setLoadingOperacoes] = useState(false);
 
+
+const [acaoDivergencia, setAcaoDivergencia] = useState("");
+const [novaDataDivergencia, setNovaDataDivergencia] = useState("");
+const [novaContaDivergencia, setNovaContaDivergencia] = useState("");
+
  
  const [contas, setContas] = useState([]);
 const [linhaEditando, setLinhaEditando] = useState(null);
+const [linhaDivergencia, setLinhaDivergencia] = useState(null);
+
 const [contaOrigemId, setContaOrigemId] = useState("");
 const [contaDestinoId, setContaDestinoId] = useState("");
  
@@ -94,6 +101,7 @@ const [filtroTexto, setFiltroTexto] = useState("");
 
 const linhasFiltradasComTexto = linhasFiltradas.filter((l) => {
   const texto = filtroTexto.toLowerCase().trim();
+ 
 
   if (!texto) return true;
 
@@ -723,8 +731,7 @@ const lote_id =
   linhaEditando?.lote_conciliacao_id ||
   0;
 
-
-
+ 
 {/*}
 async function carregarContas() {
   const r = await fetch(buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id }));
@@ -841,12 +848,13 @@ async function carregarContasContabeis() {
 function idsSelecionaveisVisiveis() {
   return linhasFiltradasComTexto
     .filter(
-      (l) =>
-        l.importar !== false &&
-        l.situacao !== "executado" &&
-        l.situacao !== "rejeitado" &&
-        l.tipo_evento !== "transf_mesma_tit"
-    )
+  (l) =>
+    l.importar !== false &&
+    l.situacao !== "executado" &&
+    l.situacao !== "rejeitado" &&
+    l.tipo_evento !== "transf_mesma_tit" &&
+    l.tipo_evento !== "divergencia_financeiro"
+)
     .map((l) => Number(l.id));
 }
 
@@ -927,6 +935,70 @@ useEffect(() => {
     document.removeEventListener("mousedown", fecharDropdownConta);
   };
 }, []);
+
+ async function estornarDivergencia() {
+  if (!linhaDivergencia?.transacao_id) {
+    alert("Transação não encontrada.");
+    return;
+  }
+
+  const confirmou = window.confirm(
+    "Tem certeza que deseja estornar este lançamento?"
+  );
+
+  if (!confirmou) return;
+
+  try {
+    const url = buildWebhookUrl("estornarlancto");
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        id: Number(linhaDivergencia.transacao_id),
+      }),
+    });
+
+    const texto = await resp.text();
+    console.log("RETORNO ESTORNO:", texto);
+
+    let json = {};
+
+    try {
+      json = JSON.parse(texto);
+    } catch {
+      throw new Error("Resposta inválida ao estornar o lançamento.");
+    }
+
+    const base = Array.isArray(json) ? json[0] : json;
+    const sucesso = base?.ok === true;
+
+    if (!resp.ok || !sucesso) {
+      throw new Error(
+        base?.message ||
+        "Erro ao estornar. Verifique os vínculos do lançamento."
+      );
+    }
+
+    const divergenciaId = Number(linhaDivergencia.id);
+
+    setLinhas((prev) =>
+      prev.filter((l) => Number(l.id) !== divergenciaId)
+    );
+
+    setLinhaDivergencia(null);
+    setAcaoDivergencia("");
+
+    window.dispatchEvent(new Event("contabil-atualizado"));
+
+    alert("Lançamento estornado com sucesso!");
+  } catch (e) {
+    console.error("ERRO Estornar:", e);
+    alert(e.message || "Erro ao estornar.");
+  }
+}
+
 
 
  return (
@@ -1356,7 +1428,7 @@ useEffect(() => {
                   <th className="p-3 text-right">Valor</th>
                   <th className="p-3 text-center">Situação</th>
                   <th className="p-3 text-left">Plano de Conta</th>
-                      <th className="p-3 text-left">Plano de Conta</th>
+                      <th className="p-3 text-left">Motivo Rejeição</th>
                   {/*<th className="p-3 text-center">Tipo Evento</th>*/}
                   <th className="p-3 text-center">Ação</th>
                 </tr>
@@ -1503,68 +1575,66 @@ useEffect(() => {
                             title="Rejeita o registro da importação."
                             onClick={() => rejeitarLinha(l.id)}
                             disabled={
-                              l.situacao === "ok" ||
                               l.situacao === "executado" ||
-                              l.situacao === "rejeitado"
+                              l.situacao === "rejeitado" ||
+                              l.tipo_evento === "transf_mesma_tit" ||
+                              l.tipo_evento === "divergencia_financeiro"
                             }
                             className="text-[12px] font-bold text-red-600 hover:text-red-800 disabled:text-slate-300 disabled:cursor-not-allowed"
                           >
                             Rejeitar
                           </button>
                           )}
-
-                          {l.tipo_evento === "transf_mesma_tit" ? (
+                          {l.tipo_evento === "divergencia_financeiro" ? (
+                            <button
+                              type="button"
+                              title="Corrigir este lançamento que existe no sistema, mas não foi encontrado no extrato"
+                              onClick={() => {
+                                setLinhaDivergencia(l);
+                                 setAcaoDivergencia("");
+                                setNovaDataDivergencia(l.data_mov || "");
+                                setNovaContaDivergencia("");
+                              
+                              }}
+                              className="text-[12px] font-bold text-orange-600 hover:text-orange-800 hover:underline"
+                            >
+                              Resolver
+                            </button>
+                          ) : l.tipo_evento === "transf_mesma_tit" ? (
                             <>
-                              <button
-                                title="Aceita o registro da forma em que ele veio do arquivo."
-                                onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
-                                className="text-[12px] font-semibold text-emerald-600 hover:text-emerald-800 hover:underline"
-                              >
-                                Aceitar
-                              </button>
-
-                              <div className="flex items-center justify-center gap-2 whitespace-nowrap">
-                                 <button
-                                    title={
-                                      resolvido
-                                        ? "Linha já resolvida como transferência"
-                                        : "Resolve esta linha como transferência entre contas"
-                                    }
-                                    disabled={resolvido}
-                                    onClick={() => {
-                                      if (resolvido) return;
-
-                                      setLinhaEditando(l);
-                                      setContaOrigemId(l.conta_financeira_id || "");
-                                      setContaDestinoId(l.destino_id || "");
-                                    }}
-                                    className={`text-[12px] font-bold ${
-                                      resolvido
-                                        ? "text-slate-300 cursor-not-allowed"
-                                        : "text-purple-600 hover:text-purple-800"
-                                    }`}
-                                  >
-                                    {resolvido ? "Resolvido" : "Resolver"}
-                                  </button>
-                              </div>
+                              {/* mantém aqui seu tratamento atual da transferência */}
                             </>
                           ) : (
                             <button
-                                title={
-                                  l.situacao === "ok" || l.situacao === "executado"
-                                    ? "Lançamento já aceito"
-                                    : "Confirmar este lançamento. Use quando estiver correto"
-                                }
-                                onClick={() => aceitarSelecionados([l.id], 1, l.tipo_evento)}
-                                disabled={l.situacao === "ok" || l.situacao === "executado"}
-                                className={`text-[12px] font-semibold underline-offset-2 ${
-                                  l.situacao === "ok" || l.situacao === "executado"
-                                    ? "text-slate-300 cursor-not-allowed"
-                                    : "text-emerald-600 hover:text-emerald-800 hover:underline"
-                                }`}
-                              >
-                                {l.situacao === "ok" || l.situacao === "executado" ? "Aceito" : "Aceitar"}
-                              </button>
+                              title={
+                                l.situacao === "ok" || l.situacao === "executado"
+                                  ? "Lançamento já aceito"
+                                  : "Confirmar este lançamento. Use quando estiver correto"
+                              }
+                              onClick={() =>
+                                aceitarSelecionados([l.id], 1, l.tipo_evento)
+                              }
+                              disabled={
+                                l.situacao === "ok" ||
+                                l.situacao === "executado" ||
+                                l.situacao === "rejeitado" ||
+                                l.importar === false ||
+                                Boolean(l.transacao_id)
+                              }
+                              className={`text-[12px] font-semibold underline-offset-2 ${
+                                l.situacao === "ok" ||
+                                l.situacao === "executado" ||
+                                l.situacao === "rejeitado" ||
+                                l.importar === false ||
+                                Boolean(l.transacao_id)
+                                  ? "text-slate-300 cursor-not-allowed"
+                                  : "text-emerald-600 hover:text-emerald-800 hover:underline"
+                              }`}
+                            >
+                              {l.situacao === "ok" || l.situacao === "executado"
+                                ? "Aceito"
+                                : "Aceitar"}
+                            </button>
                           )}
                         </div>
                       </td>
@@ -1578,6 +1648,135 @@ useEffect(() => {
       </div>
     </div>
 
+
+          {linhaDivergencia && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="w-[520px] rounded-3xl bg-white p-6 shadow-2xl">
+                <h2 className="mb-4 text-xl font-black text-slate-800">
+                  Resolver divergência do financeiro
+                </h2>
+
+                <div className="mb-4 rounded-2xl border bg-slate-50 p-4">
+                  <div className="text-sm font-bold text-slate-700">
+                    {linhaDivergencia.historico}
+                  </div>
+
+                  <div className="mt-2 text-xl font-black text-slate-900">
+                    {Number(linhaDivergencia.valor || 0).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </div>
+
+                  <div className="mt-2 text-xs font-semibold text-slate-500">
+                    Transação #{linhaDivergencia.transacao_id}
+                  </div>
+                </div>
+
+                  <div className="grid gap-3">
+                  <button
+                    type="button"
+                    className="btn-pill btn-blue"
+                    onClick={() => setAcaoDivergencia("data")}
+                  >
+                    Alterar data
+                  </button>
+
+                  {acaoDivergencia === "data" && (
+                    <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3">
+                      <label className="mb-1 block text-xs font-black text-slate-600">
+                        Nova data
+                      </label>
+
+                      <input
+                        type="date"
+                        value={novaDataDivergencia}
+                        onChange={(e) => setNovaDataDivergencia(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold"
+                      />
+
+                      <button
+                        type="button"
+                        className="btn-pill btn-green mt-3 w-full"
+                        onClick={() => {
+                          alert(
+                            `Depois vamos atualizar a transação ${linhaDivergencia.transacao_id} para ${novaDataDivergencia}`
+                          );
+                        }}
+                      >
+                        Confirmar nova data
+                      </button>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    className="btn-pill btn-blue"
+                    onClick={() => setAcaoDivergencia("conta")}
+                  >
+                    Alterar conta
+                  </button>
+
+                  {acaoDivergencia === "conta" && (
+                    <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3">
+                      <label className="mb-1 block text-xs font-black text-slate-600">
+                        Nova conta financeira
+                      </label>
+
+                      <select
+                        value={novaContaDivergencia}
+                        onChange={(e) => setNovaContaDivergencia(e.target.value)}
+                        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold"
+                      >
+                        <option value="">Selecione a conta</option>
+
+                        {contas.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.nome}
+                          </option>
+                        ))}
+                      </select>
+
+                      <button
+                        type="button"
+                        className="btn-pill btn-green mt-3 w-full"
+                        onClick={() => {
+                          alert(
+                            `Depois vamos mover a transação ${linhaDivergencia.transacao_id} para a conta ${novaContaDivergencia}`
+                          );
+                        }}
+                      >
+                        Confirmar nova conta
+                      </button>
+                    </div>
+                  )}
+
+                  <button
+                      type="button"
+                      className="btn-pill btn-red"
+                      onClick={estornarDivergencia}
+                    >
+                      Estornar lançamento
+                    </button>
+                  <button
+                    type="button"
+                    className="btn-pill btn-white"
+                    onClick={() => {
+                      setLinhaDivergencia(null);
+                      setAcaoDivergencia("");
+                      setNovaDataDivergencia("");
+                      setNovaContaDivergencia("");
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+
+
+
+              </div>
+            </div>
+          )}
     {linhaEditando && (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div className="bg-white rounded-3xl p-6 w-[520px] shadow-2xl">
@@ -1654,6 +1853,9 @@ useEffect(() => {
         </div>
       </div>
     )}
+
+
+    
 
     <ModalBase
       open={modalContaAberto}
