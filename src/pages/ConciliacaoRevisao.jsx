@@ -56,7 +56,8 @@ const [acaoDivergencia, setAcaoDivergencia] = useState("");
 const [novaDataDivergencia, setNovaDataDivergencia] = useState("");
 const [novaContaDivergencia, setNovaContaDivergencia] = useState("");
 
- 
+ const [salvandoDivergencia, setSalvandoDivergencia] = useState(false);
+
  const [contas, setContas] = useState([]);
 const [linhaEditando, setLinhaEditando] = useState(null);
 const [linhaDivergencia, setLinhaDivergencia] = useState(null);
@@ -68,33 +69,47 @@ const [importacaoId, setImportacaoId] = useState(0);
  const [filtroSituacao, setFiltroSituacao] = useState("todos");
  
 const [contaLoteSelecionada, setContaLoteSelecionada] = useState(null);
+ 
 
-
- const linhasFiltradas =
+const linhasFiltradas =
   filtroSituacao === "rejeitado"
     ? linhas.filter((l) => l.situacao === "rejeitado")
     : filtroSituacao === "pendente"
       ? linhas.filter((l) => l.situacao === "pendente")
       : filtroSituacao === "ok"
         ? linhas.filter((l) => l.situacao === "ok")
-        : filtroSituacao === "sem_conta"
+        : filtroSituacao === "divergencia_financeiro"
           ? linhas.filter(
-              (l) =>
-                l.importar !== false &&
-                l.situacao !== "rejeitado" &&
-                l.tipo_evento !== "transf_mesma_tit" &&
-                !l.conta_id &&
-                !l.conta_descricao
+              (l) => l.tipo_evento === "divergencia_financeiro"
             )
-          : linhas;
+          : filtroSituacao === "sem_conta"
+            ? linhas.filter(
+                (l) =>
+                  l.importar !== false &&
+                  l.situacao !== "rejeitado" &&
+                  l.tipo_evento !== "transf_mesma_tit" &&
+                  l.tipo_evento !== "divergencia_financeiro" &&
+                  !l.conta_id &&
+                  !l.conta_descricao
+              )
+            : linhas;
+
+
+ 
 
 
 const [modalPagamentosAberto, setModalPagamentosAberto] = useState(false);
 const [lotePagamentos, setLotePagamentos] = useState(null);
 
-
+const [historicoEditandoId, setHistoricoEditandoId] = useState(null);
+const [historicoEditandoTexto, setHistoricoEditandoTexto] = useState("");
+const [salvandoHistoricoId, setSalvandoHistoricoId] = useState(null);
 
  
+  const [relatorioConciliacao, setRelatorioConciliacao] = useState(null);
+const [modalRelatorioAberto, setModalRelatorioAberto] = useState(false);
+
+
 const [textoContaLote, setTextoContaLote] = useState("");
 const [contasLoteFiltradas, setContasLoteFiltradas] = useState([]);
 const [filtroTexto, setFiltroTexto] = useState("");
@@ -102,11 +117,17 @@ const [filtroTexto, setFiltroTexto] = useState("");
 const linhasFiltradasComTexto = linhasFiltradas.filter((l) => {
   const texto = filtroTexto.toLowerCase().trim();
  
-
+ 
   if (!texto) return true;
 
   return (
-    String(l.historico || "").toLowerCase().includes(texto) ||
+    String(
+  l.historico_lancamento ||
+  l.historico ||
+  ""
+)
+  .toLowerCase()
+  .includes(texto) ||
     String(l.tipo_evento || "").toLowerCase().includes(texto) ||
     String(l.conta_descricao || "").toLowerCase().includes(texto)
   );
@@ -921,6 +942,30 @@ setFiltroTexto("");
 
 
 useEffect(() => {
+  const salvo = localStorage.getItem(
+    "resultado_analise_conciliacao"
+  );
+
+  if (!salvo) return;
+
+  try {
+    const resultado = JSON.parse(salvo);
+    setRelatorioConciliacao(resultado);
+
+    console.log(
+      "RELATÓRIO DA CONCILIAÇÃO:",
+      resultado
+    );
+  } catch (e) {
+    console.error(
+      "Erro ao ler relatório da conciliação:",
+      e
+    );
+  }
+}, []);
+
+
+useEffect(() => {
   function fecharDropdownConta(event) {
     const clicouDentro = event.target.closest("[data-dropdown-conta]");
 
@@ -999,7 +1044,289 @@ useEffect(() => {
   }
 }
 
+          async function corrigirDivergenciaFinanceiro(acao) {
+            if (!linhaDivergencia?.id) {
+              alert("Divergência não encontrada.");
+              return;
+            }
 
+            if (!linhaDivergencia?.transacao_id) {
+              alert("Transação vinculada não encontrada.");
+              return;
+            }
+
+            if (acao === "ALTERAR_DATA" && !novaDataDivergencia) {
+              alert("Informe a nova data.");
+              return;
+            }
+
+            if (acao === "ALTERAR_CONTA" && !novaContaDivergencia) {
+              alert("Informe a nova conta financeira.");
+              return;
+            }
+
+            const mensagemConfirmacao =
+              acao === "ALTERAR_DATA"
+                ? `Confirma alterar a data para ${String(novaDataDivergencia)
+                    .split("-")
+                    .reverse()
+                    .join("/")}?`
+                : "Confirma alterar a conta financeira deste lançamento?";
+
+            if (!window.confirm(mensagemConfirmacao)) return;
+
+            try {
+              setSalvandoDivergencia(true);
+
+              const payload = {
+                empresa_id: Number(empresa_id),
+                conciliacao_id: Number(linhaDivergencia.id),
+                acao,
+                nova_data:
+                  acao === "ALTERAR_DATA"
+                    ? novaDataDivergencia
+                    : String(linhaDivergencia.data_mov || "")
+          .slice(0, 10),
+                nova_conta_id:
+                  acao === "ALTERAR_CONTA"
+                    ? Number(novaContaDivergencia)
+                    : null,
+              };
+
+              const url = buildWebhookUrl(
+                "corrigir_divergencia_financeiro"
+              );
+
+              console.log("URL CORRIGIR DIVERGÊNCIA:", url);
+              console.log("PAYLOAD CORRIGIR DIVERGÊNCIA:", payload);
+
+              const resp = await fetch(url, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+              });
+
+              const texto = await resp.text();
+
+              console.log("STATUS WEBHOOK:", resp.status);
+              console.log("RETORNO BRUTO WEBHOOK:", texto);
+
+              let json = {};
+
+              try {
+                json = JSON.parse(texto);
+              } catch {
+                throw new Error(
+                  `Resposta inválida do webhook. HTTP ${resp.status}: ${texto}`
+                );
+              }
+
+              if (!resp.ok) {
+                throw new Error(
+                  json?.message ||
+                    json?.[0]?.message ||
+                    `Erro HTTP ${resp.status}`
+                );
+              }
+
+              const base = Array.isArray(json)
+                ? json[0]
+                : json;
+
+              const resultado =
+                base?.data?.[0]?.fn_corrigir_divergencia_financeiro ||
+                base?.data?.fn_corrigir_divergencia_financeiro ||
+                base?.fn_corrigir_divergencia_financeiro ||
+                base?.data?.[0] ||
+                base?.data ||
+                base;
+
+              console.log(
+                "RESULTADO CORREÇÃO DIVERGÊNCIA:",
+                resultado
+              );
+
+              if (!resultado?.ok) {
+                throw new Error(
+                  resultado?.message ||
+                    "Não foi possível corrigir a divergência."
+                );
+              }
+
+              const conciliacaoId = Number(
+                linhaDivergencia.id
+              );
+
+              // A procedure removeu a linha técnica da conciliação.
+              setLinhas((prev) =>
+                prev.filter(
+                  (linha) =>
+                    Number(linha.id) !== conciliacaoId
+                )
+              );
+
+              setLinhaDivergencia(null);
+              setAcaoDivergencia("");
+              setNovaDataDivergencia("");
+              setNovaContaDivergencia("");
+
+              window.dispatchEvent(
+                new Event("contabil-atualizado")
+              );
+
+              alert(
+                resultado.message ||
+                  "Divergência corrigida com sucesso."
+              );
+            } catch (e) {
+              console.error(
+                "ERRO CORRIGIR DIVERGÊNCIA:",
+                e
+              );
+
+              alert(
+                e.message ||
+                  "Erro ao corrigir a divergência."
+              );
+            } finally {
+              setSalvandoDivergencia(false);
+            }
+          }
+          
+function iniciarEdicaoHistorico(linha) {
+  if (linha.situacao === "executado") {
+    alert("Não é possível alterar o histórico de um lançamento já executado.");
+    return;
+  }
+
+  setHistoricoEditandoId(Number(linha.id));
+
+  setHistoricoEditandoTexto(
+    linha.historico_lancamento ||
+    linha.historico ||
+    ""
+  );
+}
+
+function cancelarEdicaoHistorico() {
+  setHistoricoEditandoId(null);
+  setHistoricoEditandoTexto("");
+}
+
+
+async function salvarHistoricoLancamento(linha) {
+  const novoHistorico = String(
+    historicoEditandoTexto || ""
+  ).trim();
+
+  if (!novoHistorico) {
+    alert("O histórico do lançamento não pode ficar vazio.");
+    return;
+  }
+
+  const historicoAtual = String(
+    linha.historico_lancamento ||
+    linha.historico ||
+    ""
+  ).trim();
+
+  // Nada mudou: apenas fecha a edição.
+  if (novoHistorico === historicoAtual) {
+    cancelarEdicaoHistorico();
+    return;
+  }
+
+  try {
+    setSalvandoHistoricoId(Number(linha.id));
+
+    const payload = {
+      empresa_id: Number(empresa_id),
+      conciliacao_id: Number(linha.id),
+      historico_lancamento: novoHistorico,
+    };
+
+    const url = buildWebhookUrl(
+      "altera_historico_conciliacao"
+    );
+
+    console.log("SALVAR HISTÓRICO:", payload);
+
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const texto = await resp.text();
+
+    console.log("RETORNO HISTÓRICO:", texto);
+
+    let json = {};
+
+    try {
+      json = JSON.parse(texto);
+    } catch {
+      throw new Error(
+        `Resposta inválida do webhook. HTTP ${resp.status}`
+      );
+    }
+
+    if (!resp.ok) {
+      throw new Error(
+        json?.message ||
+        json?.[0]?.message ||
+        `Erro HTTP ${resp.status}`
+      );
+    }
+
+    const base = Array.isArray(json)
+      ? json[0]
+      : json;
+
+    const resultado =
+      base?.data?.[0]?.fn_atualizar_historico_conciliacao ||
+      base?.data?.fn_atualizar_historico_conciliacao ||
+      base?.fn_atualizar_historico_conciliacao ||
+      base?.data?.[0] ||
+      base?.data ||
+      base;
+
+    if (resultado?.ok === false) {
+      throw new Error(
+        resultado.message ||
+        "Não foi possível alterar o histórico."
+      );
+    }
+
+    setLinhas((prev) =>
+      prev.map((item) =>
+        Number(item.id) === Number(linha.id)
+          ? {
+              ...item,
+              historico_lancamento:
+                resultado?.historico_lancamento ||
+                novoHistorico,
+            }
+          : item
+      )
+    );
+
+    cancelarEdicaoHistorico();
+  } catch (e) {
+    console.error("ERRO AO ALTERAR HISTÓRICO:", e);
+
+    alert(
+      e.message ||
+      "Erro ao alterar o histórico."
+    );
+  } finally {
+    setSalvandoHistoricoId(null);
+  }
+}
 
  return (
    <div className="min-h-screen bg-slate-100 px-2 -mt-4 pb-2">
@@ -1087,7 +1414,17 @@ useEffect(() => {
               >
                 ↩ Reverter
               </button>
+            
 
+             {relatorioConciliacao && (
+                <button
+                  type="button"
+                  onClick={() => setModalRelatorioAberto(true)}
+                  className="btn-pill btn-blue text-xs px-4 py-2"
+                >
+                  📊 Ver análise
+                </button>
+              )}
               
 
               <div className="hidden md:block h-8 w-px bg-slate-300 mx-1" />
@@ -1114,6 +1451,18 @@ useEffect(() => {
                 <option value="ok">
                   OK ({linhas.filter((l) => l.situacao === "ok").length})
                 </option>
+
+                <option value="divergencia_financeiro">
+                  Fora do Extrato (
+                  {
+                    linhas.filter(
+                      (l) => l.tipo_evento === "divergencia_financeiro"
+                    ).length
+                  }
+                  )
+                </option>
+
+                
               {/*}  <option value="sem_conta">
                   Sem Plano ({faltamContas.length})
                 </option>*/}
@@ -1428,7 +1777,8 @@ useEffect(() => {
                   <th className="p-3 text-right">Valor</th>
                   <th className="p-3 text-center">Situação</th>
                   <th className="p-3 text-left">Plano de Conta</th>
-                      <th className="p-3 text-left">Motivo Rejeição</th>
+                  <th className="w-[190px] max-w-[190px] p-2 text-left">
+                       Motivo </th>
                   {/*<th className="p-3 text-center">Tipo Evento</th>*/}
                   <th className="p-3 text-center">Ação</th>
                 </tr>
@@ -1439,10 +1789,14 @@ useEffect(() => {
                   const resolvido = !!l.destino_id;
 
                   return (
-                    <tr
-                      key={l.id}
-                      className="border-b border-slate-100 hover:bg-blue-50/60"
-                    >
+                     <tr
+                        key={l.id}
+                        className={`border-b transition ${
+                          l.tipo_evento === "divergencia_financeiro"
+                            ? "border-orange-300 bg-orange-100 hover:bg-orange-200"
+                            : "border-slate-200 hover:bg-blue-50/60"
+                        }`}
+                      >
                       <td className="p-3 text-center">
                            <input
                           type="checkbox"
@@ -1460,10 +1814,98 @@ useEffect(() => {
                       <td className="p-3 font-semibold text-slate-700">
                         {String(l.data_mov || "").slice(0, 10).split("-").reverse().join("/")}
                       </td>
+                        
 
-                       <td className="p-3 text-slate-700 font-medium truncate">
-                        {l.historico}
+
+                     <td className="p-3 text-slate-700 font-medium">
+                        {Number(historicoEditandoId) === Number(l.id) ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              autoFocus
+                              value={historicoEditandoTexto}
+                              disabled={
+                                Number(salvandoHistoricoId) === Number(l.id)
+                              }
+                              onChange={(e) =>
+                                setHistoricoEditandoTexto(e.target.value)
+                              }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  salvarHistoricoLancamento(l);
+                                }
+
+                                if (e.key === "Escape") {
+                                  e.preventDefault();
+                                  cancelarEdicaoHistorico();
+                                }
+                              }}
+                              className="h-9 min-w-0 flex-1 rounded-xl border border-blue-400 bg-white px-3 text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-200"
+                            />
+
+                            <button
+                              type="button"
+                              title="Salvar histórico"
+                              disabled={
+                                Number(salvandoHistoricoId) === Number(l.id)
+                              }
+                              onClick={() => salvarHistoricoLancamento(l)}
+                              className="shrink-0 text-sm font-black text-emerald-600 hover:text-emerald-800 disabled:text-slate-300"
+                            >
+                              {Number(salvandoHistoricoId) === Number(l.id)
+                                ? "..."
+                                : "✓"}
+                            </button>
+
+                            <button
+                              type="button"
+                              title="Cancelar edição"
+                              disabled={
+                                Number(salvandoHistoricoId) === Number(l.id)
+                              }
+                              onClick={cancelarEdicaoHistorico}
+                              className="shrink-0 text-sm font-black text-red-500 hover:text-red-700 disabled:text-slate-300"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="group flex min-w-0 items-center gap-2">
+                            {l.tipo_evento === "divergencia_financeiro" && (
+                              <span className="shrink-0 inline-flex rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white shadow-sm">
+                                SÓ NO SISTEMA
+                              </span>
+                            )}
+
+                            <span
+                              title="Duplo clique para melhorar o histórico do lançamento"
+                              onDoubleClick={() => iniciarEdicaoHistorico(l)}
+                              className={`min-w-0 flex-1 truncate ${
+                                l.situacao !== "executado"
+                                  ? "cursor-text decoration-dotted underline-offset-4 group-hover:underline"
+                                  : ""
+                              }`}
+                            >
+                              {l.historico_lancamento ||
+                                l.historico}
+                            </span>
+
+                            {l.situacao !== "executado" && (
+                              <button
+                                type="button"
+                                title="Editar histórico do lançamento"
+                                onClick={() => iniciarEdicaoHistorico(l)}
+                                className="shrink-0 rounded-full px-1.5 py-1 text-xs text-slate-400 opacity-50 transition hover:bg-blue-50 hover:text-blue-700 hover:opacity-100 group-hover:opacity-100"
+                              >
+                                ✏️
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </td>
+
+
 
                       <td className="p-3 text-right font-black text-slate-800">
                         {Number(l.valor || 0).toLocaleString("pt-BR", {
@@ -1478,13 +1920,15 @@ useEffect(() => {
                             l.situacao
                           )}`}
                         >
-                          {l.situacao === "ok"
-                            ? "OK"
-                            : l.situacao === "rejeitado"
-                              ? "REJEITADO"
-                              : l.situacao === "executado"
-                                ? "EXECUTADO"
-                                : "PENDENTE"}
+                          {l.tipo_evento === "divergencia_financeiro"
+                            ? "FORA DO EXTRATO"
+                            : l.situacao === "ok"
+                              ? "OK"
+                              : l.situacao === "rejeitado"
+                                ? "REJEITADO"
+                                : l.situacao === "executado"
+                                  ? "EXECUTADO"
+                                  : "PENDENTE"}
                         </span>
                       </td>
 
@@ -1560,9 +2004,11 @@ useEffect(() => {
                         )}
                       </td>
 
-                      <td className="p-3 text-slate-700 font-semibold  text-blue-900 truncate">
-                        {l.mensagem}
-                      </td>
+                       <td title={l.mensagem || ""}
+                          className="w-[190px] max-w-[290px] truncate p-2 text-xs font-semibold text-blue-900"
+                        >
+                          {l.mensagem || "-"}
+                        </td>
  
                     {/*}  <td className="p-3 text-slate-600 font-semibold">
                         {l.tipo_evento}
@@ -1649,6 +2095,244 @@ useEffect(() => {
     </div>
 
 
+              {modalRelatorioAberto && relatorioConciliacao && (
+              <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50">
+                <div className="w-[760px] max-h-[88vh] overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl">
+
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h2 className="text-xl font-black text-slate-800">
+                        Resultado da conciliação
+                      </h2>
+
+                      <div className="mt-1 text-sm font-semibold text-slate-500">
+                        Lote #{relatorioConciliacao.lote_id || "-"}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setModalRelatorioAberto(false)}
+                      className="rounded-full px-3 py-1 font-black text-slate-500 hover:bg-slate-100"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+                    <div className="rounded-2xl border bg-slate-50 p-4">
+                      <div className="text-xs font-bold text-slate-500">
+                        Status
+                      </div>
+
+                      <div className="mt-1 text-lg font-black text-emerald-700">
+                        {relatorioConciliacao.ok ? "Concluída" : "Com erro"}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border bg-slate-50 p-4">
+                      <div className="text-xs font-bold text-slate-500">
+                        Lote
+                      </div>
+
+                      <div className="mt-1 text-lg font-black text-slate-800">
+                        #{relatorioConciliacao.lote_id || "-"}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border bg-slate-50 p-4">
+                      <div className="text-xs font-bold text-slate-500">
+                        Data inicial
+                      </div>
+
+                      <div className="mt-1 text-sm font-black text-slate-800">
+                        {String(
+                          relatorioConciliacao?.divergencias_financeiro?.periodo?.data_ini || ""
+                        )
+                          .split("-")
+                          .reverse()
+                          .join("/") || "-"}
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border bg-slate-50 p-4">
+                      <div className="text-xs font-bold text-slate-500">
+                        Data final
+                      </div>
+
+                      <div className="mt-1 text-sm font-black text-slate-800">
+                        {String(
+                          relatorioConciliacao?.divergencias_financeiro?.periodo?.data_fim || ""
+                        )
+                          .split("-")
+                          .reverse()
+                          .join("/") || "-"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5">
+                    <h3 className="mb-3 text-base font-black text-slate-800">
+                      Divergências do financeiro
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
+                        <div className="text-xs font-bold text-orange-700">
+                          Encontradas
+                        </div>
+
+                        <div className="mt-1 text-2xl font-black text-orange-800">
+                          {relatorioConciliacao
+                            ?.divergencias_financeiro
+                            ?.resumo
+                            ?.divergencias_inseridas || 0}
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                        <div className="text-xs font-bold text-emerald-700">
+                          Entradas
+                        </div>
+
+                        <div className="mt-1 text-lg font-black text-emerald-800">
+                          {Number(
+                            relatorioConciliacao
+                              ?.divergencias_financeiro
+                              ?.resumo
+                              ?.total_entradas || 0
+                          ).toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                        <div className="text-xs font-bold text-red-700">
+                          Saídas
+                        </div>
+
+                        <div className="mt-1 text-lg font-black text-red-800">
+                          {Number(
+                            relatorioConciliacao
+                              ?.divergencias_financeiro
+                              ?.resumo
+                              ?.total_saidas || 0
+                          ).toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                        <div className="text-xs font-bold text-blue-700">
+                          Saldo líquido
+                        </div>
+
+                        <div className="mt-1 text-lg font-black text-blue-800">
+                          {Number(
+                            relatorioConciliacao
+                              ?.divergencias_financeiro
+                              ?.resumo
+                              ?.saldo_liquido || 0
+                          ).toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                    <div className="font-black text-emerald-800">
+                      {Number(
+                        relatorioConciliacao
+                          ?.divergencias_financeiro
+                          ?.resumo
+                          ?.divergencias_inseridas || 0
+                      ) === 0
+                        ? "Nenhuma divergência do financeiro encontrada."
+                        : "Existem lançamentos no sistema que não aparecem no extrato."}
+                    </div>
+
+                    <div className="mt-1 text-sm font-semibold text-emerald-700">
+                      {Number(
+                        relatorioConciliacao
+                          ?.divergencias_financeiro
+                          ?.resumo
+                          ?.divergencias_inseridas || 0
+                      ) === 0
+                        ? "As transações do período foram encontradas na conciliação."
+                        : "Revise os registros marcados com a ação Resolver."}
+                    </div>
+                  </div>
+
+                  {Array.isArray(
+                    relatorioConciliacao?.divergencias_financeiro?.detalhes
+                  ) &&
+                    relatorioConciliacao.divergencias_financeiro.detalhes.length > 0 && (
+                      <div className="mt-5">
+                        <h3 className="mb-3 text-base font-black text-slate-800">
+                          Lançamentos encontrados
+                        </h3>
+
+                        <div className="space-y-2">
+                          {relatorioConciliacao.divergencias_financeiro.detalhes.map(
+                            (d) => (
+                              <div
+                                key={d.conciliacao_financeira_id || d.transacao_id}
+                                className="rounded-2xl border border-orange-200 bg-orange-50 p-4"
+                              >
+                                <div className="flex items-start justify-between gap-4">
+                                  <div>
+                                    <div className="font-black text-slate-800">
+                                      {d.historico || "Lançamento sem descrição"}
+                                    </div>
+
+                                    <div className="mt-1 text-xs font-semibold text-slate-500">
+                                      Transação #{d.transacao_id || "-"} ·{" "}
+                                      {String(d.data || "")
+                                        .split("-")
+                                        .reverse()
+                                        .join("/")}
+                                    </div>
+                                  </div>
+
+                                  <div className="font-black text-orange-800">
+                                    {Number(d.valor || 0).toLocaleString("pt-BR", {
+                                      style: "currency",
+                                      currency: "BRL",
+                                    })}
+                                  </div>
+                                </div>
+
+                                <div className="mt-2 text-xs font-bold text-orange-700">
+                                  {d.mensagem}
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                  <div className="mt-6 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setModalRelatorioAberto(false)}
+                      className="btn-pill btn-blue"
+                    >
+                      Fechar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
           {linhaDivergencia && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
               <div className="w-[520px] rounded-3xl bg-white p-6 shadow-2xl">
@@ -1694,18 +2378,24 @@ useEffect(() => {
                         onChange={(e) => setNovaDataDivergencia(e.target.value)}
                         className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold"
                       />
+                    
 
                       <button
                         type="button"
                         className="btn-pill btn-green mt-3 w-full"
-                        onClick={() => {
-                          alert(
-                            `Depois vamos atualizar a transação ${linhaDivergencia.transacao_id} para ${novaDataDivergencia}`
-                          );
-                        }}
+                        onClick={() =>
+                          corrigirDivergenciaFinanceiro("ALTERAR_DATA")
+                        }
+                        disabled={
+                          salvandoDivergencia ||
+                          !novaDataDivergencia
+                        }
                       >
-                        Confirmar nova data
+                        {salvandoDivergencia
+                          ? "Salvando..."
+                          : "Confirmar nova data"}
                       </button>
+
                     </div>
                   )}
 
@@ -1729,25 +2419,35 @@ useEffect(() => {
                         className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 font-bold"
                       >
                         <option value="">Selecione a conta</option>
+                        {contas.map((c) => {
+                            const idConta = c.conta_id ?? c.id;
 
-                        {contas.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.nome}
-                          </option>
-                        ))}
+                            return (
+                              <option
+                                key={idConta}
+                                value={idConta}
+                              >
+                                {c.nome || c.conta_nome}
+                              </option>
+                            );
+                          })}
                       </select>
 
                       <button
-                        type="button"
-                        className="btn-pill btn-green mt-3 w-full"
-                        onClick={() => {
-                          alert(
-                            `Depois vamos mover a transação ${linhaDivergencia.transacao_id} para a conta ${novaContaDivergencia}`
-                          );
-                        }}
-                      >
-                        Confirmar nova conta
-                      </button>
+                          type="button"
+                          className="btn-pill btn-green mt-3 w-full"
+                          onClick={() =>
+                            corrigirDivergenciaFinanceiro("ALTERAR_CONTA")
+                          }
+                          disabled={
+                            salvandoDivergencia ||
+                            !novaContaDivergencia
+                          }
+                        >
+                          {salvandoDivergencia
+                            ? "Salvando..."
+                            : "Confirmar nova conta"}
+                        </button>
                     </div>
                   )}
 

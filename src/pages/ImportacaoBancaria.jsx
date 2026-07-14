@@ -298,29 +298,69 @@ const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
          return;
        }
  
-       const payload = {
-         empresa_id,
-         conta_observada: contaId,
-         lancamentos: JSON.parse(prepararLancamentosJSONB(lancamentos))
-       };
- 
-       const url = buildWebhookUrl("importa_extrato");
- 
-       await fetchSeguro(url, {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify(payload)
-       });
- 
-        await atualizarFornecedoresServico();
- 
-       setLinhas([]);
-       setResumoImportacao(null);
-       setImportacao(0);
-       setSaldo(0);
-       limparNova();
- 
-       navigate("/conciliacao-revisao");
+        const payload = {
+  empresa_id,
+  conta_observada: contaId,
+  lancamentos: JSON.parse(
+    prepararLancamentosJSONB(lancamentos)
+  ),
+};
+
+const url = buildWebhookUrl("importa_extrato");
+
+const retorno = await fetchSeguro(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(payload),
+});
+
+console.log("RETORNO IMPORTAÇÃO:", retorno);
+
+const bruto = Array.isArray(retorno)
+  ? retorno[0]
+  : retorno;
+
+const resultado =
+  bruto?.fn_importar_extrato_e_conciliar ||
+  bruto?.data?.[0]?.fn_importar_extrato_e_conciliar ||
+  bruto?.data?.fn_importar_extrato_e_conciliar ||
+  bruto?.data?.[0] ||
+  bruto?.data ||
+  bruto;
+
+console.log("RESULTADO EXTRAÍDO:", resultado);
+
+if (!resultado?.ok) {
+  throw new Error(
+    resultado?.message ||
+    "Erro ao importar e analisar o extrato."
+  );
+}
+
+localStorage.setItem(
+  "resultado_analise_conciliacao",
+  JSON.stringify(resultado)
+);
+
+localStorage.setItem(
+  "lote_conciliacao_id",
+  String(resultado.lote_id || 0)
+);
+
+await atualizarFornecedoresServico();
+
+setLinhas([]);
+setResumoImportacao(null);
+setImportacao(0);
+setSaldo(0);
+limparNova();
+
+navigate("/conciliacao-revisao"); 
+
+
+
      } catch (err) {
        console.error("ERRO CAPTURADO:", err.message);
        alert(err.message || t("importacaoBancaria.erroSalvarLancamentos", "Erro inesperado ao salvar os lançamentos."));
