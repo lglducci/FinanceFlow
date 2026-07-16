@@ -1,4 +1,4 @@
-      import { useEffect, useState } from "react";
+         import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { buildWebhookUrl } from "../config/globals";
@@ -28,6 +28,35 @@ const [conciliando, setConciliando] = useState(false);
 const [statusEtapa, setStatusEtapa] = useState("importar");
 const [tipoArquivo, setTipoArquivo] = useState("");
 const [validacaoPDF, setValidacaoPDF] = useState(null);
+ 
+const [contasContabeis, setContasContabeis] = useState([]);
+const [contaDropdownLinha, setContaDropdownLinha] = useState(null);
+const [contaBuscaLinha, setContaBuscaLinha] = useState({});
+const [contasFiltradasLinha, setContasFiltradasLinha] = useState([]);
+
+ const [resultadoConciliacao, setResultadoConciliacao] = useState(null);
+const [transacoesFatura, setTransacoesFatura] = useState([]);
+const [carregandoTransacoes, setCarregandoTransacoes] = useState(false);
+const [carregandoResultado, setCarregandoResultado] = useState(false);
+
+const [linhasSelecionadas, setLinhasSelecionadas] = useState([]);
+const [contaLoteTexto, setContaLoteTexto] = useState("");
+const [contaLoteId, setContaLoteId] = useState(null);
+const [mostrarContasLote, setMostrarContasLote] = useState(false);
+
+const [filtroStatus, setFiltroStatus] = useState("pendentes");
+ 
+ 
+
+const [tipoImportacao, setTipoImportacao] =
+  useState("normal");
+
+
+   const quantidadePendentes = linhas.filter(
+  (linha) =>
+    linhaExigeContaContabil(linha) &&
+    !linha.conta_contabil_id
+).length;
  
   const botaoBase = `
     px-5 py-2 rounded-full
@@ -87,23 +116,84 @@ const [validacaoPDF, setValidacaoPDF] = useState(null);
 
   useEffect(() => {
     carregarCartoes();
+    carregarContasContabeis();
+  }, []);
+
+  useEffect(() => {
+    function fecharDropdownContaCartao(event) {
+      const clicouDentro = event.target.closest(
+        "[data-dropdown-conta-cartao]"
+      );
+
+      if (!clicouDentro) {
+        setContaDropdownLinha(null);
+        setContasFiltradasLinha([]);
+      }
+    }
+
+    document.addEventListener("mousedown", fecharDropdownContaCartao);
+
+    return () => {
+      document.removeEventListener("mousedown", fecharDropdownContaCartao);
+    };
   }, []);
 
    
 
 
 
-  
-    async function carregarCartoes() {
-      try {
-        const resp = await fetch(buildWebhookUrl("cartoes", { id_empresa: empresa_id }));
-        const data = await resp.json();
-        setCartoes(Array.isArray(data) ? data : []);
-      } catch {
-        setCartoes([]);
-      }
-    }
+   async function carregarCartoes() {
+  try {
+    const resp = await fetch(
+      buildWebhookUrl("cartoes", {
+        id_empresa: empresa_id,
+      })
+    );
 
+    const data = await resp.json();
+
+    const lista = Array.isArray(data)
+      ? data
+      : Array.isArray(data?.data)
+        ? data.data
+        : [];
+
+    setCartoes(lista);
+
+    /*
+      Define automaticamente o primeiro cartão.
+      Antes ele aparecia na tela, mas cartaoId permanecia vazio.
+    */
+    if (lista.length > 0) {
+      setCartaoId((atual) => {
+        const aindaExiste = lista.some(
+          (cartao) =>
+            String(cartao.id) === String(atual)
+        );
+
+        if (atual && aindaExiste) {
+          return atual;
+        }
+
+        const escolhido =
+          lista.find(
+            (cartao) =>
+              cartao.escolhido === true ||
+              cartao.escolhido === "true"
+          ) || lista[0];
+
+        return String(escolhido.id);
+      });
+    } else {
+      setCartaoId("");
+    }
+  } catch (e) {
+    console.error("ERRO AO CARREGAR CARTÕES:", e);
+
+    setCartoes([]);
+    setCartaoId("");
+  }
+}
 
 
   function normalizarTexto(txt) {
@@ -316,11 +406,103 @@ function extrairTotalFaturaPDF(texto) {
 
   return null;
 }
+ 
 
 function montarValidacaoPDF({ linhasConvertidas, totalPDF }) {
+  function ehPagamentoFatura(linha) {
+    const descricao = normalizarTexto(
+      linha.estabelecimento ||
+      linha.descricao ||
+      linha.historico ||
+      ""
+    );
+
+    /*
+      Só considera pagamento quando:
+      - o valor é negativo;
+      - e a descrição identifica claramente pagamento da fatura.
+    */
+    return (
+      Number(linha.valor || 0) < 0 &&
+      (
+        descricao.includes("pagamento") ||
+        descricao.includes("pagamentos validos normais") ||
+        descricao.includes("pagamento recebido") ||
+        descricao.includes("pagamento de fatura")
+      )
+    );
+  }
+
+  /*
+    Compras/despesas:
+    todos os valores positivos.
+
+    Não dependemos de tipo_linha porque o PDF/N8N
+    pode classificar estorno de forma diferente.
+  */
+  const compras = Number(
+    linhasConvertidas
+      .filter((l) => Number(l.valor || 0) > 0)
+      .reduce(
+        (soma, l) =>
+          soma + Number(l.valor || 0),
+        0
+      )
+      .toFixed(2)
+  );
+
+  /*
+    Créditos e estornos:
+    todo valor negativo que NÃO seja pagamento da fatura.
+  */
+  const creditosEstornos = Number(
+    linhasConvertidas
+      .filter(
+        (l) =>
+          Number(l.valor || 0) < 0 &&
+          !ehPagamentoFatura(l)
+      )
+      .reduce(
+        (soma, l) =>
+          soma + Math.abs(Number(l.valor || 0)),
+        0
+      )
+      .toFixed(2)
+  );
+
+  /*
+    Pagamentos:
+    negativos com descrição claramente relacionada
+    ao pagamento da fatura anterior.
+  */
+  const pagamentos = Number(
+    linhasConvertidas
+      .filter(ehPagamentoFatura)
+      .reduce(
+        (soma, l) =>
+          soma + Math.abs(Number(l.valor || 0)),
+        0
+      )
+      .toFixed(2)
+  );
+
+  /*
+    Total correto:
+    soma todos os lançamentos,
+    exceto pagamentos da fatura anterior.
+
+    Compra positiva soma.
+    Estorno/crédito negativo reduz.
+    Pagamento é ignorado.
+  */
   const totalImportado = Number(
     linhasConvertidas
-      .reduce((soma, l) => soma + Math.abs(Number(l.valor || 0)), 0)
+      .filter((l) => !ehPagamentoFatura(l))
+      .reduce(
+        (soma, l) =>
+          soma + Number(l.valor || 0),
+        0
+      )
       .toFixed(2)
   );
 
@@ -329,108 +511,321 @@ function montarValidacaoPDF({ linhasConvertidas, totalPDF }) {
       origem: "PDF",
       ok: false,
       bloqueiaSalvar: false,
-      mensagem: `Não localizei com segurança o total da fatura no PDF. Total importado: ${formatarMoeda(totalImportado)}.`,
+
+      mensagem:
+        `Não localizei com segurança o total da fatura no PDF. ` +
+        `Compras: ${formatarMoeda(compras)}. ` +
+        `Créditos/estornos: -${formatarMoeda(creditosEstornos)}. ` +
+        `Total líquido: ${formatarMoeda(totalImportado)}.`,
+
       totalPDF: null,
       totalImportado,
+      compras,
+      creditosEstornos,
+      pagamentos,
       diferenca: null,
     };
   }
 
-  const diferenca = Number((totalImportado - totalPDF).toFixed(2));
-  const ok = valoresQuaseIguais(totalImportado, totalPDF);
+  const totalFatura = Number(totalPDF);
+
+  const diferenca = Number(
+    (totalImportado - totalFatura).toFixed(2)
+  );
+
+  const ok = valoresQuaseIguais(
+    totalImportado,
+    totalFatura
+  );
 
   return {
     origem: "PDF",
     ok,
     bloqueiaSalvar: !ok,
+
     mensagem: ok
-      ? "PDF validado: total importado bate com o total da fatura."
-      : `Divergência no PDF: total importado ${formatarMoeda(totalImportado)} x total da fatura ${formatarMoeda(totalPDF)}. Diferença ${formatarMoeda(diferenca)}.`,
-    totalPDF,
+      ? `PDF validado: compras ${formatarMoeda(compras)}, ` +
+        `créditos/estornos -${formatarMoeda(creditosEstornos)}, ` +
+        `pagamentos ignorados ${formatarMoeda(pagamentos)} e ` +
+        `total líquido ${formatarMoeda(totalImportado)}.`
+      : `Divergência no PDF: compras ${formatarMoeda(compras)}, ` +
+        `créditos/estornos -${formatarMoeda(creditosEstornos)}, ` +
+        `pagamentos ignorados ${formatarMoeda(pagamentos)}, ` +
+        `total líquido importado ${formatarMoeda(totalImportado)} ` +
+        `x total da fatura ${formatarMoeda(totalFatura)}. ` +
+        `Diferença ${formatarMoeda(diferenca)}.`,
+
+    totalPDF: totalFatura,
     totalImportado,
+    compras,
+    creditosEstornos,
+    pagamentos,
     diferenca,
   };
 }
 
 
+ function converterPlanilha(json) {
+  if (!json.length) return [];
 
-  function converterPlanilha(json) {
-    if (!json.length) return [];
+  const headers = Object.keys(json[0]);
 
-    const headers = Object.keys(json[0]);
+  const campoData = localizarCampo(headers, [
+    "data compra",
+    "data lancamento",
+    "data",
+    "dt",
+  ]);
 
-    const campoData = localizarCampo(headers, [
-      "data",
-      "dt",
-      "data compra",
-      "data lancamento",
-    ]);
+  const campoDescricao = localizarCampo(headers, [
+    "estabelecimento",
+    "descricao",
+    "historico",
+    "lancamento",
+    "transacao",
+    "merchant",
+  ]);
 
-    const campoDescricao = localizarCampo(headers, [
-      "estabelecimento",
-      "descricao",
-      "historico",
-      "lancamento",
-      "transacao",
-      "merchant",
-    ]);
+  const campoValor = localizarCampo(headers, [
+    "valor",
+    "amount",
+    "vlr",
+    "total",
+  ]);
 
-    const campoValor = localizarCampo(headers, [
-      "valor",
-      "amount",
-      "vlr",
-      "total",
-    ]);
+  /*
+    Não usar "nome" nem "cartao".
+    São genéricos e podem capturar outra coluna.
+  */
+  const campoPortador = localizarCampo(headers, [
+    "nome do portador",
+    "portador",
+    "nome titular",
+    "titular",
+  ]);
 
-    const campoPortador = localizarCampo(headers, [
-      "portador",
-      "titular",
-      "nome",
-      "cartao",
-    ]);
+  const campoParcela = localizarCampo(headers, [
+    "numero da parcela",
+    "parcela",
+    "parcelas",
+    "prestacao",
+  ]);
 
-    const campoParcela = localizarCampo(headers, [
-      "parcela",
-      "parcelas",
-      "prestacao",
-    ]);
+  if (
+    !campoData ||
+    !campoDescricao ||
+    !campoValor
+  ) {
+    alert(
+      "Não consegui identificar Data, Descrição/Estabelecimento e Valor."
+    );
+    return [];
+  }
 
-    if (!campoData || !campoDescricao || !campoValor) {
-      alert("Não consegui identificar Data, Descrição/Estabelecimento e Valor.");
-      return [];
-    }
+  return json
+    .map((row, index) => {
+      const data = dataParaISO(
+        row[campoData]
+      );
 
-    return json
-      .map((row, index) => {
-        const data = dataParaISO(row[campoData]);
-        const estabelecimento = String(row[campoDescricao] || "").trim();
-        const valor = parseNumeroBR(row[campoValor]);
-        const portador = campoPortador ? String(row[campoPortador] || "").trim() : null;
+      const estabelecimento = String(
+        row[campoDescricao] || ""
+      ).trim();
 
-        const parcela = interpretarParcela(campoParcela ? row[campoParcela] : null);
-        const tipo_linha = identificarTipo(estabelecimento, valor);
+      /*
+        Mantém o sinal original:
+        compra positiva
+        pagamento negativo
+        estorno/crédito negativo
+      */
+      const valor = parseNumeroBR(
+        row[campoValor]
+      );
 
-        return {
-          linha: index + 1,
-          data,
-          estabelecimento,
-          portador,
-          valor,
-          parcela: parcela.parcela_texto,
-          parcela_atual: parcela.parcela_atual,
-          parcela_total: parcela.parcela_total,
-          tipo_linha,
-          dados_originais: row,
-        };
-      })
-      .filter(
-  (l) =>
-    l.data &&
-    l.estabelecimento &&
-    l.valor !== 0 &&
-    !deveIgnorarLinhaCartao(l.estabelecimento)
+      const portador = campoPortador
+        ? String(
+            row[campoPortador] || ""
+          ).trim() || null
+        : null;
+
+      const parcela = interpretarParcela(
+        campoParcela
+          ? row[campoParcela]
+          : null
+      );
+
+      let tipo_linha;
+
+      /*
+        1. Pagamento anterior:
+        negativo e descrição contendo pagamento.
+      */
+      if (
+        valor < 0 &&
+        normalizarTexto(
+          estabelecimento
+        ).includes("pagamento")
+      ) {
+        tipo_linha = "pagamento";
+      }
+
+      /*
+        2. Outro valor negativo:
+        crédito ou estorno.
+      */
+      else if (valor < 0) {
+        tipo_linha = "credito";
+      }
+
+      /*
+        3. Valor positivo com parcela:
+        compra parcelada.
+      */
+      else if (
+        parcela.parcela_atual &&
+        parcela.parcela_total
+      ) {
+        tipo_linha = "parcela";
+      }
+
+      /*
+        4. Compra positiva sem parcela.
+      */
+      else {
+        tipo_linha = "compra";
+      }
+
+      return {
+        linha: index + 1,
+        data,
+        estabelecimento,
+        portador,
+        valor,
+
+        parcela:
+          parcela.parcela_texto,
+
+        parcela_atual:
+          parcela.parcela_atual,
+
+        parcela_total:
+          parcela.parcela_total,
+
+        tipo_linha,
+
+        dados_originais: row,
+      };
+    })
+    .filter((linha) => {
+      if (!linha.data) return false;
+
+      if (!linha.estabelecimento) {
+        return false;
+      }
+
+      if (!Number.isFinite(linha.valor)) {
+        return false;
+      }
+
+      if (linha.valor === 0) {
+        return false;
+      }
+
+      if (
+        deveIgnorarLinhaCartao(
+          linha.estabelecimento
+        )
+      ) {
+        return false;
+      }
+
+      /*
+        PAGAMENTO:
+        não aparece na tela;
+        não entra no resumo;
+        não é enviado ao webhook;
+        não chega à procedure.
+      */
+      if (
+        linha.tipo_linha ===
+        "pagamento"
+      ) {
+        return false;
+      }
+
+      /*
+        ESTORNO/CRÉDITO:
+        permanece na tela com valor negativo;
+        será enviado como tipo "credito";
+        reduzirá o valor da fatura.
+      */
+      return true;
+    });
+}
+
+function conferirCartaoSelecionadoComPDF(dadosPDF, cartao) {
+  if (!dadosPDF || !cartao) {
+    return { ok: true, mensagem: "" };
+  }
+
+  const erros = [];
+
+  // final cartão
+  const finalCadastro = String(cartao.numero || "")
+    .replace(/\D/g, "")
+    .slice(-4);
+
+  if (
+    finalCadastro &&
+    Array.isArray(dadosPDF.finais) &&
+    dadosPDF.finais.length > 0 &&
+    !dadosPDF.finais.includes(finalCadastro)
+  ) {
+    erros.push(
+  `Final do cartão: cadastro ${finalCadastro}, PDF ${dadosPDF.finais.join(" ou ")}`
 );
   }
+
+  // vencimento
+  if (
+    Number(cartao.vencimento_dia) &&
+    Number(dadosPDF.vencimento_dia) &&
+    Number(cartao.vencimento_dia) !==
+      Number(dadosPDF.vencimento_dia)
+  ) {
+    erros.push(
+        `Vencimento: cadastro dia ${cartao.vencimento_dia}, PDF dia ${dadosPDF.vencimento_dia}`
+    );
+  }
+
+  // fechamento
+  if (
+    Number(cartao.fechamento_dia) &&
+    Number(dadosPDF.fechamento_dia) &&
+    Number(cartao.fechamento_dia) !==
+      Number(dadosPDF.fechamento_dia)
+  ) {
+   erros.push(
+  `Dia de fechamento: cadastro ${cartao.fechamento_dia}, PDF ${dadosPDF.fechamento_dia}`
+);
+  }
+
+  return {
+    ok: erros.length === 0,
+    mensagem: erros.join("\n"),
+  };
+}
+
+const linhasExibidas = linhas.filter((linha) => {
+  if (filtroStatus === "todos") return true;
+
+  return (
+    !linha.status_conciliacao ||
+    linha.status_conciliacao === "pendente" ||
+    linha.status_conciliacao.startsWith("pendente_")
+  );
+});
+ 
 
  async function importarArquivo(e) {
   try {
@@ -439,6 +834,21 @@ function montarValidacaoPDF({ linhasConvertidas, totalPDF }) {
 
     const nome = file.name || "";
     const ext = nome.split(".").pop().toLowerCase();
+
+    if (["xlsx", "xls","csv"].includes(ext)) {
+  const confirmou = window.confirm(
+    `Tem certeza que este arquivo pertence ao cartão ${cartaoSelecionado?.nome || ""} ` +
+    `final ${String(cartaoSelecionado?.numero || "").slice(-4)}?`
+  );
+
+  if (!confirmou) {
+    e.target.value = "";
+    return;
+  }
+}
+
+
+
     const buffer = await file.arrayBuffer();
 
     console.log("ARQUIVO SELECIONADO:", { nome, ext, tamanho: file.size });
@@ -447,6 +857,11 @@ function montarValidacaoPDF({ linhasConvertidas, totalPDF }) {
     setStatusEtapa("importar");
     setTipoArquivo(ext.toUpperCase());
     setValidacaoPDF(null);
+
+
+      setContaBuscaLinha({});
+      setContaDropdownLinha(null);
+      setContasFiltradasLinha([]);
 
     let linhasConvertidas = [];
     let validacao = null;
@@ -461,13 +876,34 @@ console.log("LINHAS N8N:", retornoPDF?.linhas);
     alert(retornoPDF?.mensagem || "Não consegui importar o PDF.");
     return;
   }
+
+
+  const conferencia =
+  conferirCartaoSelecionadoComPDF(
+    retornoPDF.dados_cartao_pdf,
+    cartaoSelecionado
+  );
+
+if (!conferencia.ok) {
+  const continuar = window.confirm(
+    "O PDF parece não pertencer ao cartão selecionado.\n\n" +
+    conferencia.mensagem +
+    "\n\nDeseja continuar?"
+  );
+
+  if (!continuar) {
+    e.target.value = "";
+    return;
+  }
+}
  
   linhasConvertidas = Array.isArray(retornoPDF?.linhas)
   ? retornoPDF.linhas
   : [];
-  setTipoArquivo(retornoPDF.origem || "PDF_N8N");
 
-   const referenciaPDF =
+setTipoArquivo(retornoPDF.origem || "PDF_N8N");
+
+const referenciaPDF =
   retornoPDF.data_referencia ||
   retornoPDF.mes_referencia ||
   mesReferenciaDaFatura(retornoPDF.vencimento) ||
@@ -475,11 +911,20 @@ console.log("LINHAS N8N:", retornoPDF?.linhas);
   mesReferenciaDaFatura(retornoPDF.data_vencimento) ||
   null;
 
-  processarLinhasImportadas(
-    linhasConvertidas,
-    retornoPDF.validacao || null,
-    referenciaPDF
+/*
+  Procura compras manuais existentes e recupera
+  as contas contábeis antes de mostrar na tela.
+*/
+linhasConvertidas =
+  await buscarContasContabeisImportacao(
+    linhasConvertidas
   );
+
+processarLinhasImportadas(
+  linhasConvertidas,
+  retornoPDF.validacao || null,
+  referenciaPDF
+);
 
   alert(`${linhasConvertidas.length} lançamentos carregados na tela.`);
   e.target.value = "";
@@ -534,7 +979,16 @@ console.log("LINHAS N8N:", retornoPDF?.linhas);
       return;
     }
 
-    processarLinhasImportadas(linhasConvertidas, validacao);
+    linhasConvertidas =
+  await buscarContasContabeisImportacao(
+    linhasConvertidas
+  );
+
+processarLinhasImportadas(
+  linhasConvertidas,
+  retornoPDF.validacao || null,
+  referenciaPDF
+);
 
     if (validacao?.bloqueiaSalvar) {
       alert(`${linhasConvertidas.length} lançamentos carregados, mas a importação ficou BLOQUEADA: ${validacao.mensagem}`);
@@ -548,7 +1002,8 @@ console.log("LINHAS N8N:", retornoPDF?.linhas);
     alert(err.message || "Erro ao importar arquivo.");
   }
 }
- 
+  
+
 async function importarPDFViaN8N(file, buffer) {
   const formData = new FormData();
 
@@ -556,27 +1011,103 @@ async function importarPDFViaN8N(file, buffer) {
   formData.append("cartao_id", cartaoId || "");
   formData.append("senha_pdf", senhaPDF || "");
 
-  // Se tiver senha, o React extrai o texto e manda texto_pdf.
+  // Com senha informada, o navegador tenta abrir o PDF.
   if (senhaPDF.trim()) {
     const textoPDF = await lerTextoPDF(buffer);
 
     if (!textoPDF || textoPDF.trim().length < 50) {
-      throw new Error("Não consegui extrair texto do PDF com a senha informada.");
+      throw new Error(
+        "Não consegui extrair o conteúdo do PDF com a senha informada."
+      );
     }
 
     formData.append("texto_pdf", textoPDF);
   } else {
-    // Sem senha, manda o arquivo puro para o N8N extrair melhor.
+    // Sem senha, envia o arquivo ao n8n.
     formData.append("arquivo", file);
   }
 
-  const resp = await fetch(buildWebhookUrl("importar_fatura_cartao_pdf"), {
-    method: "POST",
-    body: formData,
-  });
+  const resp = await fetch(
+    buildWebhookUrl("importar_fatura_cartao_pdf"),
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
 
-  const json = await resp.json();
-  return Array.isArray(json) ? json[0] : json;
+  const texto = await resp.text();
+
+  console.log("STATUS IMPORTAÇÃO PDF:", resp.status);
+  console.log("RETORNO BRUTO IMPORTAÇÃO PDF:", texto);
+
+  if (!texto || !texto.trim()) {
+    if (!senhaPDF.trim()) {
+      throw new Error(
+        "Este PDF pode estar protegido por senha. Informe a senha do PDF e tente novamente."
+      );
+    }
+
+    throw new Error(
+      "O serviço de importação não retornou resposta."
+    );
+  }
+
+  let json;
+
+  try {
+    json = JSON.parse(texto);
+  } catch {
+    const textoNormalizado = texto.toLowerCase();
+
+    if (
+      textoNormalizado.includes("password") ||
+      textoNormalizado.includes("senha") ||
+      textoNormalizado.includes("encrypted") ||
+      textoNormalizado.includes("encript")
+    ) {
+      throw new Error(
+        "Este PDF exige senha. Informe a senha e tente novamente."
+      );
+    }
+
+    throw new Error(
+      `Resposta inválida do serviço de importação: ${texto}`
+    );
+  }
+
+  if (!resp.ok) {
+    const mensagem =
+      json?.mensagem ||
+      json?.message ||
+      json?.erro ||
+      json?.error ||
+      json?.[0]?.mensagem ||
+      json?.[0]?.message;
+
+    throw new Error(
+      mensagem ||
+      "Erro ao processar o PDF."
+    );
+  }
+
+  const resultado = Array.isArray(json)
+    ? json[0]
+    : json;
+
+  if (resultado?.ok === false) {
+    const mensagem =
+      resultado?.mensagem ||
+      resultado?.message ||
+      resultado?.erro ||
+      resultado?.error;
+
+    throw new Error(
+      mensagem ||
+      "Não foi possível processar o PDF."
+    );
+  }
+
+  return resultado;
 }
 
 
@@ -616,23 +1147,43 @@ function processarLinhasImportadas(linhasConvertidas, validacao = null, referenc
   });
 }
 
-  async function salvarImportacao() {
-    if (!cartaoId) {
-      alert("Selecione o cartão.");
-      return;
-    }
+ async function salvarImportacao() {
+  if (!cartaoId) {
+    alert("Selecione o cartão.");
+    return;
+  }
 
-    if (!linhas.length) {
-      alert("Nenhuma linha importada.");
-      return;
-    }
+  if (!linhas.length) {
+    alert("Nenhuma linha importada.");
+    return;
+  }
 
-    if (validacaoPDF?.bloqueiaSalvar) {
-      alert(validacaoPDF.mensagem || "Importação PDF bloqueada por divergência de total.");
-      return;
-    }
+  const linhasSemConta = linhas.filter(
+    (linha) =>
+      linhaExigeContaContabil(linha) &&
+      !linha.conta_contabil_id
+  );
 
-    const ids = linhas.map((l) => ({
+  if (linhasSemConta.length > 0) {
+    alert(
+      `Existem ${linhasSemConta.length} compra(s) sem conta contábil. ` +
+      "Informe todas as contas antes de salvar."
+    );
+    return;
+  }
+
+  if (validacaoPDF?.bloqueiaSalvar) {
+    alert(
+      validacaoPDF.mensagem ||
+      "Importação PDF bloqueada por divergência de total."
+    );
+    return;
+  }
+
+  const ids = linhas.map((l) => {
+    const exigeConta = linhaExigeContaContabil(l);
+
+    return {
       data: l.data,
       estabelecimento: l.estabelecimento,
       portador: l.portador,
@@ -641,52 +1192,87 @@ function processarLinhasImportadas(linhasConvertidas, validacao = null, referenc
       parcela_atual: l.parcela_atual,
       parcela_total: l.parcela_total,
       tipo_linha: l.tipo_linha,
+
+      conta_contabil_id:
+        exigeConta && l.conta_contabil_id
+          ? Number(l.conta_contabil_id)
+          : null,
+
+      conta_contabil_descricao:
+        exigeConta
+          ? l.conta_contabil_descricao || null
+          : null,
+
       dados_originais: l.dados_originais,
-    }));
+    };
+  });
 
-     
+  const payload = {
+    empresa_id: Number(empresa_id),
+    cartao_id: Number(cartaoId),
+    origem: tipoArquivo?.startsWith("PDF")
+      ? tipoArquivo
+      : "CARTAO",
+    ids,
+    data_referencia: dataReferencia,
+  };
 
-    const payload = {
-  empresa_id: Number(empresa_id),
-  cartao_id: Number(cartaoId),
-  origem: tipoArquivo?.startsWith("PDF") ? tipoArquivo : "CARTAO",
-  ids,
-  data_referencia:dataReferencia
-};
+  try {
+    setSalvando(true);
 
-    try {
-      setSalvando(true);
+    const url = buildWebhookUrl("conciliar_cartao");
 
-      const url = buildWebhookUrl("conciliar_cartao");
+    const resp = await fetchSeguro(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-      const resp = await fetchSeguro(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    const retorno = Array.isArray(resp)
+      ? resp[0]
+      : resp;
 
-         const retorno = Array.isArray(resp) ? resp[0] : resp;
+    const novoImportacaoId =
+      retorno?.importacao_id ||
+      retorno?.id ||
+      retorno?.data?.importacao_id ||
+      retorno?.retorno?.importacao_id ||
+      retorno?.data?.[0]
+        ?.ff_importar_cartao_transacoes
+        ?.importacao_id;
 
-const novoImportacaoId =
-  retorno?.importacao_id ||
-  retorno?.id ||
-  retorno?.data?.importacao_id ||
-  retorno?.retorno?.importacao_id ||
-  retorno?.data?.[0]?.ff_importar_cartao_transacoes?.importacao_id;
+    if (!novoImportacaoId) {
+      console.log("RETORNO SALVAR:", resp);
 
-if (!novoImportacaoId) {
-  console.log("RETORNO SALVAR:", resp);
-  throw new Error("Importação salva, mas o webhook não retornou importacao_id.");
-}
-console.log("IMPORTACAO_ID STATE:", novoImportacaoId);
-setImportacaoId(Number(novoImportacaoId));
-setStatusEtapa("conciliar");
-    } catch (err) {
-      alert(err.message || "Erro ao salvar importação.");
-    } finally {
-      setSalvando(false);
+      throw new Error(
+        "Importação salva, mas o webhook não retornou importacao_id."
+      );
     }
+
+    console.log(
+      "IMPORTACAO_ID STATE:",
+      novoImportacaoId
+    );
+
+    setImportacaoId(
+      Number(novoImportacaoId)
+    );
+
+    setStatusEtapa("conciliar");
+  } catch (err) {
+    alert(
+      err.message ||
+      "Erro ao salvar importação."
+    );
+  } finally {
+    setSalvando(false);
   }
+}
+
+
+
 
  function limpar() {
   setLinhas([]);
@@ -698,7 +1284,27 @@ setStatusEtapa("conciliar");
   setConciliando(false);
   setTipoArquivo("");
   setValidacaoPDF(null);
+
+  setLinhasSelecionadas([]);
+  setContaLoteTexto("");
+  setContaLoteId(null);
+  setMostrarContasLote(false);
+
+  // Limpa contas da importação anterior
+  setContaBuscaLinha({});
+  setContaDropdownLinha(null);
+  setContasFiltradasLinha([]);
+
+setResultadoConciliacao(null);
+setTransacoesFatura([]);
+setCarregandoTransacoes(false);
+
+ 
+setCarregandoResultado(false);
+
+
 }
+ 
 
   async function conciliarImportacao() {
   if (!importacaoId) {
@@ -726,16 +1332,26 @@ setStatusEtapa("conciliar");
       }),
     });
 
-    alert("Fatura conciliada com sucesso!");
     console.log("RETORNO CONCILIAR:", resp);
 
-   limpar();
+    console.log("ANTES DE CHAMAR resultado_conciliacao");
+
+    const resultado = await carregarResultadoConciliacao();
+
+    if (!resultado) {
+      return;
+    }
+
+    setStatusEtapa("finalizado");
+    alert("Fatura conciliada com sucesso!");
   } catch (err) {
-    alert(err.message || "Erro ao conciliar importação.");
+    console.error("ERRO AO CONCILIAR:", err);
+    alert(err?.message || "Erro ao conciliar importação.");
   } finally {
     setConciliando(false);
   }
 }
+
 
 function sugerirDataReferencia(linhasConvertidas) {
   const cartao = cartoes.find((c) => String(c.id) === String(cartaoId));
@@ -840,23 +1456,461 @@ async function lerTextoPDF(buffer) {
   }
 }
 
+async function carregarContasContabeis() {
+  try {
+    const url = buildWebhookUrl(
+      "despesa_cmv",
+      { empresa_id }
+    );
+
+    const resp = await fetch(url);
+
+    if (!resp.ok) {
+      throw new Error("Erro ao carregar contas contábeis.");
+    }
+
+    const json = await resp.json();
+
+    const base = Array.isArray(json) ? json[0] : json;
+    const dados = base?.data || base?.dados || json;
+
+    setContasContabeis(
+      Array.isArray(dados) ? dados : []
+    );
+  } catch (e) {
+    console.error("ERRO CONTAS CONTÁBEIS:", e);
+    setContasContabeis([]);
+  }
+}
 
 
+function filtrarContasDaLinha(texto) {
+  const busca = String(texto || "")
+    .toLowerCase()
+    .trim();
 
-   return (
+  const lista = contasContabeis
+    .filter((c) => {
+      const descricao = `${c.codigo || ""} ${c.nome || ""} ${
+        c.apelido || ""
+      }`.toLowerCase();
+
+      return descricao.includes(busca);
+    })
+    .slice(0, 15);
+
+  setContasFiltradasLinha(lista);
+}
+
+ function selecionarContaContabilLinha(linhaAtual, conta) {
+  const chaveLinha = Number(linhaAtual.linha);
+
+  setLinhas((prev) =>
+    prev.map((item) =>
+      Number(item.linha) === chaveLinha
+        ? {
+            ...item,
+            conta_contabil_id: Number(conta.id),
+            conta_contabil_descricao: `${conta.codigo} - ${conta.nome}`,
+          }
+        : item
+    )
+  );
+
+  setContaBuscaLinha((prev) => ({
+    ...prev,
+    [chaveLinha]: `${conta.codigo} - ${conta.nome}`,
+  }));
+
+  setContaDropdownLinha(null);
+  setContasFiltradasLinha([]);
+}
+
+ 
+async function carregarTransacoesFatura(faturaId) {
+  if (!faturaId) {
+    throw new Error("Fatura não informada.");
+  }
+
+  try {
+    setCarregandoTransacoes(true);
+
+    const url = buildWebhookUrl("transacoes_fatura", {
+      empresa_id: Number(empresa_id),
+      fatura_id: Number(faturaId),
+    });
+
+    console.log("CHAMANDO transacoes_fatura:", url);
+
+    const resp = await fetch(url, {
+      method: "GET",
+    });
+
+    const texto = await resp.text();
+
+    let json;
+    try {
+      json = JSON.parse(texto);
+    } catch {
+      throw new Error(
+        `Resposta inválida do webhook transacoes_fatura: ${texto}`
+      );
+    }
+
+    if (!resp.ok) {
+      throw new Error(
+        json?.message ||
+          json?.[0]?.message ||
+          `Erro HTTP ${resp.status} ao carregar a fatura.`
+      );
+    }
+
+    const lista =
+      Array.isArray(json?.[0]?.data)
+        ? json[0].data
+        : Array.isArray(json?.data)
+          ? json.data
+          : Array.isArray(json)
+            ? json
+            : [];
+
+    setTransacoesFatura(lista);
+    return lista;
+  } finally {
+    setCarregandoTransacoes(false);
+  }
+}
+ 
+
+async function carregarResultadoConciliacao() {
+  try {
+    setCarregandoResultado(true);
+
+    const payload = {
+      empresa_id: Number(empresa_id),
+      cartao_id: Number(cartaoId),
+      data_referencia: dataReferencia,
+    };
+
+    const url = buildWebhookUrl("resultado_conciliacao");
+
+    console.log("CHAMANDO resultado_conciliacao:", url, payload);
+
+    const resp = await fetchSeguro(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("RETORNO resultado_conciliacao:", resp);
+
+    const base = Array.isArray(resp) ? resp[0] : resp;
+
+    const resultado =
+      base?.fatura_id
+        ? base
+        : base?.data?.fatura_id
+          ? base.data
+          : Array.isArray(base?.data)
+            ? base.data[0]
+            : base?.data?.[0] || base;
+
+    const faturaId = Number(resultado?.fatura_id || 0);
+
+    if (!faturaId) {
+      throw new Error(
+        "O webhook resultado_conciliacao não retornou fatura_id."
+      );
+    }
+
+    const resultadoTela = {
+      ...resultado,
+      fatura_id: faturaId,
+      importacao_id: Number(importacaoId),
+    };
+
+    setResultadoConciliacao(resultadoTela);
+
+    await carregarTransacoesFatura(faturaId);
+
+    return resultadoTela;
+  } catch (err) {
+    console.error("ERRO RESULTADO CONCILIAÇÃO:", err);
+    alert(
+      err?.message ||
+        "A conciliação foi concluída, mas não foi possível carregar o resultado."
+    );
+    return null;
+  } finally {
+    setCarregandoResultado(false);
+  }
+}
+
+function linhaExigeContaContabil(linha) {
+  const tipo = String(
+    linha?.tipo_linha || ""
+  ).toLowerCase();
+
+  const parcelaAtual = Number(
+    linha?.parcela_atual || 1
+  );
+
+  if (
+    tipo === "credito" ||
+    tipo === "pagamento"
+  ) {
+    return false;
+  }
+
+  if (tipo === "compra") {
+    return true;
+  }
+
+  if (
+    tipoImportacao === "implantacao" &&
+    tipo === "parcela"
+  ) {
+    return true;
+  }
+
+  return (
+    tipo === "parcela" &&
+    parcelaAtual === 1
+  );
+}
+
+function selecionarLinhaLote(linha) {
+  const id = Number(linha.linha);
+
+  setLinhasSelecionadas((anteriores) =>
+    anteriores.includes(id)
+      ? anteriores.filter((item) => item !== id)
+      : [...anteriores, id]
+  );
+}
+
+function selecionarTodasLinhas() {
+  const permitidas = linhas
+    .filter((linha) => linhaExigeContaContabil(linha))
+    .map((linha) => Number(linha.linha));
+
+  const todasSelecionadas =
+    permitidas.length > 0 &&
+    permitidas.every((id) =>
+      linhasSelecionadas.includes(id)
+    );
+
+  setLinhasSelecionadas(
+    todasSelecionadas ? [] : permitidas
+  );
+}
+
+function selecionarContaLote(conta) {
+  setContaLoteId(Number(conta.id));
+  setContaLoteTexto(
+    `${conta.codigo} - ${conta.nome}`
+  );
+  setMostrarContasLote(false);
+}
+
+function aplicarContaSelecionados() {
+  if (!linhasSelecionadas.length) {
+    alert("Selecione pelo menos uma compra.");
+    return;
+  }
+
+  if (!contaLoteId) {
+    alert("Selecione a conta contábil.");
+    return;
+  }
+
+  setLinhas((anteriores) =>
+    anteriores.map((linha) =>
+      linhasSelecionadas.includes(
+        Number(linha.linha)
+      ) &&
+      linhaExigeContaContabil(linha)
+        ? {
+            ...linha,
+            conta_contabil_id: contaLoteId,
+            conta_contabil_descricao:
+              contaLoteTexto,
+          }
+        : linha
+    )
+  );
+
+  setContaBuscaLinha((anterior) => {
+    const novo = { ...anterior };
+
+    linhasSelecionadas.forEach((id) => {
+      novo[id] = contaLoteTexto;
+    });
+
+    return novo;
+  });
+
+  setLinhasSelecionadas([]);
+  setContaLoteTexto("");
+  setContaLoteId(null);
+  setMostrarContasLote(false);
+}
+ 
+
+async function buscarContasContabeisImportacao(linhasImportadas) {
+  if (!Array.isArray(linhasImportadas) || linhasImportadas.length === 0) {
+    return linhasImportadas;
+  }
+
+  try {
+    const ids = linhasImportadas.map((linha) => ({
+      linha: Number(linha.linha),
+      data: linha.data,
+      estabelecimento: linha.estabelecimento,
+      valor: Number(linha.valor || 0),
+      parcela_atual: linha.parcela_atual || null,
+      parcela_total: linha.parcela_total || null,
+      tipo_linha: linha.tipo_linha,
+    }));
+
+    const payload = {
+      empresa_id: Number(empresa_id),
+      cartao_id: Number(cartaoId),
+      fechamento_dia: Number(
+        cartaoSelecionado?.fechamento_dia || 20
+      ),
+      ids,
+    };
+
+    console.log("PAYLOAD SUGESTÃO CONTÁBIL:", payload);
+
+    const resp = await fetchSeguro(
+      buildWebhookUrl("sugerir_contas_importacao_cartao"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    console.log("RETORNO BRUTO SUGESTÃO CONTÁBIL:", resp);
+
+    /*
+      Aceita estes formatos:
+
+      { ok: true, data: [...] }
+
+      { resultado: { ok: true, data: [...] } }
+
+      [{ resultado: { ok: true, data: [...] } }]
+
+      [{ data: { resultado: { ok: true, data: [...] } } }]
+    */
+    const base = Array.isArray(resp) ? resp[0] : resp;
+
+    const resultado =
+      base?.resultado ||
+      base?.data?.resultado ||
+      base?.data?.[0]?.resultado ||
+      base;
+
+    const sugestoes = Array.isArray(resultado?.data)
+      ? resultado.data
+      : [];
+
+    console.log("SUGESTÕES ENCONTRADAS:", sugestoes);
+
+    const linhasAtualizadas = linhasImportadas.map((linha) => {
+      const sugestao = sugestoes.find(
+        (item) =>
+          Number(item.linha) === Number(linha.linha)
+      );
+
+      if (!sugestao?.contabil_id) {
+        return linha;
+      }
+
+      const contabilId = Number(sugestao.contabil_id);
+
+      const conta = contasContabeis.find(
+        (item) => Number(item.id) === contabilId
+      );
+
+      const descricaoConta = conta
+        ? `${conta.codigo} - ${conta.nome}`
+        : `Conta contábil ${contabilId}`;
+
+      return {
+        ...linha,
+        compra_match_id:
+          sugestao.compra_match_id
+            ? Number(sugestao.compra_match_id)
+            : null,
+
+        conta_contabil_id: contabilId,
+        conta_contabil_descricao: descricaoConta,
+      };
+    });
+
+    /*
+      O input da tabela usa primeiro contaBuscaLinha.
+      Por isso precisamos atualizar esse estado também.
+    */
+    setContaBuscaLinha((anterior) => {
+      const novo = { ...anterior };
+
+      linhasAtualizadas.forEach((linha) => {
+        if (
+          linha.conta_contabil_id &&
+          linha.conta_contabil_descricao
+        ) {
+          novo[Number(linha.linha)] =
+            linha.conta_contabil_descricao;
+        }
+      });
+
+      return novo;
+    });
+
+    console.log(
+      "LINHAS DEPOIS DA SUGESTÃO CONTÁBIL:",
+      linhasAtualizadas
+    );
+
+    return linhasAtualizadas;
+  } catch (erro) {
+    console.error(
+      "ERRO AO BUSCAR CONTAS CONTÁBEIS:",
+      erro
+    );
+
+    /*
+      A sugestão automática não deve impedir a importação.
+      Retorna as linhas originais para o usuário preencher.
+    */
+    return linhasImportadas;
+  }
+}
+
+return (
   <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-slate-200 px-4 py-4">
     <div className="mx-auto w-full max-w-[1700px] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
 
-      <div className="bg-gradient-to-r from-slate-950 via-blue-950 to-slate-900 px-6 py-5">
+      <div className="bg-[#061f4a] px-5 py-3">
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-black tracking-wide text-white">
-              💳 Central de Importação de Cartões
-            </h2>
-            <p className="text-sm text-sky-100 font-semibold mt-1">
-              Importe faturas por Excel, CSV, TXT ou PDF.
-            </p>
-          </div>
+           <div className="flex items-center gap-3">
+              <h2 className="text-lg font-black tracking-wide text-white">
+                💳 Central de Importação de Cartões — RESULTADO ATIVO
+              </h2>
+
+              <p className="text-xs text-sky-100 font-semibold">
+                Importe faturas por Excel, CSV, TXT ou PDF.
+              </p>
+            </div>
 
           <div className="flex gap-2">
             <button
@@ -885,8 +1939,236 @@ async function lerTextoPDF(buffer) {
           </div>
         </div>
 
-        {abaAtiva === "lancamentos" && (
-          <div className="mt-5 grid grid-cols-[520px_220px_1fr] gap-4 items-end">
+
+           {abaAtiva === "lancamentos" &&
+  resultadoConciliacao && (
+    <div className="mt-5 overflow-hidden rounded-3xl border border-emerald-300 bg-white shadow-xl">
+      <div className="flex items-center justify-between gap-4 bg-emerald-700 px-5 py-4 text-white">
+        <div>
+          <h3 className="text-xl font-black">
+            ✅ Fatura conciliada com sucesso
+          </h3>
+
+          <p className="mt-1 text-xs font-semibold text-emerald-100">
+            Fatura nº {resultadoConciliacao.fatura_id} ·
+            Importação nº {resultadoConciliacao.importacao_id}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={limpar}
+          className="btn-pill btn-white text-xs"
+        >
+          Nova importação
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 border-b bg-emerald-50 p-4 md:grid-cols-5">
+        <div className="rounded-2xl border bg-white p-3">
+          <div className="text-xs font-bold text-slate-500">
+            Processadas
+          </div>
+
+          <div className="text-xl font-black text-slate-800">
+            {resultadoConciliacao.processadas || 0}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-white p-3">
+          <div className="text-xs font-bold text-slate-500">
+            Criadas
+          </div>
+
+          <div className="text-xl font-black text-emerald-700">
+            {resultadoConciliacao.compras_criadas ||
+              resultadoConciliacao
+                .compras_implantacao_criadas ||
+              0}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-white p-3">
+          <div className="text-xs font-bold text-slate-500">
+            Recriadas
+          </div>
+
+          <div className="text-xl font-black text-blue-700">
+            {resultadoConciliacao.compras_recriadas || 0}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-white p-3">
+          <div className="text-xs font-bold text-slate-500">
+            Pendentes
+          </div>
+
+          <div className="text-xl font-black text-amber-700">
+            {resultadoConciliacao
+              .pendentes_compras_antigas || 0}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-white p-3">
+          <div className="text-xs font-bold text-slate-500">
+            Ignoradas
+          </div>
+
+          <div className="text-xl font-black text-slate-700">
+            {resultadoConciliacao.ignoradas || 0}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between bg-slate-800 px-5 py-3 text-white">
+        <div>
+          <div className="font-black">
+            Lançamentos da fatura
+          </div>
+
+          <div className="text-xs font-semibold text-slate-300">
+            O que ficou gravado no cartão após a conciliação
+          </div>
+        </div>
+
+        <div className="text-xs font-black">
+          {transacoesFatura.length} registro(s)
+        </div>
+      </div>
+
+
+
+      
+
+      {carregandoTransacoes ? (
+        <div className="p-8 text-center font-bold text-slate-500">
+          Carregando lançamentos...
+        </div>
+      ) : transacoesFatura.length === 0 ? (
+        <div className="p-8 text-center font-bold text-slate-500">
+          Nenhum lançamento encontrado nesta fatura.
+        </div>
+      ) : (
+        <div className="max-h-[520px] overflow-auto">
+          <table className="w-full text-sm">
+            <thead className="sticky top-0 z-10 bg-slate-200 text-slate-800">
+              <tr>
+                <th className="w-[115px] p-3 text-left">
+                  Compra
+                </th>
+
+                <th className="p-3 text-left">
+                  Descrição
+                </th>
+
+                <th className="w-[105px] p-3 text-center">
+                  Parcela
+                </th>
+
+                <th className="w-[120px] p-3 text-center">
+                  Data parcela
+                </th>
+
+                <th className="w-[110px] p-3 text-center">
+                  Referência
+                </th>
+
+                <th className="w-[135px] p-3 text-right">
+                  Valor
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {transacoesFatura.map((item, index) => (
+                <tr
+                  key={`${item.fatura_id}-${item.descricao}-${item.parcela_num}-${index}`}
+                  className="border-t hover:bg-blue-50"
+                >
+                  <td className="p-3 font-semibold text-slate-600">
+                    {String(item.data_compra || "")
+                      .slice(0, 10)
+                      .split("-")
+                      .reverse()
+                      .join("/")}
+                  </td>
+
+                  <td className="p-3">
+                    <div className="font-bold text-slate-800">
+                      {item.descricao}
+                    </div>
+
+                    <div className="mt-0.5 text-[11px] font-semibold text-slate-400">
+                      {item.nome} · {item.bandeira} · Final{" "}
+                      {String(item.numero || "").slice(-4)}
+                    </div>
+                  </td>
+
+                  <td className="p-3 text-center font-black text-slate-700">
+                    {item.parcela_num || 1}/
+                    {item.parcela_total || 1}
+                  </td>
+
+                  <td className="p-3 text-center font-semibold text-slate-600">
+                    {String(item.data_parcela || "")
+                      .slice(0, 10)
+                      .split("-")
+                      .reverse()
+                      .join("/")}
+                  </td>
+
+                  <td className="p-3 text-center font-semibold text-slate-600">
+                    {String(item.mes_referencia || "")
+                      .slice(0, 7)
+                      .split("-")
+                      .reverse()
+                      .join("/")}
+                  </td>
+
+                  <td className="p-3 text-right font-black text-red-700">
+                    {Number(item.valor || 0).toLocaleString(
+                      "pt-BR",
+                      {
+                        style: "currency",
+                        currency: "BRL",
+                      }
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+            <tfoot className="sticky bottom-0 bg-slate-900 text-white">
+              <tr>
+                <td
+                  colSpan={5}
+                  className="p-3 text-right font-black"
+                >
+                  Total desta fatura
+                </td>
+
+                <td className="p-3 text-right text-base font-black">
+                  {transacoesFatura
+                    .reduce(
+                      (total, item) =>
+                        total + Number(item.valor || 0),
+                      0
+                    )
+                    .toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      )}
+    </div>
+  )}
+ 
+        {abaAtiva === "lancamentos" &&   !resultadoConciliacao && (
+           <div className="mt-2 grid grid-cols-[620px_420px_1fr] gap-3 items-center">
             <div className="flex flex-col">
               <label className="text-sm font-bold text-white mb-1">
                 Cartão
@@ -901,44 +2183,90 @@ async function lerTextoPDF(buffer) {
                   {"<<"}
                 </button>
 
-                <div className="w-full max-w-[420px] rounded-2xl bg-white border-2 border-cyan-200 px-4 py-3 shadow-lg">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <div className="text-base font-black text-slate-900">
-                        {cartaoSelecionado?.nome || `Cartão ${cartaoSelecionado?.id || ""}`}
+                <div className="w-full max-w-[390px] rounded-xl bg-white border border-cyan-200 px-3 py-2 shadow">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-base font-black text-slate-900">
+                          {cartaoSelecionado?.nome ||
+                            `Cartão ${cartaoSelecionado?.id || ""}`}
+                        </div>
+
+                        <div className="text-sm font-bold text-slate-500">
+                          Final{" "}
+                          {String(
+                            cartaoSelecionado?.numero || ""
+                          ).slice(-4)}
+                        </div>
+
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            disabled={!cartaoSelecionado?.id}
+                            onClick={() =>
+                              navigate(
+                                `/app/edit-card/${cartaoSelecionado.id}`
+                              )
+                            }
+                            className="
+                              inline-flex items-center gap-1
+                              rounded-lg border border-blue-200
+                              bg-blue-50 px-2.5 py-1
+                              text-[11px] font-black text-blue-700
+                              hover:bg-blue-100
+                              disabled:cursor-not-allowed
+                              disabled:opacity-40
+                            "
+                          >
+                            ✏️ Editar cartão
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate("/app/new-card")
+                            }
+                            className="
+                              inline-flex items-center gap-1
+                              rounded-lg border border-emerald-200
+                              bg-emerald-50 px-2.5 py-1
+                              text-[11px] font-black text-emerald-700
+                              hover:bg-emerald-100
+                            "
+                          >
+                            ＋ Novo cartão
+                          </button>
+                        </div>
                       </div>
 
-                      <div className="text-sm font-bold text-slate-500">
-                        Final {String(cartaoSelecionado?.numero || "").slice(-4)}
+                      <div className="text-right">
+                        <div className="text-xs font-bold text-slate-400">
+                          Disponível
+                        </div>
+
+                        <div className="text-base font-black text-emerald-700">
+                          {formatarMoeda(
+                            cartaoSelecionado?.limite_disponivel
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <div className="text-xs font-bold text-slate-400">
-                        Disponível
-                      </div>
-                      <div className="text-base font-black text-emerald-700">
-                        {formatarMoeda(cartaoSelecionado?.limite_disponivel)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                    <div className="rounded-xl bg-slate-100 px-3 py-2">
+                   <div className="mt-2 grid grid-cols-3 gap-1.5 text-[11px]">
+                    <div  className="rounded-lg bg-slate-100 px-2 py-1.5">
                       <div className="text-slate-500 font-bold">Limite</div>
                       <div className="text-slate-900 font-black">
                         {formatarMoeda(cartaoSelecionado?.limite_total)}
                       </div>
                     </div>
 
-                    <div className="rounded-xl bg-slate-100 px-3 py-2">
+                    <div  className="rounded-lg bg-slate-100 px-2 py-1.5">
                       <div className="text-slate-500 font-bold">Fecha</div>
                       <div className="text-slate-900 font-black">
                         Dia {cartaoSelecionado?.fechamento_dia || "-"}
                       </div>
                     </div>
 
-                    <div className="rounded-xl bg-slate-100 px-3 py-2">
+                    <div  className="rounded-lg bg-slate-100 px-2 py-1.5">
                       <div className="text-slate-500 font-bold">Vence</div>
                       <div className="text-slate-900 font-black">
                         Dia {cartaoSelecionado?.vencimento_dia || "-"}
@@ -1084,8 +2412,11 @@ async function lerTextoPDF(buffer) {
             </div>
           )}
 
-        {abaAtiva === "lancamentos" && resumo && (
-          <div className="mb-4 bg-emerald-50 border border-emerald-300 text-emerald-800 px-4 py-3 rounded-2xl text-sm font-black shadow-sm">
+          {abaAtiva === "lancamentos" &&
+  resumo &&
+  !resultadoConciliacao && (
+ 
+           <div className="mb-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-800">
             ✔ {resumo.qtd} registros importados | Compras:{" "}
             {resumo.compras.toLocaleString("pt-BR", {
               style: "currency",
@@ -1104,9 +2435,11 @@ async function lerTextoPDF(buffer) {
           </div>
         )}
 
-        {abaAtiva === "lancamentos" && validacaoPDF && (
+        {abaAtiva === "lancamentos" &&
+  validacaoPDF &&
+  !resultadoConciliacao && (
           <div
-            className={`mb-4 px-4 py-3 rounded-2xl text-sm font-black shadow-sm border ${
+             className={`mb-2 rounded-xl border px-3 py-2 text-xs font-black ${
               validacaoPDF.ok
                 ? "bg-emerald-50 border-emerald-300 text-emerald-800"
                 : "bg-red-50 border-red-300 text-red-800"
@@ -1116,70 +2449,297 @@ async function lerTextoPDF(buffer) {
           </div>
         )}
 
-        {abaAtiva === "lancamentos" && (
-          <div className="max-h-[580px] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow">
-           <div className="sticky top-0 grid grid-cols-[110px_1.8fr_220px_120px_160px_150px] gap-5 text-sm py-3 px-4 border-b border-slate-200 bg-slate-900 text-white z-10">
-              <div className="text-left font-black">Data</div>
-              <div className="text-left font-black">Estabelecimento</div>
-              <div className="text-left font-black">Portador</div>
-              <div className="text-center font-black">Parcela</div>
-              <div className="text-right font-black">Valor</div>
-              <div className="text-center font-black">Tipo</div>
-            </div>
+          {abaAtiva === "lancamentos" &&
+  linhas.length > 0 &&
+  !resultadoConciliacao && (
+    <div className="mb-2 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
 
-            {linhas.map((l) => (
-              <div
-                key={l.linha}
-                className="grid grid-cols-[110px_1.8fr_220px_120px_160px_150px] gap-5 text-sm border-b border-slate-100 py-2 px-4 hover:bg-sky-50"
-              >
-                <div className="font-semibold text-slate-700">
-                  {String(l.data || "").includes("-")
-                    ? l.data.split("-").reverse().join("/")
-                    : l.data}
+      {/* Filtro */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-black text-slate-500">
+          Exibir:
+        </span>
+
+        <select
+          value={filtroStatus}
+          onChange={(e) => setFiltroStatus(e.target.value)}
+          className="h-9 min-w-[155px] rounded-xl border border-amber-300 bg-amber-50 px-3 text-xs font-black text-amber-800 outline-none focus:ring-2 focus:ring-amber-200"
+        >
+          <option value="pendentes">
+            Pendentes ({quantidadePendentes})
+          </option>
+
+          <option value="todos">
+            Todos ({linhas.length})
+          </option>
+        </select>
+      </div>
+
+      {/* Conta para selecionados */}
+      <div className="flex items-center gap-2">
+        <div
+          className="relative w-[340px]"
+          data-dropdown-conta-cartao
+        >
+          <input
+            type="text"
+            value={contaLoteTexto}
+            placeholder="Conta contábil para selecionados"
+            onFocus={() => setMostrarContasLote(true)}
+            onChange={(e) => {
+              setContaLoteTexto(e.target.value);
+              setContaLoteId(null);
+              setMostrarContasLote(true);
+            }}
+            className="h-9 w-full rounded-xl border border-blue-200 bg-blue-50 px-3 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-200"
+          />
+
+          {mostrarContasLote &&
+            (() => {
+              const busca = String(contaLoteTexto || "")
+                .toLowerCase()
+                .trim();
+
+              const filtradas = contasContabeis
+                .filter((conta) => {
+                  const descricao =
+                    `${conta.codigo || ""} ` +
+                    `${conta.nome || ""} ` +
+                    `${conta.apelido || ""}`;
+
+                  return (
+                    !busca ||
+                    descricao.toLowerCase().includes(busca)
+                  );
+                })
+                .slice(0, 15);
+
+              if (!filtradas.length) return null;
+
+              return (
+                <div className="absolute right-0 top-full z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl">
+                  {filtradas.map((conta) => (
+                    <button
+                      key={conta.id}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        selecionarContaLote(conta);
+                      }}
+                      className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
+                    >
+                      <span className="font-black text-slate-800">
+                        {conta.codigo}
+                      </span>
+
+                      <span className="text-slate-600">
+                        {" - "}
+                        {conta.nome}
+                      </span>
+                    </button>
+                  ))}
                 </div>
+              );
+            })()}
+        </div>
 
-                <div className="truncate font-bold text-slate-800">
-                  {l.estabelecimento}
+        <button
+          type="button"
+          onClick={aplicarContaSelecionados}
+          disabled={
+            !linhasSelecionadas.length ||
+            !contaLoteId
+          }
+          className="h-9 whitespace-nowrap rounded-xl bg-[#061f4a] px-4 text-xs font-black text-white shadow hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Aplicar ({linhasSelecionadas.length})
+        </button>
+      </div>
+    </div>
+  )}
+
+         {abaAtiva === "lancamentos" &&
+  !resultadoConciliacao && (
+          <div className="max-h-[580px] overflow-y-auto overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow">
+            <div className="min-w-[1500px]">
+              <div className="sticky top-0 z-10 grid grid-cols-[44px_110px_minmax(280px,1.8fr)_220px_100px_320px_140px_120px] items-center gap-3 border-b border-slate-200 bg-slate-900 px-4 py-3 text-sm text-white">
+                <div className="flex justify-center">
+                  <input
+                    type="checkbox"
+                    checked={
+                      linhas.filter(linhaExigeContaContabil).length > 0 &&
+                      linhas
+                        .filter(linhaExigeContaContabil)
+                        .every((linha) =>
+                          linhasSelecionadas.includes(Number(linha.linha))
+                        )
+                    }
+                    onChange={selecionarTodasLinhas}
+                    title="Selecionar todas as compras que permitem conta contábil"
+                    className="h-4 w-4 cursor-pointer accent-blue-700"
+                  />
                 </div>
+                <div className="text-left font-black">Data</div>
+                <div className="text-left font-black">Estabelecimento</div>
+                <div className="text-left font-black">Portador</div>
+                <div className="text-center font-black">Parcela</div>
+                <div className="text-left font-black">Conta contábil</div>
+                <div className="text-right font-black">Valor</div>
+                <div className="text-center font-black">Tipo</div>
+              </div>
 
-                <div className="truncate text-slate-500 font-semibold">
-                  {l.portador || "-"}
-                </div>
-
-                <div className="text-center font-semibold text-slate-600">
-                  {l.parcela || "-"}
-                </div>
-
+              {linhasExibidas.map((l) => (
                 <div
-                  className={`text-right font-mono font-black ${
-                    l.valor >= 0 ? "text-red-700" : "text-green-700"
-                  }`}
+                  key={l.linha}
+                  className="grid grid-cols-[44px_110px_minmax(280px,1.8fr)_220px_100px_320px_140px_120px] items-center gap-3 border-b border-slate-100 px-4 py-2 text-sm hover:bg-sky-50"
                 >
-                  {Number(l.valor || 0).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </div>
+                  <div className="flex justify-center">
+                    {linhaExigeContaContabil(l) ? (
+                      <input
+                        type="checkbox"
+                        checked={linhasSelecionadas.includes(Number(l.linha))}
+                        onChange={() => selecionarLinhaLote(l)}
+                        title="Selecionar esta compra para aplicar conta em lote"
+                        className="h-4 w-4 cursor-pointer accent-blue-700"
+                      />
+                    ) : (
+                      <span
+                        title="Esta linha não recebe conta contábil nesta etapa"
+                        className="text-slate-300"
+                      >
+                        🔒
+                      </span>
+                    )}
+                  </div>
 
-                <div className="text-center">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-black ${
-                      l.tipo_linha === "compra"
-                        ? "bg-red-100 text-red-700"
-                        : l.tipo_linha === "pagamento"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-green-100 text-green-700"
+                  <div className="font-semibold text-slate-700">
+                    {String(l.data || "").includes("-")
+                      ? l.data.split("-").reverse().join("/")
+                      : l.data}
+                  </div>
+
+                  <div className="truncate font-bold text-slate-800">
+                    {l.estabelecimento}
+                  </div>
+
+                  <div className="truncate font-semibold text-slate-500">
+                    {l.portador || "-"}
+                  </div>
+
+                  <div className="text-center font-semibold text-slate-600">
+                    {l.parcela || "-"}
+                  </div>
+
+                  <div className="relative min-w-0" data-dropdown-conta-cartao>
+                  
+                      {linhaExigeContaContabil(l) ? (
+                      <>
+                        <input
+                          type="text"
+                          value={
+                            contaBuscaLinha[l.linha] ??
+                            l.conta_contabil_descricao ??
+                            ""
+                          }
+                          placeholder="Digite código ou nome da conta"
+                          onFocus={() => {
+                            setContaDropdownLinha(Number(l.linha));
+                            filtrarContasDaLinha(
+                              contaBuscaLinha[l.linha] ||
+                                l.conta_contabil_descricao ||
+                                ""
+                            );
+                          }}
+                          onChange={(e) => {
+                            const texto = e.target.value;
+                            const chaveLinha = Number(l.linha);
+                            setContaBuscaLinha((prev) => ({
+                              ...prev,
+                              [chaveLinha]: texto,
+                            }));
+                            setLinhas((prev) =>
+                              prev.map((item) =>
+                                Number(item.linha) === chaveLinha
+                                  ? {
+                                      ...item,
+                                      conta_contabil_id: null,
+                                      conta_contabil_descricao: "",
+                                    }
+                                  : item
+                              )
+                            );
+                            setContaDropdownLinha(chaveLinha);
+                            filtrarContasDaLinha(texto);
+                          }}
+                          className="h-9 w-full rounded-xl border border-blue-200 bg-blue-50 px-3 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-200"
+                        />
+
+                        {Number(contaDropdownLinha) === Number(l.linha) &&
+                          contasFiltradasLinha.length > 0 && (
+                            <div className="absolute left-0 top-full z-50 mt-1 max-h-64 w-full min-w-[380px] overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl">
+                              {contasFiltradasLinha.map((conta) => (
+                                <button
+                                  key={conta.id}
+                                  type="button"
+                                  onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    selecionarContaContabilLinha(l, conta);
+                                  }}
+                                  className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
+                                >
+                                  <span className="font-black text-slate-800">
+                                    {conta.codigo}
+                                  </span>
+                                  <span className="text-slate-600">
+                                    {" - "}{conta.nome}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                      </>
+                    ) : (
+                      <div
+                        title="A conta contábil vem da compra original e é reutilizada nas demais parcelas"
+                        className="flex h-9 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 px-2 text-xs font-semibold text-sky-700"
+                      >
+                        🔒 Mesma conta da compra
+                      </div>
+                    )}
+                  </div>
+
+                  <div
+                    className={`text-right font-mono font-black ${
+                      l.valor >= 0 ? "text-red-700" : "text-green-700"
                     }`}
                   >
-                    {l.tipo_linha}
-                  </span>
+                    {Number(l.valor || 0).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </div>
+
+                  <div className="text-center">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-black ${
+                        l.tipo_linha === "compra"
+                          ? "bg-red-100 text-red-700"
+                          : l.tipo_linha === "pagamento"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {l.tipo_linha}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
-
-         {abaAtiva === "lancamentos" && (
+          
+          {abaAtiva === "lancamentos" &&
+  !resultadoConciliacao && (
            <div className="mt-5 flex items-center justify-end gap-3 pr-20">
             <label
               className={`btn-pill flex items-center gap-2 ${
