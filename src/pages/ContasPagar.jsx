@@ -601,7 +601,9 @@ async function selecionarContaBancaria(valor) {
        <th className="w-[45px] px-2 py-3 text-center">Sel.</th>
       <th className="w-[60px] px-2 py-3 text-left">ID</th>
       <th className="w-[220px] px-3 py-3 text-left">Descrição</th>
+       <th className="w-[105px] px-2 py-3 text-left">Data Mov.</th>
       <th className="w-[105px] px-2 py-3 text-left">Venc.</th>
+      <th className="w-[105px] px-2 py-3 text-left">Data Pagto.</th>
       <th className="w-[180px] px-3 py-3 text-left">Fornecedor</th>
       <th className="w-[55px] px-1 py-3 text-center">Parc.</th>
       <th className="w-[55px] px-1 py-3 text-center">Qtd.</th>
@@ -637,8 +639,17 @@ async function selecionarContaBancaria(valor) {
             </td>
 
             <td className="px-2 py-2">
+              {formatarDataBR(c.criado_em)}
+            </td>
+
+            <td className="px-2 py-2">
               {formatarDataBR(c.vencimento)}
             </td>
+
+             <td className="px-2 py-2">
+              {formatarDataBR(c.data_pagamento)}
+            </td>
+
 
             <td className="truncate px-3 py-2" title={c.fornecedor}>
               {c.fornecedor}
