@@ -165,6 +165,8 @@ export default function DiagnosticoApropriacaoPagar() {
   const [erro, setErro] = useState("");
   const [busca, setBusca] = useState("");
 
+  const [analiseAberta, setAnaliseAberta] = useState(false);
+
   async function carregar() {
     if (!empresaId) {
       setErro("Empresa não identificada.");
@@ -226,83 +228,256 @@ export default function DiagnosticoApropriacaoPagar() {
     carregar();
   }, []);
 
-  const diagnostico = useMemo(() => {
-    const apropriacoes = dados.filter(
-      (item) => item.etapa === "APROPRIACAO"
-    );
+ 
+ const diagnostico = useMemo(() => {
+  const apropriacoesAutomaticas = dados.filter(
+    (item) => item.etapa === "APROPRIACAO"
+  );
 
-    const baixas = dados.filter((item) => item.etapa === "BAIXA");
+  const baixasAutomaticas = dados.filter(
+    (item) => item.etapa === "BAIXA"
+  );
 
-    const naoPagos = dados.filter(
-      (item) => item.etapa === "NAO_PAGO"
-    );
+  const naoPagos = dados.filter(
+    (item) => item.etapa === "NAO_PAGO"
+  );
 
-    const totalApropriado = apropriacoes.reduce(
+  const apropriacoesManuais = dados.filter(
+    (item) => item.etapa === "APROPRIACAO_MANUAL"
+  );
+
+  const baixasManuais = dados.filter(
+    (item) => item.etapa === "BAIXA_MANUAL"
+  );
+
+  const totalApropriadoAutomatico =
+    apropriacoesAutomaticas.reduce(
       (soma, item) => soma + numero(item.valor_total),
       0
     );
 
-    const totalBaixado = baixas.reduce(
+  const totalApropriadoManual =
+    apropriacoesManuais.reduce(
       (soma, item) => soma + numero(item.valor_total),
       0
     );
 
-    const saldo = totalApropriado - totalBaixado;
-
-    const percentualBaixado =
-      totalApropriado > 0
-        ? (totalBaixado / totalApropriado) * 100
-        : 0;
-
-    const chaves = new Set(
-      dados
-        .map((item) => item.chave_divida)
-        .filter(Boolean)
+  const totalBaixadoAutomatico =
+    baixasAutomaticas.reduce(
+      (soma, item) => soma + numero(item.valor_total),
+      0
     );
 
-    const chavesPagas = new Set(
-      baixas
-        .map((item) => item.chave_divida)
-        .filter(Boolean)
+  const totalBaixadoManual =
+    baixasManuais.reduce(
+      (soma, item) => soma + numero(item.valor_total),
+      0
     );
 
-    const chavesPendentes = new Set(
-      naoPagos
-        .map((item) => item.chave_divida)
-        .filter(Boolean)
-    );
+  const totalApropriado =
+    totalApropriadoAutomatico +
+    totalApropriadoManual;
 
-    const diasPagamento = baixas
-      .map((item) =>
-        diferencaDias(
-          item.data_apropriacao,
-          item.data_movimento
-        )
+  const totalBaixado =
+    totalBaixadoAutomatico +
+    totalBaixadoManual;
+
+  const saldoBruto =
+    totalApropriado - totalBaixado;
+
+  const saldo = Math.max(0, saldoBruto);
+
+  const excessoBaixa = Math.max(
+    0,
+    totalBaixado - totalApropriado
+  );
+
+  const saldoAutomatico = Math.max(
+    0,
+    totalApropriadoAutomatico -
+      totalBaixadoAutomatico
+  );
+
+  const saldoManual =
+    totalApropriadoManual -
+    totalBaixadoManual;
+
+  const percentualBaixado =
+    totalApropriado > 0
+      ? (totalBaixado / totalApropriado) * 100
+      : 0;
+
+  /*
+   * A contagem de dívidas considera somente as automáticas.
+   * Movimento manual não possui pagar_id e não deve ser tratado
+   * artificialmente como uma dívida individual.
+   */
+  const automaticos = dados.filter(
+    (item) => item.tipo_divida !== "MANUAL"
+  );
+
+  const chaves = new Set(
+    automaticos
+      .map((item) => item.chave_divida)
+      .filter(Boolean)
+  );
+
+  const chavesPagas = new Set(
+    baixasAutomaticas
+      .map((item) => item.chave_divida)
+      .filter(Boolean)
+  );
+
+  const chavesPendentes = new Set(
+    naoPagos
+      .map((item) => item.chave_divida)
+      .filter(Boolean)
+  );
+
+  const diasPagamento = baixasAutomaticas
+    .map((item) =>
+      diferencaDias(
+        item.data_apropriacao,
+        item.data_movimento
       )
-      .filter(
-        (dias) =>
-          dias !== null &&
-          Number.isFinite(dias) &&
-          dias >= 0
-      );
+    )
+    .filter(
+      (dias) =>
+        dias !== null &&
+        Number.isFinite(dias) &&
+        dias >= 0
+    );
 
-    const prazoMedio =
-      diasPagamento.length > 0
-        ? diasPagamento.reduce((soma, dias) => soma + dias, 0) /
-          diasPagamento.length
-        : 0;
+  const prazoMedio =
+    diasPagamento.length > 0
+      ? diasPagamento.reduce(
+          (soma, dias) => soma + dias,
+          0
+        ) / diasPagamento.length
+      : 0;
 
-    return {
-      totalApropriado,
-      totalBaixado,
-      saldo,
-      percentualBaixado,
-      quantidadeDividas: chaves.size,
-      quantidadePagas: chavesPagas.size,
-      quantidadePendentes: chavesPendentes.size,
-      prazoMedio,
-    };
-  }, [dados]);
+  /*
+   * Pagamentos por conta financeira.
+   *
+   * Nas baixas de fornecedores:
+   * débito  = Fornecedores
+   * crédito = Banco/Caixa
+   */
+  const mapaPagamentos = new Map();
+
+  [
+    ...baixasAutomaticas,
+    ...baixasManuais,
+  ].forEach((item) => {
+    const conta =
+      item.conta_credito ||
+      "Conta não identificada";
+
+    const atual =
+      mapaPagamentos.get(conta) || {
+        conta,
+        automatico: 0,
+        manual: 0,
+        total: 0,
+      };
+
+    const valor = numero(item.valor_total);
+
+    if (item.etapa === "BAIXA_MANUAL") {
+      atual.manual += valor;
+    } else {
+      atual.automatico += valor;
+    }
+
+    atual.total += valor;
+
+    mapaPagamentos.set(conta, atual);
+  });
+
+  const pagamentosPorConta = Array.from(
+    mapaPagamentos.values()
+  ).sort((a, b) => b.total - a.total);
+
+  /*
+   * Apropriações por conta de contrapartida.
+   *
+   * Nas apropriações:
+   * débito  = Despesa/Custo/Ativo
+   * crédito = Fornecedores
+   */
+  const mapaApropriacoes = new Map();
+
+  [
+    ...apropriacoesAutomaticas,
+    ...apropriacoesManuais,
+  ].forEach((item) => {
+    const conta =
+      item.conta_debito ||
+      "Conta não identificada";
+
+    const atual =
+      mapaApropriacoes.get(conta) || {
+        conta,
+        automatico: 0,
+        manual: 0,
+        total: 0,
+      };
+
+    const valor = numero(item.valor_total);
+
+    if (
+      item.etapa === "APROPRIACAO_MANUAL"
+    ) {
+      atual.manual += valor;
+    } else {
+      atual.automatico += valor;
+    }
+
+    atual.total += valor;
+
+    mapaApropriacoes.set(conta, atual);
+  });
+
+  const apropriacoesPorConta = Array.from(
+    mapaApropriacoes.values()
+  ).sort((a, b) => b.total - a.total);
+
+  return {
+    totalApropriado,
+    totalBaixado,
+    saldo,
+    saldoBruto,
+    excessoBaixa,
+    percentualBaixado,
+
+    totalApropriadoAutomatico,
+    totalApropriadoManual,
+    totalBaixadoAutomatico,
+    totalBaixadoManual,
+
+    saldoAutomatico,
+    saldoManual,
+
+    quantidadeDividas: chaves.size,
+    quantidadePagas: chavesPagas.size,
+    quantidadePendentes:
+      chavesPendentes.size,
+
+    quantidadeApropriacoesManuais:
+      apropriacoesManuais.length,
+
+    quantidadeBaixasManuais:
+      baixasManuais.length,
+
+    quantidadeMovimentosManuais:
+      apropriacoesManuais.length +
+      baixasManuais.length,
+
+    prazoMedio,
+    pagamentosPorConta,
+    apropriacoesPorConta,
+  };
+}, [dados]);
 
   const linhasFiltradas = useMemo(() => {
     const texto = busca.trim().toLowerCase();
@@ -357,6 +532,9 @@ export default function DiagnosticoApropriacaoPagar() {
     function imprimir() {
   window.print();
 }
+
+
+
   return (
     <div className="min-h-screen bg-[#eef7fd] px-3 py-2 print:bg-white">
       <div className="mx-auto w-full max-w-[1480px]">
@@ -402,6 +580,15 @@ export default function DiagnosticoApropriacaoPagar() {
                 />
                 Atualizar
               </button>
+              
+              <button
+                  type="button"
+                  onClick={() => setAnaliseAberta(true)}
+                  className="flex h-9 items-center gap-1.5 rounded-full bg-amber-400 px-4 text-xs font-black text-amber-950 shadow-sm transition hover:bg-amber-300"
+                >
+                  <Scale size={15} />
+                  Análise
+                </button>
 
               <button
                 type="button"
@@ -852,6 +1039,411 @@ export default function DiagnosticoApropriacaoPagar() {
         </div>
       </div>
       </div>
+
+      {analiseAberta && (
+  <div
+    className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/55 p-3 backdrop-blur-sm print:hidden"
+    onMouseDown={() => setAnaliseAberta(false)}
+  >
+    <div
+      className="max-h-[94vh] w-full max-w-[1100px] overflow-y-auto rounded-[26px] border border-blue-100 bg-[#f8fcff] shadow-2xl"
+      onMouseDown={(e) => e.stopPropagation()}
+    >
+      {/* CABEÇALHO */}
+      <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-[26px] bg-gradient-to-r from-[#172554] via-[#1e3a8a] to-[#2563eb] px-5 py-4 text-white">
+        <div>
+          <h2 className="text-lg font-black">
+            Análise da Conta Fornecedores
+          </h2>
+
+          <p className="mt-0.5 text-xs font-semibold text-blue-100">
+            Diagnóstico sintético de{" "}
+            {dataBR(dataIni)} a {dataBR(dataFim)}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setAnaliseAberta(false)}
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-xl font-black transition hover:bg-white/25"
+          aria-label="Fechar análise"
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="space-y-4 p-4 sm:p-5">
+        {/* SEMÁFORO */}
+        <div
+          className={`rounded-2xl border p-4 ${
+            diagnostico.excessoBaixa > 0
+              ? "border-red-200 bg-red-50"
+              : diagnostico.saldo > 0
+              ? "border-amber-200 bg-amber-50"
+              : diagnostico.quantidadeMovimentosManuais > 0
+              ? "border-blue-200 bg-blue-50"
+              : "border-emerald-200 bg-emerald-50"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                diagnostico.excessoBaixa > 0
+                  ? "bg-red-100 text-red-700"
+                  : diagnostico.saldo > 0
+                  ? "bg-amber-100 text-amber-700"
+                  : diagnostico.quantidadeMovimentosManuais > 0
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-emerald-100 text-emerald-700"
+              }`}
+            >
+              {diagnostico.saldo > 0 ||
+              diagnostico.excessoBaixa > 0 ? (
+                <AlertTriangle size={21} />
+              ) : (
+                <CheckCircle2 size={21} />
+              )}
+            </div>
+
+            <div>
+              <div className="text-sm font-black text-slate-900">
+                {diagnostico.excessoBaixa > 0
+                  ? "Baixas superiores às apropriações"
+                  : diagnostico.saldo > 0
+                  ? "Existem valores sem baixa identificada"
+                  : diagnostico.quantidadeMovimentosManuais > 0
+                  ? "Saldo conciliado, mas existem movimentos manuais"
+                  : "Movimentação conciliada"}
+              </div>
+
+              <div className="mt-1 text-xs font-semibold text-slate-600">
+                {diagnostico.excessoBaixa > 0
+                  ? `${moeda(
+                      diagnostico.excessoBaixa
+                    )} foram baixados acima do total apropriado.`
+                  : diagnostico.saldo > 0
+                  ? `${moeda(
+                      diagnostico.saldo
+                    )} permanecem sem baixa no período analisado.`
+                  : diagnostico.quantidadeMovimentosManuais > 0
+                  ? `${diagnostico.quantidadeMovimentosManuais} movimentos manuais foram encontrados e devem ser revisados.`
+                  : "Não foram encontradas diferenças ou movimentos manuais no período."}
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+ 
+        {/* RESUMO PRINCIPAL */}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm">
+            <div className="text-[10px] font-black uppercase text-slate-500">
+              Total apropriado
+            </div>
+
+            <div className="mt-1 text-xl font-black text-blue-700">
+              {moeda(diagnostico.totalApropriado)}
+            </div>
+
+            <div className="mt-2 text-[11px] font-semibold text-slate-500">
+              Automático:{" "}
+              {moeda(
+                diagnostico.totalApropriadoAutomatico
+              )}
+            </div>
+
+            <div className="text-[11px] font-semibold text-amber-700">
+              Manual:{" "}
+              {moeda(
+                diagnostico.totalApropriadoManual
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm">
+            <div className="text-[10px] font-black uppercase text-slate-500">
+              Total baixado
+            </div>
+
+            <div className="mt-1 text-xl font-black text-emerald-700">
+              {moeda(diagnostico.totalBaixado)}
+            </div>
+
+            <div className="mt-2 text-[11px] font-semibold text-slate-500">
+              Automático:{" "}
+              {moeda(
+                diagnostico.totalBaixadoAutomatico
+              )}
+            </div>
+
+            <div className="text-[11px] font-semibold text-amber-700">
+              Manual:{" "}
+              {moeda(
+                diagnostico.totalBaixadoManual
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-red-100 bg-white p-4 shadow-sm">
+            <div className="text-[10px] font-black uppercase text-slate-500">
+              Saldo não baixado
+            </div>
+
+            <div
+              className={`mt-1 text-xl font-black ${
+                diagnostico.saldo > 0
+                  ? "text-red-600"
+                  : "text-emerald-700"
+              }`}
+            >
+              {moeda(diagnostico.saldo)}
+            </div>
+
+            <div className="mt-2 text-[11px] font-semibold text-slate-500">
+              Automático:{" "}
+              {moeda(diagnostico.saldoAutomatico)}
+            </div>
+
+            <div className="text-[11px] font-semibold text-amber-700">
+              Manual líquido:{" "}
+              {moeda(diagnostico.saldoManual)}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm">
+            <div className="text-[10px] font-black uppercase text-slate-500">
+              Percentual baixado
+            </div>
+
+            <div className="mt-1 text-xl font-black text-amber-700">
+              {diagnostico.percentualBaixado.toLocaleString(
+                "pt-BR",
+                {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                }
+              )}
+              %
+            </div>
+
+            <div className="mt-2 text-[11px] font-semibold text-slate-500">
+              {diagnostico.quantidadeDividas} dívidas automáticas analisadas
+            </div>
+          </div>
+        </div>
+
+        {/* AUTOMÁTICO X MANUAL */}
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm">
+            <h3 className="text-sm font-black text-slate-900">
+              Movimentos automáticos
+            </h3>
+
+            <div className="mt-3 space-y-2 text-xs">
+              <div className="flex justify-between border-b border-slate-100 pb-2">
+                <span className="font-semibold text-slate-500">
+                  Apropriado
+                </span>
+
+                <span className="font-black text-blue-700">
+                  {moeda(
+                    diagnostico.totalApropriadoAutomatico
+                  )}
+                </span>
+              </div>
+
+              <div className="flex justify-between border-b border-slate-100 pb-2">
+                <span className="font-semibold text-slate-500">
+                  Baixado
+                </span>
+
+                <span className="font-black text-emerald-700">
+                  {moeda(
+                    diagnostico.totalBaixadoAutomatico
+                  )}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-semibold text-slate-500">
+                  Saldo
+                </span>
+
+                <span className="font-black text-red-600">
+                  {moeda(
+                    diagnostico.saldoAutomatico
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-4 shadow-sm">
+            <h3 className="text-sm font-black text-slate-900">
+              Movimentos manuais
+            </h3>
+
+            <div className="mt-3 space-y-2 text-xs">
+              <div className="flex justify-between border-b border-amber-100 pb-2">
+                <span className="font-semibold text-slate-600">
+                  Apropriações manuais
+                </span>
+
+                <span className="font-black text-blue-700">
+                  {moeda(
+                    diagnostico.totalApropriadoManual
+                  )}
+                </span>
+              </div>
+
+              <div className="flex justify-between border-b border-amber-100 pb-2">
+                <span className="font-semibold text-slate-600">
+                  Baixas manuais
+                </span>
+
+                <span className="font-black text-emerald-700">
+                  {moeda(
+                    diagnostico.totalBaixadoManual
+                  )}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span className="font-semibold text-slate-600">
+                  Saldo manual líquido
+                </span>
+
+                <span
+                  className={`font-black ${
+                    diagnostico.saldoManual > 0
+                      ? "text-red-600"
+                      : "text-emerald-700"
+                  }`}
+                >
+                  {moeda(diagnostico.saldoManual)}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-3 rounded-xl border border-amber-200 bg-white/70 px-3 py-2 text-[11px] font-semibold text-amber-800">
+              Os movimentos manuais não possuem vínculo individual
+              com uma conta a pagar. O saldo apresentado é líquido.
+            </div>
+          </div>
+        </div>
+
+        {/* PAGAMENTOS POR CONTA */}
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+            <div className="border-b border-blue-100 px-4 py-3">
+              <h3 className="text-sm font-black text-slate-900">
+                Pagamentos por conta financeira
+              </h3>
+
+              <p className="text-[11px] font-semibold text-slate-500">
+                Bancos e caixas utilizados nas baixas.
+              </p>
+            </div>
+
+            <div className="divide-y divide-slate-100">
+              {diagnostico.pagamentosPorConta.length ===
+              0 ? (
+                <div className="px-4 py-8 text-center text-xs font-semibold text-slate-400">
+                  Nenhum pagamento encontrado.
+                </div>
+              ) : (
+                diagnostico.pagamentosPorConta.map(
+                  (item) => (
+                    <div
+                      key={item.conta}
+                      className="flex items-center justify-between gap-3 px-4 py-3"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate text-xs font-black text-slate-800">
+                          {item.conta}
+                        </div>
+
+                        <div className="mt-0.5 text-[10px] font-semibold text-slate-500">
+                          Automático{" "}
+                          {moeda(item.automatico)}
+                          {" • "}
+                          Manual {moeda(item.manual)}
+                        </div>
+                      </div>
+
+                      <div className="whitespace-nowrap text-sm font-black text-emerald-700">
+                        {moeda(item.total)}
+                      </div>
+                    </div>
+                  )
+                )
+              )}
+            </div>
+          </div>
+
+          {/* APROPRIAÇÕES POR CONTA */}
+          <div className="overflow-hidden rounded-2xl border border-blue-100 bg-white shadow-sm">
+            <div className="border-b border-blue-100 px-4 py-3">
+              <h3 className="text-sm font-black text-slate-900">
+                Apropriações por conta
+              </h3>
+
+              <p className="text-[11px] font-semibold text-slate-500">
+                Contas que deram origem às dívidas.
+              </p>
+            </div>
+
+            <div className="divide-y divide-slate-100">
+              {diagnostico.apropriacoesPorConta.length ===
+              0 ? (
+                <div className="px-4 py-8 text-center text-xs font-semibold text-slate-400">
+                  Nenhuma apropriação encontrada.
+                </div>
+              ) : (
+                diagnostico.apropriacoesPorConta.map(
+                  (item) => (
+                    <div
+                      key={item.conta}
+                      className="flex items-center justify-between gap-3 px-4 py-3"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate text-xs font-black text-slate-800">
+                          {item.conta}
+                        </div>
+
+                        <div className="mt-0.5 text-[10px] font-semibold text-slate-500">
+                          Automático{" "}
+                          {moeda(item.automatico)}
+                          {" • "}
+                          Manual {moeda(item.manual)}
+                        </div>
+                      </div>
+
+                      <div className="whitespace-nowrap text-sm font-black text-blue-700">
+                        {moeda(item.total)}
+                      </div>
+                    </div>
+                  )
+                )
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => setAnaliseAberta(false)}
+            className="h-10 rounded-xl bg-slate-900 px-5 text-xs font-black text-white transition hover:bg-slate-700"
+          >
+            Fechar análise
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
