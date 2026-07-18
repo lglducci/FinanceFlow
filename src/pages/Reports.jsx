@@ -200,6 +200,16 @@ export default function Reports() {
       icon: <IconReport />,
     },
     
+
+      {
+      title: "Diagnostico Contas a Pagar",
+      desc: "Diagnóstico de Apropriacao e baixa de Contas a Pagar",
+      path: "/diagnostico-apropriacao-pagar" ,
+      icon: <IconReport />,
+    },
+    
+
+     
  
     
       
