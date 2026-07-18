@@ -312,9 +312,12 @@ export default function DiagnosticoApropriacaoPagar() {
    * Movimento manual não possui pagar_id e não deve ser tratado
    * artificialmente como uma dívida individual.
    */
+ 
   const automaticos = dados.filter(
-    (item) => item.tipo_divida !== "MANUAL"
-  );
+  (item) =>
+    item.tipo_divida !== "MANUAL" &&
+    item.tipo_divida !== "RECORRENTE"
+);
 
   const chaves = new Set(
     automaticos
@@ -533,6 +536,92 @@ export default function DiagnosticoApropriacaoPagar() {
   window.print();
 }
 
+function classeEtapa(etapa) {
+  switch (etapa) {
+    case "APROPRIACAO":
+      return "border-blue-200 bg-blue-50 text-blue-700";
+
+    case "BAIXA":
+      return "border-emerald-200 bg-emerald-50 text-emerald-700";
+
+    case "NAO_PAGO":
+      return "border-red-200 bg-red-50 text-red-700";
+
+    case "APROPRIACAO_MANUAL":
+      return "border-violet-200 bg-violet-50 text-violet-700";
+
+    case "BAIXA_MANUAL":
+      return "border-cyan-200 bg-cyan-50 text-cyan-700";
+
+    case "PAGAMENTO_RECORRENTE":
+      return "border-emerald-200 bg-emerald-50 text-emerald-700";
+
+    case "RECORRENTE_EM_ABERTO":
+      return "border-amber-200 bg-amber-50 text-amber-700";
+
+    default:
+      return "border-slate-200 bg-slate-50 text-slate-700";
+  }
+}
+
+function textoEtapa(etapa) {
+  switch (etapa) {
+    case "APROPRIACAO":
+      return "Apropriação";
+
+    case "BAIXA":
+      return "Baixa";
+
+    case "NAO_PAGO":
+      return "Não pago";
+
+    case "APROPRIACAO_MANUAL":
+      return "Apropriação manual";
+
+    case "BAIXA_MANUAL":
+      return "Baixa manual";
+
+    case "PAGAMENTO_RECORRENTE":
+      return "Recorrente paga";
+
+    case "RECORRENTE_EM_ABERTO":
+      return "Recorrente em aberto";
+
+    default:
+      return etapa || "-";
+  }
+}
+
+
+function classeConta(item) {
+  if (
+    item.etapa === "BAIXA" ||
+    item.etapa === "BAIXA_MANUAL"
+  ) {
+    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  }
+
+  if (item.etapa === "PAGAMENTO_RECORRENTE") {
+    return "border-cyan-200 bg-cyan-50 text-cyan-700";
+  }
+
+  if (item.etapa === "RECORRENTE_EM_ABERTO") {
+    return "border-amber-200 bg-amber-50 text-amber-700";
+  }
+
+  if (item.etapa === "NAO_PAGO") {
+    return "border-red-200 bg-red-50 text-red-700";
+  }
+
+  if (
+    item.etapa === "APROPRIACAO_MANUAL" ||
+    item.tipo_divida === "MANUAL"
+  ) {
+    return "border-violet-200 bg-violet-50 text-violet-700";
+  }
+
+  return "border-blue-200 bg-blue-50 text-blue-700";
+}
 
 
   return (
@@ -916,11 +1005,15 @@ export default function DiagnosticoApropriacaoPagar() {
                         </td>
 
                         <td className="whitespace-nowrap px-3 py-3 text-xs font-semibold text-slate-600">
-                          {item.tipo_divida === "PARCELADA"
-                            ? "Parcelada"
-                            : item.tipo_divida === "SIMPLES"
-                            ? "Simples"
-                            : "-"}
+                           {item.tipo_divida === "PARCELADA"
+                              ? "Parcelada"
+                              : item.tipo_divida === "SIMPLES"
+                              ? "Simples"
+                              : item.tipo_divida === "MANUAL"
+                              ? "Manual"
+                              : item.tipo_divida === "RECORRENTE"
+                              ? "Recorrente"
+                              : item.tipo_divida || "-"}
                         </td>
 
                         <td className="whitespace-nowrap px-3 py-3 text-xs font-bold text-slate-700">
@@ -975,10 +1068,16 @@ export default function DiagnosticoApropriacaoPagar() {
 
                         <td
                           className={`whitespace-nowrap px-3 py-3 text-right text-xs font-black ${
-                            item.etapa === "BAIXA"
+                            item.etapa === "BAIXA" ||
+                            item.etapa === "BAIXA_MANUAL" ||
+                            item.etapa === "PAGAMENTO_RECORRENTE"
                               ? "text-emerald-700"
                               : item.etapa === "NAO_PAGO"
                               ? "text-red-600"
+                              : item.etapa === "RECORRENTE_EM_ABERTO"
+                              ? "text-amber-700"
+                              : item.tipo_divida === "MANUAL"
+                              ? "text-violet-700"
                               : "text-blue-800"
                           }`}
                         >
