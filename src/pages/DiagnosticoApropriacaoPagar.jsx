@@ -632,9 +632,9 @@ export default function DiagnosticoApropriacaoPagar() {
             <table className="min-w-[1450px] w-full border-collapse text-left">
               <thead className="bg-[#172554] text-white">
                 <tr>
-                  <th className="px-3 py-3 text-[10px] font-black uppercase">
+                  {/*<th className="px-3 py-3 text-[10px] font-black uppercase">
                     Referência
-                  </th>
+                  </th>*/}
 
                   <th className="px-3 py-3 text-[10px] font-black uppercase">
                     Descrição
@@ -720,9 +720,9 @@ export default function DiagnosticoApropriacaoPagar() {
                             : "bg-slate-50/70"
                         } hover:bg-blue-50/70`}
                       >
-                        <td className="whitespace-nowrap px-3 py-3 text-xs font-black text-blue-700">
+                      {/*}  <td className="whitespace-nowrap px-3 py-3 text-xs font-black text-blue-700">
                           {item.chave_divida || "-"}
-                        </td>
+                        </td>*/}
 
                         <td className="max-w-[220px] px-3 py-3 text-xs font-bold text-slate-800">
                           {item.descricao || "-"}
@@ -761,14 +761,30 @@ export default function DiagnosticoApropriacaoPagar() {
                         <td className="whitespace-nowrap px-3 py-3 text-xs font-semibold text-slate-700">
                           {dataBR(item.vencimento)}
                         </td>
+                         
+                          <td className="max-w-[250px] px-3 py-3 text-xs font-semibold text-slate-700">
+                            <span
+                              className={`inline-flex rounded-md border px-2 py-1 ${
+                                item.etapa === "BAIXA"
+                                  ? "border-red-200 bg-red-50 text-red-700"
+                                  : "border-blue-200 bg-blue-50 text-blue-700"
+                              }`}
+                            >
+                              {item.conta_debito || "-"}
+                            </span>
+                          </td>
 
-                        <td className="max-w-[250px] px-3 py-3 text-xs font-semibold text-slate-700">
-                          {item.conta_debito || "-"}
-                        </td>
-
-                        <td className="max-w-[250px] px-3 py-3 text-xs font-semibold text-slate-700">
-                          {item.conta_credito || "-"}
-                        </td>
+                          <td className="max-w-[250px] px-3 py-3 text-xs font-semibold text-slate-700">
+                            <span
+                              className={`inline-flex rounded-md border px-2 py-1 ${
+                                item.etapa === "BAIXA"
+                                  ? "border-red-200 bg-red-50 text-red-700"
+                                  : "border-blue-200 bg-blue-50 text-blue-700"
+                              }`}
+                            >
+                              {item.conta_credito || "-"}
+                            </span>
+                          </td>
 
                         <td
                           className={`whitespace-nowrap px-3 py-3 text-right text-xs font-black ${
