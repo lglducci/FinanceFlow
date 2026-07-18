@@ -205,6 +205,9 @@ import ExtratoBancario  from  "./pages/ExtratoBancario";
 import Landing from "./pages/Landing";
 
 import PagamentosBaixados from "./pages/PagamentosBaixados";
+import DiagnosticoApropriacaoPagar from "./pages/DiagnosticoApropriacaoPagar";
+
+
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -661,7 +664,11 @@ const rotaAtual = window.location.pathname;
       <Route path="/diagnostico-financeiro" element={<DiagnosticoFinanceiro />} />
        <Route path="/extrato-bancario" element={<ExtratoBancario />} />
    <Route path="/pagamentos-baixados" element={<PagamentosBaixados />} />
-    
+     
+     <Route
+  path="/diagnostico-apropriacao-pagar"
+  element={<DiagnosticoApropriacaoPagar />}
+/>
 
 
 
