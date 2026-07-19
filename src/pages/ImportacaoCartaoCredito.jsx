@@ -44,9 +44,9 @@ const [contaLoteTexto, setContaLoteTexto] = useState("");
 const [contaLoteId, setContaLoteId] = useState(null);
 const [mostrarContasLote, setMostrarContasLote] = useState(false);
 
-const [filtroStatus, setFiltroStatus] = useState("pendentes");
+//const [filtroStatus, setFiltroStatus] = useState("pendentes");
  
- 
+ const [filtroStatus, setFiltroStatus] = useState("todos");
 
 const [tipoImportacao, setTipoImportacao] =
   useState("normal");
@@ -140,6 +140,11 @@ const [tipoImportacao, setTipoImportacao] =
 
    
 
+    
+
+
+
+
 
 
    async function carregarCartoes() {
@@ -192,6 +197,62 @@ const [tipoImportacao, setTipoImportacao] =
 
     setCartoes([]);
     setCartaoId("");
+  }
+}
+
+
+
+async function atualizaDiaFechamento(diaFechamento) {
+  if (!empresa_id || !cartaoId || !diaFechamento) {
+    console.log("Não foi possível atualizar o fechamento:", {
+      empresa_id,
+      cartaoId,
+      diaFechamento,
+    });
+
+    return;
+  }
+
+  try {
+    const payload = {
+      empresa_id: Number(empresa_id),
+      id: Number(cartaoId),
+      fechamento_dia: Number(diaFechamento),
+    };
+
+    console.log("ATUALIZANDO DIA DE FECHAMENTO:", payload);
+
+    const resp = await fetchSeguro(
+      buildWebhookUrl("atualizadiaFechamento"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    console.log("RETORNO ATUALIZA FECHAMENTO:", resp);
+
+    // Atualiza imediatamente o cartão na tela.
+    setCartoes((anteriores) =>
+      anteriores.map((cartao) =>
+        Number(cartao.id) === Number(cartaoId)
+          ? {
+              ...cartao,
+              fechamento_dia: Number(diaFechamento),
+            }
+          : cartao
+      )
+    );
+  } catch (erro) {
+    console.error(
+      "ERRO AO ATUALIZAR DIA DE FECHAMENTO:",
+      erro
+    );
+
+    // Não bloqueia a importação.
   }
 }
 
@@ -816,14 +877,19 @@ function conferirCartaoSelecionadoComPDF(dadosPDF, cartao) {
   };
 }
 
-const linhasExibidas = linhas.filter((linha) => {
-  if (filtroStatus === "todos") return true;
+ const linhasExibidas = linhas.filter((linha) => {
+  if (filtroStatus === "todos") {
+    return true;
+  }
 
-  return (
-    !linha.status_conciliacao ||
-    linha.status_conciliacao === "pendente" ||
-    linha.status_conciliacao.startsWith("pendente_")
-  );
+  if (filtroStatus === "pendentes") {
+    return (
+      linhaExigeContaContabil(linha) &&
+      !linha.conta_contabil_id
+    );
+  }
+
+  return true;
 });
  
 
@@ -876,6 +942,18 @@ console.log("LINHAS N8N:", retornoPDF?.linhas);
     alert(retornoPDF?.mensagem || "Não consegui importar o PDF.");
     return;
   }
+
+
+
+ const fechamentoDiaPDF = Number(
+  retornoPDF?.dados_cartao_pdf?.fechamento_dia ||
+  retornoPDF?.fechamento_dia ||
+  0
+);
+
+if (fechamentoDiaPDF) {
+  await atualizaDiaFechamento(fechamentoDiaPDF);
+}
 
 
   const conferencia =
