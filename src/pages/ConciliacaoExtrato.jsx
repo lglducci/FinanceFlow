@@ -1145,18 +1145,18 @@ async function abrirNovoLancamento(item) {
             >
               Cancelar
             </button>
-
-            <button
-              onClick={executarConciliacao}
-              disabled={carregando || !arquivo || !contaId}
-              className={`h-11 rounded-xl px-6 text-sm font-black text-white ${
-                carregando || !arquivo || !contaId
-                  ? "cursor-not-allowed bg-slate-400"
-                  : "bg-[#063452] hover:brightness-110"
-              }`}
-            >
-              {carregando ? "Conciliando..." : "Executar conciliação"}
-            </button>
+             <button
+                type="button"
+                onClick={() => executarConciliacao()}
+                disabled={executando || !arquivo || !contaId}
+                className={`h-11 rounded-xl px-6 text-sm font-black text-white ${
+                  executando || !arquivo || !contaId
+                    ? "cursor-not-allowed bg-slate-400"
+                    : "bg-[#063452] hover:brightness-110"
+                }`}
+              >
+                {executando ? "Conciliando..." : "Executar conciliação"}
+              </button>
           </div>
         </div>
       </div>
