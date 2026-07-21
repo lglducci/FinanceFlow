@@ -206,6 +206,8 @@ import Landing from "./pages/Landing";
 
 import PagamentosBaixados from "./pages/PagamentosBaixados";
 import DiagnosticoApropriacaoPagar from "./pages/DiagnosticoApropriacaoPagar";
+import ConciliacaoExtrato from "./pages/ConciliacaoExtrato";
+
 
 
 
@@ -670,7 +672,10 @@ const rotaAtual = window.location.pathname;
   element={<DiagnosticoApropriacaoPagar />}
 />
 
-
+<Route
+  path="/conciliacao-extrato"
+  element={<ConciliacaoExtrato />}
+/>
 
 </Routes>
 
