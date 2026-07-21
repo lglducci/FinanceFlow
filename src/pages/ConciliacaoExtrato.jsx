@@ -46,12 +46,20 @@ const [senhaPDF, setSenhaPDF] = useState("");
 const [executando, setExecutando] = useState(false);
 const CHAVE_CONCILIACAO = "ff_conciliacao_extrato_atual";
 
+const [contasContabeis, setContasContabeis] = useState([]);
 const [dataInicio, setDataInicio] = useState(
   `${hojeLocal().slice(0, 7)}-01`
 );
 
+const [avisoReexecutar, setAvisoReexecutar] =
+  useState(false);
 
 
+  const [linhaContaDropdown, setLinhaContaDropdown] =
+  useState(null);
+
+const [buscaContaContabil, setBuscaContaContabil] =
+  useState("");
  
 const location = useLocation();
 
@@ -213,13 +221,77 @@ const [dataFim, setDataFim] = useState(
       const json = await resp.json();
       const base = Array.isArray(json) ? json : json?.data || json?.dados || [];
 
-      setContas(Array.isArray(base) ? base : []);
-      setIndiceConta(0);
+     const novasContas = Array.isArray(base) ? base : [];
+
+              setContas(novasContas);
+
+              /*
+                Mantém a conta que o usuário estava usando.
+                Só coloca a primeira conta quando ainda não existe seleção.
+              */
+              setIndiceConta((indiceAtual) => {
+                if (!novasContas.length) {
+                  return 0;
+                }
+
+                const contaSelecionadaSalva = (() => {
+                  try {
+                    const salvo = sessionStorage.getItem(
+                      CHAVE_CONCILIACAO
+                    );
+
+                    const dados = salvo
+                      ? JSON.parse(salvo)
+                      : null;
+
+                    return Number(dados?.conta_id || 0);
+                  } catch {
+                    return 0;
+                  }
+                })();
+
+                if (contaSelecionadaSalva) {
+                  const indiceSalvo = novasContas.findIndex(
+                    (conta) =>
+                      Number(conta?.conta_id) ===
+                      contaSelecionadaSalva
+                  );
+
+                  if (indiceSalvo >= 0) {
+                    return indiceSalvo;
+                  }
+                }
+
+                if (indiceAtual >= 0 && indiceAtual < novasContas.length) {
+                  return indiceAtual;
+                }
+
+                return 0;
+              });
+
+
+
     } catch (e) {
       setErro(e.message || "Erro ao consultar contas.");
       setContas([]);
     }
   }
+
+
+  useEffect(() => {
+  if (!location.state?.lancamento_criado) {
+    return;
+  }
+
+  setAvisoReexecutar(true);
+
+  navigate(location.pathname, {
+    replace: true,
+    state: null,
+  });
+}, [location.state, location.pathname, navigate]);
+
+
 
   useEffect(() => {
     carregarContas();
@@ -302,8 +374,8 @@ const [dataFim, setDataFim] = useState(
 
     formData.append("empresa_id", String(empresa_id));
     formData.append("conta_id", String(contaId));
-    formData.append("data_inicio", dataInicio);
-    formData.append("data_fim", dataFim);
+    formData.append("data_inicio", inicio);
+formData.append("data_fim", fim);
     formData.append("senha_pdf", senhaPDF || "");
 
     /*
@@ -312,32 +384,17 @@ const [dataFim, setDataFim] = useState(
       Se voltou do lançamento rápido, envia o texto que ficou
       guardado no sessionStorage.
     */
-    if (textoPdfRecebido) {
-      formData.append("texto_pdf", textoPdfRecebido);
-    } else if (senhaPDF.trim()) {
-      /*
-        PDF com senha: extrai o texto no navegador.
-      */
-      const buffer = await arquivo.arrayBuffer();
-      const textoPDF = await lerTextoPDF(buffer);
+    const buffer = await arquivo.arrayBuffer();
 
-      if (!textoPDF || textoPDF.length < 50) {
-        throw new Error(
-          "O PDF foi aberto, mas não consegui extrair conteúdo suficiente."
-        );
-      }
+const textoPDF = await lerTextoPDF(buffer);
 
-      formData.append("texto_pdf", textoPDF);
-    } else {
-      /*
-        Execução normal: envia o arquivo.
-      */
-      formData.append(
-        "arquivo",
-        arquivo,
-        arquivo.name
-      );
-    }
+if (!textoPDF || textoPDF.length < 50) {
+  throw new Error(
+    "O PDF foi aberto, mas não consegui extrair conteúdo suficiente."
+  );
+}
+
+formData.append("texto_pdf", textoPDF);
 
     const resp = await fetch(
       buildWebhookUrl("conciliacao_extrato"),
@@ -658,19 +715,11 @@ async function buscarContaContabil(contaFinanceiraId) {
 }
   
 
-async function abrirNovoLancamento(item) {
+ async function abrirNovoLancamento(item) {
   try {
-    setExecutando(true);
     setErro("");
 
-    if (!arquivo) {
-      throw new Error(
-        "O PDF original não está mais disponível. Selecione novamente o arquivo."
-      );
-    }
-
-    const contabilId =
-      await buscarContaContabil(contaId);
+    const contabilId = await buscarContaContabil(contaId);
 
     const valorOriginal = Number(
       item?.valor_sugerido ??
@@ -678,70 +727,19 @@ async function abrirNovoLancamento(item) {
       0
     );
 
-    const valorAbsoluto =
-      Math.abs(valorOriginal);
-
-    if (!valorAbsoluto) {
-      throw new Error(
-        "O registro não possui valor válido."
-      );
-    }
-
-    /*
-      Extrai o texto ANTES de sair da tela.
-
-      O File não pode ser salvo no sessionStorage,
-      mas o texto pode.
-    */
-    const buffer = await arquivo.arrayBuffer();
-    const textoPDF = await lerTextoPDF(buffer);
-
-    if (!textoPDF || textoPDF.length < 50) {
-      throw new Error(
-        "Não consegui guardar o conteúdo do PDF para reexecutar a conciliação."
-      );
-    }
-
-    sessionStorage.setItem(
-      CHAVE_CONCILIACAO,
-      JSON.stringify({
-        resultado,
-
-        inicio,
-        fim,
-
-        dataInicio,
-        dataFim,
-
-        indiceConta,
-        conta_id: contaId,
-
-        senhaPDF,
-
-        /*
-          Conteúdo necessário para executar novamente.
-        */
-        texto_pdf: textoPDF,
-      })
-    );
-
     navigate("/lancamentocontabilrapido", {
       state: {
-        origem_tela:
-          "CONCILIACAO_EXTRATO",
+        origem_tela: "CONCILIACAO_EXTRATO",
 
         data_movimento:
           item?.data_sugerida ||
           item?.data_mov,
 
-        valor: valorAbsoluto,
+        valor: Math.abs(valorOriginal),
         valor_original: valorOriginal,
 
-        historico:
-          item?.historico || "",
-
-        tipo:
-          item?.tipo || "",
+        historico: item?.historico || "",
+        tipo: item?.tipo || "",
 
         conciliacao_id:
           item?.conciliacao_id || null,
@@ -749,8 +747,7 @@ async function abrirNovoLancamento(item) {
         origem_id:
           item?.origem_id || null,
 
-        contabil_id:
-          contabilId,
+        contabil_id: contabilId,
 
         lado_conta_financeira:
           valorOriginal > 0 ? "D" : "C",
@@ -760,20 +757,161 @@ async function abrirNovoLancamento(item) {
       },
     });
   } catch (err) {
-    console.error(
-      "Erro ao abrir lançamento:",
-      err
-    );
+    console.error("Erro ao abrir lançamento:", err);
 
     setErro(
       err?.message ||
-      "Não foi possível preparar o lançamento contábil."
+      "Não foi possível abrir o lançamento."
+    );
+  }
+}
+
+ async function criarLancamento(item) {
+  const contraparteId = Number(item.contraparte_id || 0);
+ const contaBancoId = await buscarContaContabil(contaId);
+ 
+  if (!contaBancoId) {
+    alert("Selecione a conta bancária.");
+    return;
+  }
+
+  if (!contraparteId) {
+    alert("Selecione a conta contábil da contrapartida.");
+    return;
+  }
+
+  const entrada = item.tipo === "C";
+
+  const contas = {
+    debito_id: entrada ? contaBancoId : contraparteId,
+    credito_id: entrada ? contraparteId : contaBancoId,
+  };
+
+  const dataLancto =
+    item.data_mov ||
+    item.data_movimento ||
+    item.data_sugerida;
+
+  if (!dataLancto || dataLancto === "null") {
+    alert("A pendência não possui uma data válida.");
+    return;
+  }
+
+  try {
+    setExecutando(true);
+    setErro("");
+
+    const res = await fetch(buildWebhookUrl("lancto_modelo"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        empresa_id,
+        data_lancto: dataLancto,
+        debito_id: contas.debito_id,
+        credito_id: contas.credito_id,
+        valor: Math.abs(Number(item.valor || 0)),
+        historico:
+          item.historico ||
+          item.descricao ||
+          "Lançamento criado pela conciliação",
+        lembrar: false,
+
+        // Manda uma data válida em vez de null
+        vencimento: dataLancto,
+      }),
+    });
+
+    const json = await res.json();
+
+    const retorno = Array.isArray(json)
+      ? json[0]
+      : json;
+
+    if (!res.ok || retorno?.ok === false) {
+      throw new Error(
+        retorno?.message ||
+        retorno?.mensagem ||
+        "Erro ao criar lançamento contábil."
+      );
+    }
+
+    // Retira a pendência criada da tela
+    setResultado((atual) => ({
+      ...atual,
+      acoes: Array.isArray(atual?.acoes)
+        ? atual.acoes.filter(
+            (acao) =>
+              Number(acao.conciliacao_id) !==
+              Number(item.conciliacao_id)
+          )
+        : [],
+    }));
+
+    setLinhaContaDropdown(null);
+  } catch (err) {
+    console.error("Erro ao criar lançamento:", err);
+
+    setErro(
+      err.message ||
+      "Erro ao criar lançamento contábil."
     );
   } finally {
     setExecutando(false);
   }
 }
 
+ async function carregarContasContabeis() {
+   const r = await fetch(
+     buildWebhookUrl("contas_contabeis_lancaveis", { empresa_id })
+   );
+ 
+   const j = await r.json();
+ 
+   const base = Array.isArray(j) ? j[0] : j;
+   const dados = base?.data || base?.dados || j;
+ 
+   setContasContabeis(Array.isArray(dados) ? dados : []);
+ }
+
+ useEffect(() => {
+  carregarContasContabeis();
+}, [empresa_id]);
+
+const contasFiltradasContabil = Array.isArray(contasContabeis)
+  ? contasContabeis.filter((c) =>
+      `${c.codigo || ""} ${c.nome || ""}`
+        .toLowerCase()
+        .includes(buscaContaContabil.toLowerCase())
+    )
+  : [];
+
+  function selecionarContaContabilLinha(item, conta) {
+  setResultado((atual) => {
+    if (!atual || !Array.isArray(atual.acoes)) {
+      return atual;
+    }
+
+    return {
+      ...atual,
+      acoes: atual.acoes.map((acao) =>
+        Number(acao.conciliacao_id) ===
+        Number(item.conciliacao_id)
+          ? {
+              ...acao,
+              contraparte_id: conta.id,
+              contraparte_codigo: conta.codigo,
+              contraparte_nome: conta.nome,
+            }
+          : acao
+      ),
+    };
+  });
+
+  setLinhaContaDropdown(null);
+  setBuscaContaContabil("");
+}
 
   return (
    <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
@@ -906,7 +1044,7 @@ async function abrirNovoLancamento(item) {
                 </label>
               </div>
 
-              <label className="text-xs font-black text-slate-600">
+             {/*} <label className="text-xs font-black text-slate-600">
                     Senha do PDF
                     <input
                       type="password"
@@ -915,7 +1053,7 @@ async function abrirNovoLancamento(item) {
                       placeholder="Informe somente se o PDF possuir senha"
                       className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-bold text-slate-700"
                     />
-                  </label>
+                  </label>*/}
 
               <button
                 onClick={carregarContas}
@@ -966,137 +1104,239 @@ async function abrirNovoLancamento(item) {
           )}
 
 
+      
+
+
            {Array.isArray(resultado?.acoes) && resultado.acoes.length > 0 && (
-  <div className="mt-4 rounded-3xl border border-cyan-100 bg-white p-4">
-    <div className="mb-3 text-sm font-black text-[#063452]">
-      Registros encontrados ({resultado.acoes.length})
-    </div>
+            <div className="mt-4 rounded-3xl border border-cyan-100 bg-white p-4">
+              <div className="mb-3 text-sm font-black text-[#063452]">
+                Registros encontrados ({resultado.acoes.length})
+              </div>
 
-     <div className="overflow-auto rounded-2xl border border-slate-200">
-  <table className="min-w-full text-sm">
-        <thead>
-          <tr className="bg-[#0F172A] text-left text-white">
-            <th className="px-3 py-3">O que fazer?</th>
-            <th className="px-3 py-3">Tipo</th>
-            <th className="px-3 py-3">Data</th>
-            <th className="px-3 py-3">Histórico</th>
-            <th className="px-3 py-3">Motivo</th>
-            <th className="px-3 py-3">Origem</th>
-            <th className="px-3 py-3">Lote</th>
-            <th className="px-3 py-3">Lançamento</th>
-            <th className="px-3 py-3">Conciliação</th>
-            <th className="px-3 py-3 text-right">Valor</th>
-             <th className="px-3 py-3">Ação</th>
-          </tr>
-        </thead>
+              <div className="overflow-auto rounded-2xl border border-slate-200">
+            <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="bg-[#0F172A] text-left text-white">
+                      <th className="px-3 py-3">O que fazer?</th>
+                      <th className="px-3 py-3">Tipo</th>
+                      <th className="px-3 py-3">Data</th>
+                      <th className="px-3 py-3">Histórico</th>
+                      <th className="px-3 py-3">Motivo</th>
+                      <th className="px-3 py-3">Origem</th>
+                      <th className="px-3 py-3">Lote</th>
+                      <th className="px-3 py-3">Lançamento</th>
+                      <th className="px-3 py-3">
+                        Contrapartida
+                      </th>
+                      <th className="px-3 py-3">Conciliação</th>
+                      <th className="px-3 py-3 text-right">Valor</th>
+                      <th className="px-3 py-3">Ação</th>
+                    </tr>
+                  </thead>
 
-        <tbody>
-          {resultado.acoes.map((item, index) => (
-            <tr
-              key={`${item.conciliacao_id || index}-${index}`}
-              className={
-                index % 2 === 0
-                  ? "bg-white"
-                  : "bg-slate-50"
-              }
-            >
-               <td className="border-b border-slate-100 px-3 py-3">
-                {item.acao === "CRIAR_LANCAMENTO" ? (
-                  <span className="inline-flex whitespace-nowrap rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
-                    Criar no Razão
-                  </span>
-                ) : item.acao === "EXCLUIR_LOTE" ? (
-                  <span className="inline-flex whitespace-nowrap rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700">
-                    Excluir do Razão
-                  </span>
-                ) : (
-                  <span className="inline-flex whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600">
-                    {item.acao || "-"}
-                  </span>
-                )}
-              </td>
+                  <tbody>
+                    {resultado.acoes.map((item, index) => (
+                      <tr
+                        key={`${item.conciliacao_id || index}-${index}`}
+                        className={
+                          index % 2 === 0
+                            ? "bg-white"
+                            : "bg-slate-50"
+                        }
+                      >
+                        <td className="border-b border-slate-100 px-3 py-3">
+                          {item.acao === "CRIAR_LANCAMENTO" ? (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                              Criar no Razão
+                            </span>
+                          ) : item.acao === "EXCLUIR_LOTE" ? (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700">
+                              Excluir do Razão
+                            </span>
+                          ) : (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600">
+                              {item.acao || "-"}
+                            </span>
+                          )}
+                        </td>
 
-              <td className="border-b border-slate-100 px-3 py-3 font-bold">
-                {item.tipo === "D"
-                  ? "Débito"
-                  : item.tipo === "C"
-                  ? "Crédito"
-                  : item.tipo || "-"}
-              </td>
+                        <td className="border-b border-slate-100 px-3 py-3 font-bold">
+                          {item.tipo === "D"
+                            ? "Débito"
+                            : item.tipo === "C"
+                            ? "Crédito"
+                            : item.tipo || "-"}
+                        </td>
 
-              <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3">
-                {item.data_mov || "-"}
-              </td>
+                        <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3">
+                          {item.data_mov || "-"}
+                        </td>
 
-              <td className="border-b border-slate-100 px-3 py-3">
-                {item.historico || "-"}
-              </td>
+                        <td className="border-b border-slate-100 px-3 py-3">
+                          {item.historico || "-"}
+                        </td>
+                      
 
-              <td className="border-b border-slate-100 px-3 py-3 font-bold text-amber-700">
-                {item.motivo || "-"}
-              </td>
+                        <td className="border-b border-slate-100 px-3 py-3">
+                          {item.motivo === "NAO_EXISTE_NO_EXTRATO" ? (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700">
+                              Inexistente no Extrato
+                            </span>
+                          ) : item.motivo === "NAO_EXISTE_NO_RAZAO" ? (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
+                              Inexistente no Razão
+                            </span>
+                          ) : (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600">
+                              {item.motivo || "-"}
+                            </span>
+                          )}
+                        </td>
 
-              <td className="border-b border-slate-100 px-3 py-3">
-                {item.origem === "R"
-                  ? "Razão"
-                  : item.origem === "P"
-                  ? "PDF"
-                  : item.origem || "-"}
-              </td>
+                        <td className="border-b border-slate-100 px-3 py-3">
+                          {item.origem === "R"
+                            ? "Razão"
+                            : item.origem === "P"
+                            ? "PDF"
+                            : item.origem || "-"}
+                        </td>
 
-              <td className="border-b border-slate-100 px-3 py-3 font-black">
-                {item.lote_id ?? "-"}
-              </td>
+                        <td className="border-b border-slate-100 px-3 py-3 font-black">
+                          {item.lote_id ?? "-"}
+                        </td>
 
-              <td className="border-b border-slate-100 px-3 py-3">
-                {item.lancamento_id ?? "-"}
-              </td>
+                        <td className="border-b border-slate-100 px-3 py-3">
+                          {item.lancamento_id ?? "-"}
+                        </td>
+                        
+                         <td className="relative border-b border-slate-100 px-3 py-3">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setLinhaContaDropdown((atual) =>
+                                          atual === item.conciliacao_id
+                                            ? null
+                                            : item.conciliacao_id
+                                        );
 
-              <td className="border-b border-slate-100 px-3 py-3">
-                {item.conciliacao_id ?? "-"}
-              </td>
+                                        setBuscaContaContabil("");
+                                      }}
+                                      className="flex h-9 min-w-[280px] items-center justify-between rounded-lg border border-slate-200 bg-white px-3 text-left text-xs font-bold text-slate-700 hover:bg-slate-50"
+                                    >
+                                      <span className="truncate">
+                                        {item.contraparte_id
+                                          ? `${item.contraparte_codigo} — ${item.contraparte_nome}`
+                                          : "Selecione a contrapartida"}
+                                      </span>
 
-              <td
-                className={`whitespace-nowrap border-b border-slate-100 px-3 py-3 text-right font-black ${
-                  item.tipo === "D"
-                    ? "text-red-600"
-                    : "text-emerald-600"
-                }`}
-              >
-                {moeda(item.valor)}
-              </td>
+                                      <span className="ml-2 text-slate-400">▼</span>
+                                    </button>
 
-   <td className="border-b border-slate-100 px-3 py-3 text-center">
-        {item.acao === "CRIAR_LANCAMENTO" && (
-          <button
-            type="button"
-            onClick={() => abrirNovoLancamento(item)}
-            disabled={executando}
-            className="whitespace-nowrap rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-black text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50"
-          >
-            Criar
-          </button>
-        )}
+                                    {linhaContaDropdown === item.conciliacao_id && (
+                                      <div className="absolute left-3 z-50 mt-1 w-[360px] rounded-xl border border-slate-200 bg-white shadow-xl">
+                                        <div className="border-b border-slate-100 p-2">
+                                          <input
+                                            type="text"
+                                            value={buscaContaContabil}
+                                            onChange={(e) =>
+                                              setBuscaContaContabil(e.target.value)
+                                            }
+                                            placeholder="Buscar código ou nome..."
+                                            autoFocus
+                                            className="h-9 w-full rounded-lg border border-slate-200 px-3 text-xs font-bold outline-none focus:border-blue-400"
+                                          />
+                                        </div>
 
-        {item.acao === "EXCLUIR_LOTE" && (
-          <button
-            type="button"
-            onClick={() => excluirLote(item)}
-            disabled={executando}
-            className="whitespace-nowrap rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-black text-red-700 transition hover:bg-red-100 disabled:opacity-50"
-          >
-            Excluir
-          </button>
-        )}
-      </td>
-              
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
+                                        <div className="max-h-64 overflow-y-auto">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setLinhaContaNova(item);
+                                              setModalContaAberto(true);
+                                              setLinhaContaDropdown(null);
+                                            }}
+                                            className="w-full px-3 py-2 text-left text-xs font-black text-blue-700 hover:bg-blue-50"
+                                          >
+                                            ➕ Criar nova conta para este histórico
+                                          </button>
+
+                                          {contasFiltradasContabil.map((conta) => (
+                                            <button
+                                              key={conta.id}
+                                              type="button"
+                                              onClick={() =>
+                                                selecionarContaContabilLinha(
+                                                  item,
+                                                  conta
+                                                )
+                                              }
+                                              className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
+                                            >
+                                              <span className="font-black">
+                                                {conta.codigo}
+                                              </span>
+                                              {" — "}
+                                              {conta.nome}
+                                            </button>
+                                          ))}
+
+                                          {contasFiltradasContabil.length === 0 && (
+                                            <div className="px-3 py-3 text-xs font-bold text-slate-400">
+                                              Nenhuma conta encontrada
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </td>
+                                                          <td className="border-b border-slate-100 px-3 py-3">
+                          {item.conciliacao_id ?? "-"}
+                        </td>
+
+                        <td
+                          className={`whitespace-nowrap border-b border-slate-100 px-3 py-3 text-right font-black ${
+                            item.tipo === "D"
+                              ? "text-red-600"
+                              : "text-emerald-600"
+                          }`}
+                        >
+                          {moeda(item.valor)}
+                        </td>
+
+            <td className="border-b border-slate-100 px-3 py-3 text-center">
+                  {item.acao === "CRIAR_LANCAMENTO" && (
+                    <button
+                        type="button"
+                        onClick={() => criarLancamento(item)}
+                        disabled={
+                          executando ||
+                          !item.contraparte_id
+                        }
+                        className="whitespace-nowrap rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-black text-emerald-700 disabled:opacity-40"
+                      >
+                        Criar
+                      </button>
+                  )}
+
+                  {item.acao === "EXCLUIR_LOTE" && (
+                    <button
+                      type="button"
+                      onClick={() => excluirLote(item)}
+                      disabled={executando}
+                      className="whitespace-nowrap rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-black text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+                    >
+                      Excluir
+                    </button>
+                  )}
+                </td>
+                        
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
 
 
