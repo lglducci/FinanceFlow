@@ -196,17 +196,26 @@ const [dataFim, setDataFim] = useState(
       );
     }
 
-    const json = JSON.parse(texto);
-    const dados = extrairResultado(json);
+ 
+ 
 
-    if (!resp.ok || dados?.ok === false) {
-      throw new Error(
-        dados?.message ||
-        dados?.mensagem ||
-        dados?.erro ||
-        "Erro ao conciliar o extrato."
-      );
-    }
+    const json = JSON.parse(texto);
+
+console.log("JSON RECEBIDO:", json);
+
+const dados = Array.isArray(json)
+  ? json[0]?.fn_concilia_extrato_pdf_razao
+  : json?.fn_concilia_extrato_pdf_razao;
+
+console.log("OBJETO EXTRAÍDO:", dados);
+console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
+
+ if (!resp.ok || dados.ok === false) {
+  throw new Error(
+    "O webhook respondeu, mas não encontrei fn_concilia_extrato_pdf_razao."
+  );
+}
+
 
     setResultado(dados);
   } catch (err) {
@@ -287,8 +296,8 @@ const [dataFim, setDataFim] = useState(
 }
 
   return (
-    <div className="min-h-screen bg-[#eef7fd] px-2 py-2">
-      <div className="mx-auto w-full max-w-[1050px]">
+   <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
+      <div className="mx-auto w-[98%] max-w-[1540px]">
         <div className="rounded-[28px] border border-cyan-100 bg-[#061f4a] p-4 shadow-[0_8px_30px_rgba(15,23,42,0.10)]">
           <div className="mb-4 flex items-start justify-between">
             <div>
@@ -475,6 +484,107 @@ const [dataFim, setDataFim] = useState(
               ⛔ {erro}
             </div>
           )}
+
+
+           {Array.isArray(resultado?.acoes) && resultado.acoes.length > 0 && (
+  <div className="mt-4 rounded-3xl border border-cyan-100 bg-white p-4">
+    <div className="mb-3 text-sm font-black text-[#063452]">
+      Registros encontrados ({resultado.acoes.length})
+    </div>
+
+     <div className="overflow-auto rounded-2xl border border-slate-200">
+  <table className="min-w-full text-sm">
+        <thead>
+          <tr className="bg-[#0F172A] text-left text-white">
+            <th className="px-3 py-3">Ação</th>
+            <th className="px-3 py-3">Tipo</th>
+            <th className="px-3 py-3">Data</th>
+            <th className="px-3 py-3">Histórico</th>
+            <th className="px-3 py-3">Motivo</th>
+            <th className="px-3 py-3">Origem</th>
+            <th className="px-3 py-3">Lote</th>
+            <th className="px-3 py-3">Lançamento</th>
+            <th className="px-3 py-3">Conciliação</th>
+            <th className="px-3 py-3 text-right">Valor</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {resultado.acoes.map((item, index) => (
+            <tr
+              key={`${item.conciliacao_id || index}-${index}`}
+              className={
+                index % 2 === 0
+                  ? "bg-white"
+                  : "bg-slate-50"
+              }
+            >
+              <td className="border-b border-slate-100 px-3 py-3 font-black text-slate-800">
+                {item.acao || "-"}
+              </td>
+
+              <td className="border-b border-slate-100 px-3 py-3 font-bold">
+                {item.tipo === "D"
+                  ? "Débito"
+                  : item.tipo === "C"
+                  ? "Crédito"
+                  : item.tipo || "-"}
+              </td>
+
+              <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3">
+                {item.data_mov || "-"}
+              </td>
+
+              <td className="border-b border-slate-100 px-3 py-3">
+                {item.historico || "-"}
+              </td>
+
+              <td className="border-b border-slate-100 px-3 py-3 font-bold text-amber-700">
+                {item.motivo || "-"}
+              </td>
+
+              <td className="border-b border-slate-100 px-3 py-3">
+                {item.origem === "R"
+                  ? "Razão"
+                  : item.origem === "P"
+                  ? "PDF"
+                  : item.origem || "-"}
+              </td>
+
+              <td className="border-b border-slate-100 px-3 py-3 font-black">
+                {item.lote_id ?? "-"}
+              </td>
+
+              <td className="border-b border-slate-100 px-3 py-3">
+                {item.lancamento_id ?? "-"}
+              </td>
+
+              <td className="border-b border-slate-100 px-3 py-3">
+                {item.conciliacao_id ?? "-"}
+              </td>
+
+              <td
+                className={`whitespace-nowrap border-b border-slate-100 px-3 py-3 text-right font-black ${
+                  item.tipo === "D"
+                    ? "text-red-600"
+                    : "text-emerald-600"
+                }`}
+              >
+                {moeda(item.valor)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+)}
+
+
+
+
+
+
 
           {resultado && (
             <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
