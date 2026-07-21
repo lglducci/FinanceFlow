@@ -204,6 +204,13 @@ export default function Sidebar() {
             label="Extrato Bancário"
             onClick={() => navigate("/importacao-bancaria")}
           />
+
+           <SubItem
+            compact={!sidebarAberta}
+            icon={<IconDoc />}
+            label="Concilia Razão"
+            onClick={() => navigate("/conciliacao-extrato")}
+          />
             
           </MenuGroup>
         )}
