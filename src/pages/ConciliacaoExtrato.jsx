@@ -1,7 +1,12 @@
  import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+ 
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
+
+import {
+  useLocation,
+  useNavigate
+} from "react-router-dom";
 
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
@@ -15,20 +20,7 @@ const moeda = (v) =>
   });
 
 const inicioMes = () => `${hojeLocal().slice(0, 7)}-01`;
-
-function normalizarRetorno(json) {
-  const base = Array.isArray(json) ? json[0] : json;
-
-  return (
-    base?.fn_concilia_extrato ||
-    base?.conciliaextrato ||
-    base?.data?.[0]?.fn_concilia_extrato ||
-    base?.data?.[0] ||
-    base?.data ||
-    base ||
-    {}
-  );
-}
+ 
 
 export default function ConciliacaoExtratoPdf() {
   const navigate = useNavigate();
@@ -52,10 +44,150 @@ export default function ConciliacaoExtratoPdf() {
 const [senhaPDF, setSenhaPDF] = useState("");
 
 const [executando, setExecutando] = useState(false);
+const CHAVE_CONCILIACAO = "ff_conciliacao_extrato_atual";
 
 const [dataInicio, setDataInicio] = useState(
   `${hojeLocal().slice(0, 7)}-01`
 );
+
+
+
+ 
+const location = useLocation();
+
+function normalizarRetorno(json) {
+  const base = Array.isArray(json) ? json[0] : json;
+
+  return (
+    base?.fn_concilia_extrato ||
+    base?.conciliaextrato ||
+    base?.data?.[0]?.fn_concilia_extrato ||
+    base?.data?.[0] ||
+    base?.data ||
+    base ||
+    {}
+  );
+}
+
+useEffect(() => {
+  const retorno = location.state;
+
+  if (!retorno?.lancamento_criado) {
+    return;
+  }
+
+  const conciliacaoId = retorno?.conciliacao_id;
+  const origemId = retorno?.origem_id;
+
+  setResultado((resultadoAtual) => {
+    if (!resultadoAtual) {
+      return resultadoAtual;
+    }
+
+    const acoesAtuais = Array.isArray(resultadoAtual.acoes)
+      ? resultadoAtual.acoes
+      : [];
+
+    const novasAcoes = acoesAtuais.filter((acao) => {
+      const mesmaConciliacao =
+        conciliacaoId !== null &&
+        conciliacaoId !== undefined &&
+        Number(acao?.conciliacao_id) ===
+          Number(conciliacaoId);
+
+      const mesmaOrigem =
+        origemId !== null &&
+        origemId !== undefined &&
+        String(acao?.origem_id) ===
+          String(origemId);
+
+      // Remove somente o registro que acabou de ser criado
+      return !(mesmaConciliacao || mesmaOrigem);
+    });
+
+    const novoResultado = {
+      ...resultadoAtual,
+      acoes: novasAcoes,
+    };
+
+    /*
+      Atualiza também o conteúdo guardado para que,
+      se sair e voltar, o lançamento não apareça novamente.
+    */
+    try {
+      const salvo = sessionStorage.getItem(
+        CHAVE_CONCILIACAO
+      );
+
+      const dadosSalvos = salvo
+        ? JSON.parse(salvo)
+        : {};
+
+      sessionStorage.setItem(
+        CHAVE_CONCILIACAO,
+        JSON.stringify({
+          ...dadosSalvos,
+          resultado: novoResultado,
+          inicio,
+          fim,
+          indiceConta,
+          conta_id: contaId,
+          senhaPDF,
+        })
+      );
+    } catch (err) {
+      console.error(
+        "Erro ao atualizar estado da conciliação:",
+        err
+      );
+    }
+
+    return novoResultado;
+  });
+
+  /*
+    Limpa o state da navegação para o efeito não executar
+    novamente em outra renderização.
+  */
+  navigate(location.pathname, {
+    replace: true,
+    state: null,
+  });
+}, [location.state]);
+
+useEffect(() => {
+  try {
+    const salvo = sessionStorage.getItem(CHAVE_CONCILIACAO);
+
+    if (!salvo) return;
+
+    const dados = JSON.parse(salvo);
+
+    if (dados?.resultado) {
+      setResultado(dados.resultado);
+    }
+
+    if (dados?.inicio) {
+      setInicio(dados.inicio);
+      setDataInicio(dados.inicio);
+    }
+
+    if (dados?.fim) {
+      setFim(dados.fim);
+      setDataFim(dados.fim);
+    }
+
+    if (dados?.indiceConta !== undefined) {
+      setIndiceConta(Number(dados.indiceConta) || 0);
+    }
+
+    if (dados?.senhaPDF) {
+      setSenhaPDF(dados.senhaPDF);
+    }
+  } catch (err) {
+    console.error("Erro ao restaurar conciliação:", err);
+  }
+}, []);
 
 const [dataFim, setDataFim] = useState(
   hojeLocal()
@@ -144,9 +276,20 @@ const [dataFim, setDataFim] = useState(
 }
 
 
-  async function executarConciliacao() {
-  if (!arquivo) {
+ async function executarConciliacao(textoPdfRecebido = null) {
+  /*
+    Quando clicar normalmente no botão, existe arquivo.
+
+    Quando voltar do lançamento contábil, o arquivo não existe mais,
+    mas temos o texto do PDF guardado no sessionStorage.
+  */
+  if (!arquivo && !textoPdfRecebido) {
     alert("Selecione o PDF.");
+    return;
+  }
+
+  if (!contaId) {
+    alert("Conta financeira não identificada.");
     return;
   }
 
@@ -163,7 +306,18 @@ const [dataFim, setDataFim] = useState(
     formData.append("data_fim", dataFim);
     formData.append("senha_pdf", senhaPDF || "");
 
-    if (senhaPDF.trim()) {
+    /*
+      REEXECUÇÃO:
+
+      Se voltou do lançamento rápido, envia o texto que ficou
+      guardado no sessionStorage.
+    */
+    if (textoPdfRecebido) {
+      formData.append("texto_pdf", textoPdfRecebido);
+    } else if (senhaPDF.trim()) {
+      /*
+        PDF com senha: extrai o texto no navegador.
+      */
       const buffer = await arquivo.arrayBuffer();
       const textoPDF = await lerTextoPDF(buffer);
 
@@ -175,7 +329,14 @@ const [dataFim, setDataFim] = useState(
 
       formData.append("texto_pdf", textoPDF);
     } else {
-      formData.append("arquivo", arquivo, arquivo.name);
+      /*
+        Execução normal: envia o arquivo.
+      */
+      formData.append(
+        "arquivo",
+        arquivo,
+        arquivo.name
+      );
     }
 
     const resp = await fetch(
@@ -190,42 +351,80 @@ const [dataFim, setDataFim] = useState(
 
     if (!texto.trim()) {
       throw new Error(
-        senhaPDF.trim()
-          ? "O webhook não retornou resposta."
-          : "O PDF pode exigir senha. Informe a senha e tente novamente."
+        "O webhook da conciliação não retornou resposta."
       );
     }
 
- 
- 
-
     const json = JSON.parse(texto);
 
-console.log("JSON RECEBIDO:", json);
+    console.log("JSON RECEBIDO:", json);
 
-const dados = Array.isArray(json)
-  ? json[0]?.fn_concilia_extrato_pdf_razao
-  : json?.fn_concilia_extrato_pdf_razao;
+    const dados = Array.isArray(json)
+      ? json[0]?.fn_concilia_extrato_pdf_razao
+      : json?.fn_concilia_extrato_pdf_razao;
 
-console.log("OBJETO EXTRAÍDO:", dados);
-console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
+    console.log("OBJETO EXTRAÍDO:", dados);
+    console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
 
- if (!resp.ok || dados.ok === false) {
-  throw new Error(
-    "O webhook respondeu, mas não encontrei fn_concilia_extrato_pdf_razao."
-  );
-}
-
+    if (!resp.ok || !dados || dados?.ok === false) {
+      throw new Error(
+        dados?.message ||
+        dados?.mensagem ||
+        dados?.erro ||
+        "O webhook respondeu, mas não retornou a conciliação."
+      );
+    }
 
     setResultado(dados);
+
+    /*
+      Atualiza o resultado guardado.
+    */
+    try {
+      const salvo = sessionStorage.getItem(
+        CHAVE_CONCILIACAO
+      );
+
+      const anterior = salvo
+        ? JSON.parse(salvo)
+        : {};
+
+      sessionStorage.setItem(
+        CHAVE_CONCILIACAO,
+        JSON.stringify({
+          ...anterior,
+          resultado: dados,
+          inicio,
+          fim,
+          dataInicio,
+          dataFim,
+          indiceConta,
+          conta_id: contaId,
+          senhaPDF,
+        })
+      );
+    } catch (storageError) {
+      console.error(
+        "Erro ao guardar resultado atualizado:",
+        storageError
+      );
+    }
   } catch (err) {
-    setErro(err.message || "Erro inesperado.");
+    console.error(
+      "Erro na conciliação:",
+      err
+    );
+
+    setErro(
+      err?.message ||
+      "Erro inesperado ao executar a conciliação."
+    );
   } finally {
     setExecutando(false);
   }
 }
 
-
+{/*}
   const totalExtrato = Number(
     resultado?.total_extrato ?? resultado?.resumo?.total_extrato ?? 0
   );
@@ -246,7 +445,32 @@ console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
     resultado?.diferenca ??
       resultado?.resumo?.diferenca ??
       totalExtrato - totalRazao
-  );
+  );*/}
+
+  const acoes = Array.isArray(resultado?.acoes)
+  ? resultado.acoes
+  : [];
+
+const pendencias = acoes.length;
+
+const totalPdfPendente = acoes
+  .filter((item) => item.origem === "P")
+  .reduce((total, item) => total + Number(item.valor || 0), 0);
+
+const totalRazaoPendente = acoes
+  .filter((item) => item.origem === "R")
+  .reduce((total, item) => total + Number(item.valor || 0), 0);
+
+const criarLancamentos = acoes.filter(
+  (item) => item.acao === "CRIAR_LANCAMENTO"
+).length;
+
+const excluirLotes = acoes.filter(
+  (item) => item.acao === "EXCLUIR_LOTE"
+).length;
+
+const diferencaPendente =
+  totalPdfPendente - totalRazaoPendente;
 
 
   async function lerTextoPDF(buffer) {
@@ -294,6 +518,262 @@ console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
     throw new Error("Não consegui abrir o PDF.");
   }
 }
+
+
+async function excluirLote(item) {
+  const loteId = Number(item?.lote_id) || 0;
+
+  if (!loteId) {
+    alert("Este registro não possui lote para excluir.");
+    return;
+  }
+
+  const confirmar = window.confirm(
+    `ATENÇÃO\n\nVocê está excluindo o LOTE número ${loteId} do Razão.\n\nIsso apagará todos os lançamentos contábeis vinculados a esse lote.\n\nDeseja continuar?`
+  );
+
+  if (!confirmar) return;
+
+  try {
+    setExecutando(true);
+    setErro("");
+
+    const resp = await fetch(
+      buildWebhookUrl("excluilanctolote"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          empresa_id: empresa_id,
+          lote_id: loteId,
+          importacao_id: 0,
+        }),
+      }
+    );
+
+    const texto = await resp.text();
+
+    console.log("Resposta exclusão do lote:", texto);
+
+    if (!texto.trim()) {
+      throw new Error("O servidor não retornou resposta.");
+    }
+
+    const json = JSON.parse(texto);
+    const retorno = Array.isArray(json) ? json[0] : json;
+
+    if (!resp.ok || retorno?.ok === false) {
+      throw new Error(
+        retorno?.message ||
+          retorno?.mensagem ||
+          "Não foi possível excluir o lote."
+      );
+    }
+
+    alert(`Lote ${loteId} excluído com sucesso!`);
+
+    setResultado((atual) => {
+      if (!atual) return atual;
+
+      return {
+        ...atual,
+        acoes: Array.isArray(atual.acoes)
+          ? atual.acoes.filter(
+              (acao) => Number(acao?.lote_id) !== loteId
+            )
+          : [],
+      };
+    });
+  } catch (err) {
+    console.error("Erro ao excluir lote:", err);
+    setErro(err.message || "Erro ao excluir o lote.");
+  } finally {
+    setExecutando(false);
+  }
+}
+ 
+async function buscarContaContabil(contaFinanceiraId) {
+  if (!contaFinanceiraId) {
+    throw new Error("Conta financeira não identificada.");
+  }
+
+  // COLOQUE AQUI O NOME EXATO DO SEU WEBHOOK
+  const url = buildWebhookUrl("buscar_contabil_conta_financeira", {
+    empresa_id,
+    conta_id: contaFinanceiraId,
+  });
+
+  console.log("🔎 URL BUSCA CONTÁBIL:", url);
+
+  const resp = await fetch(url);
+  const texto = await resp.text();
+
+  console.log("🔎 RETORNO BRUTO CONTA CONTÁBIL:", texto);
+
+  if (!resp.ok) {
+    throw new Error(
+      texto || `Erro ao buscar conta contábil (${resp.status}).`
+    );
+  }
+
+  let json;
+
+  try {
+    json = texto ? JSON.parse(texto) : null;
+  } catch {
+    throw new Error(
+      "O webhook da conta contábil não retornou um JSON válido."
+    );
+  }
+
+  console.log("🔎 JSON CONTA CONTÁBIL:", json);
+
+  const base = Array.isArray(json) ? json[0] : json;
+
+  const contabilId = Number(
+    base?.contabil_id ??
+    base?.contabilId ??
+    base?.data?.contabil_id ??
+    base?.data?.contabilId ??
+    base?.data?.[0]?.contabil_id ??
+    base?.data?.[0]?.contabilId ??
+    base?.dados?.contabil_id ??
+    base?.dados?.contabilId ??
+    base?.dados?.[0]?.contabil_id ??
+    base?.dados?.[0]?.contabilId ??
+    base?.resultado?.contabil_id ??
+    base?.resultado?.[0]?.contabil_id ??
+    0
+  );
+
+  if (!contabilId) {
+    throw new Error(
+      `O webhook respondeu, mas não encontrei o contabil_id. Retorno: ${texto}`
+    );
+  }
+
+  return contabilId;
+}
+  
+
+async function abrirNovoLancamento(item) {
+  try {
+    setExecutando(true);
+    setErro("");
+
+    if (!arquivo) {
+      throw new Error(
+        "O PDF original não está mais disponível. Selecione novamente o arquivo."
+      );
+    }
+
+    const contabilId =
+      await buscarContaContabil(contaId);
+
+    const valorOriginal = Number(
+      item?.valor_sugerido ??
+      item?.valor ??
+      0
+    );
+
+    const valorAbsoluto =
+      Math.abs(valorOriginal);
+
+    if (!valorAbsoluto) {
+      throw new Error(
+        "O registro não possui valor válido."
+      );
+    }
+
+    /*
+      Extrai o texto ANTES de sair da tela.
+
+      O File não pode ser salvo no sessionStorage,
+      mas o texto pode.
+    */
+    const buffer = await arquivo.arrayBuffer();
+    const textoPDF = await lerTextoPDF(buffer);
+
+    if (!textoPDF || textoPDF.length < 50) {
+      throw new Error(
+        "Não consegui guardar o conteúdo do PDF para reexecutar a conciliação."
+      );
+    }
+
+    sessionStorage.setItem(
+      CHAVE_CONCILIACAO,
+      JSON.stringify({
+        resultado,
+
+        inicio,
+        fim,
+
+        dataInicio,
+        dataFim,
+
+        indiceConta,
+        conta_id: contaId,
+
+        senhaPDF,
+
+        /*
+          Conteúdo necessário para executar novamente.
+        */
+        texto_pdf: textoPDF,
+      })
+    );
+
+    navigate("/lancamentocontabilrapido", {
+      state: {
+        origem_tela:
+          "CONCILIACAO_EXTRATO",
+
+        data_movimento:
+          item?.data_sugerida ||
+          item?.data_mov,
+
+        valor: valorAbsoluto,
+        valor_original: valorOriginal,
+
+        historico:
+          item?.historico || "",
+
+        tipo:
+          item?.tipo || "",
+
+        conciliacao_id:
+          item?.conciliacao_id || null,
+
+        origem_id:
+          item?.origem_id || null,
+
+        contabil_id:
+          contabilId,
+
+        lado_conta_financeira:
+          valorOriginal > 0 ? "D" : "C",
+
+        voltar_para:
+          "/conciliacao-extrato",
+      },
+    });
+  } catch (err) {
+    console.error(
+      "Erro ao abrir lançamento:",
+      err
+    );
+
+    setErro(
+      err?.message ||
+      "Não foi possível preparar o lançamento contábil."
+    );
+  } finally {
+    setExecutando(false);
+  }
+}
+
 
   return (
    <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
@@ -496,7 +976,7 @@ console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
   <table className="min-w-full text-sm">
         <thead>
           <tr className="bg-[#0F172A] text-left text-white">
-            <th className="px-3 py-3">Ação</th>
+            <th className="px-3 py-3">O que fazer?</th>
             <th className="px-3 py-3">Tipo</th>
             <th className="px-3 py-3">Data</th>
             <th className="px-3 py-3">Histórico</th>
@@ -506,6 +986,7 @@ console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
             <th className="px-3 py-3">Lançamento</th>
             <th className="px-3 py-3">Conciliação</th>
             <th className="px-3 py-3 text-right">Valor</th>
+             <th className="px-3 py-3">Ação</th>
           </tr>
         </thead>
 
@@ -519,8 +1000,20 @@ console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
                   : "bg-slate-50"
               }
             >
-              <td className="border-b border-slate-100 px-3 py-3 font-black text-slate-800">
-                {item.acao || "-"}
+               <td className="border-b border-slate-100 px-3 py-3">
+                {item.acao === "CRIAR_LANCAMENTO" ? (
+                  <span className="inline-flex whitespace-nowrap rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                    Criar no Razão
+                  </span>
+                ) : item.acao === "EXCLUIR_LOTE" ? (
+                  <span className="inline-flex whitespace-nowrap rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700">
+                    Excluir do Razão
+                  </span>
+                ) : (
+                  <span className="inline-flex whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600">
+                    {item.acao || "-"}
+                  </span>
+                )}
               </td>
 
               <td className="border-b border-slate-100 px-3 py-3 font-bold">
@@ -572,6 +1065,31 @@ console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
               >
                 {moeda(item.valor)}
               </td>
+
+   <td className="border-b border-slate-100 px-3 py-3 text-center">
+        {item.acao === "CRIAR_LANCAMENTO" && (
+          <button
+            type="button"
+            onClick={() => abrirNovoLancamento(item)}
+            disabled={executando}
+            className="whitespace-nowrap rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-black text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50"
+          >
+            Criar
+          </button>
+        )}
+
+        {item.acao === "EXCLUIR_LOTE" && (
+          <button
+            type="button"
+            onClick={() => excluirLote(item)}
+            disabled={executando}
+            className="whitespace-nowrap rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] font-black text-red-700 transition hover:bg-red-100 disabled:opacity-50"
+          >
+            Excluir
+          </button>
+        )}
+      </td>
+              
             </tr>
           ))}
         </tbody>
@@ -585,21 +1103,40 @@ console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
 
 
 
+        {resultado && (
+  <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
+    <Card
+      titulo="Pendências do PDF"
+      valor={moeda(totalPdfPendente)}
+      alerta={totalPdfPendente !== 0}
+    />
 
-          {resultado && (
-            <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
-              <Card titulo="Total extrato" valor={moeda(totalExtrato)} />
-              <Card titulo="Total razão" valor={moeda(totalRazao)} />
-              <Card titulo="Conciliados" valor={conciliados} ok />
-              <Card titulo="Pendências" valor={pendencias} alerta={pendencias > 0} />
-              <Card
-                titulo="Diferença"
-                valor={moeda(diferenca)}
-                alerta={Math.abs(diferenca) > 0.009}
-                ok={Math.abs(diferenca) <= 0.009}
-              />
-            </div>
-          )}
+    <Card
+      titulo="Pendências do razão"
+      valor={moeda(totalRazaoPendente)}
+      alerta={totalRazaoPendente !== 0}
+    />
+
+    <Card
+      titulo="Criar lançamentos"
+      valor={criarLancamentos}
+      alerta={criarLancamentos > 0}
+    />
+
+    <Card
+      titulo="Excluir lotes"
+      valor={excluirLotes}
+      alerta={excluirLotes > 0}
+    />
+
+    <Card
+      titulo="Total de pendências"
+      valor={pendencias}
+      alerta={pendencias > 0}
+      ok={pendencias === 0}
+    />
+  </div>
+)}
 
           <div className="mt-4 flex justify-end gap-2">
             <button
