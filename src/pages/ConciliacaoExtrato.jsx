@@ -893,7 +893,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
 
   return (
    <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
-      <div className="mx-auto w-[98%] max-w-[1540px]">
+      <div className="mx-auto w-[98%] max-w-[1640px]">
         <div className="rounded-[28px] border border-cyan-100 bg-[#061f4a] p-4 shadow-[0_8px_30px_rgba(15,23,42,0.10)]">
           <div className="mb-4 flex items-start justify-between">
             <div>
