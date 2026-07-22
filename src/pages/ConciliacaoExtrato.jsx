@@ -163,39 +163,7 @@ useEffect(() => {
   });
 }, [location.state]);
 
-useEffect(() => {
-  try {
-    const salvo = sessionStorage.getItem(CHAVE_CONCILIACAO);
-
-    if (!salvo) return;
-
-    const dados = JSON.parse(salvo);
-
-    if (dados?.resultado) {
-      setResultado(dados.resultado);
-    }
-
-    if (dados?.inicio) {
-      setInicio(dados.inicio);
-      setDataInicio(dados.inicio);
-    }
-
-    if (dados?.fim) {
-      setFim(dados.fim);
-      setDataFim(dados.fim);
-    }
-
-    if (dados?.indiceConta !== undefined) {
-      setIndiceConta(Number(dados.indiceConta) || 0);
-    }
-
-    if (dados?.senhaPDF) {
-      setSenhaPDF(dados.senhaPDF);
-    }
-  } catch (err) {
-    console.error("Erro ao restaurar conciliação:", err);
-  }
-}, []);
+ 
 
 const [dataFim, setDataFim] = useState(
   hojeLocal()
@@ -406,6 +374,8 @@ formData.append("texto_pdf", textoPDF);
 
     const texto = await resp.text();
 
+ 
+
     if (!texto.trim()) {
       throw new Error(
         "O webhook da conciliação não retornou resposta."
@@ -433,6 +403,10 @@ formData.append("texto_pdf", textoPDF);
     }
 
     setResultado(dados);
+
+
+setInicio(dados?.data_inicio || inicio);
+setFim(dados?.data_fim || fim);
 
     /*
       Atualiza o resultado guardado.
@@ -620,6 +594,8 @@ async function excluirLote(item) {
 
     const json = JSON.parse(texto);
     const retorno = Array.isArray(json) ? json[0] : json;
+  
+ 
 
     if (!resp.ok || retorno?.ok === false) {
       throw new Error(
@@ -769,7 +745,7 @@ async function buscarContaContabil(contaFinanceiraId) {
  async function criarLancamento(item) {
   const contraparteId = Number(item.contraparte_id || 0);
  const contaBancoId = await buscarContaContabil(contaId);
- 
+
   if (!contaBancoId) {
     alert("Selecione a conta bancária.");
     return;
@@ -913,6 +889,8 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
   setBuscaContaContabil("");
 }
 
+ 
+
   return (
    <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
       <div className="mx-auto w-[98%] max-w-[1540px]">
@@ -1021,28 +999,39 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
               <div className="text-xs font-black uppercase tracking-wider text-slate-400">
                 Período
               </div>
+             
 
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                <label className="text-xs font-black text-slate-600">
-                  Início
-                  <input
-                    type="date"
-                    value={inicio}
-                    onChange={(e) => setInicio(e.target.value)}
-                    className="mt-1 h-10 w-full rounded-xl border px-2 text-sm font-bold"
-                  />
-                </label>
+             <div className="mt-3 grid grid-cols-2 gap-3">
+              <label className="text-xs font-black text-slate-600">
+                Início
+                <input
+                  type="date"
+                  value={inicio || ""}
+                  disabled
+                  title="A data inicial será identificada automaticamente pelo arquivo PDF."
+                  className="mt-1 h-9 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
+                />
+              </label>
 
-                <label className="text-xs font-black text-slate-600">
-                  Fim
-                  <input
-                    type="date"
-                    value={fim}
-                    onChange={(e) => setFim(e.target.value)}
-                    className="mt-1 h-10 w-full rounded-xl border px-2 text-sm font-bold"
-                  />
-                </label>
-              </div>
+              <label className="text-xs font-black text-slate-600">
+                Fim
+                <input
+                  type="date"
+                  value={fim || ""}
+                  disabled
+                  title="A data final será identificada automaticamente pelo arquivo PDF."
+                  className="mt-1 h-9 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
+                />
+              </label>
+            </div>
+
+            <div className="mt-2 flex items-start gap-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
+              <span className="text-sm">ℹ️</span>
+
+              <p className="text-xs font-bold leading-5 text-orange-700">
+                O período não editável. As datas serão identificadas após a execução da conciliação no extrato PDF selecionado.
+              </p>
+            </div>
 
              {/*} <label className="text-xs font-black text-slate-600">
                     Senha do PDF
@@ -1160,15 +1149,23 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
                           )}
                         </td>
 
-                        <td className="border-b border-slate-100 px-3 py-3 font-bold">
-                          {item.tipo === "D"
-                            ? "Débito"
-                            : item.tipo === "C"
-                            ? "Crédito"
-                            : item.tipo || "-"}
+                        <td className="border-b border-slate-100 px-3 py-3">
+                          {item.tipo === "D" ? (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-black text-red-700">
+                              Débito
+                            </span>
+                          ) : item.tipo === "C" ? (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                              Crédito
+                            </span>
+                          ) : (
+                            <span className="inline-flex whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-black text-slate-600">
+                              {item.tipo || "-"}
+                            </span>
+                          )}
                         </td>
 
-                        <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3">
+                        <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3 font-black">
                           {item.data_mov || "-"}
                         </td>
 
@@ -1338,46 +1335,75 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
             </div>
           )}
 
+ 
+
+            {resultado && (
+              <>
+                <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-black text-slate-600">
+                      Data inicial do extrato
+                    </label>
+
+                    <input
+                      type="date"
+                      value={resultado?.data_inicio || ""}
+                      disabled
+                      className="h-9 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-xs font-black text-slate-600">
+                      Data final do extrato
+                    </label>
+
+                    <input
+                      type="date"
+                      value={resultado?.data_fim || ""}
+                      disabled
+                      className="h-9 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
+                  <Card
+                    titulo="Pendências do PDF"
+                    valor={moeda(totalPdfPendente)}
+                    alerta={totalPdfPendente !== 0}
+                  />
+
+                  <Card
+                    titulo="Pendências do razão"
+                    valor={moeda(totalRazaoPendente)}
+                    alerta={totalRazaoPendente !== 0}
+                  />
+
+                  <Card
+                    titulo="Criar lançamentos"
+                    valor={criarLancamentos}
+                    alerta={criarLancamentos > 0}
+                  />
+
+                  <Card
+                    titulo="Excluir lotes"
+                    valor={excluirLotes}
+                    alerta={excluirLotes > 0}
+                  />
+
+                  <Card
+                    titulo="Total de pendências"
+                    valor={pendencias}
+                    alerta={pendencias > 0}
+                    ok={pendencias === 0}
+                  />
+                </div>
+              </>
+            )}
 
 
-
-
-
-        {resultado && (
-  <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
-    <Card
-      titulo="Pendências do PDF"
-      valor={moeda(totalPdfPendente)}
-      alerta={totalPdfPendente !== 0}
-    />
-
-    <Card
-      titulo="Pendências do razão"
-      valor={moeda(totalRazaoPendente)}
-      alerta={totalRazaoPendente !== 0}
-    />
-
-    <Card
-      titulo="Criar lançamentos"
-      valor={criarLancamentos}
-      alerta={criarLancamentos > 0}
-    />
-
-    <Card
-      titulo="Excluir lotes"
-      valor={excluirLotes}
-      alerta={excluirLotes > 0}
-    />
-
-    <Card
-      titulo="Total de pendências"
-      valor={pendencias}
-      alerta={pendencias > 0}
-      ok={pendencias === 0}
-    />
-  </div>
-)}
-
+ 
           <div className="mt-4 flex justify-end gap-2">
             <button
               onClick={() => navigate(-1)}
