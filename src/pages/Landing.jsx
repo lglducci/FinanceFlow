@@ -11,6 +11,8 @@ import VideosYoutube from "../components/landing/VideosYoutube";
 import PrintsSistema from "../components/landing/PrintsSistema";
 import FAQ from "../components/landing/FAQ";
 import Footer from "../components/landing/Footer";
+import AgendarDemonstracao  from "../components/landing/AgendarDemonstracao";
+
 
 export default function Landing() {
   return (
@@ -31,6 +33,8 @@ export default function Landing() {
       <Recursos />
 
       <ComoFunciona />
+
+      <AgendarDemonstracao /> {/* segundo botão aqui */}
 
       <VideosYoutube />
 
