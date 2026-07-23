@@ -1053,7 +1053,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
             </div>
           </div>
 
-           <div className="mt-2.5 rounded-2xl border border-blue-300 bg-white px-5 py-4 shadow-sm">
+           <div className="mt-2.5 rounded-2xl border border-blue-300 bg-gray-150 px-5 py-4 shadow-sm">
             <input
               ref={inputPdfRef}
               type="file"
