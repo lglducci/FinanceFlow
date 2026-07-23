@@ -891,30 +891,30 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
 
  
 
-  return (
+  return ( 
    <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
-      <div className="mx-auto w-[98%] max-w-[1640px]">
-        <div className="rounded-[28px] border border-cyan-100 bg-[#061f4a] p-4 shadow-[0_8px_30px_rgba(15,23,42,0.10)]">
-          <div className="mb-4 flex items-start justify-between">
-            <div>
-              <h1 className="text-xl font-black text-white">
-                📄 Conciliação de Extrato PDF
-              </h1>
-              <p className="mt-1 text-sm font-semibold text-cyan-100">
-                Extrato bancário x razão contábil
-              </p>
+      <div className="mx-auto w-[98%] max-w-[1740px]">
+         <div className="overflow-hidden rounded-[24px] border border-gray-200 bg-[#f8fbfd] shadow-[0_8px_30px_rgba(15,23,42,0.08)]">
+           <div className="flex items-center justify-between border-b border-blue-200 bg-[#082a57] px-5 py-3">
+              <div>
+                <h1 className="text-lg font-black text-white">
+                  📄 Conciliação de Extrato PDF
+                </h1>
+
+                <p className="mt-0.5 text-xs font-semibold text-blue-100">
+                  Extrato bancário x razão contábil
+                </p>
+              </div>
+
+              <button
+                onClick={() => navigate(-1)}
+                className="rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-black text-white hover:bg-white/20"
+              >
+                Sair
+              </button>
             </div>
-
-            <button
-              onClick={() => navigate(-1)}
-              className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-black text-white hover:bg-white/20"
-            >
-              Sair
-            </button>
-          </div>
-
-          <div className="grid gap-3 lg:grid-cols-[1.35fr_0.65fr]">
-            <div className="rounded-3xl border border-cyan-100 bg-white p-4">
+           <div className="grid gap-2.5 lg:grid-cols-[1.45fr_0.55fr]">
+            <div className="min-h-[185px] rounded-2xl border border-cyan-300 bg-white p-5 shadow-sm">
               <div className="mb-3 text-xs font-black uppercase tracking-wider text-slate-400">
                 Conta bancária
               </div>
@@ -995,7 +995,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
               </div>
             </div>
 
-            <div className="rounded-3xl border border-cyan-100 bg-white p-4">
+            <div className="rounded-3xl border border-cyan-300 bg-white p-4">
               <div className="text-xs font-black uppercase tracking-wider text-slate-400">
                 Período
               </div>
@@ -1025,7 +1025,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
               </label>
             </div>
 
-            <div className="mt-2 flex items-start gap-2 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
+            <div className="mt-2 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-350 px-3 py-2">
               <span className="text-sm">ℹ️</span>
 
               <p className="text-xs font-bold leading-5 text-orange-700">
@@ -1053,7 +1053,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
             </div>
           </div>
 
-          <div className="mt-3 rounded-3xl border border-cyan-100 bg-white p-4">
+           <div className="mt-2.5 rounded-2xl border border-blue-300 bg-white px-5 py-4 shadow-sm">
             <input
               ref={inputPdfRef}
               type="file"
@@ -1077,6 +1077,54 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
                 </div>
               </div>
 
+
+                
+            {resultado && (
+              <>
+                 
+
+                <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
+                  <Card
+                    titulo="Pendências do PDF"
+                    valor={moeda(totalPdfPendente)}
+                    alerta={totalPdfPendente !== 0}
+                  />
+
+                  <Card
+                    titulo="Pendências do razão"
+                    valor={moeda(totalRazaoPendente)}
+                    alerta={totalRazaoPendente !== 0}
+                  />
+
+                  <Card
+                    titulo="Criar lançamentos"
+                    valor={criarLancamentos}
+                    alerta={criarLancamentos > 0}
+                  />
+
+                  <Card
+                    titulo="Excluir lotes"
+                    valor={excluirLotes}
+                    alerta={excluirLotes > 0}
+                  />
+
+                  <Card
+                    titulo="Total de pendências"
+                    valor={pendencias}
+                    alerta={pendencias > 0}
+                    ok={pendencias === 0}
+                  />
+                </div>
+              </>
+            )}
+
+
+          
+
+
+
+
+
               <button
                 onClick={() => inputPdfRef.current?.click()}
                 className="h-10 shrink-0 rounded-xl border border-cyan-200 bg-cyan-50 px-4 text-sm font-black text-[#063452] hover:bg-cyan-100"
@@ -1097,7 +1145,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
 
 
            {Array.isArray(resultado?.acoes) && resultado.acoes.length > 0 && (
-            <div className="mt-4 rounded-3xl border border-cyan-100 bg-white p-4">
+            <div className="mt-2.5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
               <div className="mb-3 text-sm font-black text-[#063452]">
                 Registros encontrados ({resultado.acoes.length})
               </div>
@@ -1336,72 +1384,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
           )}
 
  
-
-            {resultado && (
-              <>
-                <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-xs font-black text-slate-600">
-                      Data inicial do extrato
-                    </label>
-
-                    <input
-                      type="date"
-                      value={resultado?.data_inicio || ""}
-                      disabled
-                      className="h-9 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="mb-1 block text-xs font-black text-slate-600">
-                      Data final do extrato
-                    </label>
-
-                    <input
-                      type="date"
-                      value={resultado?.data_fim || ""}
-                      disabled
-                      className="h-9 w-full rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
-                  <Card
-                    titulo="Pendências do PDF"
-                    valor={moeda(totalPdfPendente)}
-                    alerta={totalPdfPendente !== 0}
-                  />
-
-                  <Card
-                    titulo="Pendências do razão"
-                    valor={moeda(totalRazaoPendente)}
-                    alerta={totalRazaoPendente !== 0}
-                  />
-
-                  <Card
-                    titulo="Criar lançamentos"
-                    valor={criarLancamentos}
-                    alerta={criarLancamentos > 0}
-                  />
-
-                  <Card
-                    titulo="Excluir lotes"
-                    valor={excluirLotes}
-                    alerta={excluirLotes > 0}
-                  />
-
-                  <Card
-                    titulo="Total de pendências"
-                    valor={pendencias}
-                    alerta={pendencias > 0}
-                    ok={pendencias === 0}
-                  />
-                </div>
-              </>
-            )}
-
+ 
 
  
           <div className="mt-4 flex justify-end gap-2">
