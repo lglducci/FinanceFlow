@@ -1,5 +1,4 @@
- 
-import Navbar from "../components/landing/Navbar";
+ import Navbar from "../components/landing/Navbar";
 import Hero from "../components/landing/Hero";
 import Bancos from "../components/landing/Bancos";
 import Problemas from "../components/landing/Problemas";
@@ -11,13 +10,12 @@ import VideosYoutube from "../components/landing/VideosYoutube";
 import PrintsSistema from "../components/landing/PrintsSistema";
 import FAQ from "../components/landing/FAQ";
 import Footer from "../components/landing/Footer";
-import AgendarDemonstracao  from "../components/landing/AgendarDemonstracao";
-
+import AgendarDemonstracao from "../components/landing/AgendarDemonstracao";
+import ContadorVisitas from "../components/landing/ContadorVisitas";
 
 export default function Landing() {
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
-
       <Navbar />
 
       <Hero />
@@ -34,7 +32,7 @@ export default function Landing() {
 
       <ComoFunciona />
 
-      <AgendarDemonstracao /> {/* segundo botão aqui */}
+      <AgendarDemonstracao />
 
       <VideosYoutube />
 
@@ -42,8 +40,9 @@ export default function Landing() {
 
       <FAQ />
 
-      <Footer />
+      <ContadorVisitas />
 
+      <Footer />
     </main>
   );
 }
