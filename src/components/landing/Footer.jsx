@@ -57,9 +57,9 @@ export default function Footer() {
           <div>
             <h3 className="font-black text-xl mb-6">Contato</h3>
             <div className="space-y-5">
-              <a href="mailto:lglducci@hotmail.com.br" className="flex items-center gap-3 text-slate-400 hover:text-cyan-300 transition">
+              <a href="mailto:lglducci@hotmail.com" className="flex items-center gap-3 text-slate-400 hover:text-cyan-300 transition">
                 <Mail size={18} />
-                lglducci@hotmail.com.br
+                lglducci@hotmail.com
               </a>
 
               <a href="https://wa.me/5516992975836" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-slate-400 hover:text-cyan-300 transition">

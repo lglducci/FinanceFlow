@@ -1,4 +1,3 @@
- 
 import {
   Landmark,
   CreditCard,
@@ -6,9 +5,11 @@ import {
   Wallet,
   BarChart3,
   TrendingUp,
+  FileSearch2,
   ArrowDown,
   CheckCircle2,
 } from "lucide-react";
+
 
 const etapas = [
   {
@@ -47,6 +48,14 @@ const etapas = [
     texto:
       "Agora você entende exatamente para onde o dinheiro foi e quanto sua empresa realmente está lucrando.",
   },
+
+   {
+  icon: FileSearch2,
+  titulo: "7. Concilie o Extrato Bancário com o Razão",
+  texto:
+    "Importe o extrato bancário em PDF e compare automaticamente cada movimentação com os lançamentos do razão, identificando correspondências, divergências e itens ainda não conciliados.",
+},
+
 ];
 
 export default function ComoFunciona() {
