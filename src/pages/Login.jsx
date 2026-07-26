@@ -136,7 +136,7 @@ alert("Enviamos um link de redefinição para seu e-mail.");
 
    
     <p className="text-2xl text-white text-center leading-relaxed">
-      Controle Contábil simples, seguro <br /> e aa profissional.
+      Controle Contábil simples, seguro <br /> e profissional.
     </p>
   </div>
 </div>
