@@ -460,6 +460,19 @@ return (
                     </span>
                   </td>
 
+                  
+                   <td className="px-3 py-2">
+                      {l.origem === "CONTABIL" ? (
+                        <span className="inline-flex rounded-full border border-amber-500/60 bg-amber-850 px-2 py-1 text-xs font-semibold text-amber-500">
+                          Manual
+                        </span>
+                      ) : (
+                        <span className="inline-flex rounded-full border border-blue-500/60 bg-blue-850 px-2 py-1 text-xs font-semibold text-blue-4500">
+                          Sistema
+                        </span>
+                      )}
+                    </td>
+
                   <td className="p-3">
                     <div className="flex gap-2 justify-center">
                       <button
