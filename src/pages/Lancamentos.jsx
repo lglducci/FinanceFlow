@@ -1533,7 +1533,7 @@ return (
                       <option value="conta_pagar">📤 {t("lancamentos.aPagar", "A pagar")}</option>
                       <option value="cartao_compra">💳 {t("lancamentos.comprasCartao", "Compras cartão")}</option>
                       <option value="fatura_cartao">💳 {t("lancamentos.faturas", "Faturas")}</option>
-                      <option value="vence_hoje">⏰ {t("lancamentos.vencimentos", "Vencimentos")}</option>
+                   {/*   <option value="vence_hoje">⏰ {t("lancamentos.vencimentos", "Vencimentos")}</option>*/}
                       <option value="vencidos">🔴 {t("lancamentos.vencidos", "Vencidos")}</option>
                       <option value="vence_sete_dias">📅 {t("lancamentos.venceSeteDias", "Vence 7 dias")}</option>
                       <option value="estorno">🔁 {t("lancamentos.estornados", "Estornados")}</option>
