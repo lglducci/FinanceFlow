@@ -272,7 +272,7 @@ useEffect(() => {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-black text-[#063452]">
-              ⏰ Títulos vencidos e a vencer
+              ⏰ Painel de Obrigações e Recebimentos
             </h1>
             <p className="text-sm font-semibold text-slate-500">
               Controle de contas vencidas e próximas do vencimento.
