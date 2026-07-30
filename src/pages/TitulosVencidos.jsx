@@ -16,6 +16,7 @@ export default function TitulosVencidos() {
   const [contaId, setContaId] = useState(0);
   const [contas, setContas] = useState([]);
   
+  const [filtroEvento, setFiltroEvento] = useState("");
  
 
 
@@ -187,22 +188,20 @@ function toggleSelecionado(id) {
   );
 }
 
+ 
 
- function toggleSelecionarTodos(lista) {
-  const ids = lista.map((l) => l.uid);
+function toggleSelecionarTodos() {
+  const ids = listaFiltrada.map((l) => l.uid);
 
-  const todosMarcados = ids.every((id) => selecionados.includes(id));
+  const todosMarcados = ids.every((id) =>
+    selecionados.includes(id)
+  );
 
   setSelecionados(todosMarcados ? [] : ids);
 }
 
 
-
-function executarSelecionados() {
-  console.log("Selecionados:", selecionados);
-  alert(`Selecionados: ${selecionados.join(", ")}`);
-}
-
+ 
 
 
 async function executarSelecionados() {
@@ -211,7 +210,7 @@ async function executarSelecionados() {
     return;
   }
 
-  const itens = lista
+  const itens = listaFiltrada
     .filter((l) => selecionados.includes(l.uid))
     .map((l) => ({
       origem_tabela: l.origem_tabela,
@@ -231,6 +230,8 @@ async function executarSelecionados() {
     itens,
   };
 
+ 
+
   const resp = await fetch(buildWebhookUrl("executar_titulos"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -249,13 +250,23 @@ async function executarSelecionados() {
   pesquisar();
 }
 
+ const listaFiltrada = lista.filter((l) => {
+  if (!filtroEvento) return true;
+
+  const tipo = String(l.tipo_origem || "")
+    .trim()
+    .toUpperCase();
+
+  return tipo === filtroEvento;
+});
+
 useEffect(() => {
   pesquisar();
 }, []);
 
  return (
   <div className="min-h-screen bg-slate-100 px-4 py-5">
-    <div className="mx-auto w-full max-w-[1600px] space-y-4">
+    <div className="mx-auto w-full max-w-[1800px] space-y-4">
 
       <div className="rounded-3xl border border-cyan-100 bg-white p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -328,7 +339,7 @@ useEffect(() => {
               </label>
 
               <div className="flex flex-wrap gap-2">
-                {[7, 15, 30, 60, 90, 120, 180].map((d) => (
+                {[7, 15, 30, 60, 90, 120, 180,360].map((d) => (
                   <button
                     key={d}
                     type="button"
@@ -380,6 +391,25 @@ useEffect(() => {
             >
               Executar ({selecionados.length})
             </button>
+
+
+            <div>
+ 
+                <select
+                value={filtroEvento}
+                onChange={(e) => {
+                  setFiltroEvento(e.target.value);
+                  setSelecionados([]);
+                }}
+                className="h-10 min-w-[190px] rounded-xl border-2 border-blue-500 bg-white px-3 text-sm font-black text-blue-700 shadow-sm"
+              >
+                <option value="">Todos os tipos</option>
+                <option value="PAGAR">🔴 Conta a Pagar</option>
+                <option value="RECEBER">🟢 Conta a Receber</option>
+                <option value="FATURA_CARTAO">🟣 Fatura Cartão</option>
+                <option value="RECORRENTE">🟠 Recorrente</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -393,10 +423,10 @@ useEffect(() => {
                   <input
                     type="checkbox"
                     checked={
-                      lista.length > 0 &&
-                      lista.every((item) => selecionados.includes(item.uid))
+                      listaFiltrada.length > 0 &&
+                      listaFiltrada.every((item) => selecionados.includes(item.uid))
                     }
-                    onChange={() => toggleSelecionarTodos(lista)}
+                     onChange={toggleSelecionarTodos}
                   />
                 </th>
                 <th className="px-3 py-3 text-left font-black">Status</th>
@@ -411,7 +441,7 @@ useEffect(() => {
             </thead>
 
             <tbody>
-              {lista.length === 0 && (
+              {listaFiltrada.length === 0 && (
                 <tr>
                   <td colSpan={9} className="py-10 text-center font-bold text-slate-400">
                     {loading ? "Carregando..." : "Nenhum título encontrado."}
@@ -419,7 +449,7 @@ useEffect(() => {
                 </tr>
               )}
 
-              {lista.map((l) => (
+             {listaFiltrada.map((l) => (
                 <tr key={l.uid} className="border-b border-cyan-50 hover:bg-cyan-50">
                   <td className="px-3 py-3 text-center">
                     <input
@@ -441,9 +471,33 @@ useEffect(() => {
                     </span>
                   </td>
 
-                  <td className="px-3 py-3 font-black text-[#063452]">
-                    {l.evento_codigo}
-                  </td>
+                   <td className="px-3 py-3">
+                      <span
+                        className={`inline-flex items-center rounded-full border-2 px-3 py-1 text-xs font-black shadow-sm ${
+                          l.evento_codigo === "PAGAR"
+                            ? "border-red-500 bg-red-50 text-red-700"
+                            : l.evento_codigo === "RECEBER"
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                            : l.evento_codigo === "PAGAMENTO_CARTAO" ||
+                              l.evento_codigo === "PAGAMENTO_FATURA_CARTAO"
+                            ? "border-purple-500 bg-purple-50 text-purple-700"
+                            : l.evento_codigo === "RECORRENTE"
+                            ? "border-amber-500 bg-amber-50 text-amber-700"
+                            : "border-slate-400 bg-slate-50 text-slate-700"
+                        }`}
+                      >
+                        {l.evento_codigo === "PAGAR"
+                          ? "Conta a Pagar"
+                          : l.evento_codigo === "RECEBER"
+                          ? "Conta a Receber"
+                          : l.evento_codigo === "PAGAMENTO_CARTAO" ||
+                            l.evento_codigo === "PAGAMENTO_FATURA_CARTAO"
+                          ? "Fatura Cartão"
+                          : l.evento_codigo === "RECORRENTE"
+                          ? "Recorrente"
+                          : l.evento_codigo}
+                      </span>
+                    </td>
 
                   <td className="px-3 py-3 text-center font-bold">
                     {formatarDataSemFuso(l.vencimento)}
