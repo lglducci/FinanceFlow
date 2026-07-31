@@ -166,7 +166,7 @@ export default function Sidebar() {
               </div>
             )}
 
-            <SubItem compact={!sidebarAberta} icon={<IconCalendar />} label="Títulos Vencidos" onClick={() => navigate("/titulos-vencidos")} color="red" />
+            <SubItem compact={!sidebarAberta} icon={<IconCalendar />} label="Painel de Títulos" onClick={() => navigate("/titulos-vencidos")} color="red" />
 
             <NestedButton
               open={openSub === "dinheiro"}
