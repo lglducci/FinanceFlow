@@ -90,7 +90,8 @@ export default function ImportadorSicoob({ onTextoPronto }) {
     const resultado = tratarLinhas(linhas);
 
     if (!resultado.length) {
-      alert("Nenhuma linha válida encontrada no arquivo.");
+       alert("Nenhuma linha válida encontrada no arquivo. Seu arquivo não encontra dentro do padrão solicitado pela ferramenta.");
+        alert("Enquanto o arquivo não for corrigido, a importação será rejeitada. Veja o modelo e corrija o seu arquivo. Sem cabeçalhos e rodapés.");
       e.target.value = "";
       return;
     }
