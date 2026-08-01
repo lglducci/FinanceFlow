@@ -19,6 +19,13 @@ import ImportadorSicoob from "../components/ImportadorSicoob";
       const empresa_id = localStorage.getItem("empresa_id");
     const [contas, setContas] = useState([]);
     const inputOfxRef = useRef(null);
+
+    /* importacao de pdf */
+
+    const inputPdfRef = useRef(null);
+const [importandoPdf, setImportandoPdf] = useState(false);
+
+
      const hoje = hojeLocal();
      const [linhas, setLinhas] = useState([]); 
     
@@ -39,7 +46,11 @@ const [mostrarNovaLinha, setMostrarNovaLinha] = useState(true);
    const [indiceConta, setIndiceConta] = useState(0);
   const [salvando, setSalvando] = useState(false);
   const contaAtual = contas[indiceConta] || null;
-   
+   const [erroContaPdf, setErroContaPdf] = useState(null);
+const [modalErroContaAberto, setModalErroContaAberto] = useState(false);
+
+
+
     const botaoBase = `
      px-5 py-2 rounded-full
      font-bold text-sm tracking-wide
@@ -953,9 +964,380 @@ navigate("/conciliacao-revisao");
    
    
    
+    /* Importacao de pdf   */
+   
+
+function normalizarNomeBanco(valor) {
+  return String(valor || "")
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function resolverWebhookPdf(conta) {
+  const codigoBanco = somenteNumeros(conta?.nro_banco);
+  const nomeBanco = normalizarNomeBanco(
+    conta?.banco_nome ||
+    conta?.nome ||
+    conta?.conta_nome
+  );
+
+  /*
+   * SICOOB
+   * Código bancário: 756
+   *
+   * Aqui estamos reaproveitando o webhook que você já possui.
+   * Caso o nome real da rota seja diferente, altere somente esta linha.
+   */
+  if (
+    codigoBanco === "756" ||
+    nomeBanco.includes("SICOOB")
+  ) {
+    return {
+      banco: "SICOOB",
+      webhook: "extrato_pdf_sicoob",
+    };
+  }
+
+  /*
+   * Os demais ficam preparados para quando criarmos os parsers.
+   */
+  if (
+    codigoBanco === "033" ||
+    nomeBanco.includes("SANTANDER")
+  ) {
+    return {
+      banco: "SANTANDER",
+      webhook: "extrato_pdf_santander",
+    };
+  }
+
+
+   if (
+    codigoBanco === "348" ||
+    nomeBanco.includes("XP")
+  ) {
+    return {
+      banco: "BRADESCO",
+      webhook: "extrato_pdf_xp",
+    };
+  }
+
+
+  if (
+    codigoBanco === "237" ||
+    nomeBanco.includes("BRADESCO")
+  ) {
+    return {
+      banco: "BRADESCO",
+      webhook: "extrato_pdf_bradesco",
+    };
+  }
+
+  if (
+    codigoBanco === "341" ||
+    nomeBanco.includes("ITAU")
+  ) {
+    return {
+      banco: "ITAU",
+      webhook: "extrato_pdf_itau",
+    };
+  }
+
+  if (
+    codigoBanco === "001" ||
+    nomeBanco.includes("BANCO DO BRASIL")
+  ) {
+    return {
+      banco: "BANCO_DO_BRASIL",
+      webhook: "extrato_pdf_banco_brasil",
+    };
+  }
+
+  if (
+    codigoBanco === "104" ||
+    nomeBanco.includes("CAIXA")
+  ) {
+    return {
+      banco: "CAIXA",
+      webhook: "extrato_pdf_caixa",
+    };
+  }
+
+  return null;
+}
+
+
+
+async function importarPDFArquivo(e) {
+  const arquivo = e.target.files?.[0];
+
+  if (!arquivo) return;
+
+  try {
+    await importarPDF(arquivo);
+  } finally {
+    e.target.value = "";
+  }
+}
+
+
+async function importarPDF(arquivo) {
+  if (importandoPdf || salvando) return;
+
+  const contaSelecionada =
+    contas.find(
+      (c) => String(c.conta_id) === String(contaId)
+    ) || contaAtual;
+
+  if (!contaSelecionada || !contaId) {
+    alert("Selecione uma conta bancária antes de importar o PDF.");
+    return;
+  }
+
+  const configuracao = resolverWebhookPdf(contaSelecionada);
+
+  if (!configuracao) {
+    alert(
+      "Não foi possível identificar o banco da conta selecionada."
+    );
+    return;
+  }
+
+  /*
+   * Por enquanto somente o Sicoob possui parser pronto.
     
-   
-   
+  if (configuracao.banco !== "BRADESCO") {
+    alert(
+      `A importação de PDF do banco ${configuracao.banco} ainda não está disponível.`
+    );
+    return;
+  }*/
+
+  if (
+    arquivo.type !== "application/pdf" &&
+    !arquivo.name.toLowerCase().endsWith(".pdf")
+  ) {
+    alert("Selecione um arquivo PDF válido.");
+    return;
+  }
+
+  prepararNovaImportacao("PDF");
+  setImportandoPdf(true);
+
+  try {
+    const formData = new FormData();
+
+    formData.append("arquivo", arquivo);
+    formData.append("pdf", arquivo);
+
+    formData.append("empresa_id", String(empresa_id));
+    formData.append("conta_id", String(contaId));
+
+    formData.append("banco", configuracao.banco);
+
+    /*
+     * Esse é o parâmetro que vai decidir o caminho dentro do n8n.
+     *
+     * CONCILIACAO = processo atual de conciliação
+     * IMPORTACAO  = devolver movimentos para importar
+     */
+    formData.append("finalidade", "IMPORTACAO");
+    formData.append("tipo_processamento", "IMPORTACAO");
+
+    const url = buildWebhookUrl(configuracao.webhook);
+  
+
+    const resposta = await fetch(url, {
+  method: "POST",
+  body: formData,
+});
+
+const retorno = await resposta.json();
+
+    console.log("RETORNO PDF:", retorno);
+
+    const bruto = Array.isArray(retorno)
+      ? retorno[0]
+      : retorno;
+
+
+      const resultado =
+  bruto?.json ||
+  bruto?.data?.[0] ||
+  bruto?.data ||
+  bruto;
+
+/*
+ * ============================================================
+ * TRATA CONTA BANCÁRIA INCORRETA
+ * ============================================================
+ */
+
+if (
+  resultado?.ok === false &&
+  resultado?.tipo_erro === "CONTA_BANCARIA_INCORRETA"
+) {
+  const selecionada = resultado?.conta_selecionada || {};
+  const arquivoPdf = resultado?.conta_arquivo || {};
+
+ 
+ setErroContaPdf({
+  mensagem:
+    resultado?.mensagem ||
+    "O extrato não pertence à conta selecionada.",
+
+  detalhes:
+    Array.isArray(resultado?.detalhes)
+      ? resultado.detalhes
+      : [],
+
+  contaSelecionada:
+    resultado?.conta_selecionada || {},
+
+  contaArquivo:
+    resultado?.conta_arquivo || {}
+});
+
+setModalErroContaAberto(true);
+
+setLinhas([]);
+setResumoImportacao(null);
+setImportacao(0);
+setSaldo(saldoBase);
+
+return;
+}
+
+if (resultado?.ok === false) {
+  throw new Error(
+    resultado?.mensagem ||
+    resultado?.message ||
+    resultado?.erro ||
+    "Erro ao processar o PDF."
+  );
+}
+
+const movimentos = Array.isArray(resultado?.movimentos)
+  ? resultado.movimentos
+  : [];
+
+if (movimentos.length === 0) {
+  throw new Error(
+    resultado?.mensagem ||
+    resultado?.message ||
+    "Nenhuma movimentação bancária válida foi encontrada no PDF."
+  );
+}
+ 
+     
+
+    const novasLinhas = movimentos.map((movimento) => {
+      const tipoMovimento = String(
+        movimento.tipo || ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const valorOriginal = Math.abs(
+        parseNumeroMoney(movimento.valor)
+      );
+
+      const ehSaida =
+        tipoMovimento === "D" ||
+        tipoMovimento === "DEBITO" ||
+        tipoMovimento === "SAIDA";
+
+      const valorFinal = ehSaida
+        ? -valorOriginal
+        : valorOriginal;
+
+      return {
+        _id: gerarLinhaId(),
+
+        /*
+         * O n8n deverá devolver a data completa:
+         * 2026-07-20
+         */
+        data: dataBRparaISO(movimento.data),
+
+        historico: String(
+          movimento.historico ||
+          movimento.descricao ||
+          "LANÇAMENTO PDF"
+        ).trim(),
+
+        tipo: ehSaida ? "saida" : "entrada",
+
+        valor: valorFinal
+          .toFixed(2)
+          .replace(".", ","),
+
+        arquivo_tipo: "PDF",
+      };
+    });
+
+    const linhaInvalida = novasLinhas.findIndex(
+      (linha) =>
+        !linha.data ||
+        !linha.historico ||
+        !Number.isFinite(parseNumeroMoney(linha.valor)) ||
+        parseNumeroMoney(linha.valor) === 0
+    );
+
+    if (linhaInvalida !== -1) {
+      throw new Error(
+        `Movimentação ${linhaInvalida + 1} inválida no retorno do PDF.`
+      );
+    }
+
+    let totalEntrada = 0;
+    let totalSaida = 0;
+
+    novasLinhas.forEach((linha) => {
+      const valor = parseNumeroMoney(linha.valor);
+
+      if (valor >= 0) {
+        totalEntrada += valor;
+      } else {
+        totalSaida += Math.abs(valor);
+      }
+    });
+
+    setResumoImportacao({
+      qtd: novasLinhas.length,
+      entrada: totalEntrada,
+      saida: totalSaida,
+    });
+
+    const linhasComSaldo = recalcularLinhas(
+      novasLinhas,
+      saldoBase
+    );
+
+    setImportacao(1);
+
+    /*
+     * Mesmo funcionamento do OFX:
+     *
+     * importou corretamente
+     * → salva automaticamente
+     * → vai para a revisão
+     */
+    await salvarLancamentos(linhasComSaldo);
+
+  } catch (erro) {
+    console.error("ERRO IMPORTAÇÃO PDF:", erro);
+
+    alert(
+      erro?.message ||
+      "Erro ao importar o extrato PDF."
+    );
+  } finally {
+    setImportandoPdf(false);
+  }
+}
    
    async function importarOFXArquivo(e) {
      const arquivo = e.target.files?.[0];
@@ -1690,8 +2072,34 @@ navigate("/conciliacao-revisao");
          >
            📥  {t("importacaoBancaria.importarOFX", "Importar OFX")}
          </button>
+
+
+         <button
+              type="button"
+              onClick={() => inputPdfRef.current?.click()}
+              disabled={importandoPdf || salvando}
+              className={`h-10 px-4 rounded-xl border font-bold text-sm shadow-sm transition ${
+                importandoPdf || salvando
+                  ? "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
+                  : "border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
+              }`}
+            >
+              {importandoPdf
+                ? "Processando PDF..."
+                : "📄 Importar PDF"}
+            </button>
    
        <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
+
+
+       <input
+          id="inputPdf"
+          ref={inputPdfRef}
+          type="file"
+          accept=".pdf,application/pdf"
+          className="hidden"
+          onChange={importarPDFArquivo}
+        />
      </div>
    
      <div className="flex items-center gap-2 mr-10">
@@ -1761,6 +2169,119 @@ navigate("/conciliacao-revisao");
            />
          )}
        </ModalBase>
+
+
+   <ModalBase
+  open={modalErroContaAberto}
+  onClose={() => setModalErroContaAberto(false)}
+  title="Dados bancários inconsistentes"
+>
+  {erroContaPdf && (
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+        <div className="text-base font-black text-red-700">
+          O extrato não pertence à conta selecionada
+        </div>
+
+        <div className="mt-1 text-sm font-semibold text-red-600">
+          {erroContaPdf.mensagem}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4">
+          <div className="mb-3 text-sm font-black text-slate-800">
+            Conta selecionada no FinanceFlow
+          </div>
+
+          <div className="space-y-1 text-sm text-slate-600">
+            <div>
+              <b>Nome:</b>{" "}
+              {erroContaPdf.contaSelecionada?.nome || "-"}
+            </div>
+
+            <div>
+              <b>Banco:</b>{" "}
+              {erroContaPdf.contaSelecionada?.banco || "-"}
+            </div>
+
+            <div>
+              <b>Agência:</b>{" "}
+              {erroContaPdf.contaSelecionada?.agencia || "-"}
+            </div>
+
+            <div>
+              <b>Conta:</b>{" "}
+              {erroContaPdf.contaSelecionada?.conta || "-"}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <div className="mb-3 text-sm font-black text-amber-800">
+            Conta encontrada no arquivo
+          </div>
+
+          <div className="space-y-1 text-sm text-amber-700">
+            <div>
+              <b>Titular:</b>{" "}
+              {erroContaPdf.contaArquivo?.titular || "-"}
+            </div>
+
+            <div>
+              <b>Banco:</b>{" "}
+              {erroContaPdf.contaArquivo?.banco || "-"}
+            </div>
+
+            <div>
+              <b>Agência:</b>{" "}
+              {erroContaPdf.contaArquivo?.agencia || "-"}
+            </div>
+
+            <div>
+              <b>Conta:</b>{" "}
+              {erroContaPdf.contaArquivo?.conta || "-"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {erroContaPdf.detalhes?.length > 0 && (
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="mb-2 text-sm font-black text-slate-800">
+            Divergências encontradas
+          </div>
+
+          <div className="space-y-1">
+            {erroContaPdf.detalhes.map((item, index) => (
+              <div
+                key={index}
+                className="text-sm font-semibold text-slate-600"
+              >
+                • {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800">
+        Selecione a conta bancária correta e importe o PDF novamente.
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => setModalErroContaAberto(false)}
+          className="h-10 rounded-xl bg-[#063452] px-5 text-sm font-black text-white hover:brightness-110"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+  )}
+</ModalBase>
+
 
      </div>
    );
