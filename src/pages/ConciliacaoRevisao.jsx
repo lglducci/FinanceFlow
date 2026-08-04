@@ -1836,14 +1836,29 @@ async function salvarHistoricoLancamento(linha) {
 
                        <td className="w-[460px] max-w-[460px] p-3 text-slate-700">
                                 <div className="flex min-w-0 items-center gap-2">
-                                  <span
-                                    title={l.historico_lancamento || l.historico || ""}
-                                    className="min-w-0 flex-1 truncate font-medium"
-                                  >
-                                    {l.historico_lancamento ||
-                                      l.historico ||
-                                      "Sem histórico"}
-                                  </span>
+                                  {historicoEditandoId === Number(l.id) ? (
+                                    <input
+                                      autoFocus
+                                      value={historicoEditandoTexto}
+                                      onChange={(e) => setHistoricoEditandoTexto(e.target.value)}
+                                      onBlur={() => salvarHistoricoLancamento(l)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter") salvarHistoricoLancamento(l);
+                                        if (e.key === "Escape") cancelarEdicaoHistorico();
+                                      }}
+                                      className="min-w-0 flex-1 rounded-lg border border-blue-300 px-2 py-1 text-sm"
+                                    />
+                                  ) : (
+                                    <span
+                                      title={l.historico_lancamento || l.historico || ""}
+                                      className="min-w-0 flex-1 truncate font-medium"
+                                      onDoubleClick={() => iniciarEdicaoHistorico(l)}
+                                    >
+                                      {l.historico_lancamento ||
+                                        l.historico ||
+                                        "Sem histórico"}
+                                    </span>
+                                  )}
 
                                   <button
                                     type="button"
@@ -2218,7 +2233,11 @@ async function salvarHistoricoLancamento(linha) {
                               </td>
 
                               <td className="px-14 py-2 font-bold">
-                                {relatorioConciliacao?.pdf?.quantidade_registros ?? 0}
+                                {
+  relatorioConciliacao?.pdf?.quantidade_registros ||
+  relatorioConciliacao?.pdf?.quantidade_blocos ||
+  0
+}
                               </td>
 
                               <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
