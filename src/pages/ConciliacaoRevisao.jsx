@@ -36,6 +36,7 @@ const [modalAjudaAberto, setModalAjudaAberto] = useState(false);
 const [contasContabeis, setContasContabeis] = useState([]);
 
 
+
 const mensagensPainel = [
   "Analise o extrato  ➜  Classifique com aconta contábil  ➜  1) Selecione  2) Aceite  3) Execute",
   "Filtre registros parecidos e aplique a mesma conta contábil em lote",
@@ -113,11 +114,14 @@ const [modalRelatorioAberto, setModalRelatorioAberto] = useState(false);
 const [textoContaLote, setTextoContaLote] = useState("");
 const [contasLoteFiltradas, setContasLoteFiltradas] = useState([]);
 const [filtroTexto, setFiltroTexto] = useState("");
+ const [historicoDetalhe, setHistoricoDetalhe] = useState(null);
+
 
 const linhasFiltradasComTexto = linhasFiltradas.filter((l) => {
   const texto = filtroTexto.toLowerCase().trim();
  
  
+
   if (!texto) return true;
 
   return (
@@ -179,6 +183,13 @@ function filtrarContasLote(texto) {
           : [];
 
 setLinhas(lista);
+
+if (lista.length > 0) {
+  setRelatorioConciliacao((prev) => ({
+    ...prev,
+    pdf: lista[0].pdf_diagnostico || null,
+  }));
+}
 
 if (lista.length > 0) {
   setImportacaoId(lista[0].lote_conciliacao_id || 0);
@@ -1328,6 +1339,9 @@ async function salvarHistoricoLancamento(linha) {
   }
 }
 
+
+
+
  return (
    <div className="min-h-screen bg-slate-100 px-2 -mt-4 pb-2">
     <div className="mx-auto max-w-[1700px]">
@@ -1335,8 +1349,8 @@ async function salvarHistoricoLancamento(linha) {
       {!resultadoExecucao && (
           <div className="mb-3 rounded-3xl bg-white p-3 shadow-lg border border-slate-200">
            <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-black text-slate-800 whitespace-nowrap">
-              Revisão da Conciliação
+           <h1 className="text-2xl font-black text-slate-800 whitespace-nowrap">
+              Classificação da Importação
             </h1>
 
             <div className="ml-12 text-sm font-bold text-slate-700">
@@ -1386,7 +1400,7 @@ async function salvarHistoricoLancamento(linha) {
               </button>
 
               <button
-                title="Aceitar registros selecionados para status de ok. Preparação para execução da conciliação."
+                title="Aceitar registros selecionados para status de ok. Preparação para finalizacao da importação."
                 onClick={() => aceitarSelecionados()}
                 disabled={!podeAceitar}
                 className={`btn-pill text-xs px-4 py-2 ${
@@ -1397,7 +1411,7 @@ async function salvarHistoricoLancamento(linha) {
               </button>
 
               <button
-                title="Executar a conciliação. Finalizar o processo e realizar os lançamentos financeiros e pagamentos."
+                title="Finalizar a Importação. Finalizar o processo e realizar os lançamentos financeiros e pagamentos."
                 onClick={executarConciliacao}
                 disabled={!podeExecutar}
                   className={`btn-pill text-xs px-4 py-2 ${
@@ -1475,52 +1489,55 @@ async function salvarHistoricoLancamento(linha) {
                 className="h-9 w-[200px] rounded-full border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
               />
 
-              <div className="relative">
-                <input
-                      value={textoContaLote}
-                      onFocus={() => filtrarContasLote("")}
-                      onChange={(e) => {
-                        const texto = e.target.value;
-                        setTextoContaLote(texto);
-                        setContaLoteSelecionada(null);
-                        filtrarContasLote(texto);
-                      }}
-                      placeholder="Conta opcional em lote..."
-                      className="h-9 w-[280px] rounded-full border border-blue-200 bg-blue-50 px-3 text-xs font-bold text-slate-700"
-                    />
+             <div className="relative">
+                  <input
+                    value={textoContaLote}
+                    onFocus={() => filtrarContasLote("")}
+                    onChange={(e) => {
+                      const texto = e.target.value;
+                      setTextoContaLote(texto);
+                      setContaLoteSelecionada(null);
+                      filtrarContasLote(texto);
+                    }}
+                    placeholder="Conta opcional em lote..."
+                    className="h-9 w-[280px] rounded-full border border-blue-200 bg-blue-50 px-3 text-xs font-bold text-slate-700"
+                  />
 
-                {contasLoteFiltradas.length > 0 && (
-                  <div className="absolute z-50 mt-2 max-h-72 w-[420px] overflow-y-auto rounded-2xl border bg-white shadow-xl">
-                    {contasLoteFiltradas.map((c) => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => {
-                          setContaLoteSelecionada(c);
-                          setTextoContaLote(`${c.codigo} - ${c.nome}`);
-                          setContasLoteFiltradas([]);
-                        }}
-                        className="block w-full px-4 py-2 text-left text-xs hover:bg-blue-50"
-                      >
-                        <span className="font-black">{c.codigo}</span> — {c.nome}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                  {contasLoteFiltradas.length > 0 && (
+                    <div className="absolute z-50 mt-2 max-h-72 w-[420px] overflow-y-auto rounded-2xl border bg-white shadow-xl">
+                      {contasLoteFiltradas.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => {
+                            setContaLoteSelecionada(c);
+                            setTextoContaLote(`${c.codigo} - ${c.nome}`);
+                            setContasLoteFiltradas([]);
 
-              <button
+                            setItemChanged(true);
+                          }}
+                          className="block w-full px-4 py-2 text-left text-xs hover:bg-blue-50"
+                        >
+                          <span className="font-black">{c.codigo}</span> — {c.nome}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+               <button
                   type="button"
                   onClick={aplicarContaEmLote}
                   disabled={!contaLoteSelecionada || selecionados.length === 0}
                   className={`btn-pill text-xs px-4 py-2 ${
-                    contaLoteSelecionada && selecionados.length > 0
-                      ? "btn-blue"
+                    contaLoteSelecionada
+                      ? "!bg-blue-800 !text-white !opacity-100"
                       : "btn-white opacity-60 cursor-not-allowed"
                   }`}
                 >
                   Aplicar Selecionados ({selecionados.length})
                 </button>
+                
 
                 <button
                 type="button"
@@ -1552,7 +1569,7 @@ async function salvarHistoricoLancamento(linha) {
         {resultadoExecucao && (
           <div className="mb-6 rounded-3xl border border-emerald-300 bg-emerald-50 p-6 shadow-lg">
             <h2 className="text-2xl font-black text-emerald-800">
-              ✅ Conciliação executada com sucesso
+              ✅ Importação finalizada com sucesso
             </h2>
 
             <p className="mt-2 text-emerald-700 font-semibold">
@@ -1773,7 +1790,7 @@ async function salvarHistoricoLancamento(linha) {
                       </th>
                    
                   <th className="p-3 text-left">Data</th>
-                   <th className="w-[460px] p-3 text-left">Histórico</th>
+                   <th className="w-[400px] p-3 text-left">Histórico</th>
                   <th className="p-3 text-right">Valor</th>
                   <th className="p-3 text-center">Situação</th>
                   <th className="p-3 text-left">Plano de Conta</th>
@@ -1817,93 +1834,43 @@ async function salvarHistoricoLancamento(linha) {
                         
 
 
-                     <td className="p-3 text-slate-700 font-medium">
-                        {Number(historicoEditandoId) === Number(l.id) ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              autoFocus
-                              value={historicoEditandoTexto}
-                              disabled={
-                                Number(salvandoHistoricoId) === Number(l.id)
-                              }
-                              onChange={(e) =>
-                                setHistoricoEditandoTexto(e.target.value)
-                              }
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                  salvarHistoricoLancamento(l);
-                                }
+                       <td className="w-[460px] max-w-[460px] p-3 text-slate-700">
+                                <div className="flex min-w-0 items-center gap-2">
+                                  <span
+                                    title={l.historico_lancamento || l.historico || ""}
+                                    className="min-w-0 flex-1 truncate font-medium"
+                                  >
+                                    {l.historico_lancamento ||
+                                      l.historico ||
+                                      "Sem histórico"}
+                                  </span>
 
-                                if (e.key === "Escape") {
-                                  e.preventDefault();
-                                  cancelarEdicaoHistorico();
-                                }
-                              }}
-                              className="h-9 min-w-0 flex-1 rounded-xl border border-blue-400 bg-white px-3 text-sm font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-200"
-                            />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setHistoricoDetalhe(
+                                        l.historico_lancamento ||
+                                        l.historico ||
+                                        ""
+                                      )
+                                    }
+                                    className="shrink-0 rounded-lg border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-black text-blue-700 hover:bg-blue-100"
+                                  >
+                                    Ver
+                                  </button>
 
-                            <button
-                              type="button"
-                              title="Salvar histórico"
-                              disabled={
-                                Number(salvandoHistoricoId) === Number(l.id)
-                              }
-                              onClick={() => salvarHistoricoLancamento(l)}
-                              className="shrink-0 text-sm font-black text-emerald-600 hover:text-emerald-800 disabled:text-slate-300"
-                            >
-                              {Number(salvandoHistoricoId) === Number(l.id)
-                                ? "..."
-                                : "✓"}
-                            </button>
-
-                            <button
-                              type="button"
-                              title="Cancelar edição"
-                              disabled={
-                                Number(salvandoHistoricoId) === Number(l.id)
-                              }
-                              onClick={cancelarEdicaoHistorico}
-                              className="shrink-0 text-sm font-black text-red-500 hover:text-red-700 disabled:text-slate-300"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="group flex min-w-0 items-center gap-2">
-                            {l.tipo_evento === "divergencia_financeiro" && (
-                              <span className="shrink-0 inline-flex rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-black text-white shadow-sm">
-                                SÓ NO SISTEMA
-                              </span>
-                            )}
-
-                            <span
-                              title="Duplo clique para melhorar o histórico do lançamento"
-                              onDoubleClick={() => iniciarEdicaoHistorico(l)}
-                              className={`min-w-0 flex-1 truncate ${
-                                l.situacao !== "executado"
-                                  ? "cursor-text decoration-dotted underline-offset-4 group-hover:underline"
-                                  : ""
-                              }`}
-                            >
-                              {l.historico_lancamento ||
-                                l.historico}
-                            </span>
-
-                            {l.situacao !== "executado" && (
-                              <button
-                                type="button"
-                                title="Editar histórico do lançamento"
-                                onClick={() => iniciarEdicaoHistorico(l)}
-                                className="shrink-0 rounded-full px-1.5 py-1 text-xs text-slate-400 opacity-50 transition hover:bg-blue-50 hover:text-blue-700 hover:opacity-100 group-hover:opacity-100"
-                              >
-                                ✏️
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </td>
+                                  {l.situacao !== "executado" && (
+                                    <button
+                                      type="button"
+                                      title="Editar histórico"
+                                      onClick={() => iniciarEdicaoHistorico(l)}
+                                      className="shrink-0 text-xs text-slate-400 hover:text-blue-700"
+                                    >
+                                      ✏️
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
 
 
 
@@ -1933,7 +1900,7 @@ async function salvarHistoricoLancamento(linha) {
                       </td>
 
                         <td    data-dropdown-conta
-                              className="p-3 relative min-w-[260px]"
+                              className="p-3 relative min-w-[200px]"
                             >
                               <input
                                 value={
@@ -2005,7 +1972,7 @@ async function salvarHistoricoLancamento(linha) {
                       </td>
 
                        <td title={l.mensagem || ""}
-                          className="w-[190px] max-w-[290px] truncate p-2 text-xs font-semibold text-blue-900"
+                          className="w-[190px] max-w-[250px] truncate p-2 text-xs font-semibold text-blue-900"
                         >
                           {l.mensagem || "-"}
                         </td>
@@ -2170,6 +2137,168 @@ async function salvarHistoricoLancamento(linha) {
                       </div>
                     </div>
                   </div>
+
+
+                  {relatorioConciliacao?.pdf && (
+                        <>
+                          <h3 className="mb-3 mt-5 text-base font-black text-slate-800">
+                            Diagnóstico do PDF
+                          </h3>
+
+                          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+
+                            <div className="rounded-2xl border bg-slate-50 p-4">
+                              <div className="text-xs font-bold text-slate-500">Layout</div>
+                              <div className="mt-1 text-sm font-black">
+                                {relatorioConciliacao.pdf.tipo_layout}
+                              </div>
+                            </div>
+
+                            <div className="rounded-2xl border bg-slate-50 p-4">
+                              <div className="text-xs font-bold text-slate-500">Créditos</div>
+                              <div className="mt-1 text-lg font-black">
+                                {relatorioConciliacao.pdf.quantidade_creditos}
+                              </div>
+                            </div>
+
+                            <div className="rounded-2xl border bg-slate-50 p-4">
+                              <div className="text-xs font-bold text-slate-500">Débitos</div>
+                              <div className="mt-1 text-lg font-black">
+                                {relatorioConciliacao.pdf.quantidade_debitos}
+                              </div>
+                            </div>
+
+                            <div className="rounded-2xl border bg-slate-50 p-4">
+                              <div className="text-xs font-bold text-slate-500">Saldo confere</div>
+                              <div className="mt-1 text-lg font-black">
+                                {relatorioConciliacao.pdf.saldo_confere ? "✅ Sim" : "❌ Não"}
+                              </div>
+                            </div>
+                                 <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50">
+
+                                <div className="flex items-center justify-between border-b px-12 py-3">
+                                  
+
+                                  <span
+                                    className={`font-bold ${
+                                      relatorioConciliacao?.pdf?.saldo_confere
+                                        ? "text-green-700"
+                                        : "text-red-700"
+                                    }`}
+                                  >
+                                    {relatorioConciliacao?.pdf?.saldo_confere
+                                      ? "✅ VALIDADO"
+                                      : "❌ NÃO CONFERE"}
+                                  </span>
+                                </div>
+
+                                  <table className="w-full text-sm">
+                          <tbody>
+                            <tr className="border-b">
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Banco
+                              </td>
+
+                              <td className="px-4 py-2 font-bold">
+                                {relatorioConciliacao?.pdf_banco || "-"}
+                              </td>
+
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Layout
+                              </td>
+
+                              <td className="px-4 py-2 font-bold">
+                                {relatorioConciliacao?.pdf?.tipo_layout || "-"}
+                              </td>
+                            </tr>
+
+                            <tr className="border-b">
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Movimentos
+                              </td>
+
+                              <td className="px-14 py-2 font-bold">
+                                {relatorioConciliacao?.pdf?.quantidade_registros ?? 0}
+                              </td>
+
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Diferença
+                              </td>
+
+                              <td className="px-4 py-2 font-bold">
+                                {Number(
+                                  relatorioConciliacao?.pdf?.diferenca_saldo || 0
+                                ).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </td>
+                            </tr>
+
+                            <tr className="border-b">
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Entradas
+                              </td>
+
+                              <td className="px-14 py-2 font-bold">
+                                {Number(
+                                  relatorioConciliacao?.pdf?.total_creditos || 0
+                                ).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </td>
+
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Saídas
+                              </td>
+
+                              <td className="px-4 py-2 font-bold">
+                                {Number(
+                                  relatorioConciliacao?.pdf?.total_debitos || 0
+                                ).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Saldo inicial
+                              </td>
+
+                              <td className="px-14 py-2 font-bold">
+                                {Number(
+                                  relatorioConciliacao?.pdf?.saldo_inicial || 0
+                                ).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </td>
+
+                              <td className="w-[110px] px-4 py-2 font-semibold text-slate-500">
+                                Saldo final
+                              </td>
+
+                              <td className="px-4 py-2 font-bold">
+                                {Number(
+                                  relatorioConciliacao?.pdf?.saldo_final || 0
+                                ).toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
+                              </div>
+                                                          
+
+                          </div>
+                        </>
+                      )}
 
                   <div className="mt-5">
                     <h3 className="mb-3 text-base font-black text-slate-800">
@@ -2754,7 +2883,43 @@ async function salvarHistoricoLancamento(linha) {
   </div>
 )}
 
+
+{historicoDetalhe !== null && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-[680px] rounded-3xl bg-white p-5 shadow-2xl">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 className="text-lg font-black text-slate-800">
+          Histórico completo
+        </h3>
+
+        <button
+          type="button"
+          onClick={() => setHistoricoDetalhe(null)}
+          className="rounded-full px-3 py-1 font-black text-slate-500 hover:bg-slate-100"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="mt-4 whitespace-pre-wrap break-words rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-800">
+        {historicoDetalhe}
+      </div>
+
+      <div className="mt-5 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setHistoricoDetalhe(null)}
+          className="btn-pill btn-blue"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
   </div>
+)}
+  </div>
+
+  
 );
  
 

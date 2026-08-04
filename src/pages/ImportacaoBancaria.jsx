@@ -24,7 +24,7 @@ import ImportadorSicoob from "../components/ImportadorSicoob";
 
     const inputPdfRef = useRef(null);
 const [importandoPdf, setImportandoPdf] = useState(false);
-
+ const diagnosticoPdfRef = useRef(null);
 
      const hoje = hojeLocal();
      const [linhas, setLinhas] = useState([]); 
@@ -309,12 +309,18 @@ const [modalErroContaAberto, setModalErroContaAberto] = useState(false);
          return;
        }
  
-        const payload = {
+    const payload = {
   empresa_id,
   conta_observada: contaId,
+
   lancamentos: JSON.parse(
     prepararLancamentosJSONB(lancamentos)
   ),
+
+ dados_importacao_pdf:
+  typeof diagnosticoPdfRef.current === "string"
+    ? JSON.parse(diagnosticoPdfRef.current)
+    : diagnosticoPdfRef.current
 };
 
 const url = buildWebhookUrl("importa_extrato");
@@ -762,9 +768,12 @@ navigate("/conciliacao-revisao");
      return null;
    }
    
-  
-   function parseNumeroMoney(valor) {
-   if (valor == null) return 0;
+ function parseNumeroMoney(valor) {
+  if (typeof valor === "number") {
+    return Number.isFinite(valor) ? valor : 0;
+  }
+
+  if (valor == null) return 0;
  
    let txt = String(valor)
      .trim()
@@ -1317,6 +1326,61 @@ if (movimentos.length === 0) {
     );
 
     setImportacao(1);
+
+
+    /*
+ * ============================================================
+ * TRAVA ABSOLUTA ANTES DE GRAVAR
+ * ============================================================
+ */
+
+  diagnosticoPdfRef.current = {
+  banco: resultado?.banco,
+  data_inicio: resultado?.data_inicio,
+  data_fim: resultado?.data_fim,
+  quantidade: resultado?.quantidade,
+  diagnostico: resultado?.diagnostico
+};
+
+const diagnostico = resultado?.diagnostico;
+
+if (
+  resultado?.ok !== true ||
+  !diagnostico ||
+  diagnostico?.saldo_confere !== true ||
+  Math.abs(Number(diagnostico?.diferenca_saldo || 0)) > 0.01
+) {
+  console.error(
+    "IMPORTAÇÃO PDF BLOQUEADA ANTES DA GRAVAÇÃO:",
+    resultado
+  );
+
+  setLinhas([]);
+  setResumoImportacao(null);
+  setImportacao(0);
+  setSaldo(saldoBase);
+
+  throw new Error(
+    resultado?.mensagem ||
+    `Importação cancelada. O extrato não confere. Diferença encontrada: ${Number(
+      diagnostico?.diferenca_saldo || 0
+    ).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    })}. Nenhum dado foi gravado.`
+  );
+}
+
+/*
+ * Somente chega aqui quando:
+ * resultado.ok === true
+ * diagnostico existe
+ * saldo_confere === true
+ * diferença <= R$ 0,01
+ */
+
+
+ 
 
     /*
      * Mesmo funcionamento do OFX:
