@@ -381,26 +381,66 @@ formData.append("texto_pdf", textoPDF);
         "O webhook da conciliação não retornou resposta."
       );
     }
+ 
 
     const json = JSON.parse(texto);
 
-    console.log("JSON RECEBIDO:", json);
+console.log("JSON RECEBIDO:", json);
 
-    const dados = Array.isArray(json)
-      ? json[0]?.fn_concilia_extrato_pdf_razao
-      : json?.fn_concilia_extrato_pdf_razao;
+const bruto = Array.isArray(json)
+  ? json[0]
+  : json;
 
-    console.log("OBJETO EXTRAÍDO:", dados);
-    console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
+/*
+|--------------------------------------------------------------------------
+| ERRO RETORNADO DIRETAMENTE PELO CODE DO N8N
+|--------------------------------------------------------------------------
+*/
 
-    if (!resp.ok || !dados || dados?.ok === false) {
-      throw new Error(
-        dados?.message ||
-        dados?.mensagem ||
-        dados?.erro ||
-        "O webhook respondeu, mas não retornou a conciliação."
-      );
-    }
+if (bruto?.ok === false) {
+  const detalhes = Array.isArray(bruto?.detalhes)
+    ? bruto.detalhes.join("\n")
+    : "";
+
+  throw new Error(
+    [
+      bruto?.mensagem ||
+        bruto?.message ||
+        bruto?.erro ||
+        "Erro ao processar o extrato.",
+
+      detalhes
+    ]
+      .filter(Boolean)
+      .join("\n\n")
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| RETORNO NORMAL DA PROCEDURE
+|--------------------------------------------------------------------------
+*/
+
+const dados =
+  bruto?.fn_concilia_extrato_pdf_razao ||
+  bruto?.data?.[0]?.fn_concilia_extrato_pdf_razao ||
+  bruto?.data?.fn_concilia_extrato_pdf_razao ||
+  bruto?.data?.[0] ||
+  bruto?.data ||
+  bruto;
+
+console.log("OBJETO EXTRAÍDO:", dados);
+console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
+
+if (!resp.ok || !dados || dados?.ok === false) {
+  throw new Error(
+    dados?.message ||
+    dados?.mensagem ||
+    dados?.erro ||
+    "O webhook respondeu, mas não retornou a conciliação."
+  );
+}
 
     setResultado(dados);
 

@@ -1618,21 +1618,21 @@ async function salvarHistoricoLancamento(linha) {
 
               <button
                 onClick={() => verOperacoesGeradas()}
-                className="btn-pill btn-blue"
+                  className="btn-pill btn-green"
               >
                 Ver transações geradas
               </button>
 
                <button
                 onClick={() => verPagamentoBaixados()}
-                className="btn-pill btn-blue"
+                   className="btn-pill btn-black"
               >
                 Ver Pagamentos Baixados
               </button>
 
                 <button
                 onClick={() => navigate("/importacao-bancaria")}
-                className="btn-pill btn-white"
+               className="btn-pill btn-emerald"
               >
                 Sair 
               </button>
