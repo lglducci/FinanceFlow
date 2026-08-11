@@ -4,10 +4,10 @@
   useRef,
   useState
 } from "react";
-   import { hojeLocal } from "../utils/dataLocal";
+    
    import { buildWebhookUrl } from "../config/globals";
 import * as XLSX from "xlsx";
-
+ import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 const WEBHOOK_IMPORTAR = "/webhook/importa_venda_getnet";
 const WEBHOOK_CONFERIR = "/webhook/confere_consumer_getnet";
 const WEBHOOK_PROCESSAR = "/webhook/processa_ajustes_operadora";
@@ -151,8 +151,13 @@ export default function ConciliacaoOperadora() {
   const [resultado, setResultado] = useState(null);
   const [resultadoImportacao, setResultadoImportacao] = useState(null);
   const [carregandoConferencia, setCarregandoConferencia] = useState(false);
-  const [dataInicio, setDataInicio] = useState("");
-  const [dataFim, setDataFim] = useState("");
+  
+  
+   const hoje = hojeLocal();
+
+const [dataInicio, setDataInicio] = useState(hoje);
+const [dataFim, setDataFim] = useState(hoje);
+
   const [filtro, setFiltro] = useState("ACOES");
   const [selecionados, setSelecionados] = useState({});
 
@@ -160,7 +165,7 @@ export default function ConciliacaoOperadora() {
 const [saldo, setSaldo] = useState(0);
 const [saldoBase, setSaldoBase] = useState(0);
 const [carregandoSaldo, setCarregandoSaldo] = useState(false);
-     const hoje = hojeLocal();
+ 
 
 /* status da segunda drop de banco agora  */
  
