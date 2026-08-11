@@ -1790,7 +1790,7 @@ async function salvarHistoricoLancamento(linha) {
                       </th>
                    
                   <th className="p-3 text-left">Data</th>
-                   <th className="w-[400px] p-3 text-left">Histórico</th>
+                   <th className="w-[560px] p-3 text-left">Histórico</th>
                   <th className="p-3 text-right">Valor</th>
                   <th className="p-3 text-center">Situação</th>
                   <th className="p-3 text-left">Plano de Conta</th>
@@ -1814,28 +1814,33 @@ async function salvarHistoricoLancamento(linha) {
                             : "border-slate-200 hover:bg-blue-50/60"
                         }`}
                       >
-                      <td className="p-3 text-center">
-                           <input
-                          type="checkbox"
-                          checked={selecionados.map(Number).includes(Number(l.id))}
-                          onChange={() => toggleSelecionado(l.id)}
-                          disabled={
-                            l.situacao === "executado" ||
-                            l.situacao === "rejeitado" ||
-                            l.tipo_evento === "transf_mesma_tit"
-                          }
-                          className="h-4 w-4 cursor-pointer rounded border-slate-300"
-                        />
-                          </td>
+                       
+                       <td className="w-10 px-2 py-1 text-center">
+                          <input
+                            type="checkbox"
+                            checked={selecionados.map(Number).includes(Number(l.id))}
+                            onChange={() => toggleSelecionado(l.id)}
+                            disabled={
+                              l.situacao === "executado" ||
+                              l.situacao === "rejeitado" ||
+                              l.tipo_evento === "transf_mesma_tit"
+                            }
+                            className="h-4 w-4 cursor-pointer rounded border-slate-300"
+                          />
+                        </td>
 
-                      <td className="p-3 font-semibold text-slate-700">
-                        {String(l.data_mov || "").slice(0, 10).split("-").reverse().join("/")}
-                      </td>
                         
+                        <td className="w-[92px] px-1 py-1 font-semibold text-slate-700 whitespace-nowrap">
+                            {String(l.data_mov || "")
+                              .slice(0, 10)
+                              .split("-")
+                              .reverse()
+                              .join("/")}
+                          </td>
+                                                  
 
-
-                       <td className="w-[460px] max-w-[460px] p-3 text-slate-700">
-                                <div className="flex min-w-0 items-center gap-2">
+                            <td className="w-[660px] max-w-[660px] px-1 py-1 text-slate-700">
+                                  <div className="flex min-w-0 items-center gap-2">
                                   {historicoEditandoId === Number(l.id) ? (
                                     <input
                                       autoFocus

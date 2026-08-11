@@ -433,6 +433,20 @@ export default function Reports() {
     icon: <IconPayableDiagnosis />,
     iconBox: "bg-orange-100",
   },
+
+
+  {
+    title:  "Relatório de Recebíveis",
+    desc: "Relatório de Recebíveis",
+    path: "/relatorio-recebiveis",
+    icon: <IconPayableDiagnosis />,
+    iconBox: "bg-orange-100",
+  },
+
+
+
+ 
+
 ];
 
  

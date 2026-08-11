@@ -291,13 +291,23 @@ const [modalErroContaAberto, setModalErroContaAberto] = useState(false);
          return;
        }
  
-       const lancamentos = linhasParaSalvar.map(l => ({
-         data: l.data,
-         historico: l.historico,
-         valor: parseNumeroBR(l.valor),
-         tipo: l.tipo
-       }));
- 
+        const lancamentos = linhasParaSalvar.map(l => ({
+        data: l.data,
+        historico: l.historico,
+        valor: parseNumeroBR(l.valor),
+        tipo: l.tipo,
+
+        natureza_financeira:
+          l.natureza_financeira || null,
+            natureza_movimento:
+    l.natureza_movimento || null,
+        tipo_evento:
+          l.tipo_evento || null,
+
+        classificacao:
+          l.classificacao || null,
+      }));
+      
        const index = lancamentos.findIndex(l =>
          !l.data ||
          !l.historico ||
@@ -1019,6 +1029,7 @@ function resolverWebhookPdf(conta) {
     return {
       banco: "SANTANDER",
       webhook: "extrato_pdf_santander",
+      
     };
   }
 
@@ -1262,29 +1273,44 @@ if (movimentos.length === 0) {
         ? -valorOriginal
         : valorOriginal;
 
-      return {
-        _id: gerarLinhaId(),
+     return {
+            _id: gerarLinhaId(),
 
-        /*
-         * O n8n deverá devolver a data completa:
-         * 2026-07-20
-         */
-        data: dataBRparaISO(movimento.data),
+            data: dataBRparaISO(movimento.data),
 
-        historico: String(
-          movimento.historico ||
-          movimento.descricao ||
-          "LANÇAMENTO PDF"
-        ).trim(),
+            historico: String(
+              movimento.historico ||
+              movimento.descricao ||
+              "LANÇAMENTO PDF"
+            ).trim(),
 
-        tipo: ehSaida ? "saida" : "entrada",
+            tipo: ehSaida ? "saida" : "entrada",
 
-        valor: valorFinal
-          .toFixed(2)
-          .replace(".", ","),
+            valor: valorFinal
+              .toFixed(2)
+              .replace(".", ","),
 
-        arquivo_tipo: "PDF",
-      };
+            arquivo_tipo: "PDF",
+
+            // --------------------------------------------------
+            // PRESERVA A CLASSIFICAÇÃO QUE VEIO DO N8N
+            // --------------------------------------------------
+
+            natureza_financeira:
+              movimento.natureza_financeira || null, 
+              natureza_movimento:
+                movimento.natureza_movimento || null,
+
+            tipo_evento:
+              movimento.tipo_evento ||
+              movimento.evento_codigo ||
+              null,
+
+            classificacao:
+              movimento.classificacao || null,
+
+
+          };
     });
 
     const linhaInvalida = novasLinhas.findIndex(
