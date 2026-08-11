@@ -205,16 +205,63 @@ export default function Sidebar() {
             onClick={() => navigate("/importacao-bancaria")}
           />
 
-           <SubItem
+          {/*} <SubItem
             compact={!sidebarAberta}
             icon={<IconDoc />}
             label="Concilia Razão"
             onClick={() => navigate("/conciliacao-extrato")}
           />
-             <SubItem  icon={<IconDoc />} label="Conciliação Operadora" onClick={() => navigate("/conciliacao-operadora")} />
+             <SubItem  icon={<IconDoc />} label="Conciliação Operadora" onClick={() => navigate("/conciliacao-operadora")} />*/}
 
           </MenuGroup>
         )}
+
+
+       
+        {sidebarAberta && <SectionDivider />}
+        {sidebarAberta && <SectionTitle label="Conciliações " />}
+        {podeVer("visao_geral") && (
+          <MenuGroup
+              compact={!sidebarAberta}
+              icon={<IconBook />}
+              label="Conciliações"
+              open={open === "conciliacoes"}
+              onClick={() => toggle("conciliacoes")}
+            >
+              <SubItem
+                compact={!sidebarAberta}
+                icon={<IconDoc />}
+                label="Razão"
+                onClick={() => navigate("/conciliacao-extrato")}
+              />
+
+              <SubItem
+                compact={!sidebarAberta}
+                icon={<IconCardTransaction />}
+                label="Operadora"
+                onClick={() => navigate("/conciliacao-operadora")}
+              />
+            </MenuGroup>
+        )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Contabilidade" />}
