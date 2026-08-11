@@ -179,8 +179,8 @@ export default function Sidebar() {
               <div className="ml-8 space-y-1">
                 <SubItem icon={<IconCardTransaction />} label="Cartões" onClick={() => navigate("/cartoes")} />
                 <SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/contacorrente")} /> 
-                  <SubItem  icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/extrato-bancario" )} />
-
+                <SubItem  icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/extrato-bancario" )} />
+              
               </div>
             )}
           </MenuGroup>
@@ -211,7 +211,8 @@ export default function Sidebar() {
             label="Concilia Razão"
             onClick={() => navigate("/conciliacao-extrato")}
           />
-            
+             <SubItem  icon={<IconDoc />} label="Conciliação Operadora" onClick={() => navigate("/conciliacao-operadora")} />
+
           </MenuGroup>
         )}
 
