@@ -208,48 +208,76 @@ import PagamentosBaixados from "./pages/PagamentosBaixados";
 import DiagnosticoApropriacaoPagar from "./pages/DiagnosticoApropriacaoPagar";
 import ConciliacaoExtrato from "./pages/ConciliacaoExtrato";
 
-
-
+import ConciliacaoOperadora from "./pages/ConciliacaoOperadora";
+import RelatorioRecebiveis   from "./pages/RelatorioRecebiveis";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
 const [assinaturaAtiva, setAssinaturaAtiva] = useState(true); // FORÇADO PRA TESTE
+
+
+const [verificandoAcesso, setVerificandoAcesso] = useState(true);
 const [bloquearSistema, setBloquearSistema] = useState(null);
 
- 
-
- useEffect(() => {
+useEffect(() => {
   async function checkAssinatura() {
     const empresa_id =
       localStorage.getItem("empresa_id") ||
       localStorage.getItem("id_empresa");
- 
-    if (!empresa_id) return;
+
+    if (!empresa_id) {
+      setBloquearSistema(true);
+      setVerificandoAcesso(false);
+      return;
+    }
 
     try {
       const r = await fetch(buildWebhookUrl("check_assinatura"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ empresa_id })
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          empresa_id: Number(empresa_id),
+        }),
       });
 
-      const res = await r.json();
-      console.log("🔍 RESPOSTA DO WEBHOOK:", res);
-
-      const bloquear = res.bloquear;
-
-      if (bloquear) {
-        setBloquearSistema(bloquear);
+      if (!r.ok) {
+        throw new Error(`Erro HTTP ${r.status}`);
       }
 
+      const res = await r.json();
+
+      console.log("🔍 RESPOSTA DO WEBHOOK:", res);
+
+      const item = Array.isArray(res)
+        ? res[0]
+        : Array.isArray(res?.data)
+          ? res.data[0]
+          : res;
+
+      setBloquearSistema(item?.bloquear === true);
     } catch (err) {
       console.error("❌ Erro ao verificar assinatura:", err);
+
+      // Em caso de erro, escolha segura: bloquear.
+      setBloquearSistema(true);
+    } finally {
+      setVerificandoAcesso(false);
     }
   }
 
-  checkAssinatura();
-}, []);
+  if (token) {
+    checkAssinatura();
+  } else {
+    setVerificandoAcesso(false);
+  }
+}, [token]);
+
+
+
+
 
  
 const rotaAtual = window.location.pathname;
@@ -676,6 +704,21 @@ const rotaAtual = window.location.pathname;
   path="/conciliacao-extrato"
   element={<ConciliacaoExtrato />}
 />
+
+<Route
+  path="/conciliacao-operadora"
+  element={<ConciliacaoOperadora />}
+/>
+
+
+<Route
+  path="/relatorio-recebiveis"
+  element={<RelatorioRecebiveis />}
+/>
+
+ 
+
+ 
 
 </Routes>
 
