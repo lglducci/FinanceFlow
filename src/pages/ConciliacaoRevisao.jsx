@@ -1922,38 +1922,59 @@ async function salvarHistoricoLancamento(linha) {
                         <td    data-dropdown-conta
                               className="p-3 relative min-w-[200px]"
                             >
-                              <input
-                                value={
-                                  l.tipo_evento === "transf_mesma_tit"
-                                    ? "Conta contábil definida pela transferência"
-                                    : textoContaBusca[l.id] ??
-                                      l.conta_descricao ??
-                                      l.conta_id ??
-                                      ""
-                                }
-                                onFocus={() => {
-                                  setLinhaContaDropdown(l.id);
-                                  filtrarContasContabeis("");
-                                }}
-                                onChange={(e) => {
-                                  const texto = e.target.value;
+                               <input
+                                    value={
+                                      l.natureza_movimento === "pagamento_operadora"
+                                        ? "Transitória do modelo ( 1.1.4.01)"
+                                        : l.tipo_evento === "transf_mesma_tit"
+                                        ? "Conta contábil definida pela transferência"
+                                        : textoContaBusca[l.id] ??
+                                          l.conta_descricao ??
+                                          l.conta_id ??
+                                          ""
+                                    }
+                                    onFocus={() => {
+                                      if (
+                                        l.natureza_movimento === "pagamento_operadora" ||
+                                        l.tipo_evento === "transf_mesma_tit"
+                                      ) {
+                                        return;
+                                      }
 
-                                  setTextoContaBusca((prev) => ({
-                                    ...prev,
-                                    [l.id]: texto,
-                                  }));
+                                      setLinhaContaDropdown(l.id);
+                                      filtrarContasContabeis("");
+                                    }}
+                                    onChange={(e) => {
+                                      if (
+                                        l.natureza_movimento === "pagamento_operadora" ||
+                                        l.tipo_evento === "transf_mesma_tit"
+                                      ) {
+                                        return;
+                                      }
 
-                                  setLinhaContaDropdown(l.id);
-                                  filtrarContasContabeis(texto);
-                                }}
-                                placeholder="Digite a conta..."
-                                className="w-full rounded-xl border px-3 py-2 text-xs font-bold"
-                                disabled={
-                                  l.situacao === "executado" ||
-                                  l.tipo_evento === "transf_mesma_tit"
-                                }
-                              />                                       
-                                                  
+                                      const texto = e.target.value;
+
+                                      setTextoContaBusca((prev) => ({
+                                        ...prev,
+                                        [l.id]: texto,
+                                      }));
+
+                                      setLinhaContaDropdown(l.id);
+                                      filtrarContasContabeis(texto);
+                                    }}
+                                    placeholder="Digite a conta..."
+                                    className={`w-full rounded-xl border px-3 py-2 text-xs font-bold ${
+                                      l.natureza_movimento === "pagamento_operadora"
+                                        ? "bg-slate-100 text-slate-500 cursor-not-allowed"
+                                        : ""
+                                    }`}
+                                    disabled={
+                                      l.situacao === "executado" ||
+                                      l.tipo_evento === "transf_mesma_tit" ||
+                                      l.natureza_movimento === "pagamento_operadora"
+                                    }
+                                  />                                  
+                                                                                    
 
 
 
