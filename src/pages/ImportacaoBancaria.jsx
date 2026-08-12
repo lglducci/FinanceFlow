@@ -1370,11 +1370,20 @@ if (movimentos.length === 0) {
 
 const diagnostico = resultado?.diagnostico;
 
+ const ehConsumer =
+  resultado?.banco === "CONSUMER" ||
+  String(resultado?.banco_codigo || "") === "000";
+
 if (
   resultado?.ok !== true ||
   !diagnostico ||
-  diagnostico?.saldo_confere !== true ||
-  Math.abs(Number(diagnostico?.diferenca_saldo || 0)) > 0.01
+  (
+    !ehConsumer &&
+    (
+      diagnostico?.saldo_confere !== true ||
+      Math.abs(Number(diagnostico?.diferenca_saldo || 0)) > 0.01
+    )
+  )
 ) {
   console.error(
     "IMPORTAÇÃO PDF BLOQUEADA ANTES DA GRAVAÇÃO:",
