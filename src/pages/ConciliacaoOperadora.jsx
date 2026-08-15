@@ -1245,7 +1245,10 @@ function nomeFormaPagamento(forma) {
   alerta={Number(resumo.rejeitado_bruto || 0) > 0}
 />
 
-  
+  <Card
+    titulo="Com taxa"
+    valor={resumo.com_taxa || 0}
+  />
 
   <Card
     titulo="Bruto"
