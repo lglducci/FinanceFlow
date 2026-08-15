@@ -1733,12 +1733,19 @@ async function salvarHistoricoLancamento(linha) {
                             {l.forma || "-"}
                           </td>
 
-                          <td className="px-3 py-2 text-right font-black whitespace-nowrap">
-                            {Number(l.valor || 0).toLocaleString("pt-BR", {
-                              style: "currency",
-                              currency: "BRL",
-                            })}
-                          </td>
+                          <td  className={`px-3 py-2 text-right font-black whitespace-nowrap ${
+                            Number(l.valor || 0) < 0
+                              ? "text-red-600"
+                              : Number(l.valor || 0) > 0
+                              ? "text-green-600"
+                              : ""
+                          }`}
+                        >
+                          {Number(l.valor || 0).toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1894,7 +1901,14 @@ async function salvarHistoricoLancamento(linha) {
 
 
 
-                      <td className="p-3 text-right font-black text-slate-800">
+                      <td  className={`p-3 text-right font-black ${
+                          Number(l.valor || 0) < 0
+                            ? "text-red-600"
+                            : Number(l.valor || 0) > 0
+                            ? "text-green-600"
+                            : "text-slate-800"
+                        }`}
+                      >
                         {Number(l.valor || 0).toLocaleString("pt-BR", {
                           style: "currency",
                           currency: "BRL",
