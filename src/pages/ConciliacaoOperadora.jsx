@@ -1211,10 +1211,10 @@ function nomeFormaPagamento(forma) {
             </div>
                
                <div className="
-  mb-4
+  mb-2
   grid grid-cols-2 gap-3
   md:grid-cols-4
-  xl:grid-cols-8
+  xl:grid-cols-6
 ">
 
   <Card
@@ -1296,7 +1296,7 @@ function nomeFormaPagamento(forma) {
     setFiltro("NAO_PROCESSAVEIS")
   }
 >
-  Não processáveis
+ Rejeitados
 </Filtro>
               </div>
 
