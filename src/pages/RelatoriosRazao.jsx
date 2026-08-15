@@ -29,6 +29,38 @@ export default function RelatoriosRazao() {
   const location = useLocation();
  const navigate = useNavigate();
  
+
+const movimentosConta = dados.filter(
+  (l) => l.historico !== "TOTAL DA CONTA"
+);
+
+const saldoInicialPeriodo =
+  tipo === "c" && dados.length > 0
+    ? Number(dados[0]?.saldo_inicial || 0)
+    : 0;
+
+const entradasPeriodo =
+  tipo === "c"
+    ? movimentosConta.reduce((total, l) => {
+        const valor = Number(l.valor || 0);
+        return valor > 0 ? total + valor : total;
+      }, 0)
+    : 0;
+
+const saidasPeriodo =
+  tipo === "c"
+    ? movimentosConta.reduce((total, l) => {
+        const valor = Number(l.valor || 0);
+        return valor < 0 ? total + Math.abs(valor) : total;
+      }, 0)
+    : 0;
+
+const movimentacaoPeriodo = entradasPeriodo - saidasPeriodo;
+
+const saldoFinalPeriodo =
+  saldoInicialPeriodo + movimentacaoPeriodo;
+
+
   // formatter BR
   const fmt = new Intl.NumberFormat("pt-BR", {
     minimumFractionDigits: 2,
@@ -359,6 +391,106 @@ return (
         </div>
       </div>
 
+
+      {tipo === "c" && dados.length > 0 && (
+  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+
+    {/* SALDO INICIAL */}
+    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="text-xs font-black uppercase tracking-wide text-slate-500">
+        Saldo inicial
+      </div>
+
+      <div
+        className={`mt-1 text-xl font-black ${
+          saldoInicialPeriodo < 0
+            ? "text-red-600"
+            : "text-slate-800"
+        }`}
+      >
+        {fmt.format(saldoInicialPeriodo)}
+      </div>
+
+      <div className="mt-1 text-[11px] font-semibold text-slate-400">
+        Antes de {formatarData(dataIni)}
+      </div>
+    </div>
+
+    {/* ENTRADAS */}
+    <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 shadow-sm">
+      <div className="text-xs font-black uppercase tracking-wide text-green-700">
+        Entradas
+      </div>
+
+      <div className="mt-1 text-xl font-black text-green-700">
+        {fmt.format(entradasPeriodo)}
+      </div>
+
+      <div className="mt-1 text-[11px] font-semibold text-green-600">
+        No período
+      </div>
+    </div>
+
+    {/* SAÍDAS */}
+    <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 shadow-sm">
+      <div className="text-xs font-black uppercase tracking-wide text-red-700">
+        Saídas
+      </div>
+
+      <div className="mt-1 text-xl font-black text-red-600">
+        {fmt.format(saidasPeriodo)}
+      </div>
+
+      <div className="mt-1 text-[11px] font-semibold text-red-500">
+        No período
+      </div>
+    </div>
+
+    {/* MOVIMENTAÇÃO */}
+    <div className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 shadow-sm">
+      <div className="text-xs font-black uppercase tracking-wide text-blue-700">
+        Movimentação do período
+      </div>
+
+      <div
+        className={`mt-1 text-xl font-black ${
+          movimentacaoPeriodo < 0
+            ? "text-red-600"
+            : "text-blue-700"
+        }`}
+      >
+        {fmt.format(movimentacaoPeriodo)}
+      </div>
+
+      <div className="mt-1 text-[11px] font-semibold text-blue-500">
+        Entradas − Saídas
+      </div>
+    </div>
+
+    {/* SALDO FINAL */}
+    <div className="rounded-2xl border border-slate-300 bg-slate-100 px-4 py-3 shadow-sm">
+      <div className="text-xs font-black uppercase tracking-wide text-slate-600">
+        Saldo final
+      </div>
+
+      <div
+        className={`mt-1 text-xl font-black ${
+          saldoFinalPeriodo < 0
+            ? "text-red-600"
+            : "text-green-700"
+        }`}
+      >
+        {fmt.format(saldoFinalPeriodo)}
+      </div>
+
+      <div className="mt-1 text-[11px] font-semibold text-slate-500">
+        Em {formatarData(dataFim)}
+      </div>
+    </div>
+
+  </div>
+)}
+
       {/* TABELA */}
       <div id="print-area" className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-100 px-2 py-1">
@@ -446,30 +578,7 @@ return (
             </thead>
 
             <tbody className="leading-tight">
-              {dados.length > 0 && tipo === "c" && (
-                <tr>
-                  <td colSpan={8} className="border-b border-blue-100 bg-blue-150 px-2 py-1">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="font-black text-blue-900">
-                        {dados[0].conta_codigo} — {dados[0].conta_nome}
-                      </div>
-
-                      <div className="rounded bg-white px-2 py-0.5 text-sm font-black shadow-sm">
-                        Saldo inicial:{" "}
-                        <span
-                          className={
-                            Number(dados[0].saldo_inicial || 0) < 0
-                              ? "text-red-600"
-                              : "text-green-700"
-                          }
-                        >
-                          {fmt.format(dados[0].saldo_inicial)}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              )}
+              
 
               {dados
                 .filter((l) => mostrarZeradas || !linhaZerada(l))
