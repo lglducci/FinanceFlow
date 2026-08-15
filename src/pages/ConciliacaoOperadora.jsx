@@ -1234,15 +1234,18 @@ function nomeFormaPagamento(forma) {
   />
 
   <Card
-    titulo="Não processáveis"
+    titulo="Rejeitados"
     valor={resumo.nao_processaveis || 0}
     alerta={Number(resumo.nao_processaveis || 0) > 0}
   />
 
   <Card
-    titulo="Com taxa"
-    valor={resumo.com_taxa || 0}
-  />
+  titulo="Valor rejeitado"
+  valor={moeda(resumo.rejeitado_bruto)}
+  alerta={Number(resumo.rejeitado_bruto || 0) > 0}
+/>
+
+  
 
   <Card
     titulo="Bruto"
