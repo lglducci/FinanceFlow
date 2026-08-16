@@ -115,6 +115,93 @@ export default function RelatoriosDRE() {
       .filter((g) => g.itens.length > 0 || g.total !== 0);
   }, [dadosAnalitico]);
 
+
+
+
+  const gruposGerenciaisN2 = useMemo(() => {
+  const mapa = {
+    receita: {
+      titulo: "Receitas",
+      total: 0,
+      tipo: "receita",
+    },
+
+    custo_variavel: {
+      titulo: "Custos Variáveis",
+      total: 0,
+      tipo: "custo",
+    },
+
+    custo_fixo: {
+      titulo: "Custos Fixos",
+      total: 0,
+      tipo: "custo",
+    },
+
+    despesa_variavel: {
+      titulo: "Despesas Variáveis",
+      total: 0,
+      tipo: "despesa",
+    },
+
+    despesa_fixa: {
+      titulo: "Despesas Fixas",
+      total: 0,
+      tipo: "despesa",
+    },
+
+    receita_sem_classificacao: {
+      titulo: "Receitas sem Classificação",
+      total: 0,
+      tipo: "receita",
+    },
+
+    custo_sem_classificacao: {
+      titulo: "Custos sem Classificação",
+      total: 0,
+      tipo: "custo",
+    },
+
+    despesa_sem_classificacao: {
+      titulo: "Despesas sem Classificação",
+      total: 0,
+      tipo: "despesa",
+    },
+
+    sem_classificacao: {
+      titulo: "Sem Classificação",
+      total: 0,
+      tipo: "outro",
+    },
+  };
+
+  dadosAnalitico.forEach((item) => {
+    let chave = item.classificacao_gerencial;
+
+    if (!chave) {
+      const grupoContabil = String(item.grupo || "").toUpperCase();
+
+      if (grupoContabil === "RECEITA") {
+        chave = "receita_sem_classificacao";
+      } else if (grupoContabil === "CUSTO") {
+        chave = "custo_sem_classificacao";
+      } else if (grupoContabil === "DESPESA") {
+        chave = "despesa_sem_classificacao";
+      } else {
+        chave = "sem_classificacao";
+      }
+    }
+
+    const grupo = mapa[chave] || mapa.sem_classificacao;
+
+    grupo.total += Number(item.valor || 0);
+  });
+
+  return Object.entries(mapa)
+    .map(([chave, g]) => ({ chave, ...g }))
+    .filter((g) => g.total !== 0);
+}, [dadosAnalitico]);
+
   function exportarExcel() {
     if (nivel === 1) {
       ExcelExport.exportar(
@@ -279,13 +366,13 @@ function dataBR(data) {
                 </tr>
               </thead>
               <tbody>
-                {gruposGerenciais.map((g) => (
+                {gruposGerenciaisN2.map((g) => (
                   <tr key={g.chave} className="border-b hover:bg-cyan-50">
                     <td className="px-4 py-3 font-black text-[#063452]">
                       {g.titulo}
                     </td>
                     <td className={`px-4 py-3 text-right font-black ${
-                      g.chave === "receita" ? "text-emerald-700" : "text-red-600"
+                     g.tipo === "receita" ? "text-emerald-700" : "text-red-600"
                     }`}>
                       R$ {fmt.format(Math.abs(g.total))}
                     </td>
