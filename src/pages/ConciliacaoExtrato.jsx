@@ -1797,39 +1797,41 @@ function converterLinhaContabil(item) {
                 </div>
               ) : (
                 <div className="overflow-auto rounded-2xl border border-slate-200">
-                  <table className="min-w-[1200px] w-full table-fixed text-xs">
+                 
+                     <table className="w-[1700px] table-fixed text-xs">
                     <thead>
                       <tr className="bg-[#0F172A] text-left text-white">
-                        <th className="w-[85px] px-2 py-2">Data</th>
-                            <th className="w-[270px] px-2 py-2">Histórico</th>
-                            <th className="w-[115px] px-2 py-2">Conta Débito</th>
-                            <th className="w-[115px] px-2 py-2">Conta Crédito</th>
-                            <th className="w-[105px] px-2 py-2">Modelo</th>
-                            <th className="w-[55px] px-2 py-2 text-center">Transação</th>
-                            <th className="w-[45px] px-2 py-2 text-center">Diário</th>
-                            <th className="w-[45px] px-2 py-2 text-center">Lote</th>
-                            <th className="w-[90px] px-2 py-2 text-right">Valor</th>
-                            <th className="w-[90px] px-2 py-2 text-center">Origem</th>
-                            <th className="w-[75px] px-2 py-2 text-center">Ação</th>
+                        <th className="w-[72px] px-1 py-1">Data</th>
+                        <th className="w-[220px] px-1 py-1">Histórico</th>
+                        <th className="w-[105px] px-1 py-1">Conta Débito</th>
+                        <th className="w-[105px] px-1 py-1">Conta Crédito</th>
+                        <th className="w-[85px] px-1 py-1">Modelo</th>
+                        <th className="w-[55px] px-1 py-1 text-center">Transação</th>
+                        <th className="w-[45px] px-1 py-1 text-center">Diário</th>
+                        <th className="w-[45px] px-1 py-1 text-center">Lote</th>
+                        <th className="w-[80px] px-1 py-1 text-right">Valor</th>
+                        <th className="w-[80px] px-1 py-1 text-center">Origem</th>
+                        <th className="w-[135px] px-1 py-1 text-center">Ação</th>
                       </tr>
-                    </thead>
+                      </thead>
                     <tbody>
                       {dadosContabeis.map((item, index) => (
                         <tr
                           key={`${item.diario_id || "d"}-${item.transacao_id || "t"}-${index}`}
                           className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
                         >
-                          <td className="whitespace-nowrap border-b border-slate-100 px-2 py-2 font-black">
-                            {item.data_mov || "-"}
-                          </td>
-                           
-                        <td title={item.historico || ""}
-                            className="truncate border-b border-slate-100 px-2 py-2"
-                          >
-                            {item.historico || "-"}
-                          </td>
+                          <td className="w-[72px] whitespace-nowrap border-b border-slate-100 px-1  font-black">
+                              {item.data_mov || "-"}
+                            </td>
 
-                          <td className="border-b border-slate-100 px-2 py-2">
+                            <td
+                              title={item.historico || ""}
+                              className="w-[220px] truncate border-b border-slate-100 px-1 py-1"
+                            >
+                              {item.historico || "-"}
+                            </td>
+
+                          <td className="border-b border-slate-100 px-2 py-1">
                             <div className="font-black">{item.conta_debito_codigo || "-"}</div>
                             <div className="text-xs text-slate-500">{item.conta_debito_nome || "-"}</div>
                           </td>
@@ -1857,7 +1859,7 @@ function converterLinhaContabil(item) {
                               {item.origem || "-"}
                             </span> 
                           </td>
-                            <td className="border-b border-slate-100 px-2 py-2 text-center">
+                            <td className="border-b border-slate-100 px-2 py-4 text-center">
                               <div className="flex items-center justify-center gap-1">
                                 <button
                                   type="button"
