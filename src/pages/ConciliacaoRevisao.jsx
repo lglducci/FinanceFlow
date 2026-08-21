@@ -244,6 +244,25 @@ if (lista.length > 0) {
     return;
   }
 
+  const linhasSemConta = idsParaEnviar
+  .map((id) =>
+    linhas.find((l) => Number(l.id) === Number(id))
+  )
+  .filter(
+    (l) =>
+      l &&
+      exigeContaContabil(l) &&
+      !possuiContaContabil(l)
+  );
+
+if (linhasSemConta.length > 0) {
+  alert(
+    `${linhasSemConta.length} linha(s) estão sem conta contábil.\n\n` +
+    "Selecione a conta antes de aceitar."
+  );
+  return;
+}
+
   const idsNumeros = idsParaEnviar.map(Number);
 
   // AVISO ESPECIAL PARA POSSÍVEL TRANSFERÊNCIA MESMA TITULARIDADE
@@ -291,6 +310,21 @@ if (lista.length > 0) {
 }
 
  async function executarConciliacao() {
+
+  const linhasSemConta = linhas.filter(
+  (l) =>
+    exigeContaContabil(l) &&
+    !possuiContaContabil(l)
+);
+
+if (linhasSemConta.length > 0) {
+  alert(
+    `Não é possível executar.\n\n` +
+    `${linhasSemConta.length} linha(s) estão sem conta contábil.`
+  );
+  return;
+}
+
   if (!confirm("Confirma executar a conciliação das linhas marcadas como OK?")) {
     return;
   }
@@ -494,7 +528,7 @@ function statusClasse(situacao) {
   return "bg-blue-100 text-blue-700 border-blue-300";
 }
 
- const linhasValidasParaExecutar = linhas.filter(
+{/*const linhasValidasParaExecutar = linhas.filter(
   (l) => l.importar !== false && l.situacao !== "rejeitado"
 );
 
@@ -509,6 +543,34 @@ const faltamContas = linhasValidasParaExecutar.filter(
 const podeExecutar =
   linhasValidasParaExecutar.length > 0 &&
  
+  linhas.every((l) =>
+    ["ok", "rejeitado", "executado"].includes(l.situacao)
+  );*/}
+
+
+ function exigeContaContabil(linha) {
+  return (
+    linha.importar !== false &&
+    linha.situacao !== "rejeitado" &&
+    !contaContabilAutomatica(linha)
+  );
+}
+
+function possuiContaContabil(linha) {
+  return Number(linha.conta_id || 0) > 0;
+}
+
+const linhasValidasParaExecutar = linhas.filter(
+  (l) => l.importar !== false && l.situacao !== "rejeitado"
+);
+
+const faltamContas = linhasValidasParaExecutar.filter(
+  (l) => exigeContaContabil(l) && !possuiContaContabil(l)
+);
+
+const podeExecutar =
+  linhasValidasParaExecutar.length > 0 &&
+  faltamContas.length === 0 &&
   linhas.every((l) =>
     ["ok", "rejeitado", "executado"].includes(l.situacao)
   );
@@ -781,38 +843,82 @@ async function carregarContas() {
   setLinhaEditando(null);
 }
 
+ async function selecionarContaContabilLinha(l, c) {
+  try {
+    // 1. Salva a conta contábil
+    await fetchSeguro(buildWebhookUrl("conciliacao_atualizar_conta"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresa_id),
+        id: Number(l.id),
+        conta_id: Number(c.id),
+      }),
+    });
 
-async function selecionarContaContabilLinha(l, c) {
-  setLinhas((prev) =>
-    prev.map((x) =>
-      x.id === l.id
-        ? {
-            ...x,
-            conta_id: Number(c.id),
-            conta_descricao: `${c.codigo} - ${c.nome}`,
-          }
-        : x
-    )
-  );
+    // 2. Aceita imediatamente a linha
+    await fetchSeguro(
+      buildWebhookUrl("aceitar_conciliacao", {
+        empresa_id,
+        conta_id,
+      }),
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          empresa_id: Number(empresa_id),
+          conta_id: Number(conta_id),
+          ids: [Number(l.id)],
+        }),
+      }
+    );
 
-  setTextoContaBusca((prev) => ({
-    ...prev,
-    [l.id]: `${c.codigo} - ${c.nome}`,
-  }));
+    // 3. Atualiza a tela para OK
+    setLinhas((prev) =>
+      prev.map((x) =>
+        Number(x.id) === Number(l.id)
+          ? {
+              ...x,
+              conta_id: Number(c.id),
+              conta_descricao: `${c.codigo} - ${c.nome}`,
+              situacao: "ok",
+              mensagem: "Conta contábil definida e aceita",
+            }
+          : x
+      )
+    );
 
-  setLinhaContaDropdown(null);
-  setContasFiltradasContabil([]);
+    setTextoContaBusca((prev) => ({
+      ...prev,
+      [l.id]: `${c.codigo} - ${c.nome}`,
+    }));
 
-  await fetchSeguro(buildWebhookUrl("conciliacao_atualizar_conta"), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      empresa_id,
-      id: l.id,
-      conta_id: Number(c.id),
-    }),
-  });
+    setLinhaContaDropdown(null);
+    setContasFiltradasContabil([]);
+  } catch (e) {
+    console.error(e);
+    alert(e.message || "Erro ao salvar a conta contábil.");
+  }
 }
+
+
+function contaContabilAutomatica(linha) {
+  const tipoEvento = String(linha.tipo_evento || "")
+    .trim()
+    .toLowerCase();
+
+  const natureza = String(linha.natureza_movimento || "")
+    .trim()
+    .toLowerCase();
+
+  return (
+    tipoEvento === "transf_mesma_tit" ||
+    tipoEvento === "fatura_cartao" ||
+    natureza === "pagamento_operadora"
+  );
+}
+
+
 
 function filtrarContasContabeis(texto) {
   const t = String(texto || "").toLowerCase();
@@ -1938,34 +2044,26 @@ async function salvarHistoricoLancamento(linha) {
                             >
                                <input
                                     value={
-                                      l.natureza_movimento === "pagamento_operadora"
-                                        ? "Transitória do modelo ( 1.1.4.01)"
-                                        : l.tipo_evento === "transf_mesma_tit"
-                                        ? "Conta contábil definida pela transferência"
-                                        : textoContaBusca[l.id] ??
-                                          l.conta_descricao ??
-                                          l.conta_id ??
-                                          ""
+                                      String(l.tipo_evento || "").toLowerCase() === "fatura_cartao"
+                                        ? "🔒 Conta definida pelo modelo da fatura"
+                                        : l.natureza_movimento === "pagamento_operadora"
+                                          ? "🔒 Transitória definida pelo modelo"
+                                          : l.tipo_evento === "transf_mesma_tit"
+                                            ? "🔒 Contas definidas pela transferência"
+                                            : textoContaBusca[l.id] ??
+                                              l.conta_descricao ??
+                                              l.conta_id ??
+                                              ""
                                     }
                                     onFocus={() => {
-                                      if (
-                                        l.natureza_movimento === "pagamento_operadora" ||
-                                        l.tipo_evento === "transf_mesma_tit"
-                                      ) {
+                                       if (contaContabilAutomatica(l)) {
                                         return;
                                       }
-
-                                      setLinhaContaDropdown(l.id);
-                                      filtrarContasContabeis("");
                                     }}
                                     onChange={(e) => {
-                                      if (
-                                        l.natureza_movimento === "pagamento_operadora" ||
-                                        l.tipo_evento === "transf_mesma_tit"
-                                      ) {
+                                        if (contaContabilAutomatica(l)) {
                                         return;
                                       }
-
                                       const texto = e.target.value;
 
                                       setTextoContaBusca((prev) => ({

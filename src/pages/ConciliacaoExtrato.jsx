@@ -65,8 +65,130 @@ const [avisoReexecutar, setAvisoReexecutar] =
 
 const [buscaContaContabil, setBuscaContaContabil] =
   useState("");
- 
-const location = useLocation();
+ const location = useLocation();
+
+
+
+const [modalReclassificarAberto, setModalReclassificarAberto] =
+  useState(false);
+
+const [linhaReclassificar, setLinhaReclassificar] =
+  useState(null);
+
+const [contaReclassificar, setContaReclassificar] =
+  useState(null);
+
+const [buscaReclassificar, setBuscaReclassificar] =
+  useState("");
+
+
+const contasReclassificacaoFiltradas = contasContabeis.filter((conta) => {
+  const busca = buscaReclassificar.toLowerCase().trim();
+
+  if (!busca) return true;
+
+  return `${conta.codigo || ""} ${conta.nome || ""}`
+    .toLowerCase()
+    .includes(busca);
+});
+
+function abrirModalReclassificar(item) {
+  setLinhaReclassificar(item);
+  setContaReclassificar(null);
+  setBuscaReclassificar("");
+  setModalReclassificarAberto(true);
+}
+ async function confirmarReclassificacao() {
+  if (!linhaReclassificar?.lote_id) {
+    alert("Lote não identificado.");
+    return;
+  }
+
+  if (!contaId) {
+    alert("Conta financeira não identificada.");
+    return;
+  }
+
+  if (!contaReclassificar?.id) {
+    alert("Selecione a nova conta contábil.");
+    return;
+  }
+
+  if (
+    !window.confirm(
+      `Reclassificar para ${contaReclassificar.codigo} - ${contaReclassificar.nome}?`
+    )
+  ) {
+    return;
+  }
+
+  try {
+    setExecutando(true);
+    setErroContabil("");
+
+    await fetch(
+      buildWebhookUrl("reclassifica_contabil"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          empresa_id: Number(empresa_id),
+          conta_id: Number(contaId),
+          lote_id: Number(linhaReclassificar.lote_id),
+          conta_alterada_id: Number(contaReclassificar.id),
+        }),
+      }
+    );
+
+    // Atualiza somente a linha reclassificada
+    setDadosContabeis((atual) =>
+      atual.map((item) => {
+        if (
+          Number(item.lote_id) !==
+          Number(linhaReclassificar.lote_id)
+        ) {
+          return item;
+        }
+
+        const bancoEstaNoDebito = String(
+          item.conta_debito_codigo || ""
+        ).startsWith("1.1.4");
+
+        if (bancoEstaNoDebito) {
+          return {
+            ...item,
+            conta_credito_codigo: contaReclassificar.codigo,
+            conta_credito_nome: contaReclassificar.nome,
+          };
+        }
+
+        return {
+          ...item,
+          conta_debito_codigo: contaReclassificar.codigo,
+          conta_debito_nome: contaReclassificar.nome,
+        };
+      })
+    );
+
+    setModalReclassificarAberto(false);
+    setLinhaReclassificar(null);
+    setContaReclassificar(null);
+    setBuscaReclassificar("");
+
+    alert("Reclassificação realizada com sucesso.");
+  } catch (err) {
+    console.error("Erro ao reclassificar:", err);
+
+    alert(
+      err.message ||
+      "Erro ao reclassificar o lançamento."
+    );
+  } finally {
+    setExecutando(false);
+  }
+}
 
 function normalizarRetorno(json) {
   const base = Array.isArray(json) ? json[0] : json;
@@ -720,6 +842,10 @@ async function excluirLote(item) {
     }
 
     alert(`Lote ${loteId} excluído com sucesso!`);
+
+    setDadosContabeis((atual) =>
+  atual.filter((registro) => Number(registro.lote_id) !== loteId)
+);
 
     setResultado((atual) => {
       if (!atual) return atual;
@@ -1671,19 +1797,20 @@ function converterLinhaContabil(item) {
                 </div>
               ) : (
                 <div className="overflow-auto rounded-2xl border border-slate-200">
-                  <table className="min-w-[1350px] w-full text-sm">
+                  <table className="min-w-[1200px] w-full table-fixed text-xs">
                     <thead>
                       <tr className="bg-[#0F172A] text-left text-white">
-                        <th className="px-3 py-3">Data</th>
-                        <th className="px-3 py-3">Histórico</th>
-                        <th className="px-3 py-3">Conta Débito</th>
-                        <th className="px-3 py-3">Conta Crédito</th>
-                        <th className="px-3 py-3">Modelo</th>
-                        <th className="px-3 py-3 text-center">Transação</th>
-                        <th className="px-3 py-3 text-center">Diário</th>
-                        <th className="px-3 py-3 text-center">Lote</th>
-                        <th className="px-3 py-3 text-right">Valor</th>
-                        <th className="px-3 py-3">Origem</th>
+                        <th className="w-[85px] px-2 py-2">Data</th>
+                            <th className="w-[270px] px-2 py-2">Histórico</th>
+                            <th className="w-[115px] px-2 py-2">Conta Débito</th>
+                            <th className="w-[115px] px-2 py-2">Conta Crédito</th>
+                            <th className="w-[105px] px-2 py-2">Modelo</th>
+                            <th className="w-[55px] px-2 py-2 text-center">Transação</th>
+                            <th className="w-[45px] px-2 py-2 text-center">Diário</th>
+                            <th className="w-[45px] px-2 py-2 text-center">Lote</th>
+                            <th className="w-[90px] px-2 py-2 text-right">Valor</th>
+                            <th className="w-[90px] px-2 py-2 text-center">Origem</th>
+                            <th className="w-[75px] px-2 py-2 text-center">Ação</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1692,30 +1819,34 @@ function converterLinhaContabil(item) {
                           key={`${item.diario_id || "d"}-${item.transacao_id || "t"}-${index}`}
                           className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
                         >
-                          <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3 font-black">
+                          <td className="whitespace-nowrap border-b border-slate-100 px-2 py-2 font-black">
                             {item.data_mov || "-"}
                           </td>
-                          <td className="border-b border-slate-100 px-3 py-3">
+                           
+                        <td title={item.historico || ""}
+                            className="truncate border-b border-slate-100 px-2 py-2"
+                          >
                             {item.historico || "-"}
                           </td>
-                          <td className="border-b border-slate-100 px-3 py-3">
+
+                          <td className="border-b border-slate-100 px-2 py-2">
                             <div className="font-black">{item.conta_debito_codigo || "-"}</div>
                             <div className="text-xs text-slate-500">{item.conta_debito_nome || "-"}</div>
                           </td>
-                          <td className="border-b border-slate-100 px-3 py-3">
+                          <td className="border-b border-slate-100 px-2 py-2">
                             <div className="font-black">{item.conta_credito_codigo || "-"}</div>
                             <div className="text-xs text-slate-500">{item.conta_credito_nome || "-"}</div>
                           </td>
-                          <td className="border-b border-slate-100 px-3 py-3">
+                          <td className="border-b border-slate-100 px-2 py-2">
                             {item.modelo_codigo || "-"}
                           </td>
-                          <td className="border-b border-slate-100 px-3 py-3 text-center">{item.transacao_id ?? "-"}</td>
-                          <td className="border-b border-slate-100 px-3 py-3 text-center">{item.diario_id ?? "-"}</td>
-                          <td className="border-b border-slate-100 px-3 py-3 text-center">{item.lote_id ?? "-"}</td>
-                          <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3 text-right font-black text-[#063452]">
+                          <td className="border-b border-slate-100 px-2 py-2 text-center">{item.transacao_id ?? "-"}</td>
+                          <td className="border-b border-slate-100 px-2 py-2 text-center">{item.diario_id ?? "-"}</td>
+                          <td className="border-b border-slate-100 px-2 py-2 text-center">{item.lote_id ?? "-"}</td>
+                          <td className="whitespace-nowrap border-b border-slate-100 px-2 py-2 text-right font-black text-[#063452]">
                             {moeda(item.valor)}
                           </td>
-                          <td className="border-b border-slate-100 px-3 py-3">
+                          <td className="border-b border-slate-100 px-2 py-2">
                             <span
                               className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${
                                 item.origem === "MANUAL"
@@ -1724,8 +1855,29 @@ function converterLinhaContabil(item) {
                               }`}
                             >
                               {item.origem || "-"}
-                            </span>
+                            </span> 
                           </td>
+                            <td className="border-b border-slate-100 px-2 py-2 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => excluirLote(item)}
+                                  disabled={executando || !item.lote_id}
+                                  className="rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[10px] font-black text-red-700 hover:bg-red-100 disabled:opacity-40"
+                                >
+                                  Excluir
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => abrirModalReclassificar(item)}
+                                  disabled={executando || !item.lote_id}
+                                  className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[10px] font-black text-blue-700 hover:bg-blue-100 disabled:opacity-40"
+                                >
+                                  Reclassificar
+                                </button>
+                              </div>
+                            </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1761,9 +1913,131 @@ function converterLinhaContabil(item) {
                 {executando ? "Conciliando..." : "Executar conciliação"}
               </button>
           </div>
+
+          {modalReclassificarAberto && linhaReclassificar && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
+      <div className="flex items-center justify-between border-b px-5 py-4">
+        <div>
+          <div className="text-base font-black text-[#063452]">
+            Reclassificar contrapartida
+          </div>
+
+          <div className="mt-1 text-xs font-bold text-slate-400">
+            Lote {linhaReclassificar.lote_id}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setModalReclassificarAberto(false)}
+          className="rounded-lg px-3 py-2 text-sm font-black text-slate-500 hover:bg-slate-100"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="space-y-4 p-5">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <div className="text-xs font-black text-slate-500">
+            Lançamento
+          </div>
+
+          <div className="mt-1 text-sm font-bold text-slate-800">
+            {linhaReclassificar.historico}
+          </div>
+
+          <div className="mt-2 text-sm font-black text-[#063452]">
+            {moeda(linhaReclassificar.valor)}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="rounded-xl border p-3">
+            <div className="font-black text-slate-400">Débito atual</div>
+            <div className="mt-1 font-black">
+              {linhaReclassificar.conta_debito_codigo}
+            </div>
+            <div>{linhaReclassificar.conta_debito_nome}</div>
+          </div>
+
+          <div className="rounded-xl border p-3">
+            <div className="font-black text-slate-400">Crédito atual</div>
+            <div className="mt-1 font-black">
+              {linhaReclassificar.conta_credito_codigo}
+            </div>
+            <div>{linhaReclassificar.conta_credito_nome}</div>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-xs font-black text-slate-600">
+            Nova conta da contrapartida
+          </label>
+
+          <input
+            type="text"
+            value={buscaReclassificar}
+            onChange={(e) => {
+              setBuscaReclassificar(e.target.value);
+              setContaReclassificar(null);
+            }}
+            placeholder="Digite o código ou nome da conta..."
+            className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-bold outline-none focus:border-blue-400"
+          />
+
+          <div className="mt-1 max-h-52 overflow-y-auto rounded-xl border border-slate-200">
+            {contasReclassificacaoFiltradas.map((conta) => (
+              <button
+                key={conta.id}
+                type="button"
+                onClick={() => {
+                  setContaReclassificar(conta);
+                  setBuscaReclassificar(
+                    `${conta.codigo} - ${conta.nome}`
+                  );
+                }}
+                className={`block w-full border-b px-3 py-2 text-left text-xs hover:bg-blue-50 ${
+                  Number(contaReclassificar?.id) === Number(conta.id)
+                    ? "bg-blue-50 text-blue-700"
+                    : ""
+                }`}
+              >
+                <span className="font-black">{conta.codigo}</span>
+                {" - "}
+                {conta.nome}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-2 border-t px-5 py-4">
+        <button
+          type="button"
+          onClick={() => setModalReclassificarAberto(false)}
+          className="rounded-lg border px-4 py-2 text-xs font-black text-slate-600"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          disabled={!contaReclassificar || executando}
+          onClick={confirmarReclassificacao}
+          className="rounded-lg bg-blue-700 px-4 py-2 text-xs font-black text-white disabled:opacity-40"
+        >
+          Confirmar reclassificação
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         </div>
       </div>
     </div>
+
+    
   );
 }
 
