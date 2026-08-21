@@ -1867,12 +1867,24 @@ function converterLinhaContabil(item) {
                                 >
                                   Excluir
                                 </button>
-
                                 <button
                                   type="button"
                                   onClick={() => abrirModalReclassificar(item)}
-                                  disabled={executando || !item.lote_id}
-                                  className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[10px] font-black text-blue-700 hover:bg-blue-100 disabled:opacity-40"
+                                  disabled={
+                                    executando ||
+                                    !item.lote_id ||
+                                    String(item.origem || "").toUpperCase() === "MANUAL"
+                                  }
+                                  title={
+                                    String(item.origem || "").toUpperCase() === "MANUAL"
+                                      ? "Lançamentos manuais não podem ser reclassificados nesta tela."
+                                      : "Reclassificar contrapartida"
+                                  }
+                                  className={`rounded-md border px-2 py-1 text-[10px] font-black transition ${
+                                    String(item.origem || "").toUpperCase() === "MANUAL"
+                                      ? "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400"
+                                      : "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                                  } disabled:opacity-60`}
                                 >
                                   Reclassificar
                                 </button>
