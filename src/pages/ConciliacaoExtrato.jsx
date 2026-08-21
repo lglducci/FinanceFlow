@@ -1,4 +1,4 @@
- import { useEffect, useRef, useState } from "react";
+  import { useEffect, useRef, useState } from "react";
  
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
@@ -39,6 +39,11 @@ export default function ConciliacaoExtratoPdf() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
 
+  const [abaAtiva, setAbaAtiva] = useState("pendencias");
+  const [dadosContabeis, setDadosContabeis] = useState([]);
+  const [carregandoContabil, setCarregandoContabil] = useState(false);
+  const [erroContabil, setErroContabil] = useState("");
+
   const contaAtual = contas[indiceConta] || null;
   const contaId = contaAtual?.conta_id || null;
 const [senhaPDF, setSenhaPDF] = useState("");
@@ -75,6 +80,38 @@ function normalizarRetorno(json) {
     base ||
     {}
   );
+}
+
+
+function normalizarRetornoContabil(json) {
+  let linhas = [];
+
+  if (Array.isArray(json)) {
+    if (
+      json.length === 1 &&
+      (
+        Array.isArray(json[0]?.data) ||
+        Array.isArray(json[0]?.dados) ||
+        Array.isArray(json[0]?.resultado)
+      )
+    ) {
+      linhas =
+        json[0].data ||
+        json[0].dados ||
+        json[0].resultado ||
+        [];
+    } else {
+      linhas = json;
+    }
+  } else if (Array.isArray(json?.data)) {
+    linhas = json.data;
+  } else if (Array.isArray(json?.dados)) {
+    linhas = json.dados;
+  } else if (Array.isArray(json?.resultado)) {
+    linhas = json.resultado;
+  }
+
+  return linhas.map(converterLinhaContabil);
 }
 
 useEffect(() => {
@@ -277,6 +314,9 @@ const [dataFim, setDataFim] = useState(
     });
 
     setResultado(null);
+    setDadosContabeis([]);
+    setErroContabil("");
+    setAbaAtiva("pendencias");
   }
 
   function escolherPdf(e) {
@@ -295,7 +335,10 @@ const [dataFim, setDataFim] = useState(
 
     setArquivo(file);
     setResultado(null);
+    setDadosContabeis([]);
     setErro("");
+    setErroContabil("");
+    setAbaAtiva("pendencias");
   } 
 
 
@@ -316,7 +359,66 @@ const [dataFim, setDataFim] = useState(
 }
 
 
- async function executarConciliacao(textoPdfRecebido = null) {
+ async function carregarContabilImportacao({
+  empresaId,
+  contaId: contaFinanceiraId,
+  dataInicio: dataInicial,
+  dataFim: dataFinal,
+}) {
+  if (!empresaId || !contaFinanceiraId || !dataInicial || !dataFinal) {
+    setDadosContabeis([]);
+    setErroContabil(
+      "Não foi possível identificar empresa, conta ou período para consultar o Razão."
+    );
+    return [];
+  }
+
+  try {
+    setCarregandoContabil(true);
+    setErroContabil("");
+
+    const resp = await fetch(buildWebhookUrl("contabil_importacao"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        empresa_id: Number(empresaId),
+        conta_id: Number(contaFinanceiraId),
+        data_inicio: dataInicial,
+        data_fim: dataFinal,
+      }),
+    });
+
+    const texto = await resp.text();
+
+    if (!resp.ok) {
+      throw new Error(
+        texto || `Erro ao consultar o Razão do período (${resp.status}).`
+      );
+    }
+
+    let json = [];
+    try {
+      json = texto ? JSON.parse(texto) : [];
+    } catch {
+      throw new Error(
+        "O webhook contabil_importacao não retornou um JSON válido."
+      );
+    }
+
+    const linhas = normalizarRetornoContabil(json);
+    setDadosContabeis(linhas);
+    return linhas;
+  } catch (err) {
+    console.error("Erro ao carregar Razão do período:", err);
+    setDadosContabeis([]);
+    setErroContabil(err?.message || "Erro ao consultar o Razão do período.");
+    return [];
+  } finally {
+    setCarregandoContabil(false);
+  }
+}
+
+async function executarConciliacao(textoPdfRecebido = null) {
   /*
     Quando clicar normalmente no botão, existe arquivo.
 
@@ -336,7 +438,10 @@ const [dataFim, setDataFim] = useState(
   try {
     setExecutando(true);
     setErro("");
+    setErroContabil("");
     setResultado(null);
+    setDadosContabeis([]);
+    setAbaAtiva("pendencias");
 
     const formData = new FormData();
 
@@ -381,72 +486,41 @@ formData.append("texto_pdf", textoPDF);
         "O webhook da conciliação não retornou resposta."
       );
     }
- 
 
     const json = JSON.parse(texto);
 
-console.log("JSON RECEBIDO:", json);
+    console.log("JSON RECEBIDO:", json);
 
-const bruto = Array.isArray(json)
-  ? json[0]
-  : json;
+    const dados = Array.isArray(json)
+      ? json[0]?.fn_concilia_extrato_pdf_razao
+      : json?.fn_concilia_extrato_pdf_razao;
 
-/*
-|--------------------------------------------------------------------------
-| ERRO RETORNADO DIRETAMENTE PELO CODE DO N8N
-|--------------------------------------------------------------------------
-*/
+    console.log("OBJETO EXTRAÍDO:", dados);
+    console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
 
-if (bruto?.ok === false) {
-  const detalhes = Array.isArray(bruto?.detalhes)
-    ? bruto.detalhes.join("\n")
-    : "";
-
-  throw new Error(
-    [
-      bruto?.mensagem ||
-        bruto?.message ||
-        bruto?.erro ||
-        "Erro ao processar o extrato.",
-
-      detalhes
-    ]
-      .filter(Boolean)
-      .join("\n\n")
-  );
-}
-
-/*
-|--------------------------------------------------------------------------
-| RETORNO NORMAL DA PROCEDURE
-|--------------------------------------------------------------------------
-*/
-
-const dados =
-  bruto?.fn_concilia_extrato_pdf_razao ||
-  bruto?.data?.[0]?.fn_concilia_extrato_pdf_razao ||
-  bruto?.data?.fn_concilia_extrato_pdf_razao ||
-  bruto?.data?.[0] ||
-  bruto?.data ||
-  bruto;
-
-console.log("OBJETO EXTRAÍDO:", dados);
-console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
-
-if (!resp.ok || !dados || dados?.ok === false) {
-  throw new Error(
-    dados?.message ||
-    dados?.mensagem ||
-    dados?.erro ||
-    "O webhook respondeu, mas não retornou a conciliação."
-  );
-}
+    if (!resp.ok || !dados || dados?.ok === false) {
+      throw new Error(
+        dados?.message ||
+        dados?.mensagem ||
+        dados?.erro ||
+        "O webhook respondeu, mas não retornou a conciliação."
+      );
+    }
 
     setResultado(dados);
 
+    const periodoInicio = dados?.data_inicio || inicio;
+    const periodoFim = dados?.data_fim || fim;
 
-setInicio(dados?.data_inicio || inicio);
-setFim(dados?.data_fim || fim);
+    setInicio(periodoInicio);
+    setFim(periodoFim);
+
+    await carregarContabilImportacao({
+      empresaId: empresa_id,
+      contaId,
+      dataInicio: periodoInicio,
+      dataFim: periodoFim,
+    });
 
     /*
       Atualiza o resultado guardado.
@@ -929,7 +1003,90 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
   setBuscaContaContabil("");
 }
 
- 
+ function separarRegistroPostgres(registro) {
+  if (typeof registro !== "string") return [];
+
+  const texto = registro.trim();
+
+  const conteudo =
+    texto.startsWith("(") && texto.endsWith(")")
+      ? texto.slice(1, -1)
+      : texto;
+
+  const campos = [];
+  let campo = "";
+  let entreAspas = false;
+
+  for (let i = 0; i < conteudo.length; i++) {
+    const caractere = conteudo[i];
+
+    if (caractere === '"') {
+      if (entreAspas && conteudo[i + 1] === '"') {
+        campo += '"';
+        i++;
+      } else {
+        entreAspas = !entreAspas;
+      }
+    } else if (caractere === "," && !entreAspas) {
+      campos.push(campo);
+      campo = "";
+    } else {
+      campo += caractere;
+    }
+  }
+
+  campos.push(campo);
+
+  return campos;
+}
+
+function converterLinhaContabil(item) {
+   if (!item?.ff_contabil_importacao) {
+  return {
+    ...item,
+    origem:
+      item?.origem ??
+      item?.origem_registro ??
+      null,
+  };
+}
+
+  const campos = separarRegistroPostgres(
+    item.ff_contabil_importacao
+  );
+
+  if (campos.length < 10) {
+    console.warn(
+      "Linha contábil em formato inesperado:",
+      item
+    );
+
+    return item;
+  }
+
+  return {
+  data_mov: campos[0] || null,
+
+  transacao_id: campos[1] || null,
+  diario_id: campos[2] || null,
+  lote_id: campos[3] || null,
+
+  conta_debito_codigo: campos[4] || null,
+  conta_debito_nome: campos[5] || null,
+
+  conta_credito_codigo: campos[6] || null,
+  conta_credito_nome: campos[7] || null,
+
+  valor: Number(campos[8] || 0),
+  historico: campos[9] || null,
+  modelo_codigo: campos[10] || null,
+  origem: campos[11] || null,
+};
+}
+
+ function imprimirAbaAtiva() {
+  window.print();
+}
 
   return ( 
    <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
@@ -1084,6 +1241,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
                     />
                   </label>*/}
 
+                
               <button
                 onClick={carregarContas}
                 className="mt-3 w-full rounded-xl border border-cyan-200 bg-cyan-50 py-2 text-xs font-black text-[#063452] hover:bg-cyan-100"
@@ -1182,12 +1340,54 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
 
 
       
+       <div id="print-area">
+
+           {resultado && (
+             <div className="mt-3 flex items-center gap-2 border-b border-slate-200">
+               <button
+                 type="button"
+                 onClick={() => setAbaAtiva("pendencias")}
+                 className={`rounded-t-xl border border-b-0 px-4 py-2 text-xs font-black transition ${
+                   abaAtiva === "pendencias"
+                     ? "border-slate-200 bg-white text-[#063452]"
+                     : "border-transparent bg-slate-100 text-slate-500 hover:bg-slate-200"
+                 }`}
+               >
+                 Pendências da Conciliação ({pendencias})
+               </button>
+
+               <button
+                 type="button"
+                 onClick={() => setAbaAtiva("razao")}
+                 className={`rounded-t-xl border border-b-0 px-4 py-2 text-xs font-black transition ${
+                   abaAtiva === "razao"
+                     ? "border-slate-200 bg-white text-[#063452]"
+                     : "border-transparent bg-slate-100 text-slate-500 hover:bg-slate-200"
+                 }`}
+               >
+                 Razão importado ({dadosContabeis.length})
+               </button>
+
+              
+                  <div className="ml-auto flex items-center px-3">
+                    <button
+                      type="button"
+                      onClick={imprimirAbaAtiva}
+                      className="h-8 rounded-lg border border-slate-300 bg-white px-4 text-xs font-black text-slate-700 hover:bg-slate-100"
+                    >
+                      🖨 Imprimir
+                    </button>
+                  </div>
 
 
-           {Array.isArray(resultado?.acoes) && resultado.acoes.length > 0 && (
-            <div className="mt-2.5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+
+             </div>
+           )}
+
+           {resultado && abaAtiva === "pendencias" && (
+            <div className="mt-0 rounded-b-2xl rounded-tr-2xl border border-slate-200 bg-white p-3 shadow-sm">
               <div className="mb-3 text-sm font-black text-[#063452]">
-                Registros encontrados ({resultado.acoes.length})
+                Registros encontrados ({acoes.length})
               </div>
 
               <div className="overflow-auto rounded-2xl border border-slate-200">
@@ -1212,7 +1412,7 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
                   </thead>
 
                   <tbody>
-                    {resultado.acoes.map((item, index) => (
+                    {acoes.map((item, index) => (
                       <tr
                         key={`${item.conciliacao_id || index}-${index}`}
                         className={
@@ -1423,7 +1623,121 @@ const contasFiltradasContabil = Array.isArray(contasContabeis)
             </div>
           )}
 
- 
+          {resultado && abaAtiva === "razao" && (
+            <div className="mt-0 rounded-b-2xl rounded-tr-2xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-black text-[#063452]">
+                    Razão equivalente do período
+                  </div>
+                  <div className="mt-0.5 text-xs font-bold text-slate-400">
+                    {inicio || "-"} até {fim || "-"} · Conta financeira {contaId || "-"}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    carregarContabilImportacao({
+                      empresaId: empresa_id,
+                      contaId,
+                      dataInicio: inicio,
+                      dataFim: fim,
+                    })
+                  }
+                  disabled={carregandoContabil || !contaId || !inicio || !fim}
+                  className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-xs font-black text-[#063452] hover:bg-cyan-100 disabled:opacity-50"
+                >
+                  {carregandoContabil ? "Atualizando..." : "↻ Atualizar Razão"}
+                </button>
+              </div>
+
+              {erroContabil && (
+                <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold text-red-700">
+                  ⛔ {erroContabil}
+                </div>
+              )}
+
+              {carregandoContabil ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm font-black text-slate-400">
+                  Carregando movimentos contábeis...
+                </div>
+              ) : dadosContabeis.length === 0 ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-10 text-center">
+                  <div className="text-2xl">📚</div>
+                  <div className="mt-2 text-sm font-black text-slate-600">
+                    Nenhum movimento contábil encontrado no período
+                  </div>
+                </div>
+              ) : (
+                <div className="overflow-auto rounded-2xl border border-slate-200">
+                  <table className="min-w-[1350px] w-full text-sm">
+                    <thead>
+                      <tr className="bg-[#0F172A] text-left text-white">
+                        <th className="px-3 py-3">Data</th>
+                        <th className="px-3 py-3">Histórico</th>
+                        <th className="px-3 py-3">Conta Débito</th>
+                        <th className="px-3 py-3">Conta Crédito</th>
+                        <th className="px-3 py-3">Modelo</th>
+                        <th className="px-3 py-3 text-center">Transação</th>
+                        <th className="px-3 py-3 text-center">Diário</th>
+                        <th className="px-3 py-3 text-center">Lote</th>
+                        <th className="px-3 py-3 text-right">Valor</th>
+                        <th className="px-3 py-3">Origem</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dadosContabeis.map((item, index) => (
+                        <tr
+                          key={`${item.diario_id || "d"}-${item.transacao_id || "t"}-${index}`}
+                          className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
+                        >
+                          <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3 font-black">
+                            {item.data_mov || "-"}
+                          </td>
+                          <td className="border-b border-slate-100 px-3 py-3">
+                            {item.historico || "-"}
+                          </td>
+                          <td className="border-b border-slate-100 px-3 py-3">
+                            <div className="font-black">{item.conta_debito_codigo || "-"}</div>
+                            <div className="text-xs text-slate-500">{item.conta_debito_nome || "-"}</div>
+                          </td>
+                          <td className="border-b border-slate-100 px-3 py-3">
+                            <div className="font-black">{item.conta_credito_codigo || "-"}</div>
+                            <div className="text-xs text-slate-500">{item.conta_credito_nome || "-"}</div>
+                          </td>
+                          <td className="border-b border-slate-100 px-3 py-3">
+                            {item.modelo_codigo || "-"}
+                          </td>
+                          <td className="border-b border-slate-100 px-3 py-3 text-center">{item.transacao_id ?? "-"}</td>
+                          <td className="border-b border-slate-100 px-3 py-3 text-center">{item.diario_id ?? "-"}</td>
+                          <td className="border-b border-slate-100 px-3 py-3 text-center">{item.lote_id ?? "-"}</td>
+                          <td className="whitespace-nowrap border-b border-slate-100 px-3 py-3 text-right font-black text-[#063452]">
+                            {moeda(item.valor)}
+                          </td>
+                          <td className="border-b border-slate-100 px-3 py-3">
+                            <span
+                              className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${
+                                item.origem === "MANUAL"
+                                  ? "border-amber-200 bg-amber-50 text-amber-700"
+                                  : "border-blue-200 bg-blue-50 text-blue-700"
+                              }`}
+                            >
+                              {item.origem || "-"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+
+
+ </div>
  
 
  
