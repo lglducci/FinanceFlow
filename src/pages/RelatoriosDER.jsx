@@ -202,24 +202,64 @@ export default function RelatoriosDRE() {
     .filter((g) => g.total !== 0);
 }, [dadosAnalitico]);
 
-  function exportarExcel() {
-    if (nivel === 1) {
-      ExcelExport.exportar(
-        [
-          { Indicador: "Receita", Valor: receita },
-          { Indicador: "Custos", Valor: custos },
-          { Indicador: "Lucro Bruto", Valor: lucroBruto },
-          { Indicador: "Despesas", Valor: despesas },
-          { Indicador: "Resultado", Valor: resultado },
-          { Indicador: "Margem %", Valor: margem },
-        ],
-        "dre_n1.xlsx"
-      );
-      return;
-    }
+ function exportarExcel() {
+  if (nivel === 1) {
+    ExcelExport.exportar(
+      [
+        {
+          Indicador: "Receita",
+          Valor: Math.abs(Number(receita || 0)),
+        },
+        {
+          Indicador: "Custos",
+          Valor: -Math.abs(Number(custos || 0)),
+        },
+        {
+          Indicador: "Lucro Bruto",
+          Valor: Number(lucroBruto || 0),
+        },
+        {
+          Indicador: "Despesas",
+          Valor: -Math.abs(Number(despesas || 0)),
+        },
+        {
+          Indicador: "Resultado",
+          Valor: Number(resultado || 0),
+        },
+        {
+          Indicador: "Margem %",
+          Valor: Number(margem || 0),
+        },
+      ],
+      "dre_n1.xlsx"
+    );
 
-    ExcelExport.exportar(dadosAnalitico, `dre_n${nivel}.xlsx`);
+    return;
   }
+
+  const dadosExportacao = dadosAnalitico.map((item) => {
+    const valorOriginal = Number(item.valor || 0);
+
+    const valorDRE =
+      item.grupo === "RECEITA"
+        ? Math.abs(valorOriginal)
+        : -Math.abs(valorOriginal);
+
+    return {
+      ...item,
+      valor: valorDRE,
+      perc_sobre_grupo:
+        item.perc_sobre_grupo != null
+          ? Number(item.perc_sobre_grupo)
+          : null,
+    };
+  });
+
+  ExcelExport.exportar(
+    dadosExportacao,
+    `dre_n${nivel}.xlsx`
+  );
+}
 
   function imprimir() {
   window.print();
