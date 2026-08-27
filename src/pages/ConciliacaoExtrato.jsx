@@ -1,7 +1,7 @@
   import { useEffect, useRef, useState } from "react";
  
 import { buildWebhookUrl } from "../config/globals";
-import { hojeLocal } from "../utils/dataLocal";
+import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 import {
   useLocation,
@@ -32,9 +32,9 @@ export default function ConciliacaoExtratoPdf() {
 
   const [contas, setContas] = useState([]);
   const [indiceConta, setIndiceConta] = useState(0);
-  const [inicio, setInicio] = useState(inicioMes());
+  const [inicio, setInicio] = useState(hojeMaisDias(-58));
   const [fim, setFim] = useState(hojeLocal());
-  const [arquivo, setArquivo] = useState(null);
+ 
   const [resultado, setResultado] = useState(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
@@ -46,16 +46,13 @@ export default function ConciliacaoExtratoPdf() {
 
   const contaAtual = contas[indiceConta] || null;
   const contaId = contaAtual?.conta_id || null;
-const [senhaPDF, setSenhaPDF] = useState("");
+ 
 
 const [executando, setExecutando] = useState(false);
 const CHAVE_CONCILIACAO = "ff_conciliacao_extrato_atual";
 
 const [contasContabeis, setContasContabeis] = useState([]);
-const [dataInicio, setDataInicio] = useState(
-  `${hojeLocal().slice(0, 7)}-01`
-);
-
+ 
 const [avisoReexecutar, setAvisoReexecutar] =
   useState(false);
 
@@ -324,9 +321,7 @@ useEffect(() => {
 
  
 
-const [dataFim, setDataFim] = useState(
-  hojeLocal()
-);
+ 
 
   async function carregarContas() {
     try {
@@ -441,28 +436,7 @@ const [dataFim, setDataFim] = useState(
     setAbaAtiva("pendencias");
   }
 
-  function escolherPdf(e) {
-    const file = e.target.files?.[0];
-
-    if (!file) return;
-
-    if (
-      file.type !== "application/pdf" &&
-      !file.name.toLowerCase().endsWith(".pdf")
-    ) {
-      alert("Selecione um arquivo PDF.");
-      e.target.value = "";
-      return;
-    }
-
-    setArquivo(file);
-    setResultado(null);
-    setDadosContabeis([]);
-    setErro("");
-    setErroContabil("");
-    setAbaAtiva("pendencias");
-  } 
-
+ 
 
   function extrairResultado(retorno) {
   const bruto = Array.isArray(retorno)
@@ -538,22 +512,22 @@ const [dataFim, setDataFim] = useState(
   } finally {
     setCarregandoContabil(false);
   }
-}
+} 
 
-async function executarConciliacao(textoPdfRecebido = null) {
-  /*
-    Quando clicar normalmente no botão, existe arquivo.
 
-    Quando voltar do lançamento contábil, o arquivo não existe mais,
-    mas temos o texto do PDF guardado no sessionStorage.
-  */
-  if (!arquivo && !textoPdfRecebido) {
-    alert("Selecione o PDF.");
+async function executarConciliacao() {
+  if (!contaId) {
+    alert("Conta financeira não identificada.");
     return;
   }
 
-  if (!contaId) {
-    alert("Conta financeira não identificada.");
+  if (!inicio || !fim) {
+    alert("Informe a data inicial e a data final.");
+    return;
+  }
+
+  if (inicio > fim) {
+    alert("A data inicial não pode ser maior que a data final.");
     return;
   }
 
@@ -565,43 +539,23 @@ async function executarConciliacao(textoPdfRecebido = null) {
     setDadosContabeis([]);
     setAbaAtiva("pendencias");
 
-    const formData = new FormData();
-
-    formData.append("empresa_id", String(empresa_id));
-    formData.append("conta_id", String(contaId));
-    formData.append("data_inicio", inicio);
-formData.append("data_fim", fim);
-    formData.append("senha_pdf", senhaPDF || "");
-
-    /*
-      REEXECUÇÃO:
-
-      Se voltou do lançamento rápido, envia o texto que ficou
-      guardado no sessionStorage.
-    */
-    const buffer = await arquivo.arrayBuffer();
-
-const textoPDF = await lerTextoPDF(buffer);
-
-if (!textoPDF || textoPDF.length < 50) {
-  throw new Error(
-    "O PDF foi aberto, mas não consegui extrair conteúdo suficiente."
-  );
-}
-
-formData.append("texto_pdf", textoPDF);
-
     const resp = await fetch(
       buildWebhookUrl("conciliacao_extrato"),
       {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          empresa_id: Number(empresa_id),
+          conta_id: Number(contaId),
+          data_inicio: inicio,
+          data_fim: fim,
+        }),
       }
     );
 
     const texto = await resp.text();
-
- 
 
     if (!texto.trim()) {
       throw new Error(
@@ -609,13 +563,27 @@ formData.append("texto_pdf", textoPDF);
       );
     }
 
-    const json = JSON.parse(texto);
+    let json;
+
+    try {
+      json = JSON.parse(texto);
+    } catch {
+      throw new Error(
+        "O webhook da conciliação não retornou um JSON válido."
+      );
+    }
 
     console.log("JSON RECEBIDO:", json);
 
-    const dados = Array.isArray(json)
-      ? json[0]?.fn_concilia_extrato_pdf_razao
-      : json?.fn_concilia_extrato_pdf_razao;
+    const base = Array.isArray(json) ? json[0] : json;
+
+    const dados =
+      base?.fn_concilia_extrato_pdf_razao ||
+      base?.data?.fn_concilia_extrato_pdf_razao ||
+      base?.data?.[0]?.fn_concilia_extrato_pdf_razao ||
+      base?.resultado ||
+      base?.data ||
+      base;
 
     console.log("OBJETO EXTRAÍDO:", dados);
     console.log("AÇÕES EXTRAÍDAS:", dados?.acoes);
@@ -625,15 +593,14 @@ formData.append("texto_pdf", textoPDF);
         dados?.message ||
         dados?.mensagem ||
         dados?.erro ||
-        "O webhook respondeu, mas não retornou a conciliação."
+        "Não foi possível executar a conciliação."
       );
     }
-
-    setResultado(dados);
 
     const periodoInicio = dados?.data_inicio || inicio;
     const periodoFim = dados?.data_fim || fim;
 
+    setResultado(dados);
     setInicio(periodoInicio);
     setFim(periodoFim);
 
@@ -644,43 +611,25 @@ formData.append("texto_pdf", textoPDF);
       dataFim: periodoFim,
     });
 
-    /*
-      Atualiza o resultado guardado.
-    */
     try {
-      const salvo = sessionStorage.getItem(
-        CHAVE_CONCILIACAO
-      );
-
-      const anterior = salvo
-        ? JSON.parse(salvo)
-        : {};
-
       sessionStorage.setItem(
         CHAVE_CONCILIACAO,
         JSON.stringify({
-          ...anterior,
           resultado: dados,
-          inicio,
-          fim,
-          dataInicio,
-          dataFim,
+          inicio: periodoInicio,
+          fim: periodoFim,
           indiceConta,
           conta_id: contaId,
-          senhaPDF,
         })
       );
     } catch (storageError) {
       console.error(
-        "Erro ao guardar resultado atualizado:",
+        "Erro ao guardar resultado da conciliação:",
         storageError
       );
     }
   } catch (err) {
-    console.error(
-      "Erro na conciliação:",
-      err
-    );
+    console.error("Erro na conciliação:", err);
 
     setErro(
       err?.message ||
@@ -740,52 +689,7 @@ const diferencaPendente =
   totalPdfPendente - totalRazaoPendente;
 
 
-  async function lerTextoPDF(buffer) {
-  try {
-    const loadingTask = pdfjsLib.getDocument({
-      data: buffer,
-      password: senhaPDF?.trim() || undefined,
-    });
-
-    const pdf = await loadingTask.promise;
-    let textoFinal = "";
-
-    for (let pagina = 1; pagina <= pdf.numPages; pagina++) {
-      const page = await pdf.getPage(pagina);
-      const content = await page.getTextContent();
-
-      const textoPagina = content.items
-        .map((item) => item.str)
-        .join(" ");
-
-      textoFinal += `\n${textoPagina}`;
-    }
-
-    return textoFinal.trim();
-  } catch (err) {
-    const mensagem = String(err?.message || "");
-    const codigo = err?.code;
-
-    if (
-      mensagem.includes("No password given") ||
-      codigo === 1
-    ) {
-      throw new Error(
-        "Este PDF exige senha. Informe a senha e tente novamente."
-      );
-    }
-
-    if (
-      mensagem.includes("Incorrect Password") ||
-      codigo === 2
-    ) {
-      throw new Error("Senha do PDF incorreta.");
-    }
-
-    throw new Error("Não consegui abrir o PDF.");
-  }
-}
-
+ 
 
 async function excluirLote(item) {
   const loteId = Number(item?.lote_id) || 0;
@@ -1221,7 +1125,7 @@ function converterLinhaContabil(item) {
            <div className="flex items-center justify-between border-b border-blue-200 bg-[#082a57] px-5 py-3">
               <div>
                 <h1 className="text-lg font-black text-white">
-                  📄 Conciliação de Extrato PDF
+                  📄 Conciliação de Extrato PDF  
                 </h1>
 
                 <p className="mt-0.5 text-xs font-semibold text-blue-100">
@@ -1323,38 +1227,43 @@ function converterLinhaContabil(item) {
                 Período
               </div>
              
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                  <label className="text-xs font-black text-slate-600">
+                    Início
 
-             <div className="mt-3 grid grid-cols-2 gap-3">
-              <label className="text-xs font-black text-slate-600">
-                Início
-                <input
-                  type="date"
-                  value={inicio || ""}
-                  disabled
-                  title="A data inicial será identificada automaticamente pelo arquivo PDF."
-                  className="mt-1 h-9 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
-                />
-              </label>
+                    <input
+                      type="date"
+                      value={inicio || ""}
+                      onChange={(e) => {
+                        setInicio(e.target.value);
+                        setResultado(null);
+                        setDadosContabeis([]);
+                        setErro("");
+                        setErroContabil("");
+                      }}
+                      className="mt-1 h-9 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:border-cyan-500"
+                    />
+                  </label>
 
-              <label className="text-xs font-black text-slate-600">
-                Fim
-                <input
-                  type="date"
-                  value={fim || ""}
-                  disabled
-                  title="A data final será identificada automaticamente pelo arquivo PDF."
-                  className="mt-1 h-9 w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600"
-                />
-              </label>
-            </div>
+                  <label className="text-xs font-black text-slate-600">
+                    Fim
 
-            <div className="mt-2 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-350 px-3 py-2">
-              <span className="text-sm">ℹ️</span>
+                    <input
+                      type="date"
+                      value={fim || ""}
+                      onChange={(e) => {
+                        setFim(e.target.value);
+                        setResultado(null);
+                        setDadosContabeis([]);
+                        setErro("");
+                        setErroContabil("");
+                      }}
+                      className="mt-1 h-9 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:border-cyan-500"
+                    />
+                  </label>
+                </div>
 
-              <p className="text-xs font-bold leading-5 text-orange-700">
-                O período não editável. As datas serão identificadas após a execução da conciliação no extrato PDF selecionado.
-              </p>
-            </div>
+          
 
              {/*} <label className="text-xs font-black text-slate-600">
                     Senha do PDF
@@ -1377,86 +1286,8 @@ function converterLinhaContabil(item) {
             </div>
           </div>
 
-           <div className="mt-2.5 rounded-2xl border border-blue-300 bg-gray-150 px-5 py-4 shadow-sm">
-            <input
-              ref={inputPdfRef}
-              type="file"
-              accept=".pdf,application/pdf"
-              onChange={escolherPdf}
-              className="hidden"
-            />
-
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <div className="text-xs font-black uppercase tracking-wider text-slate-400">
-                  Arquivo PDF
-                </div>
-                <div className="mt-1 truncate text-sm font-black text-slate-700">
-                  {arquivo ? arquivo.name : "Nenhum arquivo selecionado"}
-                </div>
-                <div className="mt-1 text-xs font-bold text-slate-400">
-                  {arquivo
-                    ? `${(arquivo.size / 1024 / 1024).toFixed(2)} MB`
-                    : "Selecione o extrato bancário."}
-                </div>
-              </div>
-
-
-                
-            {resultado && (
-              <>
-                 
-
-                <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
-                  <Card
-                    titulo="Pendências do PDF"
-                    valor={moeda(totalPdfPendente)}
-                    alerta={totalPdfPendente !== 0}
-                  />
-
-                  <Card
-                    titulo="Pendências do razão"
-                    valor={moeda(totalRazaoPendente)}
-                    alerta={totalRazaoPendente !== 0}
-                  />
-
-                  <Card
-                    titulo="Criar lançamentos"
-                    valor={criarLancamentos}
-                    alerta={criarLancamentos > 0}
-                  />
-
-                  <Card
-                    titulo="Excluir lotes"
-                    valor={excluirLotes}
-                    alerta={excluirLotes > 0}
-                  />
-
-                  <Card
-                    titulo="Total de pendências"
-                    valor={pendencias}
-                    alerta={pendencias > 0}
-                    ok={pendencias === 0}
-                  />
-                </div>
-              </>
-            )}
-
-
+            
           
-
-
-
-
-
-              <button
-                onClick={() => inputPdfRef.current?.click()}
-                className="h-10 shrink-0 rounded-xl border border-cyan-200 bg-cyan-50 px-4 text-sm font-black text-[#063452] hover:bg-cyan-100"
-              >
-                📥 Selecionar PDF
-              </button>
-            </div>
-          </div>
 
           {erro && (
             <div className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
@@ -1915,17 +1746,12 @@ function converterLinhaContabil(item) {
               Cancelar
             </button>
              <button
-                type="button"
-                onClick={() => executarConciliacao()}
-                disabled={executando || !arquivo || !contaId}
-                className={`h-11 rounded-xl px-6 text-sm font-black text-white ${
-                  executando || !arquivo || !contaId
-                    ? "cursor-not-allowed bg-slate-400"
-                    : "bg-[#063452] hover:brightness-110"
-                }`}
-              >
-                {executando ? "Conciliando..." : "Executar conciliação"}
-              </button>
+            type="button"
+            onClick={executarConciliacao}
+            className="h-11 rounded-xl bg-[#063452] px-6 text-sm font-black text-white hover:brightness-110"
+          >
+            {executando ? "Conciliando..." : "Executar conciliação"}
+          </button>
           </div>
 
           {modalReclassificarAberto && linhaReclassificar && (
