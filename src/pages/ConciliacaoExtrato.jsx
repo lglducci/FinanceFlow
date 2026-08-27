@@ -1286,7 +1286,46 @@ function converterLinhaContabil(item) {
             </div>
           </div>
 
-            
+            {resultado && (
+  <div className="mt-2.5 rounded-2xl border border-blue-300 bg-white px-5 py-4 shadow-sm">
+    <div className="mb-3 text-xs font-black uppercase tracking-wider text-slate-400">
+      Resumo da conciliação
+    </div>
+
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <Card
+        titulo="Pendências do financeiro"
+        valor={moeda(totalPdfPendente)}
+        alerta={totalPdfPendente !== 0}
+      />
+
+      <Card
+        titulo="Pendências do razão"
+        valor={moeda(totalRazaoPendente)}
+        alerta={totalRazaoPendente !== 0}
+      />
+
+      <Card
+        titulo="Criar lançamentos"
+        valor={criarLancamentos}
+        alerta={criarLancamentos > 0}
+      />
+
+      <Card
+        titulo="Excluir lotes"
+        valor={excluirLotes}
+        alerta={excluirLotes > 0}
+      />
+
+      <Card
+        titulo="Total de pendências"
+        valor={pendencias}
+        alerta={pendencias > 0}
+        ok={pendencias === 0}
+      />
+    </div>
+  </div>
+)}
           
 
           {erro && (
