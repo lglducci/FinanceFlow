@@ -119,9 +119,9 @@ function textoAcao(acao) {
 
 function Card({ titulo, valor, alerta = false }) {
   return (
-    <div className={`rounded-lg border bg-white p-3 shadow-sm ${alerta ? "border-red-300" : "border-slate-300"}`}>
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{titulo}</div>
-      <div className={`mt-1 text-lg font-bold ${alerta ? "text-red-700" : "text-slate-900"}`}>{valor}</div>
+    <div className={`rounded-lg border bg-white p-3 shadow-sm ${alerta ? "border-red-400" : "border-green-300"}`}>
+      <div className="text-[11px] font-bold uppercase tracking-wide text-slate-700">{titulo}</div>
+      <div className={`mt-1 text-lg font-bold ${alerta ? "text-red-700" : "text-blue-900"}`}>{valor}</div>
     </div>
   );
 }
@@ -856,217 +856,14 @@ function nomeFormaPagamento(forma) {
       <div className="mx-auto max-w-[1500px]">
         <div className="mb-4 overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
           <div className="bg-[#0F172A] px-5 py-4">
-            <h1 className="text-lg font-semibold text-white">Conciliação de Operadora</h1>
+            <h1 className="text-lg font-semibold text-white">Conciliação de Operadora (GETNET)</h1>
             <p className="mt-1 text-xs text-slate-300">Importe o arquivo da operadora, confira vendas, taxas e divergências.</p>
           </div>
 
            <div className="p-4">
 
   {/* DUAS CONTAS COM O MESMO TAMANHO */}
-  <div className="grid gap-6 lg:grid-cols-2 items-start"> 
-            <div>
-              <div>
-            <label className="mb-2 block text-xs font-black text-slate-700">
-              Conta Caixa (Empresa)
-            </label>
-
-          <div className="flex items-center gap-3 w-full">
-
-            {/* ANTERIOR */}
-            <button
-              type="button"
-              onClick={contaAnterior}
-              className="btn-pill btn-white flex items-center gap-2"
-            >
-              ◀
-            </button>
-
-            {contaAtual ? (
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() =>
-                  selecionarConta(contaAtual)
-                }
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" ||
-                    e.key === " "
-                  ) {
-                    e.preventDefault();
-                    selecionarConta(contaAtual);
-                  }
-                }}
-                className="
-                  flex-1 min-w-0
-                  rounded-[22px] border bg-white
-                  px-5 py-4
-                  flex items-center gap-4
-                  transition
-                  hover:scale-[1.01]
-                  cursor-pointer
-                "
-                style={{
-                  borderColor:
-                    contaAtual.cor_hex ||
-                    "#bae6fd",
-
-                  boxShadow:
-                    String(contaId) ===
-                    String(
-                      contaAtual.conta_id ??
-                        contaAtual.id
-                    )
-                      ? `0 0 0 2px ${
-                          contaAtual.cor_hex ||
-                          "#2563eb"
-                        }33,
-                        0 12px 28px ${
-                          contaAtual.cor_hex ||
-                          "#2563eb"
-                        }33`
-                      : `0 8px 20px ${
-                          contaAtual.cor_hex ||
-                          "#0f172a"
-                        }22`,
-                }}
-              >
-
-                {/* ÍCONE */}
-                <div
-                  className="
-                    h-16 w-16
-                    rounded-2xl border
-                    flex items-center
-                    justify-center
-                    overflow-hidden
-                    shrink-0
-                  "
-                  style={{
-                    background: `${
-                      contaAtual.cor_hex ||
-                      "#f8fafc"
-                    }12`,
-
-                    borderColor: `${
-                      contaAtual.cor_hex ||
-                      "#e2e8f0"
-                    }55`,
-                  }}
-                >
-                  {contaAtual.icone_url ? (
-                    <img
-                      src={contaAtual.icone_url}
-                      alt={
-                        contaAtual.banco_nome ||
-                        contaAtual.nome
-                      }
-                      className="h-10 w-10 object-contain"
-                    />
-                  ) : (
-                    <span className="text-3xl">
-                      🏦
-                    </span>
-                  )}
-                </div>
-
-                {/* CONTA */}
-                <div className="flex-1 min-w-0 text-left">
-
-                  <div className="text-lg font-black text-slate-800">
-                    {contaAtual.nome ||
-                      contaAtual.conta_nome}
-                  </div>
-
-                  <div className="mt-1 text-xs font-bold text-slate-400">
-                    {contaAtual.banco_nome ||
-                      contaAtual.banco ||
-                      "Conta bancária"}
-                  </div>
-
-                  <div className="mt-1 text-xs font-bold text-slate-500">
-                    Banco{" "}
-                    {contaAtual.nro_banco || "-"}
-                    {" • "}
-                    Ag.{" "}
-                    {contaAtual.agencia || "-"}
-                    {" • "}
-                    Conta{" "}
-                    {contaAtual.conta || "-"}
-                  </div>
-
-                  <div className="mt-1 text-xs font-bold text-slate-500">
-                    Conta {indiceConta + 1} de{" "}
-                    {contas.length}
-                  </div>
-
-                </div>
-
-                {/* SALDO */}
-                <div className="text-right shrink-0 min-w-[120px]">
-
-                  <div className="text-xs font-bold text-slate-400">
-                    Saldo
-                  </div>
-
-                  <div
-                    className={`text-lg font-black ${
-                      Number(saldo || 0) >= 0
-                        ? "text-emerald-700"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {carregandoSaldo
-                      ? "..."
-                      : Number(
-                          saldo || 0
-                        ).toLocaleString(
-                          "pt-BR",
-                          {
-                            style: "currency",
-                            currency: "BRL",
-                          }
-                        )}
-                  </div>
-
-                </div>
-              </div>
-            ) : (
-
-
-              
-              <div
-                className="
-                  w-full max-w-[520px]
-                  rounded-3xl
-                  border border-dashed
-                  border-slate-300
-                  bg-white
-                  px-5 py-8
-                  text-center
-                  font-bold
-                  text-slate-400
-                "
-              >
-                Nenhuma conta encontrada
-              </div>
-            )}
-
-            {/* PRÓXIMA */}
-            <button
-              type="button"
-              onClick={proximaConta}
-              className="btn-pill btn-white flex items-center gap-2"
-            >
-              ▶
-            </button>
-
-          </div>
-        </div>
-        </div>
-
-     
-            </div>
+ 
 
             <div className="border-t border-slate-200 px-4 py-4">
   <label className="mb-2 block text-xs font-semibold text-slate-600">
@@ -1204,7 +1001,7 @@ function nomeFormaPagamento(forma) {
 
         {resultado && (
           <>
-            <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-xs text-slate-600">
+            <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-1 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-600">
               <span><strong>Operadora:</strong> {resultado.operadora || "GETNET"}</span>
               <span><strong>Conta:</strong> {contaAtual?.nome || contaAtual?.conta_nome || contaId}</span>
               <span><strong>Período conferido:</strong> {dataBR(resultado.data_inicio || dataInicio)} a {dataBR(resultado.data_fim || dataFim)}</span>
