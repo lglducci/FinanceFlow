@@ -26,11 +26,36 @@ export default function RelatoriosRazao() {
  const [tipo, setTipo] = useState("c"); // r = detalhado (default)
  const [textoConta, setTextoConta] = useState("");
   const [contas, setContas] = useState([]);
+ const [filtroHistorico, setFiltroHistorico] = useState("");
+
+  
   const location = useLocation();
  const navigate = useNavigate();
  
 
-const movimentosConta = dados.filter(
+
+ const normalizarTexto = (texto) =>
+  String(texto || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+const dadosFiltrados = dados.filter((linha) => {
+  const passouFiltroZeradas =
+    mostrarZeradas || !linhaZerada(linha);
+
+  const passouFiltroHistorico =
+    !filtroHistorico.trim() ||
+    normalizarTexto(linha.historico).includes(
+      normalizarTexto(filtroHistorico)
+    );
+
+  return passouFiltroZeradas && passouFiltroHistorico;
+});
+
+
+ const movimentosConta = dadosFiltrados.filter(
   (l) => l.historico !== "TOTAL DA CONTA"
 );
 
@@ -57,9 +82,12 @@ const saidasPeriodo =
 
 const movimentacaoPeriodo = entradasPeriodo - saidasPeriodo;
 
+ 
 const saldoFinalPeriodo =
-  saldoInicialPeriodo + movimentacaoPeriodo;
-
+  saldoInicialPeriodo +
+  dados
+    .filter((l) => l.historico !== "TOTAL DA CONTA")
+    .reduce((total, l) => total + Number(l.valor || 0), 0);
 
   // formatter BR
   const fmt = new Intl.NumberFormat("pt-BR", {
@@ -178,6 +206,7 @@ function trocarTipo(novoTipo) {
   setDados([]);
   setLoading(false);
   setContaId("");
+  setFiltroHistorico("");
   // se tiver:
   // setTotais(null);
   // setSelecionado(null);
@@ -213,9 +242,7 @@ function linhaZerada(l) {
 
  function exportarExcel() {
  
-  const dadosExcel = dados
-    .filter((l) => mostrarZeradas || !linhaZerada(l))
-    .map((l) => ({
+  const dadosExcel = dadosFiltrados.map((l) => ({
       Data: formatarData(l.data_mov || l.data),
       Conta: l.conta_codigo ? `${l.conta_codigo} - ${l.conta_nome || ""}` : "",
       Contrapartida: l.conta_contrapartida || "",
@@ -258,7 +285,7 @@ return (
         {/* FILTROS */}
         <div className="p-5">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[150px_150px_360px_minmax(240px,1fr)]">
               <div>
                 <label className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500">
                   Data inicial
@@ -284,7 +311,7 @@ return (
               </div>
 
               {tipo === "c" ? (
-                <div className="md:col-span-2">
+               <div className="md:col-span-2 xl:col-span-1">
                   <label
                     htmlFor="conta-especifica"
                     className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500"
@@ -322,7 +349,7 @@ return (
                   </datalist>
                 </div>
               ) : (
-                <div className="md:col-span-2">
+                <div className="md:col-span-2 xl:col-span-1">
                   <label className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500">
                     Conta opcional
                   </label>
@@ -335,9 +362,46 @@ return (
                   />
                 </div>
               )}
+           
+            {tipo !== "m" && (
+            <div className="md:col-span-2 xl:col-span-1">
+              <label
+                htmlFor="filtro-historico"
+                className="mb-1 block text-xs font-black uppercase tracking-wide text-slate-500"
+              >
+                Histórico
+              </label>
+
+              <div className="relative">
+                <input
+                  id="filtro-historico"
+                  type="text"
+                  placeholder="Filtrar histórico..."
+                  value={filtroHistorico}
+                  onChange={(e) => setFiltroHistorico(e.target.value)}
+                  className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 pr-9 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                />
+
+                {filtroHistorico && (
+                  <button
+                    type="button"
+                    onClick={() => setFiltroHistorico("")}
+                    title="Limpar filtro"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-black text-slate-400 hover:text-red-600"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             </div>
+            
+          )}
+           </div>
 
             <div className="flex flex-wrap gap-2 lg:justify-end">
+
+
+              
               <button onClick={consultar} className="btn-pill btn-white flex items-center gap-2">
                 🔎 Consultar
               </button>
@@ -412,7 +476,7 @@ return (
       </div>
 
       <div className="mt-1 text-[11px] font-semibold text-slate-400">
-        Antes de {formatarData(dataIni)}
+        Saldo real antes de {formatarData(dataIni)}
       </div>
     </div>
 
@@ -427,7 +491,7 @@ return (
       </div>
 
       <div className="mt-1 text-[11px] font-semibold text-green-600">
-        No período
+         {filtroHistorico ? "No histórico filtrado" : "No período"}
       </div>
     </div>
 
@@ -463,7 +527,9 @@ return (
       </div>
 
       <div className="mt-1 text-[11px] font-semibold text-blue-500">
-        Entradas − Saídas
+       {filtroHistorico
+  ? "Resultado do histórico filtrado"
+  : "Entradas − Saídas"}
       </div>
     </div>
 
@@ -484,7 +550,7 @@ return (
       </div>
 
       <div className="mt-1 text-[11px] font-semibold text-slate-500">
-        Em {formatarData(dataFim)}
+       Saldo real em {formatarData(dataFim)}
       </div>
     </div>
 
@@ -508,7 +574,7 @@ return (
             <p className="text-xs font-semibold leading-none text-slate-500">
               {loading
                 ? "Carregando dados..."
-                : `${dados.filter((l) => mostrarZeradas || !linhaZerada(l)).length} registro(s)`}
+               : `${dadosFiltrados.length} registro(s)`}
             </p>
           </div>
         </div>
@@ -580,9 +646,7 @@ return (
             <tbody className="leading-tight">
               
 
-              {dados
-                .filter((l) => mostrarZeradas || !linhaZerada(l))
-                .map((l, idx) => {
+                {dadosFiltrados.map((l, idx) => {
                   const totalConta = l.historico === "TOTAL DA CONTA";
 
                   return (
@@ -700,16 +764,20 @@ return (
                   );
                 })}
 
-              {!loading && dados.length === 0 && (
+              {!loading && dadosFiltrados.length === 0 && (
                 <tr>
                   <td colSpan={8} className="px-6 py-14 text-center">
                     <div className="mx-auto max-w-md rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8">
                       <div className="text-4xl">📭</div>
                       <div className="mt-3 text-lg font-black text-slate-700">
-                        Nenhum lançamento encontrado
+                         {dados.length > 0 && filtroHistorico
+                            ? "Nenhum histórico encontrado"
+                            : "Nenhum lançamento encontrado"}
                       </div>
                       <div className="mt-1 text-sm font-semibold text-slate-500">
-                        Ajuste os filtros e clique em Consultar.
+                        {dados.length > 0 && filtroHistorico
+                        ? "Altere ou limpe o filtro de histórico."
+                        : "Ajuste os filtros e clique em Consultar."}
                       </div>
                     </div>
                   </td>
