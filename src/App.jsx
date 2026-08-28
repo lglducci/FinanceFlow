@@ -210,6 +210,9 @@ import ConciliacaoExtrato from "./pages/ConciliacaoExtrato";
 
 import ConciliacaoOperadora from "./pages/ConciliacaoOperadora";
 import RelatorioRecebiveis   from "./pages/RelatorioRecebiveis";
+import ExtratoPluggy from "./pages/ExtratoPluggy";
+
+import  ConciliacaoCartoesCredito  from "./pages/ConciliacaoCartoesCredito";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -717,8 +720,22 @@ const rotaAtual = window.location.pathname;
 />
 
  
+<Route
+  path="/extrato-pluggy"
+  element={<ExtratoPluggy />}
+/>
+ 
+
 
  
+<Route
+  path="/conciliacao-cartao"
+  element={<ConciliacaoCartoesCredito />}
+/>
+ 
+
+
+  
 
 </Routes>
 
