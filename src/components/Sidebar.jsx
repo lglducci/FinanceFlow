@@ -241,6 +241,18 @@ export default function Sidebar() {
                 label="Operadora"
                 onClick={() => navigate("/conciliacao-operadora")}
               />
+           
+
+              <SubItem
+                compact={!sidebarAberta}
+                icon={<IconCardTransaction />}
+                label="Cartões"
+                onClick={() => navigate("/conciliacao-cartao")}
+              />
+
+
+
+                
             </MenuGroup>
         )}
 
