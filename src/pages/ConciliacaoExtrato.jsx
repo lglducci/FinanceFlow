@@ -1286,6 +1286,8 @@ function converterLinhaContabil(item) {
             </div>
           </div>
 
+          
+
             {resultado && (
   <div className="mt-2.5 rounded-2xl border border-blue-300 bg-white px-5 py-4 shadow-sm">
     <div className="mb-3 text-xs font-black uppercase tracking-wider text-slate-400">
@@ -1794,124 +1796,124 @@ function converterLinhaContabil(item) {
           </div>
 
           {modalReclassificarAberto && linhaReclassificar && (
-  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-    <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
-      <div className="flex items-center justify-between border-b px-5 py-4">
-        <div>
-          <div className="text-base font-black text-[#063452]">
-            Reclassificar contrapartida
-          </div>
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
+                <div className="flex items-center justify-between border-b px-5 py-4">
+                  <div>
+                    <div className="text-base font-black text-[#063452]">
+                      Reclassificar contrapartida
+                    </div>
 
-          <div className="mt-1 text-xs font-bold text-slate-400">
-            Lote {linhaReclassificar.lote_id}
-          </div>
-        </div>
+                    <div className="mt-1 text-xs font-bold text-slate-400">
+                      Lote {linhaReclassificar.lote_id}
+                    </div>
+                  </div>
 
-        <button
-          type="button"
-          onClick={() => setModalReclassificarAberto(false)}
-          className="rounded-lg px-3 py-2 text-sm font-black text-slate-500 hover:bg-slate-100"
-        >
-          ✕
-        </button>
-      </div>
+                  <button
+                    type="button"
+                    onClick={() => setModalReclassificarAberto(false)}
+                    className="rounded-lg px-3 py-2 text-sm font-black text-slate-500 hover:bg-slate-100"
+                  >
+                    ✕
+                  </button>
+                </div>
 
-      <div className="space-y-4 p-5">
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <div className="text-xs font-black text-slate-500">
-            Lançamento
-          </div>
+                <div className="space-y-4 p-5">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                    <div className="text-xs font-black text-slate-500">
+                      Lançamento
+                    </div>
 
-          <div className="mt-1 text-sm font-bold text-slate-800">
-            {linhaReclassificar.historico}
-          </div>
+                    <div className="mt-1 text-sm font-bold text-slate-800">
+                      {linhaReclassificar.historico}
+                    </div>
 
-          <div className="mt-2 text-sm font-black text-[#063452]">
-            {moeda(linhaReclassificar.valor)}
-          </div>
-        </div>
+                    <div className="mt-2 text-sm font-black text-[#063452]">
+                      {moeda(linhaReclassificar.valor)}
+                    </div>
+                  </div>
 
-        <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="rounded-xl border p-3">
-            <div className="font-black text-slate-400">Débito atual</div>
-            <div className="mt-1 font-black">
-              {linhaReclassificar.conta_debito_codigo}
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="rounded-xl border p-3">
+                      <div className="font-black text-slate-400">Débito atual</div>
+                      <div className="mt-1 font-black">
+                        {linhaReclassificar.conta_debito_codigo}
+                      </div>
+                      <div>{linhaReclassificar.conta_debito_nome}</div>
+                    </div>
+
+                    <div className="rounded-xl border p-3">
+                      <div className="font-black text-slate-400">Crédito atual</div>
+                      <div className="mt-1 font-black">
+                        {linhaReclassificar.conta_credito_codigo}
+                      </div>
+                      <div>{linhaReclassificar.conta_credito_nome}</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-black text-slate-600">
+                      Nova conta da contrapartida
+                    </label>
+
+                    <input
+                      type="text"
+                      value={buscaReclassificar}
+                      onChange={(e) => {
+                        setBuscaReclassificar(e.target.value);
+                        setContaReclassificar(null);
+                      }}
+                      placeholder="Digite o código ou nome da conta..."
+                      className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-bold outline-none focus:border-blue-400"
+                    />
+
+                    <div className="mt-1 max-h-52 overflow-y-auto rounded-xl border border-slate-200">
+                      {contasReclassificacaoFiltradas.map((conta) => (
+                        <button
+                          key={conta.id}
+                          type="button"
+                          onClick={() => {
+                            setContaReclassificar(conta);
+                            setBuscaReclassificar(
+                              `${conta.codigo} - ${conta.nome}`
+                            );
+                          }}
+                          className={`block w-full border-b px-3 py-2 text-left text-xs hover:bg-blue-50 ${
+                            Number(contaReclassificar?.id) === Number(conta.id)
+                              ? "bg-blue-50 text-blue-700"
+                              : ""
+                          }`}
+                        >
+                          <span className="font-black">{conta.codigo}</span>
+                          {" - "}
+                          {conta.nome}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 border-t px-5 py-4">
+                  <button
+                    type="button"
+                    onClick={() => setModalReclassificarAberto(false)}
+                    className="rounded-lg border px-4 py-2 text-xs font-black text-slate-600"
+                  >
+                    Cancelar
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={!contaReclassificar || executando}
+                    onClick={confirmarReclassificacao}
+                    className="rounded-lg bg-blue-700 px-4 py-2 text-xs font-black text-white disabled:opacity-40"
+                  >
+                    Confirmar reclassificação
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>{linhaReclassificar.conta_debito_nome}</div>
-          </div>
-
-          <div className="rounded-xl border p-3">
-            <div className="font-black text-slate-400">Crédito atual</div>
-            <div className="mt-1 font-black">
-              {linhaReclassificar.conta_credito_codigo}
-            </div>
-            <div>{linhaReclassificar.conta_credito_nome}</div>
-          </div>
-        </div>
-
-        <div>
-          <label className="text-xs font-black text-slate-600">
-            Nova conta da contrapartida
-          </label>
-
-          <input
-            type="text"
-            value={buscaReclassificar}
-            onChange={(e) => {
-              setBuscaReclassificar(e.target.value);
-              setContaReclassificar(null);
-            }}
-            placeholder="Digite o código ou nome da conta..."
-            className="mt-1 h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-bold outline-none focus:border-blue-400"
-          />
-
-          <div className="mt-1 max-h-52 overflow-y-auto rounded-xl border border-slate-200">
-            {contasReclassificacaoFiltradas.map((conta) => (
-              <button
-                key={conta.id}
-                type="button"
-                onClick={() => {
-                  setContaReclassificar(conta);
-                  setBuscaReclassificar(
-                    `${conta.codigo} - ${conta.nome}`
-                  );
-                }}
-                className={`block w-full border-b px-3 py-2 text-left text-xs hover:bg-blue-50 ${
-                  Number(contaReclassificar?.id) === Number(conta.id)
-                    ? "bg-blue-50 text-blue-700"
-                    : ""
-                }`}
-              >
-                <span className="font-black">{conta.codigo}</span>
-                {" - "}
-                {conta.nome}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-end gap-2 border-t px-5 py-4">
-        <button
-          type="button"
-          onClick={() => setModalReclassificarAberto(false)}
-          className="rounded-lg border px-4 py-2 text-xs font-black text-slate-600"
-        >
-          Cancelar
-        </button>
-
-        <button
-          type="button"
-          disabled={!contaReclassificar || executando}
-          onClick={confirmarReclassificacao}
-          className="rounded-lg bg-blue-700 px-4 py-2 text-xs font-black text-white disabled:opacity-40"
-        >
-          Confirmar reclassificação
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+          )}
         </div>
       </div>
     </div>
