@@ -5,6 +5,9 @@ import { hojeLocal } from "../utils/dataLocal";
 import ModalEscolhaBanco from "../components/ModalEscolhaBanco";
 import NovaConta from "./NovaConta";
 import TransferenciaDrawer from "./app/AppTransferencia.jsx";
+import ConectarBancoModal from "./ConectarBancoModal";
+
+import ExtratoPeriodoModal from "./ExtratoPeriodoModal";
 
 export default function AppContas() {
   const navigate = useNavigate();
@@ -13,6 +16,7 @@ export default function AppContas() {
   const [bancoSelecionado, setBancoSelecionado] = useState(null);
   const [drawerAberto, setDrawerAberto] = useState(false);
   const [drawerAtivo, setDrawerAtivo] = useState(null); // null | "menu" | "nova_conta" | "transferencia"
+ const [contaExtrato, setContaExtrato] = useState(null);
  
   const empresa_id =
     localStorage.getItem("empresa_id") ||
@@ -28,6 +32,10 @@ export default function AppContas() {
     style: "currency",
     currency: "BRL",
   });
+
+  const [contaConectar, setContaConectar] = useState(null);
+
+
 
   async function carregarContas() {
     const url = buildWebhookUrl("consultasaldo", {
@@ -407,7 +415,7 @@ export default function AppContas() {
                 >
                   {fmt.format(Number(c.saldo_final || 0))}
                 </div>
-
+              <div>
                 <button
                   onClick={() =>
                     navigate("/app/editar-conta", {
@@ -423,6 +431,39 @@ export default function AppContas() {
                 >
                   Editar
                 </button>
+                    
+
+                    <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      setContaExtrato({
+                        ...c,
+                        empresa_id: c.empresa_id ?? empresa_id,
+                        conta_id: c.conta_id ?? c.id ?? c.id_conta,
+                      });
+                    }}
+                    className="rounded-full border border-emerald-300 bg-emerald-600 px-3 py-1 text-xs font-black text-white hover:bg-emerald-700"
+                  >
+                    Extrato
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+
+                      setContaConectar({
+                        ...c,
+                        conta_id: c.conta_id ?? c.id ?? c.id_conta,
+                      });
+                    }}
+                    className="rounded-full border border-blue-300 bg-blue-600 px-3 py-1 text-xs font-black text-white hover:bg-blue-700"
+                  >
+                    🔗 Conectar
+                  </button>
+                  </div>
               </div>
             ))}
 
@@ -558,6 +599,44 @@ export default function AppContas() {
   }}
 />
 
+ {contaConectar && (
+  <ConectarBancoModal
+    conta={contaConectar}
+    empresaId={empresa_id}
+    onClose={() => setContaConectar(null)}
+    onSuccess={() => {
+      setContaConectar(null);
+      carregarContas();
+    }}
+  />
+)}
+
+{contaExtrato && (
+  <ExtratoPeriodoModal
+    conta={contaExtrato}
+    onClose={() => setContaExtrato(null)}
+    onConfirm={({ data_inicio, data_fim }) => {
+      const contaSelecionada = contaExtrato;
+      setContaExtrato(null);
+
+      navigate("/extrato-pluggy", {
+        state: {
+          empresa_id: contaSelecionada.empresa_id ?? empresa_id,
+          conta_id:
+            contaSelecionada.conta_id ??
+            contaSelecionada.id ??
+            contaSelecionada.id_conta,
+          conta_nome: contaSelecionada.conta_nome,
+          nro_banco: contaSelecionada.nro_banco,
+          agencia: contaSelecionada.agencia,
+          conta: contaSelecionada.conta,
+          data_inicio,
+          data_fim,
+        },
+      });
+    }}
+  />
+)}
     </div>
   );
 }

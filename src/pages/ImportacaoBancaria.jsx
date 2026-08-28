@@ -10,6 +10,7 @@
 import ImportadorSicoob from "../components/ImportadorSicoob";
    import * as XLSX from "xlsx";
    import { useTranslation } from "react-i18next";
+   import ConectarBancoModal from "./ConectarBancoModal";
    
    export default function ImportacaoBancaria() {
      const { t } = useTranslation();
@@ -19,6 +20,7 @@ import ImportadorSicoob from "../components/ImportadorSicoob";
       const empresa_id = localStorage.getItem("empresa_id");
     const [contas, setContas] = useState([]);
     const inputOfxRef = useRef(null);
+  const [mostrarConexao, setMostrarConexao] = useState(false);
 
     /* importacao de pdf */
 
@@ -1665,6 +1667,8 @@ if (
   
   
       return (
+
+        
      <div className="min-h-screen bg-[#eef7fd] px-1 py-1">
         
           <div className="mx-auto w-full max-w-[1620px]">
@@ -1897,6 +1901,17 @@ if (
                                     >
                                       ✏️ Editar conta
                                     </button>
+
+                                   {/*}  <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setMostrarConexao(true);
+                                      }}
+                                      className="rounded-full border border-blue-300 bg-blue-600 px-3 py-1 text-xs font-black text-white hover:bg-blue-700"
+                                    >
+                                      🔗 Conectar conta
+                                    </button>*/}
                                   </div>
                                 </div>
                               ) : (
@@ -2381,7 +2396,13 @@ if (
   )}
 </ModalBase>
 
-
+ {mostrarConexao && (
+  <ConectarBancoModal
+    conta={contaAtual}
+    empresaId={empresa_id}
+    onClose={() => setMostrarConexao(false)}
+  />
+)}
      </div>
    );
    }
