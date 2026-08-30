@@ -640,6 +640,12 @@ return (
                 <th className="sticky top-0 px-2 py-1.5 text-right text-[13px] font-black uppercase tracking-wide">
                   Saldo
                 </th>
+
+                
+                <th className="sticky top-0 px-2 py-1.5 text-right text-[13px] font-black uppercase tracking-wide">
+                  Origem
+                </th>
+                
               </tr>
             </thead>
 
@@ -694,7 +700,7 @@ return (
                             totalConta ? "text-green-700" : "text-slate-700"
                           }`}
                         >
-                          <div className="max-w-[360px] truncate">
+                          <div className="max-w-[260px] truncate">
                             {l.conta_contrapartida || "-"}
                           </div>
                         </td>
@@ -707,7 +713,7 @@ return (
                           }`}
                         >
                            <div
-                            className="max-w-[520px] print:max-w-none print:whitespace-normal print:break-words"
+                            className="max-w-[420px] print:max-w-none print:whitespace-normal print:break-words"
                             title={l.historico}
                           >
                             {l.historico}
@@ -751,15 +757,32 @@ return (
                         </td>
                       )}
 
-                      <td
-                        className={`whitespace-nowrap border-b border-slate-100 px-2 py-1 text-right font-black ${
-                          Number(tipo === "c" ? l.saldo_final : l.saldo) < 0
-                            ? "text-red-600"
-                            : "text-green-700"
-                        }`}
-                      >
-                        {fmt.format(tipo === "c" ? l.saldo_final || 0 : l.saldo || 0)}
-                      </td>
+                       <td
+                          className={`whitespace-nowrap border-b border-slate-100 px-2 py-1 text-right font-black ${
+                            Number(tipo === "c" ? l.saldo_final : l.saldo) < 0
+                              ? "text-red-600"
+                              : "text-green-700"
+                          }`}
+                        >
+                          {fmt.format(tipo === "c" ? l.saldo_final || 0 : l.saldo || 0)}
+                        </td>
+
+                        <td className="whitespace-nowrap border-b border-slate-100 py-1 pl-5 pr-2">
+                          {l.origem == null || String(l.origem).trim() === "" ? (
+                            <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800">
+                              Financeiro
+                            </span>
+                          ) : String(l.origem).toUpperCase() === "CONTABIL" ? (
+                            <span className="inline-flex items-center rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-xs font-bold text-red-700">
+                              Manual
+                            </span>
+                          ) : (
+                            <span className="inline-flex max-w-[180px] items-center truncate rounded-full border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-600">
+                              {l.origem}
+                            </span>
+                          )}
+                        </td>
+
                     </tr>
                   );
                 })}
