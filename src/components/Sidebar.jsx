@@ -11,6 +11,22 @@ export default function Sidebar() {
   const toggleSub = (m) => setOpenSub(openSub === m ? null : m);
   const toggle = (m) => setOpen(open === m ? null : m);
 
+
+ 
+
+const [sidebarAberta, setSidebarAberta] = useState(() => {
+  return localStorage.getItem("sidebarFixada") === "true";
+});
+
+function alternarFixacao() {
+  const novaFixacao = !sidebarFixada;
+
+  setSidebarFixada(novaFixacao);
+  setSidebarAberta(novaFixacao);
+
+  localStorage.setItem("sidebarFixada", String(novaFixacao));
+}
+
   const logout = () => {
     localStorage.removeItem("ff_token");
     localStorage.removeItem("force_reset_password");
@@ -33,10 +49,19 @@ export default function Sidebar() {
     localStorage.setItem("perfil", json.codigo);
     setPerfil(json.codigo || "TOTAL");
   }
+ 
 
-  const [sidebarAberta, setSidebarAberta] = useState(() => {
-    return localStorage.getItem("sidebarAberta") !== "false";
+  const [sidebarFixada, setSidebarFixada] = useState(() => {
+  return localStorage.getItem("sidebarFixada") === "true";
+});
+
+function alternarFixacao() {
+  setSidebarFixada((prev) => {
+    const novoValor = !prev;
+    localStorage.setItem("sidebarFixada", String(novoValor));
+    return novoValor;
   });
+}
 
   function alternarSidebar() {
     setSidebarAberta((prev) => {
@@ -74,12 +99,21 @@ export default function Sidebar() {
 
   return (
     <aside
-      onMouseEnter={() => setSidebarAberta(true)}
-      onMouseLeave={() => setSidebarAberta(false)}
-      className={`transition-all duration-100 bg-gradient-to-b from-[#061f4a] via-[#061f4a] to-[#061f4a] text-white flex flex-col h-full border-r-2 border-yellow-200/70 shadow-[10px_0_35px_rgba(15,23,42,0.25)] ${
-  sidebarAberta ? "w-72" : "w-20"
-}`}
-    >
+  onMouseEnter={() => {
+    if (!sidebarFixada) {
+      setSidebarAberta(true);
+    }
+  }}
+  onMouseLeave={() => {
+    if (!sidebarFixada) {
+      setSidebarAberta(false);
+    }
+  }}
+  className={`transition-all duration-200 bg-[#061f4a] text-white flex flex-col h-full border-r border-white/10 shadow-sm ${
+    sidebarAberta ? "w-64" : "w-[68px]"
+  }`}
+>
+     
       <div
         className={`
           bg-[#061f4a]
@@ -89,7 +123,7 @@ export default function Sidebar() {
       >
         <div className={`flex items-center ${sidebarAberta ? "justify-between" : "justify-center"}`}>
           <div className={`flex items-center ${sidebarAberta ? "gap-3" : "justify-center"}`}>
-            <div className="h-12 w-12 rounded-2xl bg-white/10 shadow-inner flex items-center justify-center text-white shrink-0 border border-white/15">
+            <div className="h-10 w-10 rounded-2xl bg-white/10 shadow-inner flex items-center justify-center text-white shrink-0 border border-white/15">
              <img
                 src="/img/logo-flow-icon.png"
                 alt="FinanceFlow"
@@ -99,33 +133,45 @@ export default function Sidebar() {
 
             {sidebarAberta && (
               <div>
-                <h2 className="text-xl font-black tracking-tight whitespace-nowrap">FinanceFlow</h2>
-                <p className="text-xs text-white/75 font-bold whitespace-nowrap">Gestão financeira e contábil</p>
+                <h2 className="text-base font-bold tracking-tight whitespace-nowrap">
+                    FinanceFlow
+                  </h2>
+
+                  <p className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
+                    Gestão financeira e contábil
+                  </p>
               </div>
             )}
           </div>
 
-          {sidebarAberta && (
-            <button
-              type="button"
-              onClick={alternarSidebar}
-              title="Recolher menu"
-              className="h-10 w-10 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-black shadow-inner transition-all"
+          <div
+            className={`flex items-center ${
+              sidebarAberta ? "justify-between" : "justify-center"
+            }`}
+          >
+            <div
+              className={`flex items-center ${
+                sidebarAberta ? "gap-3" : "justify-center"
+              }`}
             >
-              «
-            </button>
-          )}
+              {/* LOGO E NOME PERMANECEM AQUI */}
+            </div>
 
-          {!sidebarAberta && (
-            <button
-              type="button"
-              onClick={alternarSidebar}
-              title="Expandir menu"
-              className="hidden"
-            >
-              ☰
-            </button>
-          )}
+            {sidebarAberta && (
+              <button
+                type="button"
+                onClick={alternarFixacao}
+                title={sidebarFixada ? "Desafixar menu" : "Fixar menu"}
+                className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                  sidebarFixada
+                    ? "bg-blue-500/25 text-blue-300"
+                    : "text-slate-600 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <IconPin fixada={sidebarFixada} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -345,7 +391,7 @@ export default function Sidebar() {
             sidebarAberta ? "justify-start px-3 py-3" : "justify-center w-full px-2 py-3"
           }`}
         >
-          <span className="h-9 w-9 rounded-xl bg-white/10 text-red-200 flex items-center justify-center shrink-0 border border-red-300/30 group-hover:bg-red-600 group-hover:text-white transition-all">
+          <span className="h-8 w-8 rounded-lg bg-white/10 text-red-200 flex items-center justify-center shrink-0 border border-red-300/30 group-hover:bg-red-600 group-hover:text-white transition-all">
             <IconLogout />
           </span>
           {sidebarAberta && <span>Sair</span>}
@@ -357,7 +403,7 @@ export default function Sidebar() {
 
  function SectionTitle({ label }) {
   return (
-    <div className="px-2 pt-2 text-[12px] uppercase tracking-wide font-black text-yellow-300/90">
+    <div className="px-2 pt-2 text-[10px] uppercase tracking-wide font-black text-yellow-300/80">
       {label}
     </div>
   );
@@ -384,14 +430,14 @@ function MenuItem({ icon, label, onClick, compact = false, active = false }) {
       `}
     >
       <span
-        className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-          active
-            ? "bg-blue-600 text-white shadow-md border border-white/20"
-            : "bg-white/10 text-white border border-white/20 group-hover:bg-white/20 group-hover:text-white group-hover:border-white/30"
-        }`}
-      >
-        {icon}
-      </span>
+  className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+    active
+      ? "bg-blue-500/25 text-blue-200 border border-blue-300/20"
+      : "bg-white/[0.06] text-slate-300 border border-white/10 group-hover:bg-white/10 group-hover:text-white"
+  }`}
+>
+  {icon}
+</span>
       {!compact && <span className="truncate">{label}</span>}
     </button>
   );
@@ -440,7 +486,7 @@ function NestedButton({ icon, label, open, onClick }) {
       className="group flex items-center justify-between w-full px-3 py-2 rounded-xl text-white/90 text-[13px] font-bold hover:bg-white/10 hover:text-white transition-all duration-200"
     >
       <span className="flex items-center gap-2.5">
-        <span className="h-7 w-7 rounded-lg bg-white/10 text-white flex items-center justify-center shrink-0 border border-white/20 group-hover:bg-white/20 group-hover:text-white group-hover:border-white/30 transition-all">
+        <span className="h-6 w-6 rounded-md bg-white/[0.05] text-white flex items-center justify-center shrink-0 border border-white/20 group-hover:bg-white/20 group-hover:text-white group-hover:border-white/30 transition-all">
           {icon}
         </span>
         <span>{label}</span>
@@ -477,8 +523,31 @@ function SubItem({ icon, label, onClick, compact = false, color = "blue" }) {
   );
 }
 
-const base = "w-6 h-6 stroke-current";
-const smallBase = "w-5 h-5 stroke-current";
+const IconPin = ({ fixada = false }) => (
+  <svg
+    className={`w-4 h-4 stroke-current transition-transform ${
+      fixada ? "-rotate-45" : ""
+    }`}
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M9 3h6l-1 5 4 4v2H6v-2l4-4-1-5Z"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+
+    <path
+      d="M12 14v7"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const base = "w-[18px] h-[18px] stroke-current";
+const smallBase = "w-4 h-4 stroke-current";
 
 const IconLogo = () => (
   <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
