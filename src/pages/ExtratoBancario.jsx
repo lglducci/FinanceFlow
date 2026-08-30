@@ -650,52 +650,112 @@
  }
  
   function TabelaRazao({ linhas }) {
-   function dataBR2(data) {
-     if (!data) return "-";
-     const d = String(data).split("T")[0];
-     const [ano, mes, dia] = d.split("-");
-     return `${dia}-${mes}-${ano}`;
-   }
- 
-   return (
-     <div className="mt-3 rounded-xl border border-gray-200 bg-white overflow-hidden">
-       <div className="grid grid-cols-[120px_1fr_220px_140px_140px] gap-2 bg-gray-200 px-4 py-2 text-sm font-black text-slate-700">
-         <div>Data</div>
-         <div>Histórico</div>
-         <div>Conta</div>
-         <div className="text-right">Valor</div>
-         <div className="text-right">Saldo</div>
-       </div>
- 
-       <div className="max-h-[560px] overflow-y-auto">
-         {linhas.map((l, idx) => (
-           <div
-             key={l.id || idx}
-             className="grid grid-cols-[120px_1fr_220px_140px_140px] gap-2 border-b px-4 py-2 text-sm items-center hover:bg-sky-50"
-           >
-             <div className="font-bold">{dataBR2(l.data_mov || l.data_lanc || l.data)}</div>
-             <div className="font-semibold text-slate-800">{l.historico}</div>
-             <div>{l.conta_contrapartida || l.conta_nome || l.conta || "-"}</div>
- 
-             <div className={`text-right font-black ${Number(l.valor || 0) < 0 ? "text-red-600" : "text-emerald-700"}`}>
-               {moeda(l.valor || 0)}
-             </div>
- 
-             <div className={`text-right font-black ${Number(l.saldo_final || 0) < 0 ? "text-red-600" : "text-emerald-700"}`}>
-               {moeda(l.saldo_final || 0)}
-             </div>
-           </div>
-         ))}
- 
-         {linhas.length === 0 && (
-           <div className="p-8 text-center font-bold text-slate-400">
-             Nenhum lançamento contábil encontrado.
-           </div>
-         )}
-       </div>
-     </div>
-   );
- }
+  function dataBR2(data) {
+    if (!data) return "-";
+
+    const d = String(data).split("T")[0];
+    const [ano, mes, dia] = d.split("-");
+
+    return `${dia}-${mes}-${ano}`;
+  }
+
+  const colunas =
+    "grid-cols-[90px_minmax(280px,1fr)_200px_120px_120px_130px]";
+
+  return (
+    <div className="mt-3 rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="overflow-x-auto">
+        <div className="min-w-[1100px]">
+          {/* Cabeçalho */}
+          <div
+            className={`grid ${colunas} gap-2 bg-gray-200 px-4 py-2 text-sm font-black text-slate-700`}
+          >
+            <div>Data</div>
+            <div>Histórico</div>
+            <div>Conta</div>
+            <div className="text-right">Valor</div>
+            <div className="text-right">Saldo</div>
+            <div className="text-center" >Origem</div>
+          </div>
+
+          {/* Linhas */}
+          <div className="max-h-[560px] overflow-y-auto">
+            {linhas.map((l, idx) => {
+              const origem =
+                String(l.origem ?? "").trim() || "-";
+
+              return (
+                <div
+                  key={l.id || idx}
+                  className={`grid ${colunas} gap-2 border-b px-4 py-2 text-sm items-center hover:bg-sky-50`}
+                >
+                  <div className="font-bold whitespace-nowrap">
+                    {dataBR2(l.data_mov || l.data_lanc || l.data)}
+                  </div>
+
+                  <div
+                    className="font-semibold text-slate-800 truncate"
+                    title={l.historico || ""}
+                  >
+                    {l.historico || "-"}
+                  </div>
+
+                  <div
+                    className="truncate"
+                    title={
+                      l.conta_contrapartida ||
+                      l.conta_nome ||
+                      l.conta ||
+                      ""
+                    }
+                  >
+                    {l.conta_contrapartida ||
+                      l.conta_nome ||
+                      l.conta ||
+                      "-"}
+                  </div>
+
+                  <div
+                    className={`text-right font-black ${
+                      Number(l.valor || 0) < 0
+                        ? "text-red-600"
+                        : "text-emerald-700"
+                    }`}
+                  >
+                    {moeda(l.valor || 0)}
+                  </div>
+
+                  <div
+                    className={`text-right font-black ${
+                      Number(l.saldo_final || 0) < 0
+                        ? "text-red-600"
+                        : "text-emerald-700"
+                    }`}
+                  >
+                    {moeda(l.saldo_final || 0)}
+                  </div>
+
+                  <div
+                    className="truncate text-xs font-semibold text-slate-500  text-center"
+                    title={origem}
+                  >
+                    {origem}
+                  </div>
+                </div>
+              );
+            })}
+
+            {linhas.length === 0 && (
+              <div className="p-8 text-center font-bold text-slate-400">
+                Nenhum lançamento contábil encontrado.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
  
  function Comparacao({ resumoBanco, resumoRazao, diferenca, diferencaRegistros, diferencaEntradas, diferencaSaidas, contaAtual }) {
    return (
