@@ -455,7 +455,7 @@ return (
         </div>
       </div>
 
-
+ <div id="print-area" className="space-y-4"> 
       {tipo === "c" && dados.length > 0 && (
   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
 
@@ -558,7 +558,7 @@ return (
 )}
 
       {/* TABELA */}
-      <div id="print-area" className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+     <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-100 px-2 py-1">
           <div>
             <div className="flex flex-wrap items-center gap-2">
@@ -814,7 +814,7 @@ return (
               Carregando razão contábil...
             </div>
           )}
-        </div>
+        </div></div> {/* fim do print-area */}
       </div>
     </div>
   </div>
