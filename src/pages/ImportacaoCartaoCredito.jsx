@@ -1,4 +1,4 @@
-          import { useEffect, useState } from "react";
+           import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { buildWebhookUrl } from "../config/globals";
@@ -1954,14 +1954,14 @@ return (
   <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-slate-200 px-4 py-4">
     <div className="mx-auto w-full max-w-[1700px] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
 
-      <div className="bg-[#061f4a] px-5 py-3">
+      <div className="bg-[#0b3260] px-4 py-2.5">
         <div className="flex items-center justify-between gap-4">
-           <div className="flex items-center gap-3">
-              <h2 className="text-lg font-black tracking-wide text-white">
-                💳 Central de Importação de Cartões — RESULTADO ATIVO
+           <div>
+              <h2 className="text-sm font-black tracking-wide text-white">
+                💳 Central de Importação de Cartões
               </h2>
 
-              <p className="text-xs text-sky-100 font-semibold">
+              <p className="mt-0.5 text-[10px] font-semibold text-sky-100">
                 Importe faturas por Excel, CSV, TXT ou PDF.
               </p>
             </div>
@@ -1970,7 +1970,7 @@ return (
             <button
               type="button"
               onClick={() => setAbaAtiva("lancamentos")}
-              className={`px-5 py-2 rounded-full font-black text-sm shadow ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-black shadow ${
                 abaAtiva === "lancamentos"
                   ? "bg-cyan-400 text-slate-950"
                   : "bg-white/10 text-white hover:bg-white/20"
@@ -1982,7 +1982,7 @@ return (
             <button
               type="button"
               onClick={() => setAbaAtiva("layout")}
-              className={`px-5 py-2 rounded-full font-black text-sm shadow ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-black shadow ${
                 abaAtiva === "layout"
                   ? "bg-cyan-400 text-slate-950"
                   : "bg-white/10 text-white hover:bg-white/20"
@@ -1992,11 +1992,12 @@ return (
             </button>
           </div>
         </div>
+      </div>
 
 
            {abaAtiva === "lancamentos" &&
   resultadoConciliacao && (
-    <div className="mt-5 overflow-hidden rounded-3xl border border-emerald-300 bg-white shadow-xl">
+    <div className="mx-4 mt-4 overflow-hidden rounded-2xl border border-emerald-300 bg-white shadow-xl">
       <div className="flex items-center justify-between gap-4 bg-emerald-700 px-5 py-4 text-white">
         <div>
           <h3 className="text-xl font-black">
@@ -2221,23 +2222,23 @@ return (
     </div>
   )}
 
-        {abaAtiva === "lancamentos" &&   !resultadoConciliacao && (
-           <div className="mt-2 grid grid-cols-[620px_420px_1fr] gap-3 items-center">
-            <div className="flex flex-col">
-              <label className="text-sm font-bold text-white mb-1">
+        {abaAtiva === "lancamentos" && !resultadoConciliacao && (
+           <div className="grid grid-cols-1 items-stretch gap-3 border-b border-slate-200 bg-white p-4 xl:grid-cols-[minmax(0,1fr)_420px_220px]">
+            <div className="rounded-xl border border-cyan-300 bg-white p-3">
+              <label className="mb-2 block text-[10px] font-black uppercase tracking-wide text-slate-400">
                 Cartão
               </label>
 
-              <div className="flex items-center justify-start gap-2">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => trocarCartao("anterior")}
-                  className="h-10 w-10 rounded-full bg-cyan-500 text-white text-sm font-black shadow hover:bg-cyan-600"
+                  className="h-8 w-8 shrink-0 rounded-full border border-slate-200 bg-white text-xs font-black text-blue-700 shadow-sm hover:bg-blue-50"
                 >
                   {"<<"}
                 </button>
 
-                <div className="w-full max-w-[390px] rounded-xl bg-white border border-cyan-200 px-3 py-2 shadow">
+                <div className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="text-base font-black text-slate-900">
@@ -2332,26 +2333,26 @@ return (
                 <button
                   type="button"
                   onClick={() => trocarCartao("proximo")}
-                  className="h-10 w-10 rounded-full bg-cyan-500 text-white text-sm font-black shadow hover:bg-cyan-600"
+                  className="h-8 w-8 shrink-0 rounded-full border border-slate-200 bg-white text-xs font-black text-blue-700 shadow-sm hover:bg-blue-50"
                 >
                   {">>"}
                 </button>
               </div>
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-bold text-white">
+            <div className="flex flex-col rounded-xl border border-cyan-300 bg-white p-3">
+              <label className="text-[10px] font-black uppercase tracking-wide text-slate-400">
                 Referência da fatura
               </label>
               <input
                 type="date"
                 value={dataReferencia}
                 onChange={(e) => setDataReferencia(e.target.value)}
-                className="h-10 rounded-xl border border-sky-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-cyan-300"
+                className="mt-2 h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-cyan-200"
               />
 
               {dataReferencia && (
-                <div className="text-xs text-yellow-100 font-bold mt-1">
+                <div className="mt-1 text-[10px] font-bold text-amber-600">
                   Mês/competência da fatura. A implantação contábil usa a data de hoje.
                 </div>
               )}
@@ -2362,19 +2363,19 @@ return (
               value={senhaPDF}
               onChange={(e) => setSenhaPDF(e.target.value)}
               placeholder="Senha do PDF, se houver"
-              className="h-10 rounded-xl border border-sky-200 bg-white px-3 text-sm font-bold text-slate-700"
+              className="mt-2 h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
             />
             </div>
 
-            <div className="text-right justify-self-end">
-              <div className="text-sm font-bold text-sky-100">
+            <div className="flex flex-col justify-center rounded-xl border border-cyan-300 bg-white p-3 text-right">
+              <div className="text-[10px] font-black uppercase tracking-wide text-slate-400">
                 Total líquido
               </div>
               <div
-                className={`text-2xl font-black ${
+                className={`mt-2 text-xl font-black ${
                   (resumo?.liquido || 0) >= 0
-                    ? "text-green-300"
-                    : "text-red-300"
+                    ? "text-emerald-700"
+                    : "text-red-700"
                 }`}
               >
                 {(resumo?.liquido || 0).toLocaleString("pt-BR", {
@@ -2385,7 +2386,6 @@ return (
             </div>
           </div>
         )}
-      </div>
 
       <div className="p-5 bg-slate-50">
         {abaAtiva === "layout" && (
