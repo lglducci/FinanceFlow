@@ -1,4 +1,4 @@
-         import { useEffect, useState } from "react";
+          import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { buildWebhookUrl } from "../config/globals";
@@ -20,7 +20,7 @@ export default function ImportacaoCartaoCredito() {
   const [linhas, setLinhas] = useState([]);
   const [resumo, setResumo] = useState(null);
   const [abaAtiva, setAbaAtiva] = useState("lancamentos");
-   
+
   const [dataReferencia, setDataReferencia] = useState("");
 const [importacaoId, setImportacaoId] = useState(null);
 const [salvando, setSalvando] = useState(false);
@@ -28,7 +28,7 @@ const [conciliando, setConciliando] = useState(false);
 const [statusEtapa, setStatusEtapa] = useState("importar");
 const [tipoArquivo, setTipoArquivo] = useState("");
 const [validacaoPDF, setValidacaoPDF] = useState(null);
- 
+
 const [contasContabeis, setContasContabeis] = useState([]);
 const [contaDropdownLinha, setContaDropdownLinha] = useState(null);
 const [contaBuscaLinha, setContaBuscaLinha] = useState({});
@@ -45,19 +45,15 @@ const [contaLoteId, setContaLoteId] = useState(null);
 const [mostrarContasLote, setMostrarContasLote] = useState(false);
 
 //const [filtroStatus, setFiltroStatus] = useState("pendentes");
- 
+
  const [filtroStatus, setFiltroStatus] = useState("todos");
-
-const [tipoImportacao, setTipoImportacao] =
-  useState("normal");
-
 
    const quantidadePendentes = linhas.filter(
   (linha) =>
     linhaExigeContaContabil(linha) &&
     !linha.conta_contabil_id
 ).length;
- 
+
   const botaoBase = `
     px-5 py-2 rounded-full
     font-bold text-sm tracking-wide
@@ -138,9 +134,9 @@ const [tipoImportacao, setTipoImportacao] =
     };
   }, []);
 
-   
 
-    
+
+
 
 
 
@@ -467,7 +463,7 @@ function extrairTotalFaturaPDF(texto) {
 
   return null;
 }
- 
+
 
 function montarValidacaoPDF({ linhasConvertidas, totalPDF }) {
   function ehPagamentoFatura(linha) {
@@ -891,7 +887,7 @@ function conferirCartaoSelecionadoComPDF(dadosPDF, cartao) {
 
   return true;
 });
- 
+
 
  async function importarArquivo(e) {
   try {
@@ -931,7 +927,7 @@ function conferirCartaoSelecionadoComPDF(dadosPDF, cartao) {
 
     let linhasConvertidas = [];
     let validacao = null;
- 
+
     if (ext === "pdf") {
   const retornoPDF = await importarPDFViaN8N(file, buffer);
 
@@ -974,7 +970,7 @@ if (!conferencia.ok) {
     return;
   }
 }
- 
+
   linhasConvertidas = Array.isArray(retornoPDF?.linhas)
   ? retornoPDF.linhas
   : [];
@@ -1080,7 +1076,7 @@ processarLinhasImportadas(
     alert(err.message || "Erro ao importar arquivo.");
   }
 }
-  
+
 
 async function importarPDFViaN8N(file, buffer) {
   const formData = new FormData();
@@ -1377,12 +1373,12 @@ setResultadoConciliacao(null);
 setTransacoesFatura([]);
 setCarregandoTransacoes(false);
 
- 
+
 setCarregandoResultado(false);
 
 
 }
- 
+
 
   async function conciliarImportacao() {
   if (!importacaoId) {
@@ -1435,7 +1431,7 @@ function sugerirDataReferencia(linhasConvertidas) {
   const cartao = cartoes.find((c) => String(c.id) === String(cartaoId));
   const fechamentoDia = Number(cartao?.fechamento_dia || 31);
 
-  
+
 
   const competencias = linhasConvertidas
     .filter((l) => l.tipo_linha === "compra" && Number(l.valor || 0) > 0 && l.data)
@@ -1465,7 +1461,7 @@ function sugerirDataReferencia(linhasConvertidas) {
   return competencias[competencias.length - 1];
 }
 
- 
+
  function formatarMoeda(valor) {
   return Number(valor || 0).toLocaleString("pt-BR", {
     style: "currency",
@@ -1604,7 +1600,7 @@ function filtrarContasDaLinha(texto) {
   setContasFiltradasLinha([]);
 }
 
- 
+
 async function carregarTransacoesFatura(faturaId) {
   if (!faturaId) {
     throw new Error("Fatura não informada.");
@@ -1658,7 +1654,7 @@ async function carregarTransacoesFatura(faturaId) {
     setCarregandoTransacoes(false);
   }
 }
- 
+
 
 async function carregarResultadoConciliacao() {
   try {
@@ -1731,32 +1727,12 @@ function linhaExigeContaContabil(linha) {
     linha?.tipo_linha || ""
   ).toLowerCase();
 
-  const parcelaAtual = Number(
-    linha?.parcela_atual || 1
-  );
-
-  if (
-    tipo === "credito" ||
-    tipo === "pagamento"
-  ) {
-    return false;
-  }
-
-  if (tipo === "compra") {
-    return true;
-  }
-
-  if (
-    tipoImportacao === "implantacao" &&
-    tipo === "parcela"
-  ) {
-    return true;
-  }
-
-  return (
-    tipo === "parcela" &&
-    parcelaAtual === 1
-  );
+  /*
+    A conta de despesa pode ser corrigida em qualquer compra ou parcela,
+    independentemente de ser importação normal ou implantação.
+    Crédito e pagamento não recebem conta de despesa nesta etapa.
+  */
+  return tipo === "compra" || tipo === "parcela";
 }
 
 function selecionarLinhaLote(linha) {
@@ -1835,7 +1811,7 @@ function aplicarContaSelecionados() {
   setContaLoteId(null);
   setMostrarContasLote(false);
 }
- 
+
 
 async function buscarContasContabeisImportacao(linhasImportadas) {
   if (!Array.isArray(linhasImportadas) || linhasImportadas.length === 0) {
@@ -2116,7 +2092,7 @@ return (
 
 
 
-      
+
 
       {carregandoTransacoes ? (
         <div className="p-8 text-center font-bold text-slate-500">
@@ -2244,7 +2220,7 @@ return (
       )}
     </div>
   )}
- 
+
         {abaAtiva === "lancamentos" &&   !resultadoConciliacao && (
            <div className="mt-2 grid grid-cols-[620px_420px_1fr] gap-3 items-center">
             <div className="flex flex-col">
@@ -2493,7 +2469,7 @@ return (
           {abaAtiva === "lancamentos" &&
   resumo &&
   !resultadoConciliacao && (
- 
+
            <div className="mb-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-800">
             ✔ {resumo.qtd} registros importados | Compras:{" "}
             {resumo.compras.toLocaleString("pt-BR", {
@@ -2682,10 +2658,10 @@ return (
                       />
                     ) : (
                       <span
-                        title="Esta linha não recebe conta contábil nesta etapa"
+                        title="Crédito ou pagamento não recebe conta de despesa nesta etapa"
                         className="text-slate-300"
                       >
-                        🔒
+                        —
                       </span>
                     )}
                   </div>
@@ -2709,7 +2685,7 @@ return (
                   </div>
 
                   <div className="relative min-w-0" data-dropdown-conta-cartao>
-                  
+
                       {linhaExigeContaContabil(l) ? (
                       <>
                         <input
@@ -2778,10 +2754,10 @@ return (
                       </>
                     ) : (
                       <div
-                        title="A conta contábil vem da compra original e é reutilizada nas demais parcelas"
-                        className="flex h-9 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 px-2 text-xs font-semibold text-sky-700"
+                        title="Crédito ou pagamento não recebe conta de despesa nesta etapa"
+                        className="flex h-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-2 text-xs font-semibold text-slate-400"
                       >
-                        🔒 Mesma conta da compra
+                        Não se aplica
                       </div>
                     )}
                   </div>
@@ -2815,7 +2791,7 @@ return (
             </div>
           </div>
         )}
-          
+
           {abaAtiva === "lancamentos" &&
   !resultadoConciliacao && (
            <div className="mt-5 flex items-center justify-end gap-3 pr-20">

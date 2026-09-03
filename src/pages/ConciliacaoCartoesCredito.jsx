@@ -1,4 +1,4 @@
-  import { useEffect, useMemo, useState } from "react";
+   import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
@@ -126,7 +126,7 @@ const listaContas =
   baseContas?.data ||
   baseContas?.dados ||
   (Array.isArray(jsonContas) ? jsonContas : []);
- 
+
 
         setCartoes(listaCartoes);
         setContas(
@@ -221,147 +221,155 @@ const listaContas =
   return (
     <div className="min-h-screen bg-slate-100 p-3 text-slate-800">
       <div className="mx-auto max-w-[1600px]">
-        <div className="mb-3 flex flex-wrap items-end gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="h-9 rounded-lg border border-slate-300 px-3 text-xs font-black text-slate-600"
-          >
-            ← Voltar
-          </button>
-            <div className="w-[500px] shrink-0">
-  <div className="mb-1 text-[10px] font-black uppercase text-slate-500">
-    Cartão
-  </div>
-
-  <div className="flex items-center gap-2">
-    <button
-      type="button"
-      onClick={() => trocarCartao("anterior")}
-      disabled={cartoes.length <= 1}
-      className="h-7 w-7 shrink-0 rounded-full border border-cyan-200 bg-green-500 text-xs font-black text-white shadow-sm hover:bg-cyan-50 disabled:opacity-30"
-    >
-      {"<<"}
-    </button>
-
-    <div className="w-full rounded-lg border border-cyan-200 bg-white px-3 py-2 shadow-sm">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="text-sm font-black text-slate-900">
-            {cartaoAtual?.nome ||
-              cartaoAtual?.descricao ||
-              cartaoAtual?.apelido ||
-              `Cartão ${cartaoId || "-"}`}
-          </div>
-
-          <div className="mt-0.5 text-xs font-bold text-slate-500">
-            Final{" "}
-            {String(cartaoAtual?.numero || "").slice(-4) || "----"}
-          </div>
-
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            <button
-              type="button"
-              onClick={() =>
-                navigate(`/app/edit-card/${cartaoAtual.id}`)
-              }
-              disabled={!cartaoAtual?.id}
-              className="rounded-lg border border-blue-200 bg-blue-50 px-2 py-1 text-[9px] font-black text-blue-700 hover:bg-blue-100 disabled:opacity-40"
-            >
-              Editar cartão
-            </button>
+        <section className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between gap-3 bg-[#0b3260] px-4 py-2.5 text-white">
+            <div>
+              <div className="text-sm font-black">▣ Conciliação de Cartão de Crédito</div>
+              <div className="mt-0.5 text-[10px] font-bold text-slate-300">
+                Compras, razão contábil e reclassificação
+              </div>
+            </div>
 
             <button
               type="button"
-              onClick={() => navigate("/app/new-card")}
-              className="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[9px] font-black text-emerald-700 hover:bg-emerald-100"
+              onClick={() => navigate(-1)}
+              className="h-8 rounded-lg border border-white/25 bg-white/10 px-3 text-xs font-black text-white hover:bg-white/20"
             >
-              + Novo cartão
+              ← Voltar
             </button>
           </div>
-        </div>
 
-        <div className="text-right">
-          <div className="text-[10px] font-bold text-slate-400">
-            Disponível
+          <div className="grid grid-cols-1 gap-3 p-3 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="rounded-xl border border-cyan-300 bg-white p-3">
+              <div className="mb-2 text-[10px] font-black uppercase tracking-wide text-slate-400">
+                Cartão
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => trocarCartao("anterior")}
+                  disabled={cartoes.length <= 1}
+                  className="h-8 w-8 shrink-0 rounded-full border border-slate-200 bg-white text-xs font-black text-blue-700 shadow-sm hover:bg-blue-50 disabled:opacity-30"
+                >
+                  {"<<"}
+                </button>
+
+                <div className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-sm font-black text-slate-900">
+                        {cartaoAtual?.nome ||
+                          cartaoAtual?.descricao ||
+                          cartaoAtual?.apelido ||
+                          `Cartão ${cartaoId || "-"}`}
+                      </div>
+
+                      <div className="mt-0.5 text-xs font-bold text-slate-500">
+                        Final {String(cartaoAtual?.numero || "").slice(-4) || "----"}
+                      </div>
+
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/app/edit-card/${cartaoAtual.id}`)}
+                          disabled={!cartaoAtual?.id}
+                          className="rounded-lg border border-blue-200 bg-blue-50 px-2 py-1 text-[9px] font-black text-blue-700 hover:bg-blue-100 disabled:opacity-40"
+                        >
+                          Editar cartão
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => navigate("/app/new-card")}
+                          className="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[9px] font-black text-emerald-700 hover:bg-emerald-100"
+                        >
+                          + Novo cartão
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="text-[11px] font-bold text-slate-400">Disponível</div>
+                      <div className="text-sm font-black text-emerald-700">
+                        {moeda(cartaoAtual?.limite_disponivel)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-2 grid grid-cols-3 gap-1 text-[10px]">
+                    <div className="rounded-md bg-slate-100 px-1.5 py-1">
+                      <div className="font-bold text-slate-500">Limite</div>
+                      <div className="font-black text-slate-900">
+                        {moeda(cartaoAtual?.limite_total)}
+                      </div>
+                    </div>
+
+                    <div className="rounded-md bg-slate-100 px-1.5 py-1">
+                      <div className="font-bold text-slate-500">Fecha</div>
+                      <div className="font-black text-slate-900">
+                        Dia {cartaoAtual?.fechamento_dia || "-"}
+                      </div>
+                    </div>
+
+                    <div className="rounded-md bg-slate-100 px-1.5 py-1">
+                      <div className="font-bold text-slate-500">Vence</div>
+                      <div className="font-black text-slate-900">
+                        Dia {cartaoAtual?.vencimento_dia || "-"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => trocarCartao("proximo")}
+                  disabled={cartoes.length <= 1}
+                  className="h-8 w-8 shrink-0 rounded-full border border-slate-200 bg-white text-xs font-black text-blue-700 shadow-sm hover:bg-blue-50 disabled:opacity-30"
+                >
+                  {">>"}
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-cyan-300 bg-white p-3">
+              <div className="mb-2 text-[10px] font-black uppercase tracking-wide text-slate-400">
+                Período
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <label className="text-[10px] font-black text-slate-600">
+                  Início
+                  <input
+                    type="date"
+                    value={inicio}
+                    onChange={(e) => setInicio(e.target.value)}
+                    className="mt-1 block h-9 w-full rounded-lg border border-slate-300 px-2 text-xs font-bold"
+                  />
+                </label>
+
+                <label className="text-[10px] font-black text-slate-600">
+                  Fim
+                  <input
+                    type="date"
+                    value={fim}
+                    onChange={(e) => setFim(e.target.value)}
+                    className="mt-1 block h-9 w-full rounded-lg border border-slate-300 px-2 text-xs font-bold"
+                  />
+                </label>
+              </div>
+
+              <button
+                type="button"
+                onClick={consultar}
+                disabled={carregando || !cartaoId}
+                className="mt-3 h-9 w-full rounded-lg bg-[#063452] px-5 text-xs font-black text-white hover:bg-[#0b4568] disabled:opacity-50"
+              >
+                {carregando ? "Carregando..." : "Consultar"}
+              </button>
+            </div>
           </div>
-
-          <div className="text-sm font-black text-emerald-700">
-            {moeda(cartaoAtual?.limite_disponivel)}
-          </div>
-        </div>
-      </div>
-
-       <div className="mt-1 grid grid-cols-3 gap-1 text-[9px]">
-        <div className="rounded-md bg-slate-100 px-1.5 py-1">
-          <div className="font-bold text-slate-500">
-            Limite
-          </div>
-
-          <div className="font-black text-slate-900">
-            {moeda(cartaoAtual?.limite_total)}
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-slate-100 px-2 py-1.5">
-          <div className="font-bold text-slate-500">
-            Fecha
-          </div>
-
-          <div className="font-black text-slate-900">
-            Dia {cartaoAtual?.fechamento_dia || "-"}
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-slate-100 px-2 py-1.5">
-          <div className="font-bold text-slate-500">
-            Vence
-          </div>
-
-          <div className="font-black text-slate-900">
-            Dia {cartaoAtual?.vencimento_dia || "-"}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <button
-      type="button"
-      onClick={() => trocarCartao("proximo")}
-      disabled={cartoes.length <= 1}
-      className="h-7 w-7 shrink-0 rounded-full border border-cyan-200 bg-green-500 text-xs font-black text-white shadow-sm hover:bg-cyan-50 disabled:opacity-30"
-    >
-      {">>"}
-    </button>
-  </div>
-</div>
-          <label className="text-[10px] font-black uppercase text-slate-500">
-            Início
-            <input
-              type="date"
-              value={inicio}
-              onChange={(e) => setInicio(e.target.value)}
-              className="mt-1 block h-9 rounded-lg border border-slate-300 px-2 text-xs font-bold"
-            />
-          </label>
-          <label className="text-[10px] font-black uppercase text-slate-500">
-            Fim
-            <input
-              type="date"
-              value={fim}
-              onChange={(e) => setFim(e.target.value)}
-              className="mt-1 block h-9 rounded-lg border border-slate-300 px-2 text-xs font-bold"
-            />
-          </label>
-          <button
-            type="button"
-            onClick={consultar}
-            disabled={carregando || !cartaoId}
-            className="h-9 rounded-lg bg-[#063452] px-5 text-xs font-black text-white disabled:opacity-50"
-          >
-            {carregando ? "Carregando..." : "Consultar"}
-          </button>
-        </div>
+        </section>
 
         {erro && (
           <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700">
@@ -390,18 +398,18 @@ const listaContas =
             </div>
           ) : (
             <div className="overflow-auto">
-             
+
                  <table className="w-[1560px] table-fixed text-sm">
                 <thead>
                   <tr className="bg-[#0F172A] text-left text-white">
                     <th className="w-[90px] px-2 py-2">Data</th>
                     <th className="w-[270px] px-2 py-2">Estabelecimento</th>
-                
+
                     <th className="w-[85px] px-2 py-2 text-center">Parcela</th>
-                    <th className="w-[235px] px-2 py-2">Conta atual</th>
-                  
+                    <th className="w-[235px] px-2 py-2">Débito</th>
+
                     <th className="w-[105px] px-2 py-2 text-right">Valor</th>
-                        <th className="w-[85px] px-2 py-2 text-center">Lote</th> 
+                        <th className="w-[85px] px-2 py-2 text-center">Lote</th>
                     <th className="w-[105px] px-2 py-2 text-center">Status</th>
                     <th className="w-[155px] px-2 py-2 text-center">Ação</th>
                   </tr>
@@ -416,7 +424,7 @@ const listaContas =
                       <td title={item.estabelecimento || ""} className="truncate border-b border-slate-100 px-2 py-2">
                         {item.estabelecimento || "-"}
                       </td>
-                     
+
                       <td className="border-b border-slate-100 px-2 py-2 text-center">{item.parcela_texto || "-"}</td>
                       <td className="border-b border-slate-100 px-2 py-2">
                         <div className="font-black">{item.conta_codigo || "-"}</div>
