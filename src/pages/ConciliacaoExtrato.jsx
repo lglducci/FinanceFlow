@@ -1,4 +1,4 @@
-  import { useEffect, useRef, useState } from "react";
+   import { useEffect, useRef, useState } from "react";
  
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -95,7 +95,7 @@ function abrirModalReclassificar(item) {
   setBuscaReclassificar("");
   setModalReclassificarAberto(true);
 }
- async function confirmarReclassificacao() {
+async function confirmarReclassificacao() {
   if (!linhaReclassificar?.lote_id) {
     alert("Lote não identificado.");
     return;
@@ -119,11 +119,14 @@ function abrirModalReclassificar(item) {
     return;
   }
 
+  const linhaAlvo = linhaReclassificar;
+  const novaConta = contaReclassificar;
+
   try {
     setExecutando(true);
     setErroContabil("");
 
-    await fetch(
+    const resp = await fetch(
       buildWebhookUrl("reclassifica_contabil"),
       {
         method: "POST",
@@ -133,41 +136,129 @@ function abrirModalReclassificar(item) {
         body: JSON.stringify({
           empresa_id: Number(empresa_id),
           conta_id: Number(contaId),
-          lote_id: Number(linhaReclassificar.lote_id),
-          conta_alterada_id: Number(contaReclassificar.id),
+          lote_id: Number(linhaAlvo.lote_id),
+          conta_alterada_id: Number(novaConta.id),
         }),
       }
     );
 
-    // Atualiza somente a linha reclassificada
-    setDadosContabeis((atual) =>
-      atual.map((item) => {
-        if (
-          Number(item.lote_id) !==
-          Number(linhaReclassificar.lote_id)
-        ) {
-          return item;
-        }
+    const textoResposta = await resp.text();
 
-        const bancoEstaNoDebito = String(
-          item.conta_debito_codigo || ""
-        ).startsWith("1.1.4");
+    if (!resp.ok) {
+      throw new Error(
+        textoResposta ||
+        `Erro ao reclassificar o lançamento (${resp.status}).`
+      );
+    }
 
-        if (bancoEstaNoDebito) {
+    const normalizarComparacao = (valor) =>
+      String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^A-Z0-9]/gi, "")
+        .toUpperCase();
+
+    const nomesBanco = [
+      contaAtual?.nome,
+      contaAtual?.conta_nome,
+    ]
+      .map(normalizarComparacao)
+      .filter(Boolean);
+
+    const codigosBanco = [
+      contaAtual?.conta_contabil_codigo,
+      contaAtual?.codigo_contabil,
+      contaAtual?.contabil_codigo,
+      contaAtual?.conta_codigo,
+    ]
+      .map(normalizarComparacao)
+      .filter(Boolean);
+
+    // Como a consulta do Razão está filtrada por conta financeira,
+    // a conta bancária é a que se repete nas linhas do período.
+    // Isso cobre os casos em que consultasaldo não devolve o código contábil.
+    const ocorrenciasPorCodigo = dadosContabeis.reduce((mapa, item) => {
+      [item.conta_debito_codigo, item.conta_credito_codigo]
+        .map(normalizarComparacao)
+        .filter(Boolean)
+        .forEach((codigo) => {
+          mapa.set(codigo, (mapa.get(codigo) || 0) + 1);
+        });
+
+      return mapa;
+    }, new Map());
+
+    const codigosPorFrequencia = [...ocorrenciasPorCodigo.entries()]
+      .sort((a, b) => b[1] - a[1]);
+
+    if (
+      codigosPorFrequencia[0]?.[1] >= 2 &&
+      codigosPorFrequencia[0]?.[1] > (codigosPorFrequencia[1]?.[1] || 0)
+    ) {
+      codigosBanco.push(codigosPorFrequencia[0][0]);
+    }
+
+    const correspondeAoBanco = (codigo, nome) => {
+      const codigoNormalizado = normalizarComparacao(codigo);
+      const nomeNormalizado = normalizarComparacao(nome);
+
+      const codigoConfere =
+        codigoNormalizado && codigosBanco.includes(codigoNormalizado);
+
+      const nomeConfere =
+        nomeNormalizado &&
+        nomesBanco.some(
+          (nomeBanco) =>
+            nomeBanco === nomeNormalizado ||
+            (nomeBanco.length >= 5 && nomeNormalizado.includes(nomeBanco)) ||
+            (nomeNormalizado.length >= 5 && nomeBanco.includes(nomeNormalizado))
+        );
+
+      return Boolean(codigoConfere || nomeConfere);
+    };
+
+    const bancoNoDebito = correspondeAoBanco(
+      linhaAlvo.conta_debito_codigo,
+      linhaAlvo.conta_debito_nome
+    );
+
+    const bancoNoCredito = correspondeAoBanco(
+      linhaAlvo.conta_credito_codigo,
+      linhaAlvo.conta_credito_nome
+    );
+
+    if (bancoNoDebito !== bancoNoCredito) {
+      // A conta banco permanece intacta; altera somente a contrapartida.
+      setDadosContabeis((atual) =>
+        atual.map((item) => {
+          if (Number(item.lote_id) !== Number(linhaAlvo.lote_id)) {
+            return item;
+          }
+
+          if (bancoNoDebito) {
+            return {
+              ...item,
+              conta_credito_codigo: novaConta.codigo,
+              conta_credito_nome: novaConta.nome,
+            };
+          }
+
           return {
             ...item,
-            conta_credito_codigo: contaReclassificar.codigo,
-            conta_credito_nome: contaReclassificar.nome,
+            conta_debito_codigo: novaConta.codigo,
+            conta_debito_nome: novaConta.nome,
           };
-        }
-
-        return {
-          ...item,
-          conta_debito_codigo: contaReclassificar.codigo,
-          conta_debito_nome: contaReclassificar.nome,
-        };
-      })
-    );
+        })
+      );
+    } else {
+      // Fallback seguro: atualiza somente a grade, sem recarregar a tela.
+      await carregarContabilImportacao({
+        empresaId: empresa_id,
+        contaId,
+        dataInicio: inicio,
+        dataFim: fim,
+      });
+    }
 
     setModalReclassificarAberto(false);
     setLinhaReclassificar(null);
@@ -1125,7 +1216,7 @@ function converterLinhaContabil(item) {
            <div className="flex items-center justify-between border-b border-blue-200 bg-[#082a57] px-5 py-3">
               <div>
                 <h1 className="text-lg font-black text-white">
-                  📄 Conciliação de Extrato PDF  
+                  📄 Conciliação de Extrato Razão.  
                 </h1>
 
                 <p className="mt-0.5 text-xs font-semibold text-blue-100">
