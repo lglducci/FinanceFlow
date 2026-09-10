@@ -986,6 +986,14 @@ navigate("/conciliacao-revisao");
    
    
     /* Importacao de pdf   */
+
+function normalizarCodigoBanco(valor) {
+  const numero = somenteNumeros(valor).replace(/^0+/, "");
+
+  return numero
+    ? numero.padStart(3, "0")
+    : "";
+}
    
 
 function normalizarNomeBanco(valor) {
@@ -1482,7 +1490,47 @@ if (
        conta: texto.match(/<ACCTID>([^<\n\r]+)/)?.[1]?.trim() || "",
      };
    }
+
+
+   function normalizarAgencia(valor) {
+  const texto = String(valor || "").trim();
+
+  // Remove o dígito verificador depois do hífen
+  const agenciaSemDigito = texto.split("-")[0];
+
+  return somenteNumeros(agenciaSemDigito)
+    .replace(/^0+/, "");
+}
    
+
+
+function numeroComDigitoOpcionalBate(valorTela, valorArquivo) {
+  const tela = somenteNumeros(valorTela)
+    .replace(/^0+/, "");
+
+  const arquivo = somenteNumeros(valorArquivo)
+    .replace(/^0+/, "");
+
+  return (
+    !tela ||
+    !arquivo ||
+    tela === arquivo ||
+
+    // Tela possui um dígito a mais no final
+    (
+      tela.length === arquivo.length + 1 &&
+      tela.startsWith(arquivo)
+    ) ||
+
+    // Arquivo possui um dígito a mais no final
+    (
+      arquivo.length === tela.length + 1 &&
+      arquivo.startsWith(tela)
+    )
+  );
+}
+
+
    function validarOFXContaSelecionada(texto) {
      const contaSelecionada = contas.find(
        (c) => String(c.conta_id) === String(contaId)
@@ -1495,36 +1543,54 @@ if (
    
      const ofx = extrairDadosContaOFX(texto);
    
-     const bancoTela = somenteNumeros(contaSelecionada.nro_banco);
-     const agenciaTela = somenteNumeros(contaSelecionada.agencia);
+ 
+     const agenciaTela = normalizarAgencia(
+  contaSelecionada.agencia
+);
      const contaTela = somenteNumeros(contaSelecionada.conta);
    
-     const bancoOfx = somenteNumeros(ofx.banco);
-     const agenciaOfx = somenteNumeros(ofx.agencia);
+     const bancoTela = normalizarCodigoBanco(
+  contaSelecionada.nro_banco
+);
+
+const bancoOfx = normalizarCodigoBanco(
+  ofx.banco
+);
+ 
+    const agenciaOfx = normalizarAgencia(
+  ofx.agencia
+);
      const contaOfx = somenteNumeros(ofx.conta);
    
      if (bancoTela && bancoOfx && bancoTela !== bancoOfx) {
        alert(`${t("importacaoBancaria.ofxBloqueadoBanco", "OFX bloqueado: banco do arquivo")} (${bancoOfx}) ${t("importacaoBancaria.diferenteContaSelecionada", "é diferente da conta selecionada")} (${bancoTela}).`);
        return false;
      }
-   
-     if (agenciaTela && agenciaOfx && agenciaTela !== agenciaOfx) {
-       alert(`${t("importacaoBancaria.ofxBloqueadoAgencia", "OFX bloqueado: agência do arquivo")} (${agenciaOfx}) ${t("importacaoBancaria.diferenteContaSelecionada", "é diferente da conta selecionada")} (${agenciaTela}).`);
-       return false;
-     }
-   const contaTelaSemZero = contaTela.replace(/^0+/, "");
-   const contaOfxSemZero = contaOfx.replace(/^0+/, "");
-   
+    
+     const agenciaBate = numeroComDigitoOpcionalBate(
+  agenciaTela,
+  agenciaOfx
+);
+
+if (!agenciaBate) {
+  alert(
+    `${t(
+      "importacaoBancaria.ofxBloqueadoAgencia",
+      "OFX bloqueado: agência do arquivo"
+    )} (${agenciaOfx}) ${t(
+      "importacaoBancaria.diferenteContaSelecionada",
+      "é diferente da conta selecionada"
+    )} (${agenciaTela}).`
+  );
+
+  return false;
+}
    const contaBate =
-     !contaTela ||
-     !contaOfx ||
-     contaTela === contaOfx ||
-     contaOfx.endsWith(contaTela) ||
-     contaTela.endsWith(contaOfx) ||
-     contaTelaSemZero === contaOfxSemZero ||
-     contaOfxSemZero.endsWith(contaTelaSemZero) ||
-     contaTelaSemZero.endsWith(contaOfxSemZero);
-   
+  numeroComDigitoOpcionalBate(
+    contaTela,
+    contaOfx
+  );
+  
      if (bancoOfx === "033") {
      return true;
    }
@@ -1590,17 +1656,39 @@ if (
        }
  
        const valorNumero = parseValorOFX(valorRaw);
+
+       const historicoNormalizado = textoHistorico
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/\s+/g, " ")
+  .trim();
+
+const ehLinhaDeSaldo =
+  historicoNormalizado.includes("SALDO ANTERIOR") ||
+  historicoNormalizado.includes("SALDO DO DIA") ||
+  historicoNormalizado === "SALDO";
+
+const dataOfx = String(dataRaw)
+  .match(/\d{8}/)?.[0] || "";
+
+if (
+  ehLinhaDeSaldo ||
+  valorNumero === 0 ||
+  !dataOfx
+) {
+  return null;
+}
  
        return {
          _id: gerarLinhaId(),
-         data: `${dataRaw.slice(0, 4)}-${dataRaw.slice(4, 6)}-${dataRaw.slice(6, 8)}`,
+         data: `${dataOfx.slice(0, 4)}-${dataOfx.slice(4, 6)}-${dataOfx.slice(6, 8)}`,
          historico: historicoCompleto,
          tipo: valorNumero >= 0 ? "entrada" : "saida",
          valor: valorNumero.toFixed(2).replace(".", ","),
          arquivo_tipo: "OFX",
        };
-     });
- 
+    }).filter(Boolean);
+
      if (!novasLinhas.length) {
        alert(t("importacaoBancaria.nenhumaMovimentacaoOfx", "Nenhuma movimentação encontrada no OFX."));
        return;
@@ -1624,6 +1712,138 @@ if (
      const linhasComSaldo = recalcularLinhas(novasLinhas, saldoBase);
      setImportacao(1);
  
+       const dadosContaOfx =
+  extrairDadosContaOFX(texto);
+
+const datasOfx = novasLinhas
+  .map((linha) => linha.data)
+  .filter(Boolean)
+  .sort();
+
+const saldoFinalMatch =
+  texto.match(
+    /<LEDGERBAL>[\s\S]*?<BALAMT>\s*([^<\n\r]+)/i
+  ) ||
+  texto.match(
+    /<BALAMT>\s*([^<\n\r]+)/i
+  );
+
+if (!saldoFinalMatch) {
+  alert(
+    "O OFX não informou o saldo final da conta (BALAMT)."
+  );
+  return;
+}
+
+const saldoFinalOfx =
+  parseValorOFX(saldoFinalMatch[1]);
+
+const saldoInicialOfx =
+  saldoFinalOfx -
+  totalEntrada +
+  totalSaida;
+
+const saldoCalculadoOfx =
+  saldoInicialOfx +
+  totalEntrada -
+  totalSaida;
+
+const diferencaSaldoOfx =
+  saldoCalculadoOfx -
+  saldoFinalOfx;
+
+const saldoConfereOfx =
+  Math.abs(diferencaSaldoOfx) <= 0.01;
+
+const quantidadeCreditos =
+  novasLinhas.filter(
+    (linha) =>
+      parseNumeroMoney(linha.valor) > 0
+  ).length;
+
+const quantidadeDebitos =
+  novasLinhas.filter(
+    (linha) =>
+      parseNumeroMoney(linha.valor) < 0
+  ).length;
+
+
+/*
+|--------------------------------------------------------------------------
+| DIAGNÓSTICO CRIADO NA TELA PARA O OFX
+|--------------------------------------------------------------------------
+*/
+
+diagnosticoPdfRef.current = {
+  banco:
+    normalizarCodigoBanco(
+      dadosContaOfx.banco
+    ),
+
+  data_inicio:
+    datasOfx[0] || null,
+
+  data_fim:
+    datasOfx[
+      datasOfx.length - 1
+    ] || null,
+
+  quantidade:
+    novasLinhas.length,
+
+  diagnostico: {
+    tipo_layout:
+      "OFX",
+
+    quantidade_blocos:
+      blocos.length,
+
+    quantidade_movimentos:
+      novasLinhas.length,
+
+    quantidade_creditos:
+      quantidadeCreditos,
+
+    quantidade_debitos:
+      quantidadeDebitos,
+
+    total_creditos:
+      Number(
+        totalEntrada.toFixed(2)
+      ),
+
+    total_debitos:
+      Number(
+        totalSaida.toFixed(2)
+      ),
+
+    saldo_inicial:
+      Number(
+        saldoInicialOfx.toFixed(2)
+      ),
+
+    saldo_final:
+      Number(
+        saldoFinalOfx.toFixed(2)
+      ),
+
+    saldo_calculado:
+      Number(
+        saldoCalculadoOfx.toFixed(2)
+      ),
+
+    diferenca_saldo:
+      Number(
+        diferencaSaldoOfx.toFixed(2)
+      ),
+
+    saldo_confere:
+      saldoConfereOfx
+  }
+};
+
+
+
      // OFX agora é fluxo único:
      // importou certo -> salva automático -> vai para conferência.
      await salvarLancamentos(linhasComSaldo);
