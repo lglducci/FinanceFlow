@@ -1010,7 +1010,22 @@ function resolverWebhookPdf(conta) {
    *
    * Aqui estamos reaproveitando o webhook que você já possui.
    * Caso o nome real da rota seja diferente, altere somente esta linha.
+   * 
    */
+
+   if (
+    codigoBanco === "001" ||
+    nomeBanco.includes("BancoBrasil")
+  ) {
+    return {
+      banco: "BANCO_BRASIL",
+      webhook: "extrato_pdf_bb",
+      
+    };
+  }
+
+
+
   if (
     codigoBanco === "756" ||
     nomeBanco.includes("SICOOB")
