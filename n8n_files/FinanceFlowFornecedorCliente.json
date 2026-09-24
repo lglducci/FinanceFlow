@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        848,
-        112
+        144,
+        -864
       ],
-      "id": "7e56b2a3-1869-48d2-8c3f-4f0118ba6872",
+      "id": "2000400c-e49f-4905-892d-1bb9ff3ecd57",
       "name": "Respond to Webhook35"
     },
     {
@@ -27,10 +27,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        848,
-        288
+        144,
+        -688
       ],
-      "id": "fc017907-a908-452a-a054-aa2032131ff0",
+      "id": "adf90660-673e-4870-b3cd-0c6ccb6d4c88",
       "name": "Respond to Webhook36"
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        432
+        160,
+        -544
       ],
-      "id": "e282d7cd-28ee-4b99-8855-24f5ba26da19",
+      "id": "dbc02304-7a66-43a7-9536-068cd21f00ad",
       "name": "Respond to Webhook38"
     },
     {
@@ -72,26 +72,26 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        432
+        -272,
+        -544
       ],
-      "id": "b0be7caa-867e-4c4d-b97c-8cbe078eba34",
+      "id": "8b2e060d-0c54-4a0a-b403-c0fec54e18e5",
       "name": "EditarTranscartao5"
     },
     {
       "parameters": {
         "content": "## Pessao Forncedor Cliente\nWebhook s relacionados a pewsssoa cliente fornecedor",
-        "height": 1036,
-        "width": 1232,
+        "height": 1468,
+        "width": 1824,
         "color": 4
       },
-      "id": "7ade515c-b419-4fcf-8f93-8eceb4f4d86b",
+      "id": "65d6b7c8-0e8e-4f29-a0e9-f813e4c97683",
       "name": "Sticky Note3",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -720,
+        -944
       ]
     },
     {
@@ -103,10 +103,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        224,
-        112
+        -496,
+        -864
       ],
-      "id": "099e6a34-e0b3-41d1-bac1-849962f9f2eb",
+      "id": "dc184bcd-b44e-4f2d-8165-a624cc1b3736",
       "name": "ForncededorCliente",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -133,10 +133,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        112
+        -272,
+        -864
       ],
-      "id": "e503bce2-6c34-40a5-adf5-dbca04aef8f8",
+      "id": "7fa7e9f3-fc89-42ba-8352-3b752574c8d2",
       "name": "EditForneCliente"
     },
     {
@@ -148,16 +148,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        640,
-        112
+        -80,
+        -864
       ],
-      "id": "36053045-25fc-4dd3-b5bb-cbd8d2c2e25a",
+      "id": "6176c25e-9ff1-440d-9292-577be850da18",
       "name": "ForneceClientePessoa",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -170,10 +170,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        224,
-        288
+        -496,
+        -688
       ],
-      "id": "ff133293-f571-4ced-9208-163e37e7ff16",
+      "id": "40b5c0ba-5cb6-4e09-b96d-f652e2b17308",
       "name": "EditForneCliente1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -200,10 +200,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        288
+        -272,
+        -688
       ],
-      "id": "c61f57b4-dcc8-4035-94ca-21e9123c3953",
+      "id": "3fc18340-6dbc-4cb1-b674-f46164c9adea",
       "name": "EditarFroCli1"
     },
     {
@@ -215,16 +215,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        288
+        -64,
+        -688
       ],
-      "id": "e536d1c4-a836-483a-a840-bad00ab2a954",
+      "id": "dddcc761-2b4d-4ab9-985b-2ea32bcc9989",
       "name": "FormFornecedorCliente",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -238,10 +238,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        592
+        160,
+        -384
       ],
-      "id": "df4a6c8d-c1b6-497e-baf1-d52aeab12551",
+      "id": "6de14246-b686-4379-af6d-63422cd680c7",
       "name": "Respond to Webhook30"
     },
     {
@@ -254,10 +254,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        736
+        160,
+        -240
       ],
-      "id": "29e33d3c-51d5-44e5-b641-c29ef2cc1ac1",
+      "id": "032c8194-6f04-4b1a-9b27-17c1361c1247",
       "name": "Respond to Webhook39"
     },
     {
@@ -270,10 +270,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        224,
-        592
+        -496,
+        -384
       ],
-      "id": "b25b9945-0299-4fe8-99aa-3895257ace44",
+      "id": "25096ee1-764e-4697-b419-6309553c005c",
       "name": "SalvaForCli",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -360,14 +360,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        656,
-        592
+        -64,
+        -384
       ],
-      "id": "7ef562b3-04b8-4107-b085-c4fb312fd7f7",
+      "id": "c47242a0-42dc-418c-a109-23dfe861938e",
       "name": "SalvaForneceClien",
       "credentials": {
         "supabaseApi": {
-          "id": "rC5LgeRcKghHCrKW",
+          "id": "kcYv1XXxUeRG6YvY",
           "name": "FinanceFlow"
         }
       }
@@ -473,10 +473,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        592
+        -272,
+        -384
       ],
-      "id": "5688489f-a52d-47f2-b5cd-6a934c5b29e1",
+      "id": "e2a606db-e645-4bc9-ac92-b60e8ee13d45",
       "name": "EditSalvaForneceClien"
     },
     {
@@ -580,10 +580,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        736
+        -272,
+        -240
       ],
-      "id": "a33f9486-2b54-478a-95ca-1f72340cf105",
+      "id": "ae52d8cd-2165-4a42-af3e-f90d45116061",
       "name": "EditSalvaForneceClien1"
     },
     {
@@ -653,14 +653,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        656,
-        736
+        -64,
+        -240
       ],
-      "id": "a831e6e7-16da-4846-bc64-9063d33784f6",
+      "id": "3f98d51c-9678-46ad-84cc-009af9812cc0",
       "name": "InsereForneceClien",
       "credentials": {
         "supabaseApi": {
-          "id": "rC5LgeRcKghHCrKW",
+          "id": "kcYv1XXxUeRG6YvY",
           "name": "FinanceFlow"
         }
       }
@@ -675,10 +675,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        224,
-        432
+        -496,
+        -544
       ],
-      "id": "f40ef662-a5f6-49b0-8124-e3646b75f965",
+      "id": "30084be4-98a5-4e43-99eb-5fe003724591",
       "name": "ExcluiForneClie",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -691,16 +691,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        432
+        -64,
+        -544
       ],
-      "id": "24ea6cd8-80a9-4cdb-9294-ce38bd67ec8b",
+      "id": "17e2273f-a607-424f-8924-e7de8e5eed44",
       "name": "ExcluiFornecedorCliente",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -714,15 +714,405 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        224,
-        736
+        -496,
+        -240
       ],
-      "id": "71870fe4-b82c-4a38-a246-a1b098c70f77",
+      "id": "810c9db7-b40f-4023-a084-846c540f811a",
       "name": "InsereForCli",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        864,
+        -80
+      ],
+      "id": "1d70274f-e09b-4a10-9eb1-be221254912d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -304,
+        -80
+      ],
+      "id": "c4acd26c-0887-4b24-ba50-d57d8f4a99a7",
+      "name": "EditForneCliente2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \n WITH base AS (\n  SELECT\n    id,\n    empresa_id,\n    cpf_cnpj,\n    regexp_replace(coalesce(cpf_cnpj, ''), '\\D', '', 'g') AS cnpj\n  FROM public.pessoa\n  WHERE dados_cnpj_atualizado = false\n    AND empresa_id = {{ $json.id_empresa }}\n),\nvalidado AS (\n  SELECT\n    *,\n    (\n      11 - (\n        (\n          substring(cnpj,1,1)::int * 5 +\n          substring(cnpj,2,1)::int * 4 +\n          substring(cnpj,3,1)::int * 3 +\n          substring(cnpj,4,1)::int * 2 +\n          substring(cnpj,5,1)::int * 9 +\n          substring(cnpj,6,1)::int * 8 +\n          substring(cnpj,7,1)::int * 7 +\n          substring(cnpj,8,1)::int * 6 +\n          substring(cnpj,9,1)::int * 5 +\n          substring(cnpj,10,1)::int * 4 +\n          substring(cnpj,11,1)::int * 3 +\n          substring(cnpj,12,1)::int * 2\n        ) % 11\n      )\n    ) AS d1_calc\n  FROM base\n  WHERE length(cnpj) = 14\n    AND cnpj !~ '^(\\d)\\1{13}$'\n),\nvalidado2 AS (\n  SELECT\n    *,\n    CASE WHEN d1_calc >= 10 THEN 0 ELSE d1_calc END AS d1\n  FROM validado\n),\nvalidado3 AS (\n  SELECT\n    *,\n    (\n      11 - (\n        (\n          substring(cnpj,1,1)::int * 6 +\n          substring(cnpj,2,1)::int * 5 +\n          substring(cnpj,3,1)::int * 4 +\n          substring(cnpj,4,1)::int * 3 +\n          substring(cnpj,5,1)::int * 2 +\n          substring(cnpj,6,1)::int * 9 +\n          substring(cnpj,7,1)::int * 8 +\n          substring(cnpj,8,1)::int * 7 +\n          substring(cnpj,9,1)::int * 6 +\n          substring(cnpj,10,1)::int * 5 +\n          substring(cnpj,11,1)::int * 4 +\n          substring(cnpj,12,1)::int * 3 +\n          d1 * 2\n        ) % 11\n      )\n    ) AS d2_calc\n  FROM validado2\n)\nSELECT\n  id,\n  empresa_id,\n  cpf_cnpj,\n  cnpj AS cnpj_limpo,\n  true AS tem_cnpj\nFROM validado3\nWHERE substring(cnpj,13,1)::int = d1\n  AND substring(cnpj,14,1)::int =\n      CASE WHEN d2_calc >= 10 THEN 0 ELSE d2_calc END;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -112,
+        -80
+      ],
+      "id": "83bac751-03d3-476e-8297-8f3af9de3356",
+      "name": "ForneceClientePessoa1",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "atualiza_fornecedor_servico",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        -80
+      ],
+      "id": "ec6eedf2-84fb-4823-8b9a-21bc5da323ab",
+      "name": "AtualizaFornecedorSerivco",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " UPDATE public.pessoa\nSET\n  nome = LEFT('{{ $json.razao_social }}', 150),\n  telefone = LEFT('{{ $json.ddd_telefone_1 }}', 20),\n  cep = LEFT('{{ $json.cep }}', 8),\n  endereco = LEFT('{{ $json.logradouro }}', 150),\n  bairro = LEFT('{{ $json.bairro }}', 100),\n  cidade = LEFT('{{ $json.municipio }}', 100),\n  estado = LEFT('{{ $json.uf }}', 2),\n  dados_cnpj_atualizado = true\nWHERE regexp_replace(cpf_cnpj, '\\D', '', 'g') = '{{ $json.cnpj }}'\n  AND empresa_id =  {{ $('EditForneCliente2').item.json.id_empresa }};",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        672,
+        -80
+      ],
+      "id": "027dffda-1cba-4588-b78a-47cf347fd106",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://brasilapi.com.br/api/cnpj/v1/{{ $json.tem_cnpj ? $json.cpf_cnpj.replace(/\\D/g, '') : '00000000000000' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        320,
+        -80
+      ],
+      "id": "8ba93edf-6229-4d94-a3aa-ff0f7affe098",
+      "name": "HTTP Request",
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        96,
+        160
+      ],
+      "id": "0a4205dc-5211-427b-9f4a-c0d0d1b006e5",
+      "name": "Respond to Webhook37"
+    },
+    {
+      "parameters": {
+        "path": "rel_fornecedor",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -544,
+        160
+      ],
+      "id": "b7210785-d724-4d0b-b1b7-7e6e5396d8d4",
+      "name": "RelatorioFornecedor",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        160
+      ],
+      "id": "581e07b4-0cba-48c1-8a09-6ff97ce6342a",
+      "name": "EditRelFornecedor"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select *\nfrom  public.ff_relatorio_pagar_fornecedor_agregado({{ $json.id_empresa }})\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -128,
+        160
+      ],
+      "id": "4eafaf4f-622d-4316-a5c4-b0a07be68195",
+      "name": "ff_relatorio_pagar_fornecedor_agregado",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        96,
+        352
+      ],
+      "id": "40d5fb26-e2e4-4bc4-a083-4406e0cf9b9d",
+      "name": "Respond to Webhook40"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -320,
+        352
+      ],
+      "id": "0f764304-cb28-43dd-b173-f9434df3ca0a",
+      "name": "EditRelFornecedor1"
+    },
+    {
+      "parameters": {
+        "path": "rel_receber_pessoa",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -544,
+        352
+      ],
+      "id": "0ad75519-3577-4a3f-bf4b-1c33aac5270d",
+      "name": "RelatorioPessaoReceber",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select *\nfrom  public.ff_relatorio_receber_pessoa_agregado({{ $json.id_empresa }})\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -128,
+        352
+      ],
+      "id": "429b0c4d-9ad6-40b8-93bf-f37002ef15fa",
+      "name": "ff_relatorio_receber_pessoa_agregado",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": " function apenasNumeros(v) {\n  return String(v || \"\").replace(/\\D/g, \"\");\n}\n\nfunction cpfValido(cpf) {\n  cpf = apenasNumeros(cpf);\n  if (cpf.length !== 11) return false;\n  if (/^(\\d)\\1+$/.test(cpf)) return false;\n\n  let soma = 0;\n  for (let i = 0; i < 9; i++) soma += Number(cpf[i]) * (10 - i);\n  let d1 = 11 - (soma % 11);\n  d1 = d1 >= 10 ? 0 : d1;\n\n  soma = 0;\n  for (let i = 0; i < 10; i++) soma += Number(cpf[i]) * (11 - i);\n  let d2 = 11 - (soma % 11);\n  d2 = d2 >= 10 ? 0 : d2;\n\n  return d1 === Number(cpf[9]) && d2 === Number(cpf[10]);\n}\n\nfunction cnpjValido(cnpj) {\n  cnpj = apenasNumeros(cnpj);\n  if (cnpj.length !== 14) return false;\n  if (/^(\\d)\\1+$/.test(cnpj)) return false;\n\n  const calc = (base, pesos) => {\n    const soma = base.split(\"\").reduce((acc, n, i) => acc + Number(n) * pesos[i], 0);\n    const resto = soma % 11;\n    return resto < 2 ? 0 : 11 - resto;\n  };\n\n  const d1 = calc(cnpj.slice(0, 12), [5,4,3,2,9,8,7,6,5,4,3,2]);\n  const d2 = calc(cnpj.slice(0, 13), [6,5,4,3,2,9,8,7,6,5,4,3,2]);\n\n  return d1 === Number(cnpj[12]) && d2 === Number(cnpj[13]);\n}\n\nreturn items.map(item => {\n  const doc = apenasNumeros(item.json.cpf_cnpj);\n\n  const tipo_documento =\n    doc.length === 14 && cnpjValido(doc) ? \"CNPJ\" :\n    doc.length === 11 && cpfValido(doc) ? \"CPF\" :\n    null;\n\n  return {\n    json: {\n      ...item.json,\n      documento_limpo: doc,\n      tipo_documento,\n      documento_valido: !!tipo_documento,\n      consultar_cnpj: tipo_documento === \"CNPJ\"\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -80
+      ],
+      "id": "dbb99920-851a-464a-ad1b-27e8ecf237ec",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": " return items.map(item => {\n  const j = item.json;\n\n  const deuCerto =\n    j.cnpj &&\n    j.razao_social &&\n    !j.error &&\n    !j.message;\n\n  return {\n    json: {\n      ...j,\n      consulta_cnpj_ok: deuCerto,\n      razao_social_api: deuCerto ? j.razao_social : null,\n      nome_fantasia_api: deuCerto ? j.nome_fantasia : null,\n      situacao_cadastral_api: deuCerto ? j.descricao_situacao_cadastral : null,\n      cnae_api: deuCerto ? j.cnae_fiscal_descricao : null,\n      erro_cnpj_api: deuCerto ? null : (j.message || j.error || \"Erro ao consultar CNPJ\")\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        -80
+      ],
+      "id": "55e3ab1d-f4c7-4206-96ae-bb920f41ebd8",
+      "name": "Code in JavaScript1"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "EditForneCliente2": [
+      {
+        "json": {
+          "id_empresa": 1
+        }
+      }
+    ],
+    "ff_relatorio_pagar_fornecedor_agregado": [
+      {
+        "json": {
+          "fornecedor_id": "3",
+          "fornecedor_nome": "CLARO",
+          "vencido": "0",
+          "vence_7_dias": "0",
+          "vence_15_dias": "0",
+          "vence_30_dias": "800.00",
+          "vence_60_dias": "800.00",
+          "acima_60_dias": "5600.00",
+          "total_aberto": "7200.00",
+          "qtd_titulos": "9"
+        }
+      },
+      {
+        "json": {
+          "fornecedor_id": "12",
+          "fornecedor_nome": "LAR VOVO QUERUBINA",
+          "vencido": "0",
+          "vence_7_dias": "658.36",
+          "vence_15_dias": "0",
+          "vence_30_dias": "0",
+          "vence_60_dias": "0",
+          "acima_60_dias": "0",
+          "total_aberto": "658.36",
+          "qtd_titulos": "1"
+        }
+      },
+      {
+        "json": {
+          "fornecedor_id": "11",
+          "fornecedor_nome": "IMPACTO ACADEMIA ATIVIDADES ESPORTIVAS LTDA",
+          "vencido": "0",
+          "vence_7_dias": "653.21",
+          "vence_15_dias": "0",
+          "vence_30_dias": "0",
+          "vence_60_dias": "0",
+          "acima_60_dias": "0",
+          "total_aberto": "653.21",
+          "qtd_titulos": "1"
+        }
+      }
+    ],
+    "ff_relatorio_receber_pessoa_agregado": [
+      {
+        "json": {
+          "fornecedor_id": "3",
+          "fornecedor_nome": "CLARO",
+          "vencido": "0",
+          "vence_7_dias": "0",
+          "vence_15_dias": "0",
+          "vence_30_dias": "800.00",
+          "vence_60_dias": "800.00",
+          "acima_60_dias": "5600.00",
+          "total_aberto": "7200.00",
+          "qtd_titulos": "9"
+        }
+      },
+      {
+        "json": {
+          "fornecedor_id": "12",
+          "fornecedor_nome": "LAR VOVO QUERUBINA",
+          "vencido": "0",
+          "vence_7_dias": "658.36",
+          "vence_15_dias": "0",
+          "vence_30_dias": "0",
+          "vence_60_dias": "0",
+          "acima_60_dias": "0",
+          "total_aberto": "658.36",
+          "qtd_titulos": "1"
+        }
+      },
+      {
+        "json": {
+          "fornecedor_id": "11",
+          "fornecedor_nome": "IMPACTO ACADEMIA ATIVIDADES ESPORTIVAS LTDA",
+          "vencido": "0",
+          "vence_7_dias": "653.21",
+          "vence_15_dias": "0",
+          "vence_30_dias": "0",
+          "vence_60_dias": "0",
+          "acima_60_dias": "0",
+          "total_aberto": "653.21",
+          "qtd_titulos": "1"
+        }
+      }
+    ]
+  },
   "connections": {
     "EditarTranscartao5": {
       "main": [
@@ -888,17 +1278,160 @@
           }
         ]
       ]
+    },
+    "EditForneCliente2": {
+      "main": [
+        [
+          {
+            "node": "ForneceClientePessoa1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ForneceClientePessoa1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AtualizaFornecedorSerivco": {
+      "main": [
+        [
+          {
+            "node": "EditForneCliente2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RelatorioFornecedor": {
+      "main": [
+        [
+          {
+            "node": "EditRelFornecedor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditRelFornecedor": {
+      "main": [
+        [
+          {
+            "node": "ff_relatorio_pagar_fornecedor_agregado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_relatorio_pagar_fornecedor_agregado": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook37",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditRelFornecedor1": {
+      "main": [
+        [
+          {
+            "node": "ff_relatorio_receber_pessoa_agregado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RelatorioPessaoReceber": {
+      "main": [
+        [
+          {
+            "node": "EditRelFornecedor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_relatorio_receber_pessoa_agregado": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook40",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "cbcc1515-f751-4253-b4da-5b257a1f0c9e",
+  "versionId": "9fbceda9-bf83-46d1-8e20-342dfe93d965",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "FF0ywRnmBfXoNx4g",
+  "id": "DmjyO837w8bG42qs",
   "tags": []
 }

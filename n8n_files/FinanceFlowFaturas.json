@@ -7,13 +7,13 @@
         "height": 1148,
         "width": 1312
       },
-      "id": "4f7a13a7-ab66-4cab-ba35-c77d3faada71",
+      "id": "bc399c86-821f-4b17-bfdf-92bdf3c34c04",
       "name": "Sticky Note4",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -672,
+        -528
       ]
     },
     {
@@ -26,10 +26,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        832,
-        144
+        208,
+        -320
       ],
-      "id": "296e9f12-9ee3-4c06-9c8c-071afcf0518f",
+      "id": "aaf7d341-d95c-4ba9-bb80-701ad26bd4b8",
       "name": "Respond to Webhook21"
     },
     {
@@ -67,31 +67,31 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        368,
-        144
+        -272,
+        -320
       ],
-      "id": "bd9da7f5-3053-4a26-a0bf-3ac961dad055",
+      "id": "6376397a-1a1d-403d-b644-52580f265553",
       "name": "EditarCartões1"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n \nselect c.nome, c.bandeira, c.numero, limite_total,   fechamento_dia,  vencimento_dia, nomecartao,\nf.* from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id\n  where f.empresa_id = {{ $json.id_empresa }}\n and ( f.cartao_id = {{ $json.id }} or {{ $json.id }} = 0 )\nand  ( f.status =  '{{ $json.status}}' or  '{{ $json.status}}' = '') \n  order by f.mes_referencia asc",
+        "query": " WITH faturas AS (\n  SELECT\n    c.nome, \n    c.bandeira,\n    c.numero,\n    limite_total,\n    fechamento_dia,\n    vencimento_dia,\n    nomecartao,\n    f.*,\n    ROW_NUMBER() OVER (\n      PARTITION BY f.cartao_id\n      ORDER BY f.mes_referencia ASC\n    ) AS rn\n  FROM cartoes_faturas AS f\n  INNER JOIN cartoes AS c\n    ON c.id = f.cartao_id\n   AND c.empresa_id = f.empresa_id\n  WHERE f.empresa_id = {{ $json.id_empresa }}\n    AND (f.cartao_id = {{ $json.id }} OR {{ $json.id }} = 0)\n    AND (f.status = '{{ $json.status }}' OR '{{ $json.status }}' = '')\n)\nSELECT *\nFROM faturas\nWHERE rn <= 2\nORDER BY\n  cartao_id,\n  mes_referencia ASC;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        624,
-        144
+        -64,
+        -320
       ],
-      "id": "b17809c0-2780-4b3a-928d-bad281fd06b8",
+      "id": "0259491b-fa29-42fe-a447-68a803d0dbdb",
       "name": "ListaFaturas",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -104,35 +104,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        160,
-        144
+        -480,
+        -320
       ],
-      "id": "45296a1a-20f0-4c67-a811-5f4a28d8e12d",
+      "id": "b98c6106-a81f-4125-bafa-c3be020c932e",
       "name": "ListaFaturas1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": " \n \nselect c.nome, c.bandeira, c.numero, limite_total,   fechamento_dia,  vencimento_dia, nomecartao,\nf.* from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id\n  where f.empresa_id = {{ $json.id_empresa }}\n and ( f.cartao_id = {{ $json.id }} or {{ $json.id }} = 0 )\nand  ( f.status =  '{{ $json.status}}' or  '{{ $json.status}}' = '') \n  AND  TO_CHAR(f.mes_referencia, 'YYYY-MM-DD') = '{{ $json.mes_referencia }}';",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        768,
-        704
-      ],
-      "id": "48037018-9a64-410a-bfd5-8feb990ec23e",
-      "name": "ListaFaturas2",
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
-        }
-      },
-      "disabled": true
     },
     {
       "parameters": {
@@ -144,10 +121,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
-        416
+        224,
+        -112
       ],
-      "id": "97fcc934-53da-4cf7-84f2-799652fcbef1",
+      "id": "1c3168ab-0821-4cf5-a3f5-36d5b12bcf03",
       "name": "Respond to Webhook"
     },
     {
@@ -173,10 +150,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        416,
-        416
+        -256,
+        -112
       ],
-      "id": "68a05beb-b296-49a1-82ca-21bd32d5b7f0",
+      "id": "47b24d1d-833e-4815-95e9-dca91e949a86",
       "name": "EditarCartões"
     },
     {
@@ -188,38 +165,248 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        208,
-        416
+        -464,
+        -112
       ],
-      "id": "2f7b860a-8b67-4f7f-9e40-9e8259f84e6c",
+      "id": "5d637270-ba19-47ef-b66b-1819df347de7",
       "name": "Transcoes_faturas",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " \n \nselect t.fatura_id, c.nome, c.bandeira, c.numero, limite_total, t.data_compra,    fechamento_dia,  vencimento_dia, nomecartao,t.valor ,t.descricao , t.parcela_num, t.parcela_total ,t.data_parcela, f.mes_referencia\n from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id \n  inner join  cartoes_transacoes as t on  t.empresa_id  = t.empresa_id and t.fatura_id = f.id\n  where f.empresa_id = {{ $json.id_empresa }}\n and  f.id = {{ $json.id }} \n  order by f.mes_referencia ,t.data_parcela asc",
+        "query": "  \n \nselect t.fatura_id, c.nome, c.bandeira, c.numero, limite_total, t.data_compra,    fechamento_dia,  vencimento_dia, nomecartao,t.valor ,t.descricao , t.parcela_num, t.parcela_total ,t.data_parcela, f.mes_referencia\n from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id \n  inner join  cartoes_transacoes as t on  t.empresa_id  = t.empresa_id and t.fatura_id = f.id\n  where f.empresa_id = {{ $json.id_empresa }}\n and  f.id = {{ $json.id }} \n  order by f.mes_referencia ,t.data_parcela asc",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        672,
-        416
+        16,
+        -112
       ],
-      "id": "c38f7b91-d261-43f4-abb9-e9d24367832a",
+      "id": "f7845ab2-3429-4629-9118-dc9a29bd3266",
       "name": "TransacaoFatura",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        272
+      ],
+      "id": "91e0fca1-db59-4195-83c8-9217789e3050",
+      "name": "Respond to Webhook22"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}} ",
+              "type": "number"
+            },
+            {
+              "id": "51324e38-48c6-4999-a5e0-07f88de5777e",
+              "name": "id",
+              "value": "={{ $json.query.id}}",
+              "type": "string"
+            },
+            {
+              "id": "60aeaf9d-8685-48ca-ae92-6d16d7cb8769",
+              "name": "status",
+              "value": "={{ $json.query.status}}",
+              "type": "string"
+            },
+            {
+              "id": "c132ce68-96f3-4749-97fa-4856702377bc",
+              "name": "mes_referencia",
+              "value": "={{ $json.query.mes_referencia}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        272
+      ],
+      "id": "673205b9-b79c-41d0-b3d0-924a2be5f03a",
+      "name": "EditarCartões2"
+    },
+    {
+      "parameters": {
+        "path": "historicofaturas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        272
+      ],
+      "id": "3d285c8b-f51b-47db-9b42-751b5cc68a6a",
+      "name": "Historico_Faturas",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  \n \nselect c.nome, c.bandeira, c.numero, limite_total,   fechamento_dia,  vencimento_dia, nomecartao,\nf.* from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id\n  where f.empresa_id = {{ $json.id_empresa }}\n and ( f.cartao_id = {{ $json.id }} or {{ $json.id }} = 0 )\nand  ( f.status =  '{{ $json.status}}' or  '{{ $json.status}}' = '') \n  order by f.mes_referencia asc",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        16,
+        272
+      ],
+      "id": "730485b6-ab3f-4364-a2ce-f43806432bd5",
+      "name": "HistoricoFatura",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        96
+      ],
+      "id": "29e26ae8-5e5e-4009-9851-6dfa0ddda00c",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "id_empresa",
+              "value": "={{ $json.query.empresa_id}} ",
+              "type": "number"
+            },
+            {
+              "id": "51324e38-48c6-4999-a5e0-07f88de5777e",
+              "name": "id",
+              "value": "={{ $json.query.cartao_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        96
+      ],
+      "id": "a4f35be3-f40a-4ba6-a3aa-9973e512c855",
+      "name": "EditarCartões3"
+    },
+    {
+      "parameters": {
+        "path": "historico_transacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        96
+      ],
+      "id": "dd9e2315-b835-4c41-ba32-5994f9ec6efa",
+      "name": "Transcoes_faturas1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  \n \nselect t.fatura_id, c.nome, c.bandeira, c.numero, limite_total, t.data_compra,    fechamento_dia,  vencimento_dia, nomecartao,t.valor ,t.descricao , t.parcela_num, t.parcela_total ,t.data_parcela, f.mes_referencia\n from   cartoes_faturas as f \n  inner join  cartoes as c\n  on c.id = f.cartao_id \n  and c.empresa_id = f.empresa_id \n  inner join  cartoes_transacoes as t on  t.empresa_id  = t.empresa_id and t.fatura_id = f.id\n  where f.empresa_id = {{ $json.id_empresa }}\n and  f.id = {{ $json.id }} \n  order by f.mes_referencia ,t.data_parcela asc",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        32,
+        96
+      ],
+      "id": "2fd79c2a-b555-47dc-be86-14d89a9aeedf",
+      "name": "TransacaoFatura1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT DISTINCT ON (f.cartao_id)\n  c.nome,\n  c.bandeira,\n  c.numero,\n  limite_total,\n  fechamento_dia,\n  vencimento_dia,\n  nomecartao,\n  f.*\nFROM cartoes_faturas AS f\nINNER JOIN cartoes AS c\n  ON c.id = f.cartao_id\n AND c.empresa_id = f.empresa_id\nWHERE f.empresa_id = {{ $json.id_empresa }}\n  AND (f.cartao_id = {{ $json.id }} OR {{ $json.id }} = 0)\n  AND (f.status = '{{ $json.status }}' OR '{{ $json.status }}' = '')\nORDER BY\n  f.cartao_id,\n  f.mes_referencia DESC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        736,
+        -336
+      ],
+      "id": "3274cda3-7f9d-4314-a01a-589ba69860f2",
+      "name": "ListaFaturas2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "disabled": true
     }
   ],
   "pinData": {
     "EditarCartões": [
+      {
+        "json": {
+          "id_empresa": 1,
+          "id": 3
+        }
+      }
+    ],
+    "EditarCartões3": [
       {
         "json": {
           "id_empresa": 1,
@@ -294,17 +481,83 @@
           }
         ]
       ]
+    },
+    "EditarCartões2": {
+      "main": [
+        [
+          {
+            "node": "HistoricoFatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Historico_Faturas": {
+      "main": [
+        [
+          {
+            "node": "EditarCartões2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HistoricoFatura": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook22",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditarCartões3": {
+      "main": [
+        [
+          {
+            "node": "TransacaoFatura1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcoes_faturas1": {
+      "main": [
+        [
+          {
+            "node": "EditarCartões3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TransacaoFatura1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "9e8b41ea-3d7a-46c9-8a33-d95128e4ea74",
+  "versionId": "1ceca654-c377-49b6-a0e6-56d2ea979512",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "KqaAkJVEqqKOKBc2",
+  "id": "Ee04dKitJvTMwfDY",
   "tags": []
 }

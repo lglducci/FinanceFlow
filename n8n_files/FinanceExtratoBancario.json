@@ -1,0 +1,352 @@
+{
+  "name": "FinanceExtratoBancario",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        912,
+        144
+      ],
+      "id": "710489db-bea8-40b7-8665-e11fcdf8dc5d",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "84d4691f-07a7-48da-85b9-ad6557a565a7",
+              "name": "data_ini",
+              "value": "= {{ $json.body.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "e652a562-a4ac-4eba-ae02-bef31ce39227",
+              "name": "data_fim",
+              "value": "= {{ $json.body.data_fim}}",
+              "type": "string"
+            },
+            {
+              "id": "2c79634d-b28f-49c2-9679-170dd8b16459",
+              "name": "conta_id",
+              "value": "= {{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        144
+      ],
+      "id": "9e6758e9-5002-4b88-8d58-816b1f972630",
+      "name": "EditStaging2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        144
+      ],
+      "id": "6e26dd7b-6625-4f3e-9e83-010374027130",
+      "name": "Code in JavaScript10"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  public.fn_extrato_bancario(\n  {{ $json.empresa_id }},\n  {{ $json.conta_id }},\n  '{{ $json.data_ini }}',\n  '{{ $json.data_fim }}'\n)\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        528,
+        144
+      ],
+      "id": "629667ec-6c7c-43e4-8957-6edbaf288580",
+      "name": "ff_processa_automatico",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Apurações",
+        "height": 668,
+        "width": 1264,
+        "color": 4
+      },
+      "id": "00f496a6-eaaf-4dea-a5dc-2573bcff9ccb",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "extrato_bancario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        144
+      ],
+      "id": "0dd5c6cc-58a1-4b80-8d5e-d421796587c6",
+      "name": "ExtratoBancario",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        912,
+        352
+      ],
+      "id": "ef7ec63b-5c40-4e0e-8c85-9da67941d519",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "2c79634d-b28f-49c2-9679-170dd8b16459",
+              "name": "conta_id",
+              "value": "= {{ $json.body.conta_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        352
+      ],
+      "id": "4654f1db-ddf5-4939-a441-d7f1d03eb092",
+      "name": "EditStaging"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        352
+      ],
+      "id": "116917c1-15df-4e87-9f31-cbaa06ae282d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select contabil_id from contas_financeiras \nwhere empresa_id = {{ $json.empresa_id }} and id = {{ $json.conta_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        528,
+        352
+      ],
+      "id": "e77a9d55-070a-485a-b5e7-b4469d068f1c",
+      "name": "ff_processa_automatico1",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contabil_da_conta_corrente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        352
+      ],
+      "id": "823b49dd-de34-4e9f-91d3-b5f5204f9327",
+      "name": "ExtratoBancario1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    }
+  ],
+  "pinData": {
+    "EditStaging2": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260101",
+          "data_fim": "20260627",
+          "conta_id": 1
+        }
+      }
+    ],
+    "EditStaging": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260101",
+          "data_fim": "20260627",
+          "conta_id": 1
+        }
+      }
+    ]
+  },
+  "connections": {
+    "EditStaging2": {
+      "main": [
+        [
+          {
+            "node": "ff_processa_automatico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript10": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_processa_automatico": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtratoBancario": {
+      "main": [
+        [
+          {
+            "node": "EditStaging2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging": {
+      "main": [
+        [
+          {
+            "node": "ff_processa_automatico1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_processa_automatico1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtratoBancario1": {
+      "main": [
+        [
+          {
+            "node": "EditStaging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "43d4e13a-0b09-4181-be4f-81ec60083220",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "9um7WFHh2eHDk2ix",
+  "tags": []
+}

@@ -1,0 +1,1553 @@
+{
+  "name": "ContasRecorrentes",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -384,
+        -512
+      ],
+      "id": "825ee6df-f296-405e-b4dd-27f969d9e6dc",
+      "name": "Respond to Webhook10"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "84d4691f-07a7-48da-85b9-ad6557a565a7",
+              "name": "descricao",
+              "value": "= {{ $json.body.descricao}}",
+              "type": "string"
+            },
+            {
+              "id": "e652a562-a4ac-4eba-ae02-bef31ce39227",
+              "name": "fornecedor_id",
+              "value": "={{ $json.body.fornecedor_id}}",
+              "type": "string"
+            },
+            {
+              "id": "0a95e73b-7f97-4b02-a175-9ae95dc2c04d",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "3d3f5c5b-eddb-46c3-bac0-7db75f9f6ebe",
+              "name": "tipo_valor",
+              "value": "={{ $json.body.tipo_valor}}",
+              "type": "string"
+            },
+            {
+              "id": "bddda26d-3082-4444-946f-f74eef0b28f7",
+              "name": "valor",
+              "value": "={{ $json.body.valor_padrao}}",
+              "type": "string"
+            },
+            {
+              "id": "8183a263-17e5-4d61-95d5-1c2fb6947b9b",
+              "name": "dia_vencimento",
+              "value": "={{ $json.body.dia_vencimento}}",
+              "type": "string"
+            },
+            {
+              "id": "1aed6680-3ea0-4e5e-b092-1831d5c6f721",
+              "name": "contabil_id",
+              "value": "={{ $json.body.contabil_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        -512
+      ],
+      "id": "9e43a327-12c4-4cf2-b2e9-b91736937a0d",
+      "name": "EditStaging2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        -512
+      ],
+      "id": "a41dc55b-e596-4855-a36f-ce47824d9a62",
+      "name": "Code in JavaScript10"
+    },
+    {
+      "parameters": {
+        "content": "## Diário",
+        "height": 1132,
+        "width": 1248,
+        "color": 3
+      },
+      "id": "05125e11-d630-449e-93a9-4d6debf96604",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        -624
+      ]
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "contas_recorrentes",
+          "mode": "list",
+          "cachedResultName": "contas_recorrentes"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ativo": true,
+            "empresa_id": "={{ $json.empresa_id }}",
+            "descricao": "={{ $json.descricao }}",
+            "fornecedor_id": "={{ $json.fornecedor_id }}",
+            "tipo_valor": "={{ $json.tipo_valor }}",
+            "valor_padrao": "={{ $json.valor }}",
+            "dia_vencimento": "={{ $json.dia_vencimento }}",
+            "conta_id": "={{ $json.conta_id }}",
+            "contabil_id": "={{ $json.contabil_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "empresa_id",
+              "displayName": "empresa_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "descricao",
+              "displayName": "descricao",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fornecedor_id",
+              "displayName": "fornecedor_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conta_id",
+              "displayName": "conta_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dia_vencimento",
+              "displayName": "dia_vencimento",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo_valor",
+              "displayName": "tipo_valor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "valor_padrao",
+              "displayName": "valor_padrao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ativo",
+              "displayName": "ativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "criado_em",
+              "displayName": "criado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contabil_id",
+              "displayName": "contabil_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -800,
+        -512
+      ],
+      "id": "cea9967d-82a3-4716-936f-5538cfdec3ba",
+      "name": "Conta",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "insere_conta_recorrente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1248,
+        -512
+      ],
+      "id": "9873f475-9d9c-4786-b661-208e653ca127",
+      "name": "cadastro_recorrencia",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -464,
+        -304
+      ],
+      "id": "909e43b2-31cb-4839-9fc0-d304a92d50d8",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1056,
+        -304
+      ],
+      "id": "46fcb98b-fd9c-4be4-a308-6aed48e29a8e",
+      "name": "EditStaging"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        -304
+      ],
+      "id": "b3448430-6a48-4d89-bdcb-b21dfb393749",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " WITH competencia_atual AS (\n  SELECT date_trunc('month', current_date)::date AS competencia\n)\nSELECT\n  r.*,\n\n  c.competencia,\n\n  CASE\n    WHEN g.id IS NULL THEN false\n    ELSE true\n  END AS gerado_mes_atual,\n\n  g.data_pagamento,\n  g.valor_gerado,\n  g.conta_id AS conta_pagamento_id,\n\n  CASE\n    WHEN g.id IS NULL THEN 'PENDENTE'\n    ELSE 'GERADO'\n  END AS status_mes\n\nFROM public.contas_recorrentes r\nCROSS JOIN competencia_atual c\nLEFT JOIN public.contas_recorrentes_geradas g\n  ON g.empresa_id = r.empresa_id\n AND g.recorrente_id = r.id\n AND date_trunc('month', g.competencia)::date = c.competencia\n\nWHERE r.empresa_id = {{ $json.empresa_id }}::bigint\n  AND r.ativo = true\n\nORDER BY\n  CASE WHEN g.id IS NULL THEN 0 ELSE 1 END,\n  r.dia_vencimento,\n  r.descricao;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -816,
+        -304
+      ],
+      "id": "1954646c-c700-403a-8a63-7a7da4a68a9c",
+      "name": "Conta1",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "path": "busca_conta_recorrente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1264,
+        -304
+      ],
+      "id": "b4c6d549-950a-4891-a684-438cbe6b63d4",
+      "name": "busca_conta_recorrente",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -448,
+        -64
+      ],
+      "id": "ea0ad0bd-b122-476a-bc30-5ec0b12288c6",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        -64
+      ],
+      "id": "a06123e4-c1ac-4a41-86fd-c8fef44c2261",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atualiza_conta_recorrente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1248,
+        -64
+      ],
+      "id": "cd653c82-6a75-4bed-b030-c9935ca9d017",
+      "name": "atualiza_conta_recorrente1",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "84d4691f-07a7-48da-85b9-ad6557a565a7",
+              "name": "descricao",
+              "value": "= {{ $json.body.descricao}}",
+              "type": "string"
+            },
+            {
+              "id": "e652a562-a4ac-4eba-ae02-bef31ce39227",
+              "name": "fornecedor_id",
+              "value": "={{ $json.body.fornecedor_id}}",
+              "type": "string"
+            },
+            {
+              "id": "0a95e73b-7f97-4b02-a175-9ae95dc2c04d",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "3d3f5c5b-eddb-46c3-bac0-7db75f9f6ebe",
+              "name": "tipo_valor",
+              "value": "={{ $json.body.tipo_valor}}",
+              "type": "string"
+            },
+            {
+              "id": "bddda26d-3082-4444-946f-f74eef0b28f7",
+              "name": "valor",
+              "value": "={{ $json.body.valor_padrao}}",
+              "type": "string"
+            },
+            {
+              "id": "8183a263-17e5-4d61-95d5-1c2fb6947b9b",
+              "name": "dia_vencimento",
+              "value": "={{ $json.body.dia_vencimento}}",
+              "type": "string"
+            },
+            {
+              "id": "b60827dd-cb6f-41ac-9008-489ab604a8d9",
+              "name": "id",
+              "value": "={{ $json.body.id}}",
+              "type": "string"
+            },
+            {
+              "id": "099c4c50-2d5c-47ab-9d63-c5c2bd41b8fb",
+              "name": "ativo",
+              "value": "={{ $json.body.ativo}}",
+              "type": "string"
+            },
+            {
+              "id": "6da5951e-de24-44ba-bc69-9a134b053e8f",
+              "name": "contabil_id",
+              "value": "={{ $json.body.contabil_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1024,
+        -64
+      ],
+      "id": "ed24e47a-c040-4c6e-a942-b8b12ccea5d2",
+      "name": "EditStaging3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " update public.contas_recorrentes\nset\n  descricao = '{{$json.descricao }}',\n  fornecedor_id =  {{ $json.fornecedor_id }}::bigint,\n  conta_id =  {{ $json.conta_id }}::bigint,\n  dia_vencimento = {{ $json.dia_vencimento }} ::int,\n  tipo_valor = '{{ $json.tipo_valor }}' ,\n  valor_padrao = {{ $json.valor }}::numeric,\n  ativo = {{ $json.ativo }}::boolean,\n   contabil_id = {{ $json.contabil_id }} \nwhere empresa_id = {{ $json.empresa_id }} ::bigint\n  and id = {{ $json.id }}::bigint\nreturning *;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -800,
+        -64
+      ],
+      "id": "d312e1ce-cd67-4f53-9ae5-8c6696510121",
+      "name": "AtualizaContaRecorrente",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        928,
+        -544
+      ],
+      "id": "2193cf1f-7cff-4f35-8de7-0737df279b93",
+      "name": "Respond to Webhook11"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "0a95e73b-7f97-4b02-a175-9ae95dc2c04d",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "bddda26d-3082-4444-946f-f74eef0b28f7",
+              "name": "valor",
+              "value": "={{ $json.body.valor}}",
+              "type": "string"
+            },
+            {
+              "id": "8183a263-17e5-4d61-95d5-1c2fb6947b9b",
+              "name": "competencia",
+              "value": "={{ $json.body.competencia}}",
+              "type": "string"
+            },
+            {
+              "id": "324c9adf-1014-4a8d-a79d-c3a8791e491f",
+              "name": "recorrente_id",
+              "value": "={{ $json.body.recorrente_id}}",
+              "type": "string"
+            },
+            {
+              "id": "3e0aaa1a-c306-49a0-a761-b501aa85c7cf",
+              "name": "data_pagamento",
+              "value": "={{ $json.body.data_pagamento}}",
+              "type": "string"
+            },
+            {
+              "id": "efcd7181-8cc6-4800-abf8-ff4e779d8b0a",
+              "name": "contabil_id",
+              "value": "={{ $json.body.contabil_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        -544
+      ],
+      "id": "7d38b12a-ec3d-4e82-af1b-0df20c215260",
+      "name": "EditStaging4"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  public.ff_gera_conta_recorrente(\n {{ $json.empresa_id }},\n {{ $json.recorrente_id }},\n  '{{ $json.competencia }}',\n  {{ $json.conta_id }},\n   {{ $json.valor }},\n  '{{ $json.data_pagamento }}',\n  {{ $json.contabil_id }}\n  \n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        -544
+      ],
+      "id": "01d7c192-8514-4433-9b49-b1fba05a3f3a",
+      "name": "Conta3",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gera_lancamento_recorrente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -544
+      ],
+      "id": "16fd1836-cb3e-42f5-9851-9485d608913f",
+      "name": "gera_lancamento",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -544
+      ],
+      "id": "c508522f-8044-4ae7-bb5a-c12b6f2a8a66",
+      "name": "Code in JavaScript11"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        864,
+        -352
+      ],
+      "id": "c7186b71-74e6-4126-9bc0-9c39a415a89d",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "324c9adf-1014-4a8d-a79d-c3a8791e491f",
+              "name": "recorrente_id",
+              "value": "={{ $json.query.recorrente_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        -352
+      ],
+      "id": "d4b69975-bafe-43b2-8a54-9a3215c834c1",
+      "name": "EditStaging5"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -352
+      ],
+      "id": "baa47b2b-e2ec-496c-801d-d466baa7a61a",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select g.* , f.nome conta_nome  from contas_recorrentes_geradas as g\n   inner join contas_financeiras as f \n   on g.conta_id = f.id AND\n      g.empresa_id = f.empresa_id \n   where f.empresa_id = {{ $json.empresa_id }} and recorrente_id = {{ $json.recorrente_id }}\norder by id desc limit 6",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        -352
+      ],
+      "id": "23c7e4ad-4657-4a01-ab4c-bcf57dcf2d9e",
+      "name": "contas_recorrentes_geradas",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "path": "historico_conta_recorrente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -352
+      ],
+      "id": "9374ecc6-faf1-46b1-924a-79b9b9743a01",
+      "name": "historico_conta_recorrente",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "content": "## Diário",
+        "height": 1132,
+        "width": 1248
+      },
+      "id": "0d137baf-94e7-4c5d-90e3-d96a7e475a6c",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -624
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        864,
+        -64
+      ],
+      "id": "fa4927d1-aeeb-45eb-828d-02b2ac6eccc9",
+      "name": "Respond to Webhook13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        -64
+      ],
+      "id": "66158db0-a593-4723-a14d-dad232885cc0",
+      "name": "EditStaging6"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -64
+      ],
+      "id": "43d620ae-d7d1-47a2-a74a-66edc41813a8",
+      "name": "Code in JavaScript13"
+    },
+    {
+      "parameters": {
+        "path": "status_contas_recorrentes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -64
+      ],
+      "id": "23eade72-430a-400a-9e26-9da75abf8c70",
+      "name": "status_contas_recorrentes",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " WITH competencia_atual AS (\n  SELECT date_trunc('month', current_date)::date AS competencia\n),\npendentes AS (\n  SELECT\n    r.id,\n    r.descricao,\n    r.dia_vencimento,\n    r.valor_padrao,\n    r.conta_id\n  FROM public.contas_recorrentes r\n  CROSS JOIN competencia_atual c\n  WHERE r.empresa_id = {{ $json.empresa_id }}::bigint\n    AND r.ativo = true\n    AND NOT EXISTS (\n      SELECT 1\n      FROM public.contas_recorrentes_geradas g\n      WHERE g.empresa_id = r.empresa_id\n        AND g.recorrente_id = r.id\n        AND date_trunc('month', g.competencia)::date = c.competencia\n    )\n)\nSELECT\n  true AS ok,\n  COUNT(*) AS qtd,\n  CASE\n    WHEN COUNT(*) = 0 THEN 'Nenhuma conta recorrente pendente'\n    WHEN COUNT(*) = 1 THEN '1 conta recorrente pendente'\n    ELSE COUNT(*) || ' contas recorrentes pendentes'\n  END AS message\nFROM pendentes;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        448,
+        -64
+      ],
+      "id": "90a374dd-d215-407a-859c-400bc9112fe5",
+      "name": "status_conta",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        912,
+        176
+      ],
+      "id": "d04b1730-6691-4ea0-a0dd-109da5d524dc",
+      "name": "Respond to Webhook14"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        176
+      ],
+      "id": "70095c27-652c-470d-adeb-26ce4de1505c",
+      "name": "EditStaging7"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        176
+      ],
+      "id": "9180ffae-aded-45f6-8084-e734a90cb70e",
+      "name": "Code in JavaScript14"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from  public.ff_dashboard_contas_recorrentes(\n  {{ $json.empresa_id }},\n  '20260601',\n  '20261206'\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        496,
+        176
+      ],
+      "id": "b9495d8f-317a-4148-ac1e-a32660ad5a40",
+      "name": "status_conta1",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "path": "dashboard_conta_recorrente",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        176
+      ],
+      "id": "611dc12a-635a-4368-9c75-12e5f7a42702",
+      "name": "dashboard_conta_recorrente",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -704,
+        240
+      ],
+      "id": "88a7903d-3e00-4137-91a2-5a53cad41e51",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        240
+      ],
+      "id": "2a557efc-cc1c-43d4-8490-e258f56eaf2a",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "path": "lista_bancos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1264,
+        240
+      ],
+      "id": "74bf0bcc-3289-45d0-b1ec-ac7a0b0f8b86",
+      "name": "escolhebanco",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select codigo, nome, icone_url, cor_hex\nfrom public.bancos\nwhere ativo = true\norder by nome;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1056,
+        240
+      ],
+      "id": "8a9300bc-1a4b-4d15-b71f-30946fe30ca7",
+      "name": "banco",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        352
+      ],
+      "id": "a836fe9b-08f5-4f2f-b25b-4ab90ca045a1",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all();\n\n// 🔥 erro do postgres\nif (items[0]?.json?.error) {\n  return [\n    {\n      json: { \n        ok: false,\n        message: items[0].json.message || \"Erro desconhecido\",\n        details: items[0].json.error.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// 🔥 sucesso\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items.map(i => i.json)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        352
+      ],
+      "id": "39cc17ba-ad26-47d8-9396-8fbcfb3cb6a1",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT\n  id,\n  codigo,\n  nome,\n  codigo || ' - ' || nome AS label\nFROM contab.contas\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND tipo = 'DESPESA'\n  AND analitica = true\nORDER BY codigo;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        528,
+        352
+      ],
+      "id": "6ab423ac-253c-426d-90ff-52c4b2f47dae",
+      "name": "Despesa",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9979082e-9a0e-48c7-a643-b189cf149b01",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        304,
+        352
+      ],
+      "id": "ecfdee41-4426-47d8-a0f8-3e79d0c935a0",
+      "name": "EditStaging8"
+    },
+    {
+      "parameters": {
+        "path": "despesa",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        352
+      ],
+      "id": "81e0410b-51b1-4334-82aa-ac590253c49c",
+      "name": "Despesa_webhook",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    }
+  ],
+  "pinData": {
+    "EditStaging": [
+      {
+        "json": {
+          "empresa_id": 1
+        }
+      }
+    ],
+    "EditStaging5": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "recorrente_id": 1
+        }
+      }
+    ],
+    "EditStaging6": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "recorrente_id": 1
+        }
+      }
+    ],
+    "EditStaging7": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "recorrente_id": 1
+        }
+      }
+    ],
+    "EditStaging8": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "recorrente_id": 1
+        }
+      }
+    ]
+  },
+  "connections": {
+    "EditStaging2": {
+      "main": [
+        [
+          {
+            "node": "Conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript10": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conta": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cadastro_recorrencia": {
+      "main": [
+        [
+          {
+            "node": "EditStaging2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging": {
+      "main": [
+        [
+          {
+            "node": "Conta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conta1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "busca_conta_recorrente": {
+      "main": [
+        [
+          {
+            "node": "EditStaging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "atualiza_conta_recorrente1": {
+      "main": [
+        [
+          {
+            "node": "EditStaging3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging3": {
+      "main": [
+        [
+          {
+            "node": "AtualizaContaRecorrente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AtualizaContaRecorrente": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging4": {
+      "main": [
+        [
+          {
+            "node": "Conta3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conta3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gera_lancamento": {
+      "main": [
+        [
+          {
+            "node": "EditStaging4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript11": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging5": {
+      "main": [
+        [
+          {
+            "node": "contas_recorrentes_geradas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript12": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contas_recorrentes_geradas": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "historico_conta_recorrente": {
+      "main": [
+        [
+          {
+            "node": "EditStaging5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging6": {
+      "main": [
+        [
+          {
+            "node": "status_conta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript13": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "status_contas_recorrentes": {
+      "main": [
+        [
+          {
+            "node": "EditStaging6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "status_conta": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging7": {
+      "main": [
+        [
+          {
+            "node": "status_conta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript14": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "status_conta1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "dashboard_conta_recorrente": {
+      "main": [
+        [
+          {
+            "node": "EditStaging7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "escolhebanco": {
+      "main": [
+        [
+          {
+            "node": "banco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "banco": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Despesa": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditStaging8": {
+      "main": [
+        [
+          {
+            "node": "Despesa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Despesa_webhook": {
+      "main": [
+        [
+          {
+            "node": "EditStaging8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "379cc696-0e50-4239-842d-89b5530d090b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "2NbgqVeARJHHtNX4",
+  "tags": []
+}

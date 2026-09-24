@@ -1,0 +1,2143 @@
+{
+  "name": "FinanceOpenFinance",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pluggy-connect-token",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        16
+      ],
+      "id": "29c13689-ad63-436b-b035-09fbac259d40",
+      "name": "Webhook",
+      "webhookId": "de1bae81-149f-4634-83ee-b9732338ad19"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pluggy.ai/auth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "clientId",
+              "value": "05feb10b-6e7d-49e8-b9f9-35c7c4ab933e"
+            },
+            {
+              "name": "clientSecret",
+              "value": "10Nc84hGlCPLSqBVbUinr8ihxYyjQ6CB-HSmITTcUFY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -32,
+        16
+      ],
+      "id": "f2302545-b3be-4dfb-b773-fb6cd48f64c4",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/v2/transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "3a73246e-783b-4308-92d1-d679504877ad"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3376,
+        944
+      ],
+      "id": "f444b12d-c5ef-4a54-abf3-073b0071f7d9",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pluggy.ai/auth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "clientId",
+              "value": "05feb10b-6e7d-49e8-b9f9-35c7c4ab933e"
+            },
+            {
+              "name": "clientSecret",
+              "value": "10Nc84hGlCPLSqBVbUinr8ihxYyjQ6CB-HSmITTcUFY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2784,
+        16
+      ],
+      "id": "9185a401-bb39-41e3-8bec-c7460a3ec8fc",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/v2/transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "36492858-fa56-4225-aec7-e4b67f1f886e"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3008,
+        -64
+      ],
+      "id": "2f816746-0058-4c72-9711-e6ec9fe7f205",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/v2/transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "d1bf9472-742c-4ecd-9b74-561d315049d7"
+            },
+            {
+              "name": "dateFrom",
+              "value": "2026-07-01"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3008,
+        160
+      ],
+      "id": "7318917f-e580-4aa2-81ef-fc3a6967cfd0",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "jsCode": " // ============================================================\n// FINANCEFLOW - ADAPTADOR PLUGGY -> PADRÃO CONCILIAÇÃO EXTRATO\n// n8n Code Node\n// ============================================================\n\n// Aceita:\n// 1) vários items do n8n\n// 2) um item contendo um array\n// 3) json.movimentos / json.transactions / json.results\nconst entradas = $input.all();\n\nlet dados = [];\n\nfor (const entrada of entradas) {\n  const j = entrada.json;\n\n  if (Array.isArray(j)) {\n    dados.push(...j);\n  } else if (Array.isArray(j.movimentos)) {\n    dados.push(...j.movimentos);\n  } else if (Array.isArray(j.transactions)) {\n    dados.push(...j.transactions);\n  } else if (Array.isArray(j.results)) {\n    dados.push(...j.results);\n  } else if (j && j.id) {\n    dados.push(j);\n  }\n}\n\n// ============================================================\n// AUXILIARES\n// ============================================================\n\nfunction arredondar(valor) {\n  return Math.round((Number(valor) + Number.EPSILON) * 100) / 100;\n}\n\nfunction dataISO(valor) {\n  if (!valor) return null;\n\n  // evita problema de timezone:\n  // \"2026-08-20T03:00:00.000Z\" -> \"2026-08-20\"\n  return String(valor).substring(0, 10);\n}\n\nfunction obterDocumento(item) {\n  return (\n    item.paymentData?.referenceNumber ??\n    item.paymentData?.authenticationCode ??\n    item.providerCode ??\n    item.providerId ??\n    null\n  );\n}\n\nfunction obterHistorico(item) {\n  return (\n    item.description ??\n    item.descriptionRaw ??\n    item.merchant?.businessName ??\n    'MOVIMENTO BANCARIO'\n  );\n}\n\n// ============================================================\n// TRANSFORMA MOVIMENTOS\n// ============================================================\n\nconst movimentos = dados\n  .filter(item => item && item.status !== 'PENDING')\n  .map(item => {\n    const valorOriginal = Number(item.amount ?? 0);\n\n    let tipo;\n\n    if (item.type === 'CREDIT') {\n      tipo = 'C';\n    } else if (item.type === 'DEBIT') {\n      tipo = 'D';\n    } else {\n      tipo = valorOriginal >= 0 ? 'C' : 'D';\n    }\n\n    return {\n      data: dataISO(item.date),\n\n      historico: obterHistorico(item),\n\n      documento: obterDocumento(item),\n\n      valor: arredondar(Math.abs(valorOriginal)),\n\n      tipo,\n\n      saldo:\n        item.balance !== null &&\n        item.balance !== undefined\n          ? arredondar(item.balance)\n          : null,\n\n      natureza_financeira: null,\n\n      // ----------------------------------------------------\n      // DADOS EXTRAS PLUGGY\n      // Não atrapalham sua estrutura e podem ser úteis depois\n      // ----------------------------------------------------\n      id_externo: item.id ?? null,\n      categoria: item.category ?? null,\n      categoria_id: item.categoryId ?? null,\n      status: item.status ?? null,\n      conta_externa_id: item.accountId ?? null,\n\n      forma_pagamento:\n        item.paymentData?.paymentMethod ?? null,\n\n      contraparte:\n        item.paymentData?.receiver?.name ??\n        item.paymentData?.payer?.name ??\n        item.merchant?.businessName ??\n        null,\n\n      documento_contraparte:\n        item.paymentData?.receiver?.documentNumber?.value ??\n        item.paymentData?.payer?.documentNumber?.value ??\n        item.merchant?.cnpj ??\n        null\n    };\n  });\n\n// ============================================================\n// ORDENA DO MAIS ANTIGO PARA O MAIS NOVO\n// ============================================================\n\nmovimentos.sort((a, b) => {\n  if (!a.data) return 1;\n  if (!b.data) return -1;\n\n  return a.data.localeCompare(b.data);\n});\n\n// ============================================================\n// TOTAIS\n// ============================================================\n\nconst creditos = movimentos.filter(m => m.tipo === 'C');\nconst debitos = movimentos.filter(m => m.tipo === 'D');\n\nconst totalCreditos = arredondar(\n  creditos.reduce((acc, m) => acc + Number(m.valor || 0), 0)\n);\n\nconst totalDebitos = arredondar(\n  debitos.reduce((acc, m) => acc + Number(m.valor || 0), 0)\n);\n\n// ============================================================\n// SALDOS\n//\n// Pluggy neste retorno está trazendo balance = null.\n// Portanto só calculamos saldo quando existir balance.\n// ============================================================\n\nconst movimentosComSaldo = movimentos.filter(\n  m => m.saldo !== null && m.saldo !== undefined\n);\n\nlet saldoInicial = null;\nlet saldoFinal = null;\nlet saldoCalculado = null;\nlet diferencaSaldo = null;\nlet saldoConfere = null;\n\nif (movimentosComSaldo.length > 0) {\n\n  const primeiroComSaldo = movimentosComSaldo[0];\n  const ultimoComSaldo =\n    movimentosComSaldo[movimentosComSaldo.length - 1];\n\n  // Descobre saldo antes do primeiro movimento\n  if (primeiroComSaldo.tipo === 'C') {\n    saldoInicial = arredondar(\n      primeiroComSaldo.saldo - primeiroComSaldo.valor\n    );\n  } else {\n    saldoInicial = arredondar(\n      primeiroComSaldo.saldo + primeiroComSaldo.valor\n    );\n  }\n\n  saldoFinal = arredondar(ultimoComSaldo.saldo);\n\n  saldoCalculado = arredondar(\n    saldoInicial + totalCreditos - totalDebitos\n  );\n\n  diferencaSaldo = arredondar(\n    saldoCalculado - saldoFinal\n  );\n\n  saldoConfere = Math.abs(diferencaSaldo) <= 0.01;\n}\n\n// ============================================================\n// DIAGNÓSTICO\n// ============================================================\n\nconst diagnostico = {\n\n  tipo_layout: 'PLUGGY_API',\n\n  quantidade_linhas: dados.length,\n\n  registros: movimentos.length,\n\n  creditos: creditos.length,\n\n  debitos: debitos.length,\n\n  total_creditos: totalCreditos,\n\n  total_debitos: totalDebitos,\n\n  saldo_inicial: saldoInicial,\n\n  saldo_final: saldoFinal,\n\n  saldo_calculado: saldoCalculado,\n\n  diferenca_saldo: diferencaSaldo,\n\n  saldo_confere: saldoConfere,\n\n  primeiro_movimento:\n    movimentos.length > 0\n      ? {\n          data: movimentos[0].data,\n          historico: movimentos[0].historico,\n          documento: movimentos[0].documento,\n          valor: movimentos[0].valor,\n          tipo: movimentos[0].tipo,\n          saldo: movimentos[0].saldo,\n          natureza_financeira:\n            movimentos[0].natureza_financeira\n        }\n      : null,\n\n  ultimo_movimento:\n    movimentos.length > 0\n      ? {\n          data: movimentos[movimentos.length - 1].data,\n          historico: movimentos[movimentos.length - 1].historico,\n          documento:\n            movimentos[movimentos.length - 1].documento,\n          valor:\n            movimentos[movimentos.length - 1].valor,\n          tipo:\n            movimentos[movimentos.length - 1].tipo,\n          saldo:\n            movimentos[movimentos.length - 1].saldo,\n          natureza_financeira:\n            movimentos[movimentos.length - 1]\n              .natureza_financeira\n        }\n      : null\n};\n\n// ============================================================\n// RETORNO PADRÃO FINANCEFLOW\n// ============================================================\n\nreturn [\n  {\n    json: {\n      ok: true,\n\n      banco: 'PLUGGY',\n\n      quantidade: movimentos.length,\n\n      movimentos,\n\n      diagnostico\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3344,
+        768
+      ],
+      "id": "356378dc-0c9f-4470-a110-fcfc458d6c15",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pluggy.ai/connect_token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"options\": {\n    \"clientUserId\": \"empresa_1\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        176,
+        16
+      ],
+      "id": "6e8dafc2-0f18-406d-ba20-a6423046f682",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        16
+      ],
+      "id": "b1bf2591-9401-4532-9b80-d1ca6c8c62b7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pluggy.ai/auth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "clientId",
+              "value": "05feb10b-6e7d-49e8-b9f9-35c7c4ab933e"
+            },
+            {
+              "name": "clientSecret",
+              "value": "10Nc84hGlCPLSqBVbUinr8ihxYyjQ6CB-HSmITTcUFY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        352,
+        544
+      ],
+      "id": "914027e7-25ba-4958-837c-1494f9f1f389",
+      "name": "HTTP Request6"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1472,
+        464
+      ],
+      "id": "787c0ecc-b722-4e71-830a-90c5620450ad",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "  SELECT public.ff_salvar_conexao_pluggy(\n   {{ $json.empresa_id }} ::bigint,\n    {{ $json.conta_id }}::bigint, \n    '{{ $json.item_id }}'::UUID\n) AS resultado;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        208,
+        240
+      ],
+      "id": "c32b4d83-68fc-4bfe-bb89-7dc9cfbf25f1",
+      "name": "ff_salvar_conexao_pluggy",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96d510c6-7d08-4bbc-88e4-bc9d85e4db7d",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "2e13954d-eb46-4c36-be8b-c99e45f49bbf",
+              "name": "conta_id",
+              "value": "={{ $json.body.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "89cd2299-e179-4494-a96b-b21c027ad03f",
+              "name": "item_id",
+              "value": "={{ $json.body.item_id}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        240
+      ],
+      "id": "1118c318-38cd-4f6a-a47d-a79c369139fd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pluggy.ai/auth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "clientId",
+              "value": "05feb10b-6e7d-49e8-b9f9-35c7c4ab933e"
+            },
+            {
+              "name": "clientSecret",
+              "value": "10Nc84hGlCPLSqBVbUinr8ihxYyjQ6CB-HSmITTcUFY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3216,
+        288
+      ],
+      "id": "541fcb01-a874-49a8-b592-5bb1373ced33",
+      "name": "HTTP Request8"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/accounts/ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "datefrom",
+              "value": "2026-07-02"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3424,
+        288
+      ],
+      "id": "2974b4c2-1521-42e5-973b-e1c058b2192d",
+      "name": "Saldos"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/v2/transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "ebf140cf-fa8b-4414-8ff2-e355094da2ea"
+            },
+            {
+              "name": "dateFrom",
+              "value": "2026-07-01"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3424,
+        480
+      ],
+      "id": "08a3d938-c43a-41c1-b44b-1705df3363e7",
+      "name": "extrato"
+    },
+    {
+      "parameters": {
+        "jsCode": " const entradasMerge = $input.all().map(item => item.json);\n\n// Localiza conta e extrato dentro do Merge\nconst conta = entradasMerge.find(item =>\n  item?.id &&\n  item?.type === \"BANK\" &&\n  item?.bankData\n);\n\nconst extrato = entradasMerge.find(item =>\n  Array.isArray(item?.results)\n);\n\nif (!conta) {\n  throw new Error(\"Dados da conta/saldo não encontrados no Merge.\");\n}\n\nif (!extrato) {\n  throw new Error(\"Extrato não encontrado no Merge.\");\n}\n\n// Mantém somente movimentos confirmados.\n// PENDING será completamente descartado.\nconst movimentosConfirmados = extrato.results.filter(\n  movimento => movimento.status === \"POSTED\"\n);\n\nconst totalEntradas = movimentosConfirmados\n  .filter(movimento => Number(movimento.amount) > 0)\n  .reduce(\n    (total, movimento) => total + Number(movimento.amount),\n    0\n  );\n\nconst totalSaidas = Math.abs(\n  movimentosConfirmados\n    .filter(movimento => Number(movimento.amount) < 0)\n    .reduce(\n      (total, movimento) => total + Number(movimento.amount),\n      0\n    )\n);\n\nconst movimentacaoLiquida =\n  totalEntradas - totalSaidas;\n\nconst saldoFinal = Number(\n  conta.bankData?.closingBalance ??\n  conta.balance ??\n  0\n);\n\nconst saldoAnterior =\n  saldoFinal - movimentacaoLiquida;\n\nconst transferNumber =\n  conta.bankData?.transferNumber ?? \"\";\n\nconst partesConta = transferNumber.split(\"/\");\n\nconst codigoBanco = partesConta[0] ?? null;\nconst agencia = partesConta[1] ?? null;\n\nconst numeroConta =\n  partesConta.slice(2).join(\"/\") ||\n  conta.number ||\n  null;\n\nconst arredondar = valor =>\n  Math.round(\n    (Number(valor) + Number.EPSILON) * 100\n  ) / 100;\n\n// Ordena do movimento mais antigo para o mais recente\nconst movimentosOrdenados = [...movimentosConfirmados].sort(\n  (a, b) => new Date(a.date) - new Date(b.date)\n);\n\n// Calcula o saldo depois de cada movimento\nlet saldoAcumulado = saldoAnterior;\n\nconst movimentos = movimentosOrdenados.map(movimento => {\n  saldoAcumulado += Number(movimento.amount);\n\n  return {\n    id: movimento.id,\n    data: movimento.date,\n    descricao: movimento.description,\n    descricao_original: movimento.descriptionRaw,\n    tipo: movimento.type,\n    valor: Number(movimento.amount),\n    saldo: arredondar(saldoAcumulado),\n    categoria: movimento.category,\n    categoria_id: movimento.categoryId,\n    status: movimento.status,\n    operacao: movimento.operationType,\n    provider_id: movimento.providerId,\n    account_id: movimento.accountId\n  };\n});\n\nreturn [\n  {\n    json: {\n      ok: true,\n\n      conta: {\n        banco: conta.name,\n        codigo_banco: codigoBanco,\n        agencia,\n        numero: numeroConta,\n        titular: conta.owner,\n        documento: conta.taxNumber,\n        moeda: conta.currencyCode,\n        tipo: conta.type,\n        subtipo: conta.subtype\n      },\n\n      pluggy: {\n        item_id: conta.itemId,\n        account_id: conta.id,\n        atualizado_em: conta.updatedAt\n      },\n\n      resumo: {\n        saldo_anterior: arredondar(saldoAnterior),\n        total_entradas: arredondar(totalEntradas),\n        total_saidas: arredondar(totalSaidas),\n        movimentacao_liquida: arredondar(\n          movimentacaoLiquida\n        ),\n        saldo_final: arredondar(saldoFinal),\n        quantidade: movimentos.length\n      },\n\n      movimentos,\n\n      paginacao: {\n        next: extrato.next ?? null\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3808,
+        320
+      ],
+      "id": "21dd06ff-2784-436a-acde-c7b44c643012",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3648,
+        320
+      ],
+      "id": "662d5bac-bc58-4488-a3e4-d60c596480fb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96d510c6-7d08-4bbc-88e4-bc9d85e4db7d",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "2e13954d-eb46-4c36-be8b-c99e45f49bbf",
+              "name": "conta_id",
+              "value": "={{ $json.query.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "4cae5ac6-3098-4c68-b202-ea4169a7ddf3",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "45cfc11f-89c5-4b79-9026-7b83e8a4dec2",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        560
+      ],
+      "id": "a3742de4-209d-426e-a231-175c20a1779a",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select  \n    id ,\n    empresa_id ,\n    conta_id,\n    item_id,\n    criado_em \n from    public.pluggy_conexoes \n\nwhere  empresa_id =  {{ $json.empresa_id }} AND\n       conta_id = {{ $json.conta_id }}  ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        544
+      ],
+      "id": "0c1c850f-a744-481d-b60b-eaf7b991805b",
+      "name": "Execute a SQL query",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/accounts/ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "datefrom",
+              "value": "2026-07-02"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3584,
+        672
+      ],
+      "id": "e06b08c3-b283-4035-825c-b1297f364f1f",
+      "name": "Saldos1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/v2/transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "={{ $json.account_id }}"
+            },
+            {
+              "name": "dateFrom",
+              "value": "={{ $('Edit Fields2').item.json.data_inicio }}"
+            },
+            {
+              "name": "dateTo",
+              "value": "={{ $('Edit Fields2').item.json.data_fim }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $('HTTP Request6').item.json.apiKey }}"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1024,
+        688
+      ],
+      "id": "ae71bf6c-fac8-4228-b475-891c8f87384e",
+      "name": "extrato1"
+    },
+    {
+      "parameters": {
+        "jsCode": " const entradasMerge = $input.all().map(item => item.json);\n\n// Localiza a resposta do endpoint /accounts\nconst respostaContas = entradasMerge.find(item =>\n  Array.isArray(item?.results) &&\n  item.results.some(registro =>\n    registro?.type === \"BANK\" &&\n    registro?.bankData\n  )\n);\n\n// Localiza a resposta do endpoint /v2/transactions\nconst extrato = entradasMerge.find(item =>\n  Array.isArray(item?.results) &&\n  item.results.some(registro =>\n    registro?.date &&\n    registro?.amount !== undefined\n  )\n);\n\nif (!respostaContas) {\n  throw new Error(\n    \"Resposta das contas bancárias não encontrada no Merge.\"\n  );\n}\n\nif (!extrato) {\n  throw new Error(\n    \"Resposta das transações não encontrada no Merge.\"\n  );\n}\n\n// Seleciona somente a conta corrente\nconst conta = respostaContas.results.find(registro =>\n  registro?.type === \"BANK\" &&\n  registro?.subtype === \"CHECKING_ACCOUNT\" &&\n  registro?.bankData\n);\n\nif (!conta) {\n  throw new Error(\n    \"Conta CHECKING_ACCOUNT não encontrada.\"\n  );\n}\n\n// Elimina movimentos pendentes\nconst movimentosConfirmados = extrato.results.filter(\n  movimento =>\n    movimento?.status === \"POSTED\" &&\n    movimento?.amount !== undefined\n);\n\nconst totalEntradas = movimentosConfirmados\n  .filter(movimento => Number(movimento.amount) > 0)\n  .reduce(\n    (total, movimento) =>\n      total + Number(movimento.amount),\n    0\n  );\n\nconst totalSaidas = Math.abs(\n  movimentosConfirmados\n    .filter(movimento => Number(movimento.amount) < 0)\n    .reduce(\n      (total, movimento) =>\n        total + Number(movimento.amount),\n      0\n    )\n);\n\nconst movimentacaoLiquida =\n  totalEntradas - totalSaidas;\n\nconst saldoFinal = Number(\n  conta.bankData?.closingBalance ??\n  conta.balance ??\n  0\n);\n\nconst saldoAnterior =\n  saldoFinal - movimentacaoLiquida;\n\nconst transferNumber =\n  conta.bankData?.transferNumber ?? \"\";\n\nconst partesConta =\n  transferNumber.split(\"/\");\n\nconst codigoBanco =\n  partesConta[0] || null;\n\nconst agencia =\n  partesConta[1] || null;\n\nconst numeroConta =\n  partesConta.slice(2).join(\"/\") ||\n  conta.number ||\n  null;\n\nconst arredondar = valor =>\n  Math.round(\n    (Number(valor) + Number.EPSILON) * 100\n  ) / 100;\n\n// Coloca os movimentos do mais antigo para o mais recente\nconst movimentosOrdenados =\n  [...movimentosConfirmados].sort(\n    (a, b) =>\n      new Date(a.date) - new Date(b.date)\n  );\n\nlet saldoAcumulado = saldoAnterior;\n\nconst movimentos = movimentosOrdenados.map(\n  movimento => {\n    const valor =\n      Number(movimento.amount);\n\n    saldoAcumulado += valor;\n\n    return {\n      id: movimento.id,\n\n      data: movimento.date,\n\n      descricao:\n        movimento.description ||\n        movimento.descriptionRaw ||\n        \"Movimento bancário\",\n\n      descricao_original:\n        movimento.descriptionRaw ||\n        movimento.description ||\n        null,\n\n      tipo:\n        movimento.type,\n\n      valor,\n\n      saldo:\n        arredondar(saldoAcumulado),\n\n      categoria:\n        movimento.category ?? null,\n\n      categoria_id:\n        movimento.categoryId ?? null,\n\n      status:\n        movimento.status,\n\n      operacao:\n        movimento.operationType ?? null,\n\n      provider_id:\n        movimento.providerId ?? null,\n\n      account_id:\n        movimento.accountId ??\n        conta.id\n    };\n  }\n);\n\n// O Code do n8n precisa obrigatoriamente retornar\n// um array contendo objetos com a propriedade json.\nreturn [\n  {\n    json: {\n      ok: true,\n\n      conta: {\n        banco: conta.name,\n        codigo_banco: codigoBanco,\n        agencia,\n        numero: numeroConta,\n        titular: conta.owner,\n        documento: conta.taxNumber,\n        moeda: conta.currencyCode,\n        tipo: conta.type,\n        subtipo: conta.subtype\n      },\n\n      pluggy: {\n        item_id: conta.itemId,\n        account_id: conta.id,\n        atualizado_em: conta.updatedAt\n      },\n\n      resumo: {\n        saldo_anterior:\n          arredondar(saldoAnterior),\n\n        total_entradas:\n          arredondar(totalEntradas),\n\n        total_saidas:\n          arredondar(totalSaidas),\n\n        movimentacao_liquida:\n          arredondar(movimentacaoLiquida),\n\n        saldo_final:\n          arredondar(saldoFinal),\n\n        quantidade:\n          movimentos.length\n      },\n\n      movimentos,\n\n      paginacao: {\n        next:\n          extrato.next ?? null\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        464
+      ],
+      "id": "98125fc1-0de1-4d64-af00-ae463ff1651c",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1008,
+        464
+      ],
+      "id": "c2451741-1ca8-42da-895d-da02d3e8ba4d",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/v2/transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "=ebf140cf-fa8b-4414-8ff2-e355094da2ea"
+            },
+            {
+              "name": "type",
+              "value": "BANK"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2992,
+        512
+      ],
+      "id": "00f90519-111a-401b-b33a-6116a9f74276",
+      "name": "HTTP Request9"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/accounts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "itemId",
+              "value": "={{ $('Execute a SQL query').item.json.item_id }}"
+            },
+            {
+              "name": "type",
+              "value": "BANK"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        544,
+        720
+      ],
+      "id": "39f8fc43-9fe4-4943-b800-5c498dca57aa",
+      "name": "HTTP Request10"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/accounts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "itemId",
+              "value": "={{ $('Execute a SQL query').item.json.item_id }}"
+            },
+            {
+              "name": "type",
+              "value": "BANK"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        544,
+        368
+      ],
+      "id": "826e35a3-59d8-4ab3-b7a7-c1715ccad492",
+      "name": "Saldo"
+    },
+    {
+      "parameters": {
+        "path": "pluggy-get-extrato",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        560
+      ],
+      "id": "b91e8196-6994-464a-adf1-843da3fef68e",
+      "name": "GetExtrato",
+      "webhookId": "de1bae81-149f-4634-83ee-b9732338ad19"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pluggy-salvar-conexao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        240
+      ],
+      "id": "61a86499-062a-43b9-b1ec-0d10a240fe2f",
+      "name": "ConnectToken",
+      "webhookId": "de1bae81-149f-4634-83ee-b9732338ad19"
+    },
+    {
+      "parameters": {
+        "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
+        "height": 1228,
+        "width": 2144,
+        "color": 6
+      },
+      "id": "228cf567-48b9-4236-b700-7f0eb1b8de91",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -320
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        416,
+        240
+      ],
+      "id": "6603033c-5a18-461b-af29-493f6eb39d95",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const retorno = $input.first().json;\nconst contas = retorno.results ?? [];\n\nif (contas.length === 0) {\n  throw new Error(\n    \"A Pluggy não retornou nenhuma conta bancária.\"\n  );\n}\n\n// Procura primeiro uma conta corrente\nlet contaExtrato = contas.find(conta =>\n  conta.type === \"BANK\" &&\n  conta.subtype === \"CHECKING_ACCOUNT\"\n);\n\n// Se a instituição não classificar como conta corrente,\n// utiliza a primeira conta do tipo BANK.\nif (!contaExtrato) {\n  contaExtrato = contas.find(conta =>\n    conta.type === \"BANK\"\n  );\n}\n\nif (!contaExtrato) {\n  throw new Error(\n    \"Nenhuma conta disponível para consultar o extrato.\"\n  );\n}\n\nreturn [\n  {\n    json: {\n      item_id: contaExtrato.itemId,\n      account_id: contaExtrato.id,\n\n      banco: contaExtrato.name,\n      tipo: contaExtrato.type,\n      subtipo: contaExtrato.subtype,\n\n      numero: contaExtrato.number,\n      titular: contaExtrato.owner,\n      documento: contaExtrato.taxNumber,\n      saldo: contaExtrato.balance,\n\n      transfer_number:\n        contaExtrato.bankData?.transferNumber ?? null\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        720
+      ],
+      "id": "e9d3228e-f3ce-4180-8379-81acf068e0d0",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT NOW() AS teste;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        624,
+        -160
+      ],
+      "id": "f8b9919a-1f84-408f-8506-f44d3b7c55dd",
+      "name": "Execute a SQL query2",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "pluggy-get-investimento",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -784,
+        1008
+      ],
+      "id": "262239b9-11f2-4ac7-9995-c2dcd49c70b2",
+      "name": "GetExtrato1",
+      "webhookId": "de1bae81-149f-4634-83ee-b9732338ad19"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/investments",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "itemId",
+              "value": "={{ $('Execute a SQL query1').item.json.item_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        96,
+        1008
+      ],
+      "id": "b33b9f3e-635a-4059-b729-16dc75e369db",
+      "name": "HTTP Request11"
+    },
+    {
+      "parameters": {
+        "jsCode": " // Recebe a resposta do HTTP Request da Pluggy\nconst entradas = $input.all().map(item => item.json);\n\n// A Pluggy pode devolver:\n// 1. { results: [...] }\n// 2. diretamente vários investimentos\nlet investimentosOriginais = [];\n\nfor (const entrada of entradas) {\n  if (Array.isArray(entrada.results)) {\n    investimentosOriginais.push(...entrada.results);\n  } else if (entrada.id && entrada.itemId) {\n    investimentosOriginais.push(entrada);\n  }\n}\n\nif (investimentosOriginais.length === 0) {\n  throw new Error(\n    \"A Pluggy não retornou nenhum investimento.\"\n  );\n}\n\nfunction numero(valor) {\n  if (\n    valor === null ||\n    valor === undefined ||\n    valor === \"\"\n  ) {\n    return null;\n  }\n\n  const convertido = Number(valor);\n\n  return Number.isFinite(convertido)\n    ? convertido\n    : null;\n}\n\nfunction arredondar(valor) {\n  return Math.round(\n    (Number(valor || 0) + Number.EPSILON) * 100\n  ) / 100;\n}\n\n// Mantém somente investimentos ativos.\n// TOTAL_WITHDRAWAL representa investimento totalmente resgatado.\nconst investimentosAtivos = investimentosOriginais.filter(\n  investimento =>\n    String(investimento.status || \"\").toUpperCase() === \"ACTIVE\"\n);\n\nconst investimentos = investimentosAtivos.map(\n  investimento => ({\n    investimento_id: investimento.id,\n    item_id: investimento.itemId,\n\n    nome: investimento.name || null,\n    numero: investimento.number || null,\n    codigo: investimento.code || null,\n    isin: investimento.isin || null,\n\n    tipo: investimento.type || null,\n    subtipo: investimento.subtype || null,\n    status: investimento.status || null,\n\n    moeda: investimento.currencyCode || \"BRL\",\n    titular: investimento.owner || null,\n\n    saldo_atual: numero(investimento.balance),\n    valor_unitario: numero(investimento.value),\n    quantidade: numero(investimento.quantity),\n    valor_bruto: numero(investimento.amount),\n    valor_original: numero(investimento.amountOriginal),\n    valor_resgate: numero(investimento.amountWithdrawal),\n    lucro: numero(investimento.amountProfit),\n\n    impostos: numero(investimento.taxes),\n    outros_impostos: numero(investimento.taxes2),\n\n    rentabilidade_mes:\n      numero(investimento.lastMonthRate),\n\n    rentabilidade_12_meses:\n      numero(investimento.lastTwelveMonthsRate),\n\n    rentabilidade_anual:\n      numero(investimento.annualRate),\n\n    taxa: numero(investimento.rate),\n    tipo_taxa: investimento.rateType || null,\n    periodicidade_taxa:\n      investimento.ratePeriodicity || null,\n\n    taxa_fixa_anual:\n      numero(investimento.fixedAnnualRate),\n\n    informacao_indexador:\n      investimento.indexerAdditionalInfo || null,\n\n    isento_imposto:\n      investimento.taxExempt ?? null,\n\n    emissor: investimento.issuer || null,\n    emissor_cnpj: investimento.issuerCNPJ || null,\n\n    instituicao:\n      investimento.institution?.name || null,\n\n    instituicao_documento:\n      investimento.institution?.number || null,\n\n    data_posicao: investimento.date || null,\n    data_compra: investimento.purchaseDate || null,\n    data_emissao: investimento.issueDate || null,\n    data_vencimento: investimento.dueDate || null,\n    data_carencia:\n      investimento.gracePeriodDate || null,\n\n    regime_tributario:\n      investimento.metadata?.taxRegime || null,\n\n    numero_proposta:\n      investimento.metadata?.proposalNumber || null,\n\n    numero_processo:\n      investimento.metadata?.processNumber || null,\n\n    atualizado_em: investimento.updatedAt || null\n  })\n);\n\n// Totais da carteira ativa\nconst saldoTotal = investimentos.reduce(\n  (total, investimento) =>\n    total + Number(investimento.saldo_atual || 0),\n  0\n);\n\nconst valorOriginalTotal = investimentos.reduce(\n  (total, investimento) =>\n    total + Number(investimento.valor_original || 0),\n  0\n);\n\nconst lucroTotal = investimentos.reduce(\n  (total, investimento) =>\n    total + Number(investimento.lucro || 0),\n  0\n);\n\nconst impostosTotal = investimentos.reduce(\n  (total, investimento) =>\n    total +\n    Number(investimento.impostos || 0) +\n    Number(investimento.outros_impostos || 0),\n  0\n);\n\n// Agrupa o saldo por tipo\nconst porTipo = {};\n\nfor (const investimento of investimentos) {\n  const tipo = investimento.tipo || \"OUTROS\";\n\n  if (!porTipo[tipo]) {\n    porTipo[tipo] = {\n      tipo,\n      quantidade: 0,\n      saldo: 0\n    };\n  }\n\n  porTipo[tipo].quantidade += 1;\n  porTipo[tipo].saldo += Number(\n    investimento.saldo_atual || 0\n  );\n}\n\nconst distribuicao = Object.values(porTipo).map(\n  grupo => ({\n    ...grupo,\n    saldo: arredondar(grupo.saldo)\n  })\n);\n\nreturn [\n  {\n    json: {\n      ok: true,\n\n      item_id:\n        investimentosOriginais[0]?.itemId || null,\n\n      resumo: {\n        quantidade_recebida:\n          investimentosOriginais.length,\n\n        quantidade_ativa:\n          investimentos.length,\n\n        quantidade_encerrada:\n          investimentosOriginais.length -\n          investimentos.length,\n\n        saldo_total:\n          arredondar(saldoTotal),\n\n        valor_original_total:\n          arredondar(valorOriginalTotal),\n\n        lucro_total:\n          arredondar(lucroTotal),\n\n        impostos_total:\n          arredondar(impostosTotal)\n      },\n\n      distribuicao,\n\n      investimentos\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        1008
+      ],
+      "id": "5d5c615f-687c-4eac-908c-15b2542ac2ed",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select  \n    id ,\n    empresa_id ,\n    conta_id,\n    item_id,\n    criado_em \n from    public.pluggy_conexoes \n\nwhere  empresa_id =  {{ $json.empresa_id }} AND\n       conta_id = {{ $json.conta_id }}  ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -368,
+        1008
+      ],
+      "id": "d1c2d926-3c40-4821-a1bf-b6c955c455aa",
+      "name": "Execute a SQL query1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96d510c6-7d08-4bbc-88e4-bc9d85e4db7d",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "2e13954d-eb46-4c36-be8b-c99e45f49bbf",
+              "name": "conta_id",
+              "value": "={{ $json.query.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "4cae5ac6-3098-4c68-b202-ea4169a7ddf3",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "45cfc11f-89c5-4b79-9026-7b83e8a4dec2",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        1008
+      ],
+      "id": "2bf087d3-41fc-4ae4-8cff-f53045aea228",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        576,
+        1024
+      ],
+      "id": "08672cd9-abb9-484c-9225-e1db23a683e9",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pluggy.ai/auth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "clientId",
+              "value": "05feb10b-6e7d-49e8-b9f9-35c7c4ab933e"
+            },
+            {
+              "name": "clientSecret",
+              "value": "10Nc84hGlCPLSqBVbUinr8ihxYyjQ6CB-HSmITTcUFY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -144,
+        1008
+      ],
+      "id": "5862ac79-2319-41eb-89bc-718323bb960f",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "path": "pluggy-get-cartoes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -768,
+        1264
+      ],
+      "id": "434ff535-b57e-43e1-830c-11bf1e15928f",
+      "name": "GetExtrato2",
+      "webhookId": "de1bae81-149f-4634-83ee-b9732338ad19"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/accounts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "itemId",
+              "value": "={{ $('pluggy_cartoes').item.json.item_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        112,
+        1264
+      ],
+      "id": "33053bc1-41e0-4e4c-9bbb-2f1b6e71b191",
+      "name": "HTTP Request12"
+    },
+    {
+      "parameters": {
+        "jsCode": " const contas = $json.results || [];\n\nreturn contas\n  .filter(conta =>\n    conta.type === \"CREDIT\" &&\n    conta.subtype === \"CREDIT_CARD\"\n  )\n  .map(cartao => ({\n    json: cartao\n  }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        1264
+      ],
+      "id": "a5844793-bd35-4003-b08a-5d43f07f85ae",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "96d510c6-7d08-4bbc-88e4-bc9d85e4db7d",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "string"
+            },
+            {
+              "id": "2e13954d-eb46-4c36-be8b-c99e45f49bbf",
+              "name": "conta_id",
+              "value": "={{ $json.query.conta_id}}",
+              "type": "string"
+            },
+            {
+              "id": "4cae5ac6-3098-4c68-b202-ea4169a7ddf3",
+              "name": "data_inicio",
+              "value": "={{ $json.query.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "45cfc11f-89c5-4b79-9026-7b83e8a4dec2",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -560,
+        1264
+      ],
+      "id": "9527ec63-5993-4e74-821d-cdcca701cb57",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        528,
+        1264
+      ],
+      "id": "6c6a9b34-aa87-41b2-9f15-a33b3170aa66",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pluggy.ai/auth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "clientId",
+              "value": "05feb10b-6e7d-49e8-b9f9-35c7c4ab933e"
+            },
+            {
+              "name": "clientSecret",
+              "value": "10Nc84hGlCPLSqBVbUinr8ihxYyjQ6CB-HSmITTcUFY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -128,
+        1264
+      ],
+      "id": "93a5ee93-805f-4439-83ae-12fa59bd99c3",
+      "name": "HTTP Request13"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select  \n    id ,\n    empresa_id ,\n    conta_id,\n    item_id,\n    criado_em \n from    public.pluggy_conexoes \n\nwhere  empresa_id =  {{ $json.empresa_id }} AND\n       conta_id = {{ $json.conta_id }}  ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -352,
+        1264
+      ],
+      "id": "725a68d7-13b5-4207-9c5b-2a8c0e274b61",
+      "name": "pluggy_cartoes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/bills",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "a4d82fff-b590-47b0-aa72-316158d8c313"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        0,
+        1456
+      ],
+      "id": "770a41eb-cce2-4a37-b4e8-0fc0c2fc6061",
+      "name": "HTTP Request14"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pluggy.ai/v2/transactions",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "accountId",
+              "value": "a4d82fff-b590-47b0-aa72-316158d8c313"
+            },
+            {
+              "name": "dateFrom",
+              "value": "2026-07-01"
+            },
+            {
+              "name": "dateTo",
+              "value": "2026-08-10"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $('HTTP Request13').item.json.apiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        1456
+      ],
+      "id": "4cf66385-295a-414e-82dc-9449c92998ca",
+      "name": "HTTP Request15"
+    }
+  ],
+  "pinData": {
+    "Edit Fields": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conta_id": 7,
+          "item_id": "4293534c-d0c7-4173-b07e-e9fc5a8789b8"
+        }
+      }
+    ],
+    "Merge": [
+      {
+        "json": {
+          "id": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+          "type": "BANK",
+          "subtype": "CHECKING_ACCOUNT",
+          "name": "Banco Bradesco",
+          "balance": 9.55,
+          "currencyCode": "BRL",
+          "itemId": "16b04615-93c6-45e5-9f61-f43e87cbdc6f",
+          "number": "00042743-8",
+          "createdAt": "2026-08-24T19:05:43.744Z",
+          "updatedAt": "2026-08-24T19:05:43.833Z",
+          "marketingName": null,
+          "taxNumber": "609.740.958-34",
+          "owner": "TORQUATO LANDUCCI PIMENTEL",
+          "bankData": {
+            "transferNumber": "237/1693/00042743-8",
+            "closingBalance": 9.55,
+            "automaticallyInvestedBalance": 9.55,
+            "overdraftContractedLimit": 0,
+            "overdraftUsedLimit": 0,
+            "unarrangedOverdraftAmount": 0,
+            "hasReservedBalance": null,
+            "reservedBalances": null
+          },
+          "creditData": null
+        }
+      },
+      {
+        "json": {
+          "results": [
+            {
+              "id": "34e9b3d2-f3ee-4669-8816-1f914db4faca",
+              "description": "SAQUE DINHEIRO ATM - AG01693MAQ004287SEQ0317222081245 - DOCTO: 4287172",
+              "descriptionRaw": "SAQUE DINHEIRO ATM - AG01693MAQ004287SEQ0317222081245 - DOCTO: 4287172",
+              "currencyCode": "BRL",
+              "amount": -1000,
+              "amountInAccountCurrency": null,
+              "date": "2026-08-22T15:45:09.357Z",
+              "category": "Same person transfer - CASH",
+              "categoryId": "04010000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "PENDING",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "DEBIT",
+              "operationType": "SAQUE",
+              "operationTypeAdditionalInfo": null,
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "YMKS20262341245090003584358235",
+              "order": 0,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            },
+            {
+              "id": "86f7d3d1-9f12-4ca7-bc26-0ad698f8d0ee",
+              "description": "SAQUE DINHEIRO ATM - Ag01693maq004287seq0767104080736 - DOCTO: 4287671",
+              "descriptionRaw": "SAQUE DINHEIRO ATM - Ag01693maq004287seq0767104080736 - DOCTO: 4287671",
+              "currencyCode": "BRL",
+              "amount": -2500,
+              "amountInAccountCurrency": null,
+              "date": "2026-08-04T10:36:52.000Z",
+              "category": "Same person transfer - CASH",
+              "categoryId": "04010000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "POSTED",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": "999",
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "DEBIT",
+              "operationType": "SAQUE",
+              "operationTypeAdditionalInfo": null,
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "MGF4LAMX2608050033250000978025",
+              "order": 0,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            },
+            {
+              "id": "55665c12-c849-43d4-8280-1e0ad9544aa0",
+              "description": "INSS - DOCTO: 41693",
+              "descriptionRaw": "INSS - DOCTO: 41693",
+              "currencyCode": "BRL",
+              "amount": 3497.54,
+              "amountInAccountCurrency": null,
+              "date": "2026-08-04T07:15:34.000Z",
+              "category": "Retirement",
+              "categoryId": "01020000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "POSTED",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": "999",
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "CREDIT",
+              "operationType": "CONVENIO_ARRECADACAO",
+              "operationTypeAdditionalInfo": null,
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "MGF4LPMJ2608040152270000577525",
+              "order": 1,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            },
+            {
+              "id": "a55adbb2-d36a-49c8-aafc-66834851b8a1",
+              "description": "RENDIMENTOS - POUP FACIL-DEPOS A PARTIR 4/5/12 - DOCTO: 206719",
+              "descriptionRaw": "RENDIMENTOS - POUP FACIL-DEPOS A PARTIR 4/5/12 - DOCTO: 206719",
+              "currencyCode": "BRL",
+              "amount": 0.07,
+              "amountInAccountCurrency": null,
+              "date": "2026-08-01T07:59:56.000Z",
+              "category": "Proceeds interests and dividends",
+              "categoryId": "03060000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "POSTED",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": "999",
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "CREDIT",
+              "operationType": "OUTROS",
+              "operationTypeAdditionalInfo": "Tipo de Transação adicional complementar de movimento",
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "MGF4LPAF2608010135210005238428",
+              "order": 0,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            },
+            {
+              "id": "dc58fdf2-0b26-4de0-aa71-4c76388749a8",
+              "description": "SAQUE DINHEIRO ATM - Ag01693maq053965seq0129307070908 - DOCTO: 3965293",
+              "descriptionRaw": "SAQUE DINHEIRO ATM - Ag01693maq053965seq0129307070908 - DOCTO: 3965293",
+              "currencyCode": "BRL",
+              "amount": -2000,
+              "amountInAccountCurrency": null,
+              "date": "2026-07-07T03:00:00.000Z",
+              "category": "Same person transfer - CASH",
+              "categoryId": "04010000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "POSTED",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "DEBIT",
+              "operationType": "SAQUE",
+              "operationTypeAdditionalInfo": null,
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "MGF4LAMX2607080028500001195785",
+              "order": 0,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            },
+            {
+              "id": "152431cf-1e5a-4b37-a7cc-4ee85afbe42f",
+              "description": "SAQUE DINHEIRO ATM - Ag01693maq053965seq0700003070802 - DOCTO: 3965000",
+              "descriptionRaw": "SAQUE DINHEIRO ATM - Ag01693maq053965seq0700003070802 - DOCTO: 3965000",
+              "currencyCode": "BRL",
+              "amount": -1490,
+              "amountInAccountCurrency": null,
+              "date": "2026-07-03T03:00:00.000Z",
+              "category": "Same person transfer - CASH",
+              "categoryId": "04010000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "POSTED",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "DEBIT",
+              "operationType": "SAQUE",
+              "operationTypeAdditionalInfo": null,
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "MGF4LAMX2607040028110002255063",
+              "order": 0,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            },
+            {
+              "id": "3df4bb6a-b87d-4535-90e9-807d1f7d5e6e",
+              "description": "INSS - DOCTO: 21693",
+              "descriptionRaw": "INSS - DOCTO: 21693",
+              "currencyCode": "BRL",
+              "amount": 3497.54,
+              "amountInAccountCurrency": null,
+              "date": "2026-07-02T06:37:23.000Z",
+              "category": "Retirement",
+              "categoryId": "01020000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "POSTED",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": "999",
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "CREDIT",
+              "operationType": "CONVENIO_ARRECADACAO",
+              "operationTypeAdditionalInfo": null,
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "MGF4LPMX2607020146490000616275",
+              "order": 0,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            },
+            {
+              "id": "f188776e-3b77-4769-8a0b-7ed5f7449420",
+              "description": "RENDIMENTOS - POUP FACIL-DEPOS A PARTIR 4/5/12 - DOCTO: 206717",
+              "descriptionRaw": "RENDIMENTOS - POUP FACIL-DEPOS A PARTIR 4/5/12 - DOCTO: 206717",
+              "currencyCode": "BRL",
+              "amount": 0.03,
+              "amountInAccountCurrency": null,
+              "date": "2026-07-02T06:37:19.000Z",
+              "category": "Proceeds interests and dividends",
+              "categoryId": "03060000",
+              "balance": null,
+              "accountId": "ebf140cf-fa8b-4414-8ff2-e355094da2ea",
+              "providerCode": null,
+              "status": "POSTED",
+              "paymentData": {
+                "payer": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": null,
+                  "name": null,
+                  "routingNumber": "999",
+                  "routingNumberISPB": null
+                },
+                "paymentMethod": "OTHER",
+                "reason": null,
+                "receiver": {
+                  "accountNumber": null,
+                  "branchNumber": null,
+                  "documentNumber": {
+                    "type": "CPF",
+                    "value": "609.740.958-34"
+                  },
+                  "name": null,
+                  "routingNumber": null,
+                  "routingNumberISPB": null
+                },
+                "receiverReferenceId": null,
+                "authenticationCode": null,
+                "referenceNumber": null,
+                "boletoMetadata": null
+              },
+              "type": "CREDIT",
+              "operationType": "OUTROS",
+              "operationTypeAdditionalInfo": "Tipo de Transação adicional complementar de movimento",
+              "creditCardMetadata": null,
+              "merchant": null,
+              "providerId": "MGF4LPAF2607020144530002658226",
+              "order": 1,
+              "createdAt": "2026-08-24T19:05:43.759Z",
+              "updatedAt": "2026-08-24T19:05:43.759Z"
+            }
+          ],
+          "next": null
+        }
+      }
+    ],
+    "Edit Fields2": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conta_id": 2,
+          "data_inicio": "20260401",
+          "data_fim": "20260825"
+        }
+      }
+    ],
+    "Edit Fields4": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "conta_id": 2,
+          "data_inicio": null,
+          "data_fim": null
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Saldo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_salvar_conexao_pluggy": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "ff_salvar_conexao_pluggy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "Saldos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "extrato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saldos": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extrato": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extrato1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request10": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saldo": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetExtrato": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConnectToken": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "extrato1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetExtrato1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request11": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetExtrato2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request12": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "pluggy_cartoes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request13": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request12",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pluggy_cartoes": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request14": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request15",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "001789b3-2886-43e0-9b19-cff2786bf4a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "DaetQbmI2VtSnqzW",
+  "tags": []
+}

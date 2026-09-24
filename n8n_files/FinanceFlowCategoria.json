@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        896,
-        160
+        528,
+        -208
       ],
-      "id": "29f944e8-094d-439a-994c-d3d8f6710f17",
+      "id": "5cace16e-98e1-45fc-8a93-3c36ef886bff",
       "name": "Respond to Webhook7"
     },
     {
@@ -26,10 +26,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        208,
-        160
+        -176,
+        -208
       ],
-      "id": "538e46b0-56cb-4ad2-826a-96a9727a9281",
+      "id": "0be0a3dc-ae27-4d1c-9ba2-fbb2e9c6cf79",
       "name": "ListaCategoria",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -42,16 +42,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        672,
-        160
+        304,
+        -208
       ],
-      "id": "5f49244b-d986-4b32-85d1-8824899605ef",
+      "id": "0f0aaeae-d4c7-4175-82d1-a931e3f7a588",
       "name": "categorias_gerenciais",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -78,10 +78,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        464,
-        160
+        96,
+        -208
       ],
-      "id": "8f207de7-01b8-4920-a537-b5b51fc05c0e",
+      "id": "3eeb3d05-4a75-4f6d-823e-2919ce39c954",
       "name": "categoriaEdit"
     },
     {
@@ -91,13 +91,13 @@
         "width": 1248,
         "color": 5
       },
-      "id": "e7e23fb5-5b8b-4d45-ab08-77bbea91622c",
+      "id": "93eb4246-5d31-4288-8a6d-7b5b84dad6e4",
       "name": "Sticky Note8",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -384,
+        -368
       ]
     },
     {
@@ -110,10 +110,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        896,
-        352
+        528,
+        -16
       ],
-      "id": "ef8bfa4e-1400-4ca9-9444-4371633e47f1",
+      "id": "2601e443-2249-4d05-8eff-256c14d6b50d",
       "name": "Respond to Webhook47"
     },
     {
@@ -126,10 +126,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        224,
-        352
+        -160,
+        -16
       ],
-      "id": "8a3b90f4-4a4d-4bb5-8f16-9a042d1dd6ec",
+      "id": "a8d6e6a2-c85f-42a3-8833-aa2210068a69",
       "name": "NovaCategoria",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -162,10 +162,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        464,
-        352
+        96,
+        -16
       ],
-      "id": "a9db7b6f-2d79-4095-9d61-a332ce042993",
+      "id": "cd895da4-f766-4813-8acd-913e1141373b",
       "name": "EditCategoria"
     },
     {
@@ -199,14 +199,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        1280,
-        336
+        912,
+        -32
       ],
-      "id": "1a079e1c-f0ac-4485-bcca-e55004758784",
+      "id": "eef45735-840e-4dc3-8202-6a57ae8401ec",
       "name": "InsertCategoria",
       "credentials": {
         "supabaseApi": {
-          "id": "rC5LgeRcKghHCrKW",
+          "id": "kcYv1XXxUeRG6YvY",
           "name": "FinanceFlow"
         }
       }
@@ -221,10 +221,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
-        544
+        512,
+        176
       ],
-      "id": "10193a32-ff54-440e-ab70-7306d16125ac",
+      "id": "1fce068d-9692-43cf-b233-352e4193927c",
       "name": "Respond to Webhook48"
     },
     {
@@ -268,10 +268,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        544
+        80,
+        176
       ],
-      "id": "a5214d76-e69f-429e-9ec0-84a0f9a6fc91",
+      "id": "a289d8c7-b3ac-44ac-bb30-736c180f9b9f",
       "name": "EditSalvaCategoria"
     },
     {
@@ -317,14 +317,14 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        656,
-        544
+        288,
+        176
       ],
-      "id": "b0b9a45f-0689-46b5-94fe-662a9cb5ae6c",
+      "id": "c416d778-b09a-46e8-844a-6879305186ca",
       "name": "SalvaCategoria",
       "credentials": {
         "supabaseApi": {
-          "id": "rC5LgeRcKghHCrKW",
+          "id": "kcYv1XXxUeRG6YvY",
           "name": "FinanceFlow"
         }
       }
@@ -339,10 +339,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        208,
-        544
+        -176,
+        176
       ],
-      "id": "02d1d229-86bd-4550-8228-e301d10d59ff",
+      "id": "7b7ebb9c-472b-440b-987c-53f29bc1d8ee",
       "name": "SalvaCategoria1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -356,10 +356,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        928,
-        720
+        560,
+        352
       ],
-      "id": "64c14ac8-da50-476b-8dc1-4fc8a6e61443",
+      "id": "5603780e-3c7a-4a36-8af9-e7fd4222684f",
       "name": "Respond to Webhook49"
     },
     {
@@ -371,16 +371,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        688,
-        720
+        320,
+        352
       ],
-      "id": "417030d1-697a-4790-aa53-4e41e845f661",
+      "id": "f53b2a90-734b-49b2-acfb-4c329b363dc2",
       "name": "ListaContas1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -407,10 +407,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        464,
-        720
+        96,
+        352
       ],
-      "id": "272bc809-b0b5-4b3a-92b4-aba6eb385a41",
+      "id": "d5ad57e7-ad16-4fb5-9976-9287a37f02da",
       "name": "ListaEdit1"
     },
     {
@@ -423,10 +423,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        208,
-        720
+        -176,
+        352
       ],
-      "id": "a3140da0-24c1-4d97-a2f8-6c6419bd0251",
+      "id": "a6ccef1b-9f59-4fd8-89f1-136d5d6b8752",
       "name": "ExcluiContaGerencial",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -439,15 +439,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        672,
-        352
+        304,
+        -16
       ],
-      "id": "c6c4b5d5-6e79-4379-a1a2-405080d16cdc",
+      "id": "ff057b4a-37b5-42cc-8c31-a5ce9816a1f8",
       "name": "ff_insere_categoria_gerencial",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     }
@@ -507,11 +507,6 @@
             "index": 0
           }
         ]
-      ]
-    },
-    "InsertCategoria": {
-      "main": [
-        []
       ]
     },
     "EditSalvaCategoria": {
@@ -596,11 +591,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d03be958-3aeb-451b-984e-c8d882139d0a",
+  "versionId": "875c17f8-716c-408c-bc34-f2b919045a57",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "RypbJEjeImV4wrnf",
+  "id": "MAXQ011IPk1ixH0g",
   "tags": []
 }

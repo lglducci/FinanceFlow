@@ -1,0 +1,2001 @@
+{
+  "name": "PropectFlow",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1616,
+        1040
+      ],
+      "id": "6feac420-3260-4588-8661-efe95862fd31",
+      "name": "Respond to Webhook11"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all().map(i => i.json);\n\n// erro\nif (items[0]?.error) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: items[0].message || \"Erro desconhecido\",\n        details: items[0].error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso com várias linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1888,
+        1040
+      ],
+      "id": "27e00cc3-e12a-45af-987f-26c70d2973b8",
+      "name": "Code in JavaScript12"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "e51013a7-32ef-49f8-b249-2694b48db6eb",
+              "name": "acao",
+              "value": "={{ $json.body.acao}}",
+              "type": "string"
+            },
+            {
+              "id": "65397d1a-6759-4dd0-9abb-d39373cbceb1",
+              "name": "payload",
+              "value": "={{ $json.body.payload}}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2416,
+        1040
+      ],
+      "id": "e8af1f4f-1306-4b81-8d39-d9872dbc32e1",
+      "name": "EditaReverter"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prospectflow",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2656,
+        1040
+      ],
+      "id": "a099b3b4-9657-4053-a693-a5639752c8d7",
+      "name": "ProspecFlow",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT public.prospectflow_api(\n    {{ Number($json.empresa_id) }},\n    '{{ $json.acao }}',\n    '{{ JSON.stringify($json.payload ?? {}).replace(/'/g, \"''\") }}'::jsonb\n) AS prospectflow_api;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2192,
+        1040
+      ],
+      "id": "33bc966f-1736-4ee6-b29d-b1c0578961f1",
+      "name": "prospectflow_api",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1600,
+        1264
+      ],
+      "id": "ca7b9feb-1209-42d5-a089-29a0e2c19bba",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": " const items = $input.all().map(i => i.json);\n\n// erro\nif (items[0]?.error) {\n  return [\n    {\n      json: {\n        ok: false,\n        message: items[0].message || \"Erro desconhecido\",\n        details: items[0].error?.description || null,\n        responseCode: 400\n      }\n    }\n  ];\n}\n\n// sucesso com várias linhas\nreturn [\n  {\n    json: {\n      ok: true,\n      message: \"Operação realizada com sucesso\",\n      responseCode: 200,\n      data: items\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1792,
+        1264
+      ],
+      "id": "1e4fdaf3-f6dc-40bf-b275-73adfc87e6a3",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT public.prospectflow_api(\n    {{ Number($json.empresa_id) }},\n    '{{ $json.acao }}',\n    '{{ JSON.stringify($json.payload).replace(/'/g, \"''\") }}'::jsonb\n) AS prospectflow_api;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2016,
+        1264
+      ],
+      "id": "47439ea2-a885-45bf-9955-db685dbac397",
+      "name": "prospectflow_api1",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prospectflow-importar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2640,
+        1264
+      ],
+      "id": "362a8ccd-c17a-4cea-937b-d659f0fb86ce",
+      "name": "ProspectFlow-Importar",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "arquivo",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2448,
+        1264
+      ],
+      "id": "53a4237a-9771-4d2f-883e-d99cf2a41a0e",
+      "name": "Leads"
+    },
+    {
+      "parameters": {
+        "jsCode": " /*\n * Recebe todas as linhas do node Leads.\n * Retorna um item SALVAR_LEAD para cada linha.\n */\n\nconst EMPRESA_ID = 1;\n\nfunction normalizarChave(chave) {\n  return String(chave || \"\")\n    .replace(/^\\uFEFF/, \"\")\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .toLowerCase()\n    .trim()\n    .replace(/[^a-z0-9]+/g, \"_\")\n    .replace(/^_+|_+$/g, \"\");\n}\n\nfunction limparLinha(linha) {\n  const resultado = {};\n\n  for (const [chave, valor] of Object.entries(linha || {})) {\n    resultado[normalizarChave(chave)] = valor;\n  }\n\n  return resultado;\n}\n\nfunction texto(valor) {\n  if (valor === null || valor === undefined) {\n    return \"\";\n  }\n\n  return String(valor).trim();\n}\n\nconst itens = $input.all();\nconst saida = [];\n\nfor (let indice = 0; indice < itens.length; indice += 1) {\n  const linha = limparLinha(itens[indice].json);\n\n  const lead = {\n    tipo_lead: texto(linha.tipo_lead).toUpperCase() || \"PJ\",\n\n    nome: texto(linha.nome),\n\n    empresa_nome: texto(\n      linha.empresa_nome ||\n      linha.empresa ||\n      linha.nome_empresa\n    ),\n\n    segmento: texto(\n      linha.segmento ||\n      linha.ramo ||\n      linha.atividade\n    ),\n\n    cidade: texto(\n      linha.cidade ||\n      linha.municipio\n    ),\n\n    telefone: texto(\n      linha.telefone ||\n      linha.celular ||\n      linha.whatsapp ||\n      linha.fone\n    ),\n\n    instagram: texto(\n      linha.instagram ||\n      linha.insta\n    ),\n\n    email: texto(\n      linha.email ||\n      linha.e_mail\n    ).toLowerCase(),\n\n    canal_preferido: texto(\n      linha.canal_preferido ||\n      linha.canal\n    ).toUpperCase(),\n\n    origem: texto(\n      linha.origem ||\n      linha.fonte\n    ),\n\n    observacoes: texto(\n      linha.observacoes ||\n      linha.observacao ||\n      linha.obs\n    )\n  };\n\n  if (![\"PF\", \"PJ\"].includes(lead.tipo_lead)) {\n    lead.tipo_lead = \"PJ\";\n  }\n\n  if (!lead.canal_preferido) {\n    if (lead.telefone) {\n      lead.canal_preferido = \"WHATSAPP\";\n    } else if (lead.instagram) {\n      lead.canal_preferido = \"INSTAGRAM\";\n    } else if (lead.email) {\n      lead.canal_preferido = \"EMAIL\";\n    } else {\n      lead.canal_preferido = \"WHATSAPP\";\n    }\n  }\n\n  if (!lead.nome) {\n    throw new Error(\n      `Linha ${indice + 2}: nome do lead não informado.`\n    );\n  }\n\n  if (!lead.telefone && !lead.instagram && !lead.email) {\n    throw new Error(\n      `Linha ${indice + 2}: informe telefone, Instagram ou e-mail.`\n    );\n  }\n\n  saida.push({\n    json: {\n      empresa_id: EMPRESA_ID,\n      acao: \"SALVAR_LEAD\",\n      payload: lead\n    }\n  });\n}\n\nreturn saida;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2240,
+        1264
+      ],
+      "id": "8a241b5e-e587-4b12-ac81-7d5f866ec0a6",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": "  const entrada = $input.first().json;\nconst payload = entrada.body ?? entrada;\n\nconst eventoEvolution = String(payload.event ?? '')\n  .trim()\n  .toLowerCase();\n\nconst data = payload.data ?? {};\nconst key = data.key ?? {};\n\nconst tipoEvento = eventoEvolution.includes('call')\n  ? 'LIGACAO'\n  : 'MENSAGEM';\n\n// --------------------------------------------------\n// DIREÇÃO DA MENSAGEM\n// --------------------------------------------------\n\nconst fromMeOriginal = key.fromMe ?? data.fromMe;\n\nif (\n  tipoEvento === 'MENSAGEM' &&\n  typeof fromMeOriginal !== 'boolean'\n) {\n  throw new Error(\n    `A Evolution não informou data.key.fromMe corretamente. Valor recebido: ${JSON.stringify(fromMeOriginal)}`\n  );\n}\n\nconst enviadaPorMim = tipoEvento === 'LIGACAO'\n  ? fromMeOriginal === true\n  : fromMeOriginal;\n\nconst direcao = enviadaPorMim\n  ? 'ENVIADA_POR_MIM'\n  : 'RECEBIDA_DO_CLIENTE';\n\n// --------------------------------------------------\n// IDENTIFICAÇÃO DO CONTATO\n// --------------------------------------------------\n\nconst identificadores = [\n  key.remoteJidAlt,\n  data.remoteJidAlt,\n  key.remoteJid,\n  data.remoteJid,\n  data.from,\n  data.chatId\n]\n  .filter(valor => valor !== null && valor !== undefined)\n  .map(valor => String(valor).trim())\n  .filter(Boolean);\n\n// Ignora grupos\nif (identificadores.some(jid => jid.endsWith('@g.us'))) {\n  return [];\n}\n\nconst jidTelefone =\n  identificadores.find(jid =>\n    jid.endsWith('@s.whatsapp.net')\n  ) ?? null;\n\nconst jidLid =\n  identificadores.find(jid =>\n    jid.endsWith('@lid')\n  ) ?? null;\n\nconst numeroSemJid =\n  identificadores.find(valor =>\n    /^\\+?\\d{10,15}$/.test(valor)\n  ) ?? null;\n\nconst telefoneCliente = jidTelefone\n  ? jidTelefone\n      .replace('@s.whatsapp.net', '')\n      .replace(/\\D/g, '')\n  : numeroSemJid\n    ? numeroSemJid.replace(/\\D/g, '')\n    : null;\n\nconst jidCliente =\n  jidTelefone ??\n  jidLid ??\n  numeroSemJid ??\n  null;\n\n// --------------------------------------------------\n// CONTEÚDO DA MENSAGEM\n// --------------------------------------------------\n\nconst mensagem =\n  data.message?.conversation ??\n  data.message?.extendedTextMessage?.text ??\n  data.message?.imageMessage?.caption ??\n  data.message?.videoMessage?.caption ??\n  data.message?.documentMessage?.caption ??\n  data.message?.buttonsResponseMessage?.selectedDisplayText ??\n  data.message?.listResponseMessage?.title ??\n  null;\n\n// --------------------------------------------------\n// DATA DO EVENTO\n// --------------------------------------------------\n\nlet dataEvento = payload.date_time ?? null;\n\nif (!dataEvento && data.messageTimestamp) {\n  const timestamp = Number(data.messageTimestamp);\n\n  if (Number.isFinite(timestamp)) {\n    dataEvento = new Date(timestamp * 1000).toISOString();\n  }\n}\n\ndataEvento ??= new Date().toISOString();\n\n// --------------------------------------------------\n// VALIDAÇÕES\n// --------------------------------------------------\n\nif (!payload.instance) {\n  throw new Error('A Evolution não informou o nome da instância.');\n}\n\nif (!jidCliente) {\n  throw new Error(\n    'Não foi possível identificar o contato no payload da Evolution.'\n  );\n}\n\n// --------------------------------------------------\n// RESULTADO\n// --------------------------------------------------\n\nreturn [\n  {\n    json: {\n      tipo_evento: tipoEvento,\n      direcao,\n      from_me: enviadaPorMim,\n\n      telefone_cliente: telefoneCliente,\n      jid_cliente: jidCliente,\n      identificador_lid: jidLid,\n\n      nome_cliente: data.pushName ?? null,\n      mensagem,\n      mensagem_id: key.id ?? data.id ?? null,\n\n      instancia: String(payload.instance),\n      evento_evolution: eventoEvolution,\n      data_evento: dataEvento\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2320,
+        1552
+      ],
+      "id": "02e3550c-129e-406f-88e3-89213c4f7646",
+      "name": "ProspectResponse"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT public.prospectflow_processar_webhook(\n    '{{ JSON.stringify([$json]).replace(/'/g, \"''\") }}'::jsonb\n) AS resultado;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1600,
+        1552
+      ],
+      "id": "f9b78e1b-16f6-4a19-a691-c361659b51d0",
+      "name": "prospectflow_processar_webhook",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prospectflow-enviar-mensagem",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        928
+      ],
+      "id": "d03c576b-c5d6-4001-b3f4-5839de9be01c",
+      "name": "EnvioMsg",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ Number(200) }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2112,
+        928
+      ],
+      "id": "e83f893e-02d3-4a55-86e4-47fc279f75a8",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "e51013a7-32ef-49f8-b249-2694b48db6eb",
+              "name": "telefone",
+              "value": "={{ $json.body.telefone}}",
+              "type": "string"
+            },
+            {
+              "id": "65397d1a-6759-4dd0-9abb-d39373cbceb1",
+              "name": "mensagem",
+              "value": "={{ $json.body.mensagem}}",
+              "type": "string"
+            },
+            {
+              "id": "0f47c6ec-85ca-4c75-9032-ea087a5a6fa0",
+              "name": "lead_id",
+              "value": "={{ $json.body.lead_id || $json.lead_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        928
+      ],
+      "id": "8a0b1b63-4be6-4f45-b35e-f208f892ddf7",
+      "name": "EditaReverter2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolution.lglducci.com.br/message/sendText/{{$json.instancia_nome}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $json.telefone }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('EditaReverter2').item.json.mensagem }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1184,
+        944
+      ],
+      "id": "6fb81b33-60a6-4e04-a4ba-cb8c3050c234",
+      "name": "HTTP Request1",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from prospect.empresa_instancias where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -48,
+        928
+      ],
+      "id": "9f2434b3-d869-49ef-b975-514e9112f717",
+      "name": "Empresa_instancia",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "evolution-prospeccao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2800,
+        1696
+      ],
+      "id": "b5a31001-9f10-492b-8eb9-d7e214a3171e",
+      "name": "EntradaEnvio",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolution.lglducci.com.br/chat/findContacts/{{$json.instancia_nome}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"where\": {}\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        1424
+      ],
+      "id": "998e1497-bcca-4bbb-b7e0-4717ea7deb9d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": " const empresaId = 1;\n\n// Funciona tanto se a Evolution entregar vários items\n// quanto se entregar um array dentro de data/body.\nconst recebidos = $input.all().flatMap((item) => {\n  const json = item.json;\n\n  if (Array.isArray(json)) return json;\n  if (Array.isArray(json.data)) return json.data;\n  if (Array.isArray(json.body)) return json.body;\n\n  return [json];\n});\n\nconst contatosPorTelefone = new Map();\n\nlet ignoradosGrupo = 0;\nlet ignoradosLid = 0;\nlet ignoradosNewsletter = 0;\nlet ignoradosSemNome = 0;\nlet ignoradosInvalidos = 0;\nlet duplicadosNoRetorno = 0;\n\nfor (const contato of recebidos) {\n  const jid = String(contato.remoteJid || \"\").trim();\n\n  // Ignora grupos\n  if (contato.isGroup === true || jid.endsWith(\"@g.us\")) {\n    ignoradosGrupo++;\n    continue;\n  }\n\n  // Ignora identificadores LID\n  if (jid.endsWith(\"@lid\")) {\n    ignoradosLid++;\n    continue;\n  }\n\n  // Ignora canais\n  if (jid.endsWith(\"@newsletter\")) {\n    ignoradosNewsletter++;\n    continue;\n  }\n\n  // Aceita somente números normais do WhatsApp\n  if (!jid.endsWith(\"@s.whatsapp.net\")) {\n    ignoradosInvalidos++;\n    continue;\n  }\n\n  const telefone = jid.replace(\"@s.whatsapp.net\", \"\").replace(/\\D/g, \"\");\n  const nome = String(contato.pushName || \"\").trim();\n\n  // Validação do telefone\n  if (\n    telefone === \"0\" ||\n    telefone.length < 10 ||\n    telefone.length > 15\n  ) {\n    ignoradosInvalidos++;\n    continue;\n  }\n\n  // Sua proc exige nome\n  if (!nome) {\n    ignoradosSemNome++;\n    continue;\n  }\n\n  // Evita telefone repetido dentro do próprio retorno\n  if (contatosPorTelefone.has(telefone)) {\n    duplicadosNoRetorno++;\n    continue;\n  }\n\n  contatosPorTelefone.set(telefone, {\n    tipo_lead: \"PF\",\n    nome,\n    telefone,\n    email: null,\n    instagram: null,\n    empresa_nome: null,\n    segmento: null,\n    cidade: null,\n    canal_preferido: \"WHATSAPP\",\n    origem: \"WHATSAPP\",\n    observacoes: \"Contato importado automaticamente do WhatsApp\",\n    tipo_importacao: \"CONTATOS_WHATSAPP\"\n  });\n}\n\nconst payload = Array.from(contatosPorTelefone.values());\n\nreturn [\n  {\n    json: {\n      empresa_id: empresaId,\n      acao: \"SALVAR_LEAD\",\n      payload,\n      resumo: {\n        recebidos: recebidos.length,\n        prontos_para_enviar: payload.length,\n        ignorados_grupo: ignoradosGrupo,\n        ignorados_lid: ignoradosLid,\n        ignorados_newsletter: ignoradosNewsletter,\n        ignorados_sem_nome: ignoradosSemNome,\n        ignorados_invalidos: ignoradosInvalidos,\n        duplicados_no_retorno: duplicadosNoRetorno\n      }\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        1424
+      ],
+      "id": "2f728a5e-56da-4d6b-8c59-404970700d39",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " WITH entrada AS (\n    SELECT\n        '{{ JSON.stringify($json.payload).replace(/'/g, \"''\") }}'::jsonb AS dados\n),\n\ncontatos AS (\n    SELECT item\n    FROM entrada\n    CROSS JOIN LATERAL jsonb_array_elements(\n        CASE\n            WHEN jsonb_typeof(dados) = 'array'\n                THEN dados\n            ELSE jsonb_build_array(dados)\n        END\n    ) AS x(item)\n)\n\nSELECT public.prospectflow_api(\n    1,\n    'SALVAR_LEAD',\n    item\n) AS prospectflow_api\nFROM contatos\nWHERE COALESCE(BTRIM(item->>'nome'), '') <> ''\n  AND COALESCE(BTRIM(item->>'telefone'), '') <> ''\n  AND NOT EXISTS (\n      SELECT 1\n      FROM prospect.leads l\n      WHERE l.empresa_id = 1\n        AND regexp_replace(\n                COALESCE(l.telefone, ''),\n                '\\D',\n                '',\n                'g'\n            ) = regexp_replace(\n                item->>'telefone',\n                '\\D',\n                '',\n                'g'\n            )\n  );",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        976,
+        1424
+      ],
+      "id": "cfd4ee1e-bced-49f4-bcf9-db2e5e8581ce",
+      "name": "prospectflow_api2",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        1424
+      ],
+      "id": "b3b89c2b-803f-4dc6-8594-399c049f57be",
+      "name": "EditaReverter3"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "select * from prospect.empresa_instancias where empresa_id = {{ $json.empresa_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        272,
+        1424
+      ],
+      "id": "921628dc-3673-45fb-a8c8-cb20a5961dd5",
+      "name": "Empresa_instancia1",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1168,
+        1424
+      ],
+      "id": "3d956dbd-452a-4844-a69d-8f5b32fbd684",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "importar_zap",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        1424
+      ],
+      "id": "1d99cb33-d36c-44b2-9bbb-43a4c02f98be",
+      "name": "Importar-Zap",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "jsCode": " const origem = $(\"EditaReverter2\").item.json;\n\nconst erro = $json.error || null;\nconst mensagemErro = String(erro?.message || \"\");\nconst mensagemLimpa = mensagemErro.replace(/\\\\/g, \"\");\n\nlet resultado_envio;\n\nif (!erro) {\n  resultado_envio = \"ENVIADO\";\n} else if (\n  Number(erro.status) === 400 &&\n  mensagemLimpa.includes('\"exists\":false')\n) {\n  resultado_envio = \"ZAP_INVALIDO\";\n} else {\n  resultado_envio = \"ERRO_TECNICO\";\n}\n\nreturn {\n  json: {\n    ...origem,\n    resultado_envio,\n    erro_envio: mensagemErro,\n    resposta_evolution: $json,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        944
+      ],
+      "id": "6830bbc8-8930-4dd5-bd12-f68fa30f1d20",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.resultado_envio }}",
+                    "rightValue": "ZAP_INVALIDO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4e34bfce-f1db-4ff9-a919-aebd42615ce7"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2133713a-0d77-4cd5-be65-3c3b24da7130",
+                    "leftValue": "={{ $json.resultado_envio }}",
+                    "rightValue": "ENVIADO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1c5a5a49-d648-49ad-a2c4-d38ffe36caf0",
+                    "leftValue": "={{ $json.resultado_envio }}",
+                    "rightValue": "ERRO_TECNICO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1632,
+        896
+      ],
+      "id": "330bdcbb-7e82-4f14-a36e-8cba245929d3",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE prospect.leads\nSET\n    canal_preferido = 'TELEFONE',\n    observacoes = CONCAT_WS(\n        E'\\n',\n        NULLIF(observacoes, ''),\n        '[Sistema] Número não possui WhatsApp. Realizar contato por telefone.'\n    ),\n    updated_at = NOW()\nWHERE empresa_id = {{ Number($json.empresa_id) }}\n  AND id = {{ Number($json.lead_id) }}\nRETURNING\n    id,\n    nome,\n    telefone,\n    canal_preferido,\n    status;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1936,
+        736
+      ],
+      "id": "ca857162-6417-45ac-af6a-42804d409f40",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": " let telefone = String(  $('EditaReverter2').first().json.telefone|| \"\").replace(/\\D/g, \"\");\n\n// Retira o zero antes do DDD\ntelefone = telefone.replace(/^0+/, \"\");\n\n// Adiciona o código do Brasil\nif (!telefone.startsWith(\"55\")) {\n  telefone = `55${telefone}`;\n}\n\nreturn {\n  json: {\n    ...$json,\n    telefone,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        944
+      ],
+      "id": "4005ce0f-f258-4056-8116-08a3c3d57f33",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": " const textoOriginal = String($json.mensagem || \"\");\n\nconst normalizar = (valor) =>\n  String(valor || \"\")\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .toLowerCase()\n    .replace(/\\s+/g, \" \")\n    .trim();\n\nconst texto = normalizar(textoOriginal);\n\nconst frasesEncerramento = [\n  \"mensagem automatica\",\n  \"nao precisa responder\",\n  \"atendimento foi finalizado\",\n  \"atendimento finalizado\",\n  \"atendimento encerrado\",\n  \"seu atendimento foi encerrado\",\n  \"protocolo desse atendimento\",\n  \"protocolo de atendimento\",\n  \"finalizado com sucesso\",\n];\n\nconst frasesHorarioAutomatico = [\n  \"nosso horario de atendimento\",\n  \"horario de atendimento delivery\",\n  \"nosso horario de funcionamento\",\n  \"nosso atendimento e de\",\n  \"horario do nosso atendimento\",\n  \"atendemos de segunda\",\n  \"atendemos de terca\",\n  \"atendemos de quarta\",\n  \"atendemos de quinta\",\n  \"atendemos de sexta\",\n  \"funcionamos de segunda\",\n  \"funcionamos de terca\",\n  \"funcionamos de quarta\",\n  \"funcionamos de quinta\",\n  \"funcionamos de sexta\",\n  \"delivery e de segunda\",\n  \"delivery e de terca\",\n  \"delivery funciona\",\n];\n\nconst termosAtendente = [\n  \"falar com atendente\",\n  \"fale com atendente\",\n  \"falar com um atendente\",\n  \"falar com uma atendente\",\n  \"atendimento humano\",\n  \"atendente humano\",\n  \"falar com uma pessoa\",\n  \"fale com uma pessoa\",\n  \"falar com consultor\",\n  \"falar com vendedor\",\n  \"falar com especialista\",\n  \"falar com nossa equipe\",\n];\n\nconst termosAlternativos = [\n  \"outros assuntos\",\n  \"outras opcoes\",\n  \"outras informacoes\",\n  \"suporte\",\n  \"duvidas\",\n];\n\nconst ehEncerramento = frasesEncerramento.some((frase) =>\n  texto.includes(frase)\n);\n\nconst ehHorarioAutomatico = frasesHorarioAutomatico.some((frase) =>\n  texto.includes(frase)\n);\n\nconst possuiHorarioFormatado =\n  /\\b\\d{1,2}(?::\\d{2})?\\s*(?:h|hs|horas)\\b/i.test(texto) ||\n  /\\bdas\\s+\\d{1,2}\\s+(?:as|a)\\s+\\d{1,2}/i.test(texto);\n\nconst ehMenu =\n  texto.includes(\"digite o numero\") ||\n  texto.includes(\"digite uma opcao\") ||\n  texto.includes(\"escolha uma opcao\") ||\n  texto.includes(\"selecione uma opcao\") ||\n  texto.includes(\"informe a opcao\") ||\n  texto.includes(\"opcao desejada\") ||\n  /\\[\\s*\\d{1,2}\\s*\\]/.test(textoOriginal);\n\nlet opcaoAtendente = null;\nlet confianca = 0;\nlet termoEncontrado = null;\n\nconst linhas = textoOriginal.split(/\\r?\\n/);\n\nfunction extrairNumero(linhaOriginal) {\n  const padroes = [\n    /\\[\\s*(\\d{1,2})\\s*\\]/,\n    /^\\s*(\\d{1,2})\\s*[-–—.)]/,\n    /^\\s*opcao\\s*(\\d{1,2})\\s*[-–—.:)]?/i,\n    /^\\s*digite\\s*(\\d{1,2})\\b/i,\n  ];\n\n  for (const padrao of padroes) {\n    const resultado = linhaOriginal.match(padrao);\n\n    if (resultado) {\n      return resultado[1];\n    }\n  }\n\n  return null;\n}\n\n// Procura uma opção diretamente relacionada a um atendente.\nfor (const linhaOriginal of linhas) {\n  const linha = normalizar(linhaOriginal);\n\n  const termo = termosAtendente.find((item) =>\n    linha.includes(item)\n  );\n\n  if (!termo) {\n    continue;\n  }\n\n  const numero = extrairNumero(linhaOriginal);\n\n  if (numero) {\n    opcaoAtendente = numero;\n    confianca = 0.99;\n    termoEncontrado = termo;\n    break;\n  }\n}\n\n// Se não encontrou atendente, procura uma opção alternativa.\nif (!opcaoAtendente && ehMenu) {\n  for (const linhaOriginal of linhas) {\n    const linha = normalizar(linhaOriginal);\n\n    const termo = termosAlternativos.find((item) =>\n      linha.includes(item)\n    );\n\n    if (!termo) {\n      continue;\n    }\n\n    const numero = extrairNumero(linhaOriginal);\n\n    if (numero) {\n      opcaoAtendente = numero;\n      confianca = 0.75;\n      termoEncontrado = termo;\n      break;\n    }\n  }\n}\n\nlet classificacao = \"HUMANA\";\nlet responderAutomaticamente = false;\nlet respostaAutomatica = null;\n\n// A ordem é importante: um menu pode possuir uma opção de horário.\nif (ehEncerramento) {\n  classificacao = \"AUTOMATICA_ENCERRAMENTO\";\n  confianca = 0.99;\n  termoEncontrado = termoEncontrado || \"encerramento automático\";\n} else if (opcaoAtendente && confianca >= 0.85) {\n  classificacao = \"AUTOMATICA_MENU\";\n  responderAutomaticamente = true;\n  respostaAutomatica = opcaoAtendente;\n} else if (opcaoAtendente) {\n  classificacao = \"AUTOMATICA_MENU_REVISAR\";\n  respostaAutomatica = opcaoAtendente;\n} else if (ehMenu) {\n  classificacao = \"AUTOMATICA_MENU_SEM_ATENDENTE\";\n  confianca = 0;\n} else if (ehHorarioAutomatico && possuiHorarioFormatado) {\n  classificacao = \"AUTOMATICA_INFORMATIVA\";\n  confianca = 0.95;\n  termoEncontrado = \"horário automático\";\n} else if (ehHorarioAutomatico) {\n  classificacao = \"AUTOMATICA_INFORMATIVA\";\n  confianca = 0.85;\n  termoEncontrado = \"informação de horário\";\n}\n\nreturn {\n  json: {\n    ...$json,\n    classificacao,\n    mensagem_automatica: classificacao !== \"HUMANA\",\n    responder_automaticamente: responderAutomaticamente,\n    resposta_automatica: respostaAutomatica,\n    confianca,\n    termo_encontrado: termoEncontrado,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2112,
+        1552
+      ],
+      "id": "f161766f-edb6-43a2-aa74-02186f90fcd0",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.classificacao }}",
+                    "rightValue": "AUTOMATICA_MENU",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "bd182d3b-ded8-475c-90af-f75fad0d6c80"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "eaf08743-4c4a-4371-b80f-b8dead127cd7",
+                    "leftValue": "={{ $json.classificacao }}",
+                    "rightValue": "AUTOMATICA_ENCERRAMENTO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "59a89c0e-e8e0-4250-aefa-500751c91473",
+                    "leftValue": "={{ $json.classificacao }}",
+                    "rightValue": "HUMANA",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -1904,
+        1536
+      ],
+      "id": "ed7a1a33-3f9b-498e-95a9-1e90d9247395",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ Number(200) }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1312,
+        1552
+      ],
+      "id": "719f6c34-c006-4c07-88de-8fb914fc8d0c",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "url": "https://evolution.lglducci.com.br/instance/connect/ProspectFlow",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "662C974E2A31-4386-8C78-13B08A3AA0C2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1024,
+        -160
+      ],
+      "id": "05d4db93-20b4-4d9c-8e58-9d378b7826aa",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "jsCode": " if ($json.base64) {\n  return { status: \"PRECISA_QR\", qrCode: $json.base64 };\n}\n\nif ($json.instance?.state === \"open\") {\n  return { status: \"CONECTADO\", qrCode: null };\n}\n\nreturn {\n  status: \"ERRO_CONEXAO\",\n  qrCode: null,\n  mensagem: $json.message || \"Não foi possível conectar\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        -160
+      ],
+      "id": "8d821927-3ce9-442b-a85c-eef96eaac737",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://evolution.lglducci.com.br/instance/delete/{{$json.prospectflow_obter_ou_criar_instancia.instancia_nome}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $json.prospectflow_obter_ou_criar_instancia.token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -128,
+        -176
+      ],
+      "id": "b03c9ce8-efca-41b1-ad11-813d9df9985b",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "jsCode": " if ($json.base64) {\n  return { status: \"PRECISA_QR\", qrCode: $json.base64 };\n}\n\nif ($json.instance?.state === \"open\") {\n  return { status: \"CONECTADO\", qrCode: null };\n}\n\nreturn {\n  status: \"ERRO_CONEXAO\",\n  qrCode: null,\n  mensagem: $json.message || \"Não foi possível conectar\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1568,
+        592
+      ],
+      "id": "f538e11a-9845-4419-bfa8-8e5eb288d79a",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": "={{ $json.responseCode }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1328,
+        592
+      ],
+      "id": "6d41c056-5ef8-48db-ae71-66fb02f4793e",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT public.prospectflow_obter_ou_criar_instancia({{ $json.empresa_id }});",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2368,
+        688
+      ],
+      "id": "64594fad-6a90-4610-80ec-7c2aef25d201",
+      "name": "Empresa_instancia2",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2560,
+        688
+      ],
+      "id": "0f852980-f195-4af5-a340-daaf0276c64a",
+      "name": "EditaReverter4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c564c0dd-c24d-4898-89bd-be034166e045",
+              "leftValue": "={{ $json.prospectflow_obter_ou_criar_instancia.ok }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "fadd6385-7d32-46b4-a07d-ffc57279512f",
+              "leftValue": "={{ $json.prospectflow_obter_ou_criar_instancia.existe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2144,
+        688
+      ],
+      "id": "1df498e5-33b7-44f5-b4e5-8fff8da28b7d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT public.prospectflow_obter_ou_criar_instancia({{ $json.empresa_id }});",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -320,
+        -176
+      ],
+      "id": "8ddddcc2-e367-427a-b37a-c13c84165f1f",
+      "name": "Empresa_instancia3",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -512,
+        -176
+      ],
+      "id": "fcabc2c4-b470-40ec-98c3-676c2cb9e880",
+      "name": "EditaReverter5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "af402a4d-dd3f-40a7-a484-41881d97ad38",
+              "leftValue": "={{ $json.token }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        928
+      ],
+      "id": "ffa92755-0ec9-468a-8f88-625a560cedfb",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "https://evolution.lglducci.com.br/instance/fetchInstances",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "instanceName",
+              "value": "={{ $json.instancia_nome }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "l8buQe0n29kjEACSEvitAvly30vTj36HaQrBH"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        448,
+        816
+      ],
+      "id": "29366546-5fed-4878-850c-65b3a5a9fb6b",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "Update prospect.empresa_instancias \nset  ativo  = true, \ntoken = '{{ $json.token }}',\nnumero_whatsapp  =  '{{ $json.ownerJid }}'\nwhere empresa_id =  {{ $('EditaReverter2').item.json.empresa_id }};\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        688,
+        816
+      ],
+      "id": "84bce8e9-de65-4bf0-84fb-7ab0fcc6e4f8",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "69fe5df2-1693-4544-85ea-ce6db516e2b9",
+              "leftValue": "={{$json.body.event}}",
+              "rightValue": "messages.update",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2592,
+        1696
+      ],
+      "id": "d8811f72-5669-4b8e-a78a-de5e0e5a85a0",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "jsCode": " const body = $json.body;\n\nreturn [{\n  json: {\n    tipo_evento: \"MESSAGES_UPDATE\",\n    evento_evolution: body.event,\n    instancia: body.instance,\n    evolution_message_id: body.data?.keyId,\n    status_entrega: body.data?.status,\n    from_me: body.data?.fromMe\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2384,
+        1792
+      ],
+      "id": "11786848-c137-43f6-b158-6b5fa7b2b09b",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT public.prospectflow_processar_webhook(\n    '{{ JSON.stringify([$json]).replace(/'/g, \"''\") }}'::jsonb\n) AS resultado;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2160,
+        1792
+      ],
+      "id": "5827a991-a62b-4589-8839-19edb4366236",
+      "name": "prospectflow_processar_webhook1",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
+        "height": 1564,
+        "width": 2272,
+        "color": 6
+      },
+      "id": "f43a1430-ab21-43e3-b937-ec799ae40687",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3008,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
+        "height": 1564,
+        "width": 3024,
+        "color": 2
+      },
+      "id": "c4d7c9dd-02bf-4bf7-b622-8d57989a9dd2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prospectflow-conectar-whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2736,
+        688
+      ],
+      "id": "d2bd9c9c-5c71-4318-b26d-bbfb86b0c453",
+      "name": "ProspecConnectZap",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "url": "=https://evolution.lglducci.com.br/instance/connect/{{ $('Empresa_instancia2').item.json.prospectflow_obter_ou_criar_instancia.instancia_nome }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Cria Instância1').item.json.hash }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1520,
+        768
+      ],
+      "id": "fee269f8-2ce0-4da0-a538-7201440f669f",
+      "name": "ConectaInstancia"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.lglducci.com.br/instance/create",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "l8buQe0n29kjEACSEvitAvly30vTj36HaQrBH"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "instanceName",
+              "value": "={{ $json.prospectflow_obter_ou_criar_instancia.instancia_nome }}"
+            },
+            {
+              "name": "integration",
+              "value": "WHATSAPP-BAILEYS"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1856,
+        176
+      ],
+      "id": "26afb2dd-aee5-4f99-80f6-651f654713da",
+      "name": "Cria Instância"
+    },
+    {
+      "parameters": {
+        "url": "=https://evolution.lglducci.com.br/instance/connect/{{ $('Empresa_instancia2').item.json.prospectflow_obter_ou_criar_instancia.instancia_nome }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Empresa_instancia2').item.json.prospectflow_obter_ou_criar_instancia.token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1920,
+        592
+      ],
+      "id": "aafe3003-1f26-45ec-8a72-fbb0c99dc1d5",
+      "name": "ConectaInstancia1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.lglducci.com.br/instance/create",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "l8buQe0n29kjEACSEvitAvly30vTj36HaQrBH"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "instanceName",
+              "value": "={{ $json.prospectflow_obter_ou_criar_instancia.instancia_nome }}"
+            },
+            {
+              "name": "integration",
+              "value": "WHATSAPP-BAILEYS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1936,
+        800
+      ],
+      "id": "42068fca-2ad1-4c0b-bf01-f59078144da6",
+      "name": "Cria Instância1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution.lglducci.com.br/instance/create",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "l8buQe0n29kjEACSEvitAvly30vTj36HaQrBH"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": " {\n  \"instanceName\": \"prospectflow_empresa_{{ $json.empresa_id }}\",\n  \"token\": \"{{ $json.token_instancia }}\",\n  \"qrcode\": true,\n  \"integration\": \"WHATSAPP-BAILEYS\",\n\n  \"rejectCall\": true,\n  \"msgCall\": \"Este número não recebe ligações. Por favor, envie uma mensagem.\",\n  \"groupsIgnore\": true,\n  \"alwaysOnline\": false,\n  \"readMessages\": false,\n  \"readStatus\": false,\n  \"syncFullHistory\": false,\n\n  \"webhookUrl\": \"https://webhook.lglducci.com.br/webhook/evolution-prospeccao\",\n  \"webhookByEvents\": false,\n  \"webhookBase64\": false,\n  \"webhookEvents\": [\n    \"QRCODE_UPDATED\",\n    \"MESSAGES_UPSERT\",\n    \"MESSAGES_UPDATE\",\n    \"SEND_MESSAGE\",\n    \"CONNECTION_UPDATE\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1648,
+        80
+      ],
+      "id": "8b44a75f-21ed-437f-80b1-890e7e9b5d9a",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://evolution.lglducci.com.br/webhook/set/{{$json.instance.instanceName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "l8buQe0n29kjEACSEvitAvly30vTj36HaQrBH"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"webhook\": {\n    \"enabled\": true,\n    \"url\": \"https://webhook.lglducci.com.br/webhook/evolution-prospeccao\",\n    \"byEvents\": false,\n    \"base64\": false,\n    \"events\": [\n      \"QRCODE_UPDATED\",\n      \"MESSAGES_UPSERT\",\n      \"MESSAGES_UPDATE\",\n      \"CONNECTION_UPDATE\",\n      \"SEND_MESSAGE\"\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1744,
+        800
+      ],
+      "id": "0fea2576-30f8-4d3f-9740-990a67d63588",
+      "name": "HTTP Request5"
+    }
+  ],
+  "pinData": {
+    "EditaReverter": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "acao": "LISTAR_LEADS",
+          "payload": {
+            "filtro": "HOJE",
+            "busca": ""
+          }
+        }
+      }
+    ],
+    "EditaReverter2": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "telefone": "5516992975836",
+          "mensagem": "btatatatata"
+        }
+      }
+    ],
+    "EditaReverter3": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "telefone": "5516992975836",
+          "mensagem": "btatatatata"
+        }
+      }
+    ],
+    "EditaReverter4": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "telefone": "5516992975836",
+          "mensagem": "btatatatata"
+        }
+      }
+    ],
+    "EditaReverter5": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "telefone": "5516992975836",
+          "mensagem": "btatatatata"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Code in JavaScript12": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaReverter": {
+      "main": [
+        [
+          {
+            "node": "prospectflow_api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ProspecFlow": {
+      "main": [
+        [
+          {
+            "node": "EditaReverter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prospectflow_api": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prospectflow_api1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ProspectFlow-Importar": {
+      "main": [
+        [
+          {
+            "node": "Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "prospectflow_api1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ProspectResponse": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prospectflow_processar_webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EnvioMsg": {
+      "main": [
+        [
+          {
+            "node": "EditaReverter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaReverter2": {
+      "main": [
+        [
+          {
+            "node": "Empresa_instancia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empresa_instancia": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EntradaEnvio": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "prospectflow_api2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prospectflow_api2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaReverter3": {
+      "main": [
+        [
+          {
+            "node": "Empresa_instancia1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empresa_instancia1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Importar-Zap": {
+      "main": [
+        [
+          {
+            "node": "EditaReverter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "prospectflow_processar_webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "prospectflow_processar_webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "prospectflow_processar_webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empresa_instancia2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaReverter4": {
+      "main": [
+        [
+          {
+            "node": "Empresa_instancia2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "ConectaInstancia1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cria Instância1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empresa_instancia3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditaReverter5": {
+      "main": [
+        [
+          {
+            "node": "Empresa_instancia3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "ProspectResponse",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript8": {
+      "main": [
+        [
+          {
+            "node": "prospectflow_processar_webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prospectflow_processar_webhook1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ProspecConnectZap": {
+      "main": [
+        [
+          {
+            "node": "EditaReverter4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConectaInstancia": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConectaInstancia1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cria Instância1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "ConectaInstancia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5769ea51-3571-4ccc-b4df-680f7a0bc9ab",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
+  },
+  "id": "q4lhzahWyMRtBHXq",
+  "tags": []
+}

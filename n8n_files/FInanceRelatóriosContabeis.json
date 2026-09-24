@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        80
+        -3616,
+        -3184
       ],
-      "id": "eeb95217-b048-4a7b-9407-4c9876260a47",
+      "id": "7fe8a9d2-5818-4e2d-ba90-20c5b14201c3",
       "name": "Respond to Webhook19"
     },
     {
@@ -24,13 +24,13 @@
         "width": 1280,
         "color": 4
       },
-      "id": "c0238189-c26b-47e5-bb8b-e4edb3e37b2c",
+      "id": "0447fbd3-7af2-4537-aa83-b178e0f53d76",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1504,
-        -80
+        -4432,
+        -3344
       ]
     },
     {
@@ -43,10 +43,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        80
+        -4224,
+        -3184
       ],
-      "id": "edac8b07-490d-45df-bdaf-a3d67be2019c",
+      "id": "17505e05-ddef-471c-a9f1-08c8fc5545b5",
       "name": "Balancete",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -79,10 +79,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        80
+        -4000,
+        -3184
       ],
-      "id": "f00e78e3-7ef6-489c-8093-69975ef10ac1",
+      "id": "c4fb38da-2a39-434a-9bbb-06668fc71cf5",
       "name": "Edtranscartao"
     },
     {
@@ -94,15 +94,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        80
+        -3808,
+        -3184
       ],
-      "id": "a13d9cb3-15a3-4f7f-b2ba-79fee4290f6d",
+      "id": "f688cfc3-2ed7-4a17-9e3d-316190b335e5",
       "name": "fn_balancete",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -116,10 +116,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        288
+        -3616,
+        -2976
       ],
-      "id": "de46b11f-63bf-47e7-81ea-7b6424cf19aa",
+      "id": "059283b2-e463-494a-8364-bea182b38bd2",
       "name": "Respond to Webhook"
     },
     {
@@ -157,10 +157,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        288
+        -4000,
+        -2976
       ],
-      "id": "6c2a98a4-396e-4bf3-a49b-af3fa443cab2",
+      "id": "3bfccac4-23ca-420c-8505-f4925ac53e2f",
       "name": "Edtranscartao1"
     },
     {
@@ -173,10 +173,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        288
+        -4208,
+        -2976
       ],
-      "id": "49621d10-a93d-474b-9eba-245606cc8d95",
+      "id": "53b0e70c-b705-49d0-9445-c51847bb9e84",
       "name": "Razão",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -189,16 +189,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        288
+        -3808,
+        -2976
       ],
-      "id": "8af31b33-316c-4c60-a7a9-6abf1cf1c4fd",
+      "id": "4f5f7786-6a45-44ee-a8fe-b3b39ee62b1a",
       "name": "ff_relatorio_razao",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -213,10 +213,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3712,
-        288
+        -2224,
+        -2976
       ],
-      "id": "862abbe8-0914-44ed-a849-30524621bbae",
+      "id": "ca5c1a03-349a-46eb-858d-1abe5422f88f",
       "name": "Respond to Webhook1"
     },
     {
@@ -229,10 +229,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3120,
-        288
+        -2816,
+        -2976
       ],
-      "id": "2b379115-534a-4424-81fc-ce9ffe3f4fe3",
+      "id": "17289282-7d32-43e0-b34e-6ac9327a5dc2",
       "name": "balanco",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -259,10 +259,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3328,
-        288
+        -2608,
+        -2976
       ],
-      "id": "1ede8fdd-5810-45f0-81fc-da69b7fb5b2b",
+      "id": "3486f25b-d879-4702-90b8-7d9446dfc4a2",
       "name": "EdtBalanco"
     },
     {
@@ -274,16 +274,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3520,
-        288
+        -2416,
+        -2976
       ],
-      "id": "e3edf0c9-8959-490c-afd9-c7a60cce851c",
+      "id": "c15579d9-4d59-4a44-b77b-f77f13638223",
       "name": "ff_relatorio_balanco",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -298,10 +298,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        1040
+        -3600,
+        -2224
       ],
-      "id": "5fc9d3d0-43b5-4ab0-b7fb-36631d4a41a4",
+      "id": "ee4a473b-cbb4-4103-ab0a-9aaeb82141f6",
       "name": "Respond to Webhook20"
     },
     {
@@ -314,10 +314,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        1040
+        -4208,
+        -2224
       ],
-      "id": "52accd9e-6aa0-4439-a886-eb2158df54dc",
+      "id": "cf864c15-f023-4fc6-8fd5-343e5b68e03d",
       "name": "diario_contabil",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -330,16 +330,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2144,
-        1040
+        -3792,
+        -2224
       ],
-      "id": "180362a1-8429-40e3-bca5-1865b7b0d587",
+      "id": "b953f113-9151-445e-b88d-607dca1a1537",
       "name": "ff_diario_contabil",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -379,10 +379,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1952,
-        1040
+        -3984,
+        -2224
       ],
-      "id": "2ebf7d6c-415d-4f9a-bbd5-d98023313025",
+      "id": "3bf58076-1dca-4ad4-be9c-6520927d2ac8",
       "name": "EditDiario"
     },
     {
@@ -395,10 +395,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        1216
+        -3616,
+        -2048
       ],
-      "id": "9ab64d0f-a33a-4033-81a1-f307f6043f55",
+      "id": "60bf735f-1de3-424a-b2e9-477e4737484e",
       "name": "Respond to Webhook21"
     },
     {
@@ -410,15 +410,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        1216
+        -3808,
+        -2048
       ],
-      "id": "e458d572-f95d-4280-ad63-4d2f9ed87685",
+      "id": "ffcef323-bd98-4f6e-92e4-16af7cc51d07",
       "name": "ff_dre_periodo",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -451,10 +451,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        1216
+        -4000,
+        -2048
       ],
-      "id": "f866d19f-e4b8-415c-8647-cc925e7a264a",
+      "id": "0123b624-7520-4ab1-8edb-96be7c7eaa86",
       "name": "EditDer"
     },
     {
@@ -467,10 +467,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        1216
+        -4224,
+        -2048
       ],
-      "id": "f0dfc1ff-f050-4be3-8800-398e30198d84",
+      "id": "c26eb0ea-13fe-43b7-9194-3f72d0cba6b8",
       "name": "der",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -484,10 +484,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        928,
-        256
+        -5008,
+        -3008
       ],
-      "id": "db4c607f-97ef-4939-b7b1-6304cc9f7150",
+      "id": "fd1afbdc-a7b5-427c-b6cc-2c46a87f3631",
       "name": "Respond to Webhook22"
     },
     {
@@ -500,10 +500,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        288,
-        256
+        -5648,
+        -3008
       ],
-      "id": "26cfe453-e6b6-4134-9f13-1c7688cb956e",
+      "id": "83816700-0fd5-4c4f-8a62-c71502b5bd53",
       "name": "SaldConta",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -542,10 +542,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        512,
-        256
+        -5424,
+        -3008
       ],
-      "id": "b1270b36-ab1b-429f-9b0a-edf857b6edcb",
+      "id": "dfe5cdf1-0b76-4dc4-98fb-b44c4b1ccc45",
       "name": "EditSaldoConta"
     },
     {
@@ -557,16 +557,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        736,
-        256
+        -5200,
+        -3008
       ],
-      "id": "0b116a62-ca1f-41a4-aeb2-cf437a0e5d26",
+      "id": "3a57ca27-7888-42ed-a326-8fceb1d10e4c",
       "name": "Saldo_por_conta",
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -581,10 +581,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        896,
-        448
+        -5040,
+        -2816
       ],
-      "id": "5d276ced-81a7-4c92-8f99-f5799dddeed9",
+      "id": "8f1bc279-99d8-4529-8b58-a8c73f419642",
       "name": "Respond to Webhook23"
     },
     {
@@ -616,10 +616,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        512,
-        448
+        -5424,
+        -2816
       ],
-      "id": "2fa32216-2a4f-4cf1-929c-5dac7fc1695f",
+      "id": "52563bad-f8ac-4d8c-b044-57697969f5a2",
       "name": "EditSaldoConta1"
     },
     {
@@ -632,10 +632,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        288,
-        448
+        -5648,
+        -2816
       ],
-      "id": "b345bda0-4b60-4c61-aca4-3e4bf2ca955e",
+      "id": "fbad8aea-207a-4787-b178-998d85d203f2",
       "name": "balancete",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -648,15 +648,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        704,
-        448
+        -5232,
+        -2816
       ],
-      "id": "4d8242c6-06ca-4e20-8af5-8b17eae95463",
+      "id": "0f3eb58d-d2c0-4cd4-8c01-f5eb3effd336",
       "name": "Balancete1",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -670,10 +670,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        896,
-        656
+        -5040,
+        -2608
       ],
-      "id": "0c396755-1dc3-4fee-bfbf-8fc7743b3a40",
+      "id": "ba7f3729-1827-455f-871d-988458f3fedd",
       "name": "Respond to Webhook24"
     },
     {
@@ -705,10 +705,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        496,
-        656
+        -5440,
+        -2608
       ],
-      "id": "4b78226a-aa9e-436c-8a48-c02b0fe49a47",
+      "id": "6bb3dff0-fbf5-46be-ac23-4db9cffbbc37",
       "name": "EditbalancoNivel"
     },
     {
@@ -720,15 +720,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        688,
-        656
+        -5248,
+        -2608
       ],
-      "id": "ed999719-0f18-4abd-93dc-06e5714cedc4",
+      "id": "1ace20da-5dbe-46ea-a6b9-bbcb7d2ec229",
       "name": "BalancoNivel",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -742,10 +742,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        272,
-        656
+        -5664,
+        -2608
       ],
-      "id": "b5b79063-0d9b-4f7c-a4db-44053b5b4f9f",
+      "id": "88201b86-6732-4a2f-8562-b1f31c093d38",
       "name": "BalancoNiveis",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -759,10 +759,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
-        896
+        -5056,
+        -2368
       ],
-      "id": "10d0fce7-3b90-4d21-b172-14f9df904e5e",
+      "id": "64606cfa-358a-4aae-ab05-d6bd9bb1faac",
       "name": "Respond to Webhook25"
     },
     {
@@ -774,10 +774,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        256,
-        896
+        -5680,
+        -2368
       ],
-      "id": "82cb2277-3ebf-4925-9858-b6b8395e39fa",
+      "id": "33c67210-c758-4d01-b2e6-1657b94bdb2c",
       "name": "GerencialKpis",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -810,10 +810,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        480,
-        896
+        -5456,
+        -2368
       ],
-      "id": "8a03524f-7cbe-4e35-abb0-c12a52ca9ac9",
+      "id": "9ab31c60-f0f8-45b3-a00a-d58f19ff590e",
       "name": "EditKpis"
     },
     {
@@ -825,32 +825,32 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        672,
-        896
+        -5264,
+        -2368
       ],
-      "id": "7dcec4ba-bc9f-4b65-99cb-a5a0088ed43f",
+      "id": "7fc45b22-bd30-4029-bb48-87d571989db3",
       "name": "sp_kpi_gerencial_mensal",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
     {
       "parameters": {
         "content": "## Relatórios Contabeis\nRelatórios Contábeis.. Banlanço, balancete, DER razaão etc.",
-        "height": 1164,
+        "height": 1244,
         "width": 1328,
         "color": 6
       },
-      "id": "4d15a6d1-897e-491e-ab94-9551b5970232",
+      "id": "80158e76-3a7c-41c6-abd8-f90a046b19c1",
       "name": "Sticky Note1",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -5936,
+        -3264
       ]
     },
     {
@@ -860,13 +860,13 @@
         "width": 1328,
         "color": 3
       },
-      "id": "ddad8510-21bc-414a-8160-15f5816e6973",
+      "id": "aaf2e593-09eb-4e6e-812e-6a710cdd2a59",
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -16,
-        1376
+        -5952,
+        -1888
       ]
     },
     {
@@ -879,10 +879,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        1552
+        -5072,
+        -1712
       ],
-      "id": "40e58c2c-99d6-48bf-bee7-669ef6a718ed",
+      "id": "95e0ad0d-502a-4cd1-b580-1c965c21dce3",
       "name": "Respond to Webhook26"
     },
     {
@@ -895,10 +895,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        240,
-        1552
+        -5696,
+        -1712
       ],
-      "id": "724f3fab-d53d-4874-a1b4-cd0d897c31d9",
+      "id": "2fc871ca-9c54-4557-bfc1-e759ac0d845d",
       "name": "Fluxo_Caixa_Detalhado",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -931,10 +931,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        464,
-        1552
+        -5472,
+        -1712
       ],
-      "id": "fc043ea3-94a9-46be-9035-ac0f70ab6d1d",
+      "id": "3b1da1e2-3350-4037-9df1-6c818e80de1e",
       "name": "Editflxcaixadetalhado"
     },
     {
@@ -946,15 +946,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        1552
+        -5280,
+        -1712
       ],
-      "id": "aa3bd7d2-2176-465e-9aeb-f301e564ac7f",
+      "id": "e0a25960-5975-481c-b2e0-799fd8e7fa2c",
       "name": "sp_fluxo_caixa_detalhado",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -968,10 +968,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        1744
+        -5072,
+        -1520
       ],
-      "id": "4f3beff4-5cec-4224-a3b7-8b05a4654e19",
+      "id": "d06e2a4c-c997-4e39-a153-93c1854c77db",
       "name": "Respond to Webhook27"
     },
     {
@@ -984,10 +984,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        240,
-        1744
+        -5696,
+        -1520
       ],
-      "id": "c7a930ba-58af-40e0-9b45-9f7a943f2934",
+      "id": "31e8eab9-e2ca-4ef6-abf0-5fe1183e9b8e",
       "name": "Fluxo_Caixa_Mensal",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1020,10 +1020,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        464,
-        1744
+        -5472,
+        -1520
       ],
-      "id": "04199160-6261-4307-b7c0-91cb9392da27",
+      "id": "8b3ee7ed-51e4-4809-85cb-7d321c2ffbb0",
       "name": "Editflxcaixamensal"
     },
     {
@@ -1035,15 +1035,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        1744
+        -5280,
+        -1520
       ],
-      "id": "0eeaf144-18c1-4685-b98f-ec6cd829940c",
+      "id": "1bde9e05-d23d-4fd8-a89d-58653866ae9d",
       "name": "gera_fluxo_caixa_mensal",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -1057,10 +1057,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        464
+        -3616,
+        -2800
       ],
-      "id": "7cfcfb8b-b42d-4c4b-abf7-763e2f02126a",
+      "id": "c2a30d2e-efc2-419f-ba89-851c5924873d",
       "name": "Respond to Webhook2"
     },
     {
@@ -1098,10 +1098,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        464
+        -4000,
+        -2800
       ],
-      "id": "7e2d0c7c-4757-4c31-b795-d4c03ec63244",
+      "id": "23ecf589-518a-463f-a7ef-da7d27d2a5aa",
       "name": "Edtranscartao2"
     },
     {
@@ -1114,10 +1114,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        464
+        -4208,
+        -2800
       ],
-      "id": "960a39a6-8ad4-44ad-9313-03f2b55be8ef",
+      "id": "34238598-60df-441f-a71e-b528bdd70805",
       "name": "RazãoDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1130,16 +1130,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        464
+        -3808,
+        -2800
       ],
-      "id": "e44d19f5-79b9-4ca4-9b81-15ce0b87f561",
+      "id": "810916bd-0aae-40ef-bedb-e42a9e7fa93f",
       "name": "ff_relatorio_razao_diario",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1154,10 +1154,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        640
+        -3616,
+        -2624
       ],
-      "id": "c64ce045-8f1a-453a-b48d-3ddf3bed64f5",
+      "id": "7e973a2c-c076-41e0-8630-3f14b241aa0c",
       "name": "Respond to Webhook3"
     },
     {
@@ -1195,10 +1195,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        640
+        -4000,
+        -2624
       ],
-      "id": "11b7297f-8000-4946-8147-ec6da3213a69",
+      "id": "c6a95c95-f7c8-4b65-b017-7fa9874230a5",
       "name": "Edtranscartao3"
     },
     {
@@ -1211,10 +1211,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        640
+        -4208,
+        -2624
       ],
-      "id": "545e4f47-cbf6-4ae7-864e-f9d4ee77a4fc",
+      "id": "c3115af6-5ec8-4da0-a5e2-a43b2a85a959",
       "name": "RazãoMensal",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1227,16 +1227,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        640
+        -3808,
+        -2624
       ],
-      "id": "e41f04b9-e763-45d6-83cf-405c188c7154",
+      "id": "656df480-f5ca-402e-9592-d9e920076d33",
       "name": "ff_razao_sintetico_mensal",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1250,16 +1250,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1344,
-        352
+        -4592,
+        -2912
       ],
-      "id": "358622be-af4c-43e4-b64d-8343bf705339",
+      "id": "b5a7f5ff-340d-4982-b19e-c5e31e88f064",
       "name": "Saldo_por_conta1",
       "alwaysOutputData": false,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1274,10 +1274,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        864,
-        1936
+        -5072,
+        -1328
       ],
-      "id": "ca3884e7-1616-4862-94ef-923461f36e18",
+      "id": "db1a2e67-5a61-470d-a255-3385bf67a3bc",
       "name": "Respond to Webhook28"
     },
     {
@@ -1309,10 +1309,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        464,
-        1936
+        -5472,
+        -1328
       ],
-      "id": "022009e4-3049-4030-8903-ad53f12f213c",
+      "id": "28bf6eaa-8005-4966-ad3e-9709d2ee5598",
       "name": "Editflxcaixamensal1"
     },
     {
@@ -1324,15 +1324,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        1936
+        -5280,
+        -1328
       ],
-      "id": "da9493f0-8d95-46af-b902-60ca422d3b5e",
+      "id": "86a20085-9c10-4393-9fa1-06b1fa03f1e8",
       "name": "sp_fluxo_caixa_consolidado",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -1346,10 +1346,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        240,
-        1936
+        -5696,
+        -1328
       ],
-      "id": "e7926fa3-ee49-4cbe-88af-080f2083bce9",
+      "id": "63cf579a-4e9b-4c89-8b63-e53db7b2ee39",
       "name": "Fluxo_Caixa_consolidado",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1363,10 +1363,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        240,
-        2192
+        -5696,
+        -1072
       ],
-      "id": "6f321a2c-322d-405e-8d7d-b03330e38be5",
+      "id": "13b5175b-ef64-4e4a-8019-2a433995fe33",
       "name": "HistoricoApuracao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1379,15 +1379,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        2192
+        -5280,
+        -1072
       ],
-      "id": "0b7aadd0-5ab8-4ebf-bf3e-3826977d7ad0",
+      "id": "50f93439-3b06-4348-b7db-02fb87ca1524",
       "name": "ff_historico_apuracao",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -1401,10 +1401,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        848,
-        2192
+        -5088,
+        -1072
       ],
-      "id": "eab715c3-2687-4bee-8e83-5b02e23ea5f4",
+      "id": "5670ffd1-cc84-4299-b3cd-ba681a409677",
       "name": "Respond to Apuracao Historico"
     },
     {
@@ -1424,10 +1424,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        464,
-        2192
+        -5472,
+        -1072
       ],
-      "id": "86c58532-dc2a-4ee4-99de-e9728ef11b86",
+      "id": "9672e67f-93e2-41e6-97e7-9a75e5c3eb2d",
       "name": "EditHistorico"
     },
     {
@@ -1440,10 +1440,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        1424
+        -3600,
+        -1840
       ],
-      "id": "cf90f136-4d82-4f8c-9130-e1162b8b922b",
+      "id": "ce94dcb9-c66d-4710-a5a9-2627e904bef0",
       "name": "Respond to Webhook29"
     },
     {
@@ -1493,10 +1493,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1952,
-        1424
+        -3984,
+        -1840
       ],
-      "id": "35c93f91-db07-418d-a686-35dd5ee1ea82",
+      "id": "7de37adf-0b7f-40cf-9be3-8eb78626b195",
       "name": "EditDiario1"
     },
     {
@@ -1509,10 +1509,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        1424
+        -4208,
+        -1840
       ],
-      "id": "32455f5e-4f1a-42b6-aa4f-346c943b83a3",
+      "id": "5b0df305-e6fe-45e5-8139-e4b46cf6d6af",
       "name": "movimento_contabil",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1526,10 +1526,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        1632
+        -3616,
+        -1632
       ],
-      "id": "6e133f2a-7b3f-4a9b-a284-22629c7b61f3",
+      "id": "49beacf4-f86c-4c64-8413-42a3ee780012",
       "name": "Respond to Webhook4"
     },
     {
@@ -1542,10 +1542,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1728,
-        1632
+        -4208,
+        -1632
       ],
-      "id": "420d787d-6a6e-471d-a0d9-6c8d968c5ec3",
+      "id": "50b899c1-41c4-4ecb-a6ae-ce14ff53c84f",
       "name": "RazãoPorConta",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1558,16 +1558,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        1632
+        -3808,
+        -1632
       ],
-      "id": "d9030981-2410-4c51-8859-245b90fdf772",
+      "id": "5f7321a8-7e49-430c-b6a4-c9f700056b60",
       "name": "ff_relatorio_razao_por_conta",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1607,10 +1607,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        1632
+        -4000,
+        -1632
       ],
-      "id": "cb816323-463e-4c34-b3ea-6fa51c72a12e",
+      "id": "01ad573a-7009-40e3-b318-70643a9bb701",
       "name": "Edit_RazãoPorCont"
     },
     {
@@ -1623,10 +1623,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2304,
-        1824
+        -3632,
+        -1440
       ],
-      "id": "394345de-8b11-4faa-b7be-0c67a969707c",
+      "id": "710f0457-5ae1-4e5e-a583-d9d11f672129",
       "name": "Respond to Webhook5"
     },
     {
@@ -1664,10 +1664,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1920,
-        1824
+        -4016,
+        -1440
       ],
-      "id": "96c99fd3-80ec-48d2-b930-6f71b27be2f5",
+      "id": "0a514a1d-add1-4425-b3cf-64d7468c183e",
       "name": "Edit_RazãoPorCont1"
     },
     {
@@ -1680,10 +1680,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        1824
+        -4224,
+        -1440
       ],
-      "id": "07ffdf10-07e9-445b-bf75-2f9ab0df5dd1",
+      "id": "76b6c752-62ed-4b9e-84c2-3fea7290b78d",
       "name": "BalancoPorNivel",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1696,16 +1696,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2112,
-        1824
+        -3824,
+        -1440
       ],
-      "id": "24d3547a-c924-4e21-a44c-f44ec783d10a",
+      "id": "7a867327-ae2b-4aad-8865-f9e5d1de9246",
       "name": "ff_balanco_por_nivel",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1713,22 +1713,22 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": " WITH partidas AS (\n  SELECT\n    MIN(l.id)                          AS id,\n    l.data_mov::date                   AS data,\n    l.historico                        AS historico,\n\n    MAX(CASE WHEN l.debito  > 0 THEN l.conta_id END) AS conta_debito_id,\n    SUM(COALESCE(l.debito, 0))         AS debito,\n\n    MAX(CASE WHEN l.credito > 0 THEN l.conta_id END) AS conta_credito_id,\n    SUM(COALESCE(l.credito, 0))        AS credito,\n\n    l.lote_id,\n    l.importacao_id\n  FROM contab.lancamentos l\n  WHERE l.empresa_id = {{ $json.empresa_id }}\n\n    AND (\n      (\n        {{ Number($json.importacao_id || 0) }} > 0\n        AND l.importacao_id = {{ Number($json.importacao_id || 0) }}\n      )\n      OR\n      (\n        {{ Number($json.importacao_id || 0) }} = 0\n        AND l.data_mov::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n      )\n    )\n\n    AND (\n      '{{ $json.todos }}' = 'T'\n      OR (l.origem <> 'CONTABIL' OR l.origem IS NULL)\n    )\n\n  GROUP BY\n    l.lote_id,\n    l.importacao_id,\n    l.data_mov::date,\n    l.historico\n)\n\nSELECT\n  p.id,\n  p.data,\n  p.historico,\n\n  cd.codigo || ' - ' || cd.nome AS conta_debito,\n  p.debito,\n\n  cc.codigo || ' - ' || cc.nome AS conta_credito,\n  p.credito,\n\n  p.lote_id,\n  p.importacao_id\nFROM partidas p\nLEFT JOIN contab.contas cd ON cd.id = p.conta_debito_id\nLEFT JOIN contab.contas cc ON cc.id = p.conta_credito_id\nORDER BY p.data DESC, p.lote_id, p.importacao_id;",
+        "query": " WITH partidas AS (\n  SELECT\n    MIN(l.id)                          AS id,\n    l.data_mov::date                   AS data,\n    l.historico                        AS historico,\n\n    MAX(CASE WHEN l.debito  > 0 THEN l.conta_id END) AS conta_debito_id,\n    SUM(COALESCE(l.debito, 0))         AS debito,\n\n    MAX(CASE WHEN l.credito > 0 THEN l.conta_id END) AS conta_credito_id,\n    SUM(COALESCE(l.credito, 0))        AS credito,\n\n    l.lote_id,\n    l.importacao_id,\n    l.origem\n  FROM contab.lancamentos l\n  WHERE l.empresa_id = {{ $json.empresa_id }}\n\n    AND (\n      (\n        {{ Number($json.importacao_id || 0) }} > 0\n        AND l.importacao_id = {{ Number($json.importacao_id || 0) }}\n      )\n      OR\n      (\n        {{ Number($json.importacao_id || 0) }} = 0\n        AND l.data_mov::date BETWEEN '{{ $json.data_ini }}' AND '{{ $json.data_fim }}'\n      )\n    )\n\n    AND (\n      '{{ $json.todos }}' = 'T'\n      OR (l.origem <> 'CONTABIL' OR l.origem IS NULL)\n    )\n\n  GROUP BY\n    l.lote_id,\n    l.importacao_id,\n    l.data_mov::date,\n    l.historico,\n    l.origem\n)\n\nSELECT\n  p.id,\n  p.data,\n  p.historico,\n\n  cd.codigo || ' - ' || cd.nome AS conta_debito,\n  p.debito,\n\n  cc.codigo || ' - ' || cc.nome AS conta_credito,\n  p.credito,\n\n  p.lote_id,\n  p.importacao_id,\n  p.origem\nFROM partidas p\nLEFT JOIN contab.contas cd ON cd.id = p.conta_debito_id\nLEFT JOIN contab.contas cc ON cc.id = p.conta_credito_id\nORDER BY p.data DESC, p.lote_id, p.importacao_id;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2144,
-        1424
+        -3792,
+        -1840
       ],
-      "id": "99374e61-9699-4375-b754-7390eccb7b7b",
+      "id": "2a45797b-76c1-4a48-8a80-77e3e66d81fa",
       "name": "LancamentoProcessaCtb",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1743,10 +1743,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2320,
-        2016
+        -3616,
+        -1248
       ],
-      "id": "67c21070-c657-46f9-8761-0f6649b0ae62",
+      "id": "96b4e17d-f956-4e98-b883-17628b8da374",
       "name": "Respond to Webhook30"
     },
     {
@@ -1778,10 +1778,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        2016
+        -4000,
+        -1248
       ],
-      "id": "eb9f48dd-248f-4879-854f-49abc02872f0",
+      "id": "8170f783-cc39-4829-85ce-2485459903b0",
       "name": "EditDer1"
     },
     {
@@ -1794,10 +1794,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        2016
+        -4224,
+        -1248
       ],
-      "id": "8fb4fc3b-59b6-4cd5-a16c-b7e129c5e4b7",
+      "id": "b109e043-3084-49c6-b1df-b54b98d0594a",
       "name": "dre_analitico",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1810,16 +1810,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        2016
+        -3808,
+        -1248
       ],
-      "id": "632f2961-d75f-4610-a952-36e13a45f18e",
+      "id": "f9a5db06-e4e6-44da-b922-499102c208e4",
       "name": "ff_dre_analitico",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1831,13 +1831,13 @@
         "width": 1216,
         "color": 4
       },
-      "id": "0f1a73d3-1db6-4822-abc2-a4c24c39cd8c",
+      "id": "157b4610-db74-4d98-83e6-d9108ea802c0",
       "name": "Sticky Note3",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1504,
-        1008
+        -4432,
+        -2256
       ]
     },
     {
@@ -1847,13 +1847,13 @@
         "width": 1216,
         "color": 5
       },
-      "id": "80b386b1-6f15-43c4-b26a-b2bf622385cb",
+      "id": "d1bb2508-758a-4f95-a547-8b172a55a355",
       "name": "Sticky Note4",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2928,
-        -128
+        -3008,
+        -3392
       ]
     },
     {
@@ -1866,10 +1866,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3712,
-        80
+        -2224,
+        -3184
       ],
-      "id": "df1507c3-042d-456f-8277-f346e0e65e85",
+      "id": "727f1196-b4cb-4615-b9d9-487287eaec69",
       "name": "Respond to Webhook6"
     },
     {
@@ -1882,10 +1882,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3120,
-        80
+        -2816,
+        -3184
       ],
-      "id": "2a375049-3029-4bb3-8c8f-a3276b4fab6d",
+      "id": "86b800c0-01bc-47cb-95ef-6472c4c1f13a",
       "name": "balanco1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1912,10 +1912,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3328,
-        80
+        -2608,
+        -3184
       ],
-      "id": "77c99241-4585-4312-9e8e-d139765e8ad5",
+      "id": "404162bf-02b1-41b9-92f7-9d928ea5f0de",
       "name": "EdtBalanco1"
     },
     {
@@ -1927,16 +1927,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3520,
-        80
+        -2416,
+        -3184
       ],
-      "id": "42435cd3-804e-489e-a9ca-2daa6c1205e8",
+      "id": "60be8837-f311-4826-8a73-7ef258997f45",
       "name": "ff_balanco_patrimonial",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1951,10 +1951,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3792,
-        544
+        -2144,
+        -2720
       ],
-      "id": "cba2afd7-82c3-4227-90dd-111a423ca4e2",
+      "id": "1f3531e4-29fc-4c1a-b682-aa31712bb07b",
       "name": "Respond to Webhook7"
     },
     {
@@ -1967,10 +1967,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3104,
-        544
+        -2832,
+        -2720
       ],
-      "id": "526da10a-94b1-42c8-8de5-551303f8cc5e",
+      "id": "03d01fa6-abed-4f58-abcb-e4e44b8da8f0",
       "name": "balanco_comparativo",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2003,10 +2003,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3296,
-        544
+        -2640,
+        -2720
       ],
-      "id": "91f8bdda-ec5b-4d7e-85f1-c9335d894e16",
+      "id": "face1da2-74fa-42ef-aba8-9a75e539428b",
       "name": "EdtBalancocomparativo"
     },
     {
@@ -2018,16 +2018,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3504,
-        544
+        -2432,
+        -2720
       ],
-      "id": "0222912f-fa5b-49a1-8b0e-2c6253699560",
+      "id": "c88a7fdc-563d-4c75-801b-da6825712fd3",
       "name": "ff_balanco_patrimonial_comparativo",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -2039,13 +2039,13 @@
         "width": 1216,
         "color": 5
       },
-      "id": "2704aa79-6e29-4bfc-97e4-118787d5b6d9",
+      "id": "bb2b7b49-838d-46ce-9d92-38e67f4bb85e",
       "name": "Sticky Note5",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2896,
-        1200
+        -3040,
+        -2064
       ]
     },
     {
@@ -2058,10 +2058,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3648,
-        1328
+        -2288,
+        -1936
       ],
-      "id": "5746c464-2214-45d5-a533-20240f0c0a78",
+      "id": "d7779050-a4ac-4987-b580-98d58c68f9b5",
       "name": "Respond to Webhook8"
     },
     {
@@ -2093,10 +2093,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3216,
-        1328
+        -2720,
+        -1936
       ],
-      "id": "31f079c0-3d1a-4a50-b7bd-dc6fece2e62f",
+      "id": "258e94e2-605e-44f2-929e-f6b56427d778",
       "name": "EdtBalancocomparativo1"
     },
     {
@@ -2108,10 +2108,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3024,
-        1328
+        -2912,
+        -1936
       ],
-      "id": "0590a4b9-f543-466a-a270-7661b18548a6",
+      "id": "827477a0-2220-4e6b-8ab9-31322d01fead",
       "name": "DRE GEN ANALITICO",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2124,16 +2124,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3424,
-        1328
+        -2512,
+        -1936
       ],
-      "id": "cf0d044e-5911-45f7-ac50-712f195c79c5",
+      "id": "4105e477-1b2a-41c5-abd9-cad8e805ccfa",
       "name": "ff_dre_gerencial_analitico",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -2148,10 +2148,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3712,
-        1568
+        -2224,
+        -1696
       ],
-      "id": "ef52dbed-a6ac-492f-810a-6532c7811b44",
+      "id": "6be19228-5f40-41c1-9b58-34ef31133b49",
       "name": "Respond to Webhook9"
     },
     {
@@ -2183,10 +2183,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3216,
-        1568
+        -2720,
+        -1696
       ],
-      "id": "b8a39cd9-902b-4983-a5dc-6c2d5ee91ed7",
+      "id": "3ab0521f-2d71-4b38-9f7d-cdd44fbd8fb3",
       "name": "EdtBalancocomparativo2"
     },
     {
@@ -2198,10 +2198,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3024,
-        1568
+        -2912,
+        -1696
       ],
-      "id": "9700d266-c3c1-4630-b08a-53a134f578ea",
+      "id": "ead701bf-3c8f-4077-8ec0-81eb888cba12",
       "name": "DRE GEN RESUMO",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2214,16 +2214,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3424,
-        1568
+        -2512,
+        -1696
       ],
-      "id": "d1be87f0-5860-4e24-b092-c24ff66f9215",
+      "id": "1f87337e-8ce7-4d12-ae8e-9ad533abcc90",
       "name": "ff_dre_gerencial_resumo",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -2238,10 +2238,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        3712,
-        1840
+        -2224,
+        -1424
       ],
-      "id": "31f6360f-cdd0-4e49-b2ae-e74763ab9f6e",
+      "id": "c313674d-9f55-4b84-8f82-cd9fd6b3a9b9",
       "name": "Respond to Webhook10"
     },
     {
@@ -2273,10 +2273,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        3216,
-        1840
+        -2720,
+        -1424
       ],
-      "id": "288dcf14-5fe4-4520-9b8b-9afd27aaa978",
+      "id": "e65fabd3-f1f7-4ee7-bf22-1b74fd101988",
       "name": "EdtBalancocomparativo3"
     },
     {
@@ -2288,16 +2288,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        3424,
-        1840
+        -2512,
+        -1424
       ],
-      "id": "c7e31e68-9709-47c0-b385-b8dcbf40b8be",
+      "id": "50977e1f-0ca2-41d3-aa80-dfd312eef708",
       "name": "ff_dre_gerencial_totais",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -2311,10 +2311,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        3024,
-        1840
+        -2912,
+        -1424
       ],
-      "id": "8d1155e9-2dd4-4f4b-bdab-6b8b5beb63f7",
+      "id": "ba78cde3-8a0e-41ae-bdc9-0a6e33ad3434",
       "name": "DRE GEN totais",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2328,10 +2328,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        2512
+        -3600,
+        -752
       ],
-      "id": "d3180cec-e5c7-47cb-9d05-efd53468850c",
+      "id": "d3297831-e788-410f-8a89-40ccf0641511",
       "name": "Respond to Webhook31"
     },
     {
@@ -2363,10 +2363,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        2512
+        -4000,
+        -752
       ],
-      "id": "eb4251f5-553d-4dd5-b41f-e8274885ebdf",
+      "id": "4efe61ba-4c39-48e2-84f2-b0ed6ca001e2",
       "name": "Editflxcaixadetalhado1"
     },
     {
@@ -2379,10 +2379,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        2704
+        -3600,
+        -560
       ],
-      "id": "521f91cf-8a67-4cfc-8ebe-adbbea65765a",
+      "id": "6b046b7e-13d6-491d-81b9-2c779e5e84a3",
       "name": "Respond to Webhook32"
     },
     {
@@ -2420,10 +2420,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        2704
+        -4000,
+        -560
       ],
-      "id": "6495a5b8-1bd5-4abc-96db-4f148bbfa2d2",
+      "id": "9c97fe0a-f26c-4298-be49-89428f3a5b0a",
       "name": "Editflxcaixamensal2"
     },
     {
@@ -2436,10 +2436,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        2896
+        -3600,
+        -368
       ],
-      "id": "cb4b200c-8798-4955-ae1d-cbac759fb61c",
+      "id": "57c08f22-0163-4719-8654-f402edae901f",
       "name": "Respond to Webhook33"
     },
     {
@@ -2471,10 +2471,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1936,
-        2896
+        -4000,
+        -368
       ],
-      "id": "31b0bdbe-4941-4a0e-a141-3d0f5a45dd7c",
+      "id": "e3293f4c-8cec-4fc4-8f93-5499e217cef6",
       "name": "Editflxcaixamensal3"
     },
     {
@@ -2486,15 +2486,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        2896
+        -3808,
+        -368
       ],
-      "id": "6baa95fd-31c8-4d8b-ab71-83823eb93fe7",
+      "id": "0cc6ce68-7e6c-43bc-b2b4-48467bacfeda",
       "name": "sp_fluxo_caixa_consolidado1",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -2508,10 +2508,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        2896
+        -4224,
+        -368
       ],
-      "id": "854a1b55-2481-43cf-ae28-5d72a4eaebd2",
+      "id": "487ce882-cdf0-4806-bd1d-823f5b60e9af",
       "name": "Fluxo_Caixa_consolidado1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2522,13 +2522,13 @@
         "width": 1328,
         "color": 4
       },
-      "id": "337c88e1-b557-4fd9-9430-0daffbd0e890",
+      "id": "f4441006-4a9c-43fb-80c6-59fbc490ee04",
       "name": "Sticky Note6",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1504,
-        2416
+        -4432,
+        -848
       ]
     },
     {
@@ -2541,10 +2541,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        2704
+        -4224,
+        -560
       ],
-      "id": "aa57071c-6335-465d-8412-c591049f1c62",
+      "id": "80f85125-5056-462c-8927-aec1a11ee45e",
       "name": "Fluxo_Caixa_Agrupado",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2558,10 +2558,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        2512
+        -4224,
+        -752
       ],
-      "id": "48e6ec32-6b9c-4ab7-8a08-f0778f5d7bd5",
+      "id": "8f77bf2e-9eed-4406-aceb-053f13d22f46",
       "name": "Fluxo_Caixa_Diario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2574,15 +2574,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        2704
+        -3808,
+        -560
       ],
-      "id": "b4477f6e-c1ed-4459-9384-96c2923f4466",
+      "id": "cc02add7-af13-459a-83a7-d6ed3a1354b2",
       "name": "sp_fluxo_caixa_grafico_agrupado",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -2595,15 +2595,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2128,
-        2512
+        -3808,
+        -752
       ],
-      "id": "1b43bb0e-b473-4ed9-9a46-9fa71744304a",
+      "id": "5e102230-2319-4848-8437-202c25da962f",
       "name": "sp_fluxo_caixa_grafico_diario",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -2617,10 +2617,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2384,
-        3200
+        -3552,
+        -64
       ],
-      "id": "3d48a9ec-881b-40e9-aa21-2eb56f8e0280",
+      "id": "31735b27-6c11-49f3-a4c2-a86bdb594dcc",
       "name": "Respond to Webhook34"
     },
     {
@@ -2652,10 +2652,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1984,
-        3200
+        -3952,
+        -64
       ],
-      "id": "471b0c1d-f780-4566-a02c-4dfc3502915d",
+      "id": "f117d9dc-80d1-4fba-bc63-3b1d3e70805b",
       "name": "Editflxcaixadetalhado2"
     },
     {
@@ -2668,10 +2668,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2384,
-        3392
+        -3552,
+        128
       ],
-      "id": "a00c42a7-9f9d-4381-82d6-4d1c3a12b2f4",
+      "id": "a8429368-d51e-435a-b7ab-b9e513167156",
       "name": "Respond to Webhook35"
     },
     {
@@ -2709,10 +2709,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1984,
-        3392
+        -3952,
+        128
       ],
-      "id": "a309f661-4c4c-4d8b-bae7-cec133d47392",
+      "id": "f3dbdcff-78af-461b-ac2d-75f91931d767",
       "name": "Editflxcaixamensal4"
     },
     {
@@ -2725,10 +2725,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2384,
-        3584
+        -3552,
+        320
       ],
-      "id": "496901b3-7312-47af-a921-4198302feea1",
+      "id": "502f856c-071d-4282-9860-f341be40e222",
       "name": "Respond to Webhook36"
     },
     {
@@ -2760,10 +2760,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1984,
-        3584
+        -3952,
+        320
       ],
-      "id": "1a0947b4-51f6-4867-83b7-e360a3fc2ae0",
+      "id": "2a44344f-7981-4e16-9872-c4358b0cc407",
       "name": "Editflxcaixamensal5"
     },
     {
@@ -2775,15 +2775,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2176,
-        3584
+        -3760,
+        320
       ],
-      "id": "1be12313-55b2-4670-a623-e139645d0b64",
+      "id": "773869e9-1bfe-46e5-abca-71d952097e41",
       "name": "sp_fluxo_caixa_consolidado2",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -2797,10 +2797,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1760,
-        3584
+        -4176,
+        320
       ],
-      "id": "9cea1f8d-6729-4a10-b3aa-f6eae85e1f2b",
+      "id": "7a56c514-5e2a-4d7d-ae71-749158dd3be8",
       "name": "Fluxo_Caixa_consolidado2",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2813,15 +2813,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2176,
-        3392
+        -3760,
+        128
       ],
-      "id": "e6c7f991-07ec-4fd5-9301-320f8f6a5a3a",
+      "id": "49d9fc3c-cfe3-4996-818a-aa387cea1954",
       "name": "sp_fluxo_caixa_grafico_agrupado1",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -2834,15 +2834,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2160,
-        3200
+        -3776,
+        -64
       ],
-      "id": "673b4587-9567-494e-b42a-3d2d8a73830e",
+      "id": "c91d909f-baba-4f17-9510-414ae8b19333",
       "name": "sp_fluxo_caixa_grafico_diario1",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -2856,10 +2856,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1760,
-        3200
+        -4176,
+        -64
       ],
-      "id": "53f903d5-56b3-49db-8a13-4384a2fd9ca7",
+      "id": "5ca07a64-4fec-4b1f-850a-233125f6f276",
       "name": "Fluxo_Caixa_projetado_Diario1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2873,10 +2873,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1760,
-        3392
+        -4176,
+        128
       ],
-      "id": "94a64a8a-2e0f-4f52-be3e-d7558eaa4cf3",
+      "id": "b3c7858d-3b75-440b-abc4-50a44326b242",
       "name": "Fluxo_Caixa_Agrupado_projetado",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2890,10 +2890,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2336,
-        800
+        -3600,
+        -2464
       ],
-      "id": "ef6193f7-dd47-4e07-80b7-9a25754ae175",
+      "id": "e6dbfd56-b8d2-45b7-bd2e-f86395df72d9",
       "name": "Respond to Webhook11"
     },
     {
@@ -2913,10 +2913,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1952,
-        800
+        -3984,
+        -2464
       ],
-      "id": "07e9b7fe-1342-4112-bde0-f2f49812997c",
+      "id": "7ec45c09-2c9a-4110-9994-11e6cbcc1c5b",
       "name": "Edtranscartao4"
     },
     {
@@ -2929,10 +2929,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        1744,
-        800
+        -4192,
+        -2464
       ],
-      "id": "fed7cf87-e81e-4802-8674-5cd75ed37701",
+      "id": "1c6953ae-b240-41c4-9f61-658e4a99588c",
       "name": "LoteImportacao",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2945,16 +2945,197 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2144,
-        800
+        -3792,
+        -2464
       ],
-      "id": "92797a1c-e4a1-4623-8203-d5662ab0b6a2",
+      "id": "b04eebe1-331b-4e5d-82c9-98d9a3353fd4",
       "name": "lote_importacao",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -5056,
+        -2192
+      ],
+      "id": "0d338e77-1685-4c1d-9586-97d7ec9c6d3f",
+      "name": "Respond to Webhook37"
+    },
+    {
+      "parameters": {
+        "path": "apropriacao_baixa_cp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -5680,
+        -2192
+      ],
+      "id": "b81222a9-0094-432e-becc-86907d5ea72a",
+      "name": "apropriacao_baixa_cp",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_ini",
+              "value": "={{ $json.query.data_ini}}",
+              "type": "string"
+            },
+            {
+              "id": "be293112-684a-4018-8725-f24be9beedf3",
+              "name": "data_fim",
+              "value": "={{ $json.query.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5456,
+        -2192
+      ],
+      "id": "5747e59b-4065-4dcc-81ea-42df69ab8ec0",
+      "name": "Edit_apropriacao_baixa_cp"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " select * from  contab.ff_relatorio_apropriacao_baixa_pagar(\n   {{ $json.empresa_id }},\n  '{{ $json.data_ini }}',\n   '{{ $json.data_fim }}'\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -5264,
+        -2192
+      ],
+      "id": "586c5ff9-49a0-4e09-b8a9-44110ba05d5b",
+      "name": "ff_relatorio_apropriacao_baixa_pagar",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -2112,
+        -1136
+      ],
+      "id": "5b257f1e-d30b-4890-bd55-5afdb8fce9a2",
+      "name": "Respond to Webhook12"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            },
+            {
+              "id": "0666945b-bf29-4e01-96fd-c576bbb33f80",
+              "name": "data_inicio",
+              "value": "={{ $json.body.data_inicio}}",
+              "type": "string"
+            },
+            {
+              "id": "1008a792-1e60-4f13-8506-ad21021a31f4",
+              "name": "data_fim",
+              "value": "={{ $json.body.data_fim}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2608,
+        -1136
+      ],
+      "id": "8d8e76e3-2403-4b4f-a54e-f871664b9cde",
+      "name": "EdtBalancocomparativo4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "relatorio_recebiveis",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2800,
+        -1136
+      ],
+      "id": "cba1151a-fd42-4163-888a-66eb33320b1e",
+      "name": "Relatório Recebiveis",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " \nSELECT * FROM  contab.ff_relatorio_recebiveis(\n  {{ $json.empresa_id }},\n  '{{ $json.data_inicio}}', '{{ $json.data_fim}}'\n);\n\n\n ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2400,
+        -1136
+      ],
+      "id": "854e3e52-c01b-47f8-b3c0-ef6465335baf",
+      "name": "ff_relatorio_recebiveis",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -3091,6 +3272,24 @@
       {
         "json": {
           "empresa_id": 1
+        }
+      }
+    ],
+    "Edit_apropriacao_baixa_cp": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260701",
+          "data_fim": "20260727"
+        }
+      }
+    ],
+    "EdtBalancocomparativo4": [
+      {
+        "json": {
+          "empresa_id": 1,
+          "data_ini": "20260401",
+          "data_fim": "20261101"
         }
       }
     ]
@@ -4118,17 +4317,83 @@
           }
         ]
       ]
+    },
+    "apropriacao_baixa_cp": {
+      "main": [
+        [
+          {
+            "node": "Edit_apropriacao_baixa_cp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit_apropriacao_baixa_cp": {
+      "main": [
+        [
+          {
+            "node": "ff_relatorio_apropriacao_baixa_pagar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_relatorio_apropriacao_baixa_pagar": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook37",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EdtBalancocomparativo4": {
+      "main": [
+        [
+          {
+            "node": "ff_relatorio_recebiveis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Relatório Recebiveis": {
+      "main": [
+        [
+          {
+            "node": "EdtBalancocomparativo4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_relatorio_recebiveis": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8a5b2816-94b4-47bc-b2cc-7d9d5470eeaa",
+  "versionId": "ffcdd578-01b0-4528-96bb-f4423d784a27",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "OGLNIGwhsxxuOjk6",
+  "id": "LIxmFrZY45Qecm0l",
   "tags": []
 }

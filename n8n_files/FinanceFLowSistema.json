@@ -8,10 +8,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1344,
-        112
+        -2240,
+        -1008
       ],
-      "id": "79863ba7-1f21-4606-826c-1f72a0c641f0",
+      "id": "3187e6e4-b6eb-4ab5-b56a-ca270969f16c",
       "name": "Sim"
     },
     {
@@ -21,10 +21,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1360,
-        384
+        -2256,
+        -736
       ],
-      "id": "a2f62907-501d-4c70-9d3e-8677a3713b95",
+      "id": "6d24e151-2252-4df7-978c-c8f910b5364f",
       "name": "Não"
     },
     {
@@ -43,15 +43,15 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        -1936,
-        240
+        -2832,
+        -880
       ],
-      "id": "83e73800-56c7-4c98-9479-88825006e1e6",
+      "id": "ae9edce0-e7b0-43c7-84d0-83aeb84cdf3a",
       "name": "DadosUsuario",
       "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
-          "id": "rC5LgeRcKghHCrKW",
+          "id": "kcYv1XXxUeRG6YvY",
           "name": "FinanceFlow"
         }
       }
@@ -65,15 +65,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -768,
-        224
+        -1664,
+        -896
       ],
-      "id": "5390f15e-6990-4dc4-ac32-11e1c3c20486",
+      "id": "21f250c9-423a-48b0-b6cf-0c47c202bff0",
       "name": "DadosEmpresa",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -87,10 +87,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2656,
-        240
+        -3552,
+        -880
       ],
-      "id": "4346fefb-7d77-4078-ab11-ccf7fc0c1d39",
+      "id": "9661c6a2-52d7-445d-b670-5b72638ce9d8",
       "name": "Login",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -122,10 +122,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1664,
-        240
+        -2560,
+        -880
       ],
-      "id": "43ed87b7-c49a-4846-ab5e-2929c0e951ae",
+      "id": "26abfeee-b5c6-4e79-87dd-13d1426bc3f5",
       "name": "If2"
     },
     {
@@ -133,10 +133,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -1040,
-        224
+        -1936,
+        -896
       ],
-      "id": "8b0603e8-c062-41ec-9220-b8c77ce4bd2d",
+      "id": "5506356f-b941-48bb-bfe9-9a0c06e8ff8c",
       "name": "Merge2"
     },
     {
@@ -148,10 +148,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -544,
-        224
+        -1440,
+        -896
       ],
-      "id": "726e8d5e-fa44-4fac-9097-86b65da209e9",
+      "id": "6000fb02-7edc-46f7-b2ea-93e61a43408d",
       "name": "Respond to Webhook12"
     },
     {
@@ -177,10 +177,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2416,
-        240
+        -3312,
+        -880
       ],
-      "id": "e09361ef-316e-4509-ada2-419ce0f9522b",
+      "id": "3912944e-5b3c-4e36-a284-ce8338a6153a",
       "name": "Usuario"
     },
     {
@@ -192,10 +192,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1824,
-        592
+        -2720,
+        -528
       ],
-      "id": "cffb36fd-a3b2-40be-b93e-dab7c2fc5e73",
+      "id": "e91498b5-380e-4ad2-afe3-a3321aa0dd1b",
       "name": "Respond to Webhook"
     },
     {
@@ -215,10 +215,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2416,
-        592
+        -3312,
+        -528
       ],
-      "id": "1f4358f0-7fd4-483a-96ee-4358aca5437f",
+      "id": "0f7dbb54-552d-462b-903c-3e86594b3257",
       "name": "EditPerfil_usario"
     },
     {
@@ -230,16 +230,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2128,
-        592
+        -3024,
+        -528
       ],
-      "id": "6cd1dffd-6394-4d9f-a46c-6c687c04f898",
+      "id": "235ab965-8cfa-43b7-9bc3-2d959ca7b265",
       "name": "QueryPerfilSidebar",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -253,10 +253,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2624,
-        592
+        -3520,
+        -528
       ],
-      "id": "8456bff9-6554-4782-bb29-5cb8719e19ba",
+      "id": "0b90b994-18fa-469b-82d2-890e7d0410ee",
       "name": "Menu",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -276,15 +276,15 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        624,
-        352
+        -272,
+        -768
       ],
-      "id": "df6953f1-7f27-49b2-b009-ff6a2466ef45",
+      "id": "201aed24-4588-4ec1-8ebd-d2989d0a8955",
       "name": "DadosUsuario1",
       "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
-          "id": "rC5LgeRcKghHCrKW",
+          "id": "kcYv1XXxUeRG6YvY",
           "name": "FinanceFlow"
         }
       }
@@ -317,10 +317,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        848,
-        352
+        -48,
+        -768
       ],
-      "id": "ac6b12b4-8928-4ab7-b8a2-bda1fe162183",
+      "id": "1ef56ce3-6359-442c-a8f8-2e1a8fce9f18",
       "name": "If"
     },
     {
@@ -340,10 +340,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        384,
-        352
+        -512,
+        -768
       ],
-      "id": "8214080e-4c37-4b88-81a1-96a42ec19331",
+      "id": "d86fd1c6-4eeb-46a9-9014-c53893f2a0be",
       "name": "Usuario1"
     },
     {
@@ -356,10 +356,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        176,
-        352
+        -720,
+        -768
       ],
-      "id": "3836bc47-ae0e-4b2a-b8e2-d8b6555acf74",
+      "id": "22c02875-187d-4853-8187-9907caa30376",
       "name": "EsqueciSenha",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -372,15 +372,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1104,
-        112
+        224,
+        -1008
       ],
-      "id": "7c27b60b-a2fe-44e1-8138-40540becc8cc",
+      "id": "953bdc32-23d1-40ce-8e63-40357e94cc8b",
       "name": "RecuperaSenha",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -393,15 +393,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1296,
-        112
+        416,
+        -1008
       ],
-      "id": "b70140a3-a872-41c1-b55d-56f733eedb38",
+      "id": "2b9b1c25-c688-450d-a618-c763d6c9fc40",
       "name": "RetornaToken",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -412,10 +412,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1504,
-        112
+        624,
+        -1008
       ],
-      "id": "03213791-b5cf-48da-a76b-944c56301e8e",
+      "id": "d44ffb1f-a30d-4286-80e4-b4d6ce3f7917",
       "name": "Code in JavaScript"
     },
     {
@@ -429,10 +429,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1712,
-        112
+        832,
+        -1008
       ],
-      "id": "a4650d78-bdad-458c-a4fb-45f3fe464167",
+      "id": "3fc012fc-431d-41b6-be49-fe68aca7fb6d",
       "name": "Send email",
       "webhookId": "8b95b66e-abfc-43fd-9e1b-bed12c8da574",
       "disabled": true
@@ -446,10 +446,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1952,
-        352
+        1104,
+        -752
       ],
-      "id": "f56c4eae-84d7-4fa7-bb7b-ceb27fe76bf0",
+      "id": "c62b5831-2519-4d1c-8292-e0d9190bf4cb",
       "name": "Respond to Webhook13"
     },
     {
@@ -475,10 +475,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        416,
-        576
+        -480,
+        -544
       ],
-      "id": "70d979b7-cdbd-4f07-8298-995cb8abd0be",
+      "id": "3fe8aa93-7cf6-45e2-8f7a-021e0895087f",
       "name": "UsarioSenha"
     },
     {
@@ -490,10 +490,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1120,
-        576
+        240,
+        -544
       ],
-      "id": "2ce63a7a-e04a-4c39-9f10-c19b64a2f3ec",
+      "id": "4c871cd1-d9a4-4f8b-a592-824bd97a3262",
       "name": "Respond to Webhook14"
     },
     {
@@ -503,10 +503,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        688,
-        576
+        -208,
+        -544
       ],
-      "id": "672a09db-5b5e-413b-ab1f-abfa46bb37fb",
+      "id": "b2dccb87-a990-41a0-9a61-2dcb0c649f8b",
       "name": "Code in JavaScript1"
     },
     {
@@ -516,10 +516,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2160,
-        240
+        -3056,
+        -880
       ],
-      "id": "b5226850-0ab6-487b-86fc-622c8a011ad1",
+      "id": "5062744d-6ba5-4fc3-9c1a-8534e33a7e11",
       "name": "Code in JavaScript2"
     },
     {
@@ -532,10 +532,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        208,
-        816
+        -688,
+        -304
       ],
-      "id": "7cee68ca-086c-4dd4-97ab-06df3bfa4f3f",
+      "id": "a23716ed-a65d-4939-8cb4-df1e3d74012b",
       "name": "Dados Sessão",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -556,10 +556,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        816
+        -448,
+        -304
       ],
-      "id": "25beda29-76bd-48ed-ba7a-3ab51675a0fd",
+      "id": "26bbe42f-d098-45d7-8f52-29ce84f5624d",
       "name": "EditSessao"
     },
     {
@@ -571,15 +571,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        656,
-        816
+        -240,
+        -304
       ],
-      "id": "b85d94ca-2377-4271-a638-252d07589ed1",
+      "id": "d720f2a6-2d39-4c41-ac73-cc7b3d9a9b18",
       "name": "Execute a SQL query1",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -592,10 +592,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
-        816
+        -16,
+        -304
       ],
-      "id": "2402c322-1ac5-4c29-b4bb-2c61acae5ebe",
+      "id": "be896db8-8ec6-4864-a0c1-dda3bfaf0dc8",
       "name": "Respond to Webhook15"
     },
     {
@@ -607,10 +607,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -2752,
-        48
+        -3648,
+        -1072
       ],
-      "id": "a6e8e8fc-d40a-4abb-8e56-d050a91dce41",
+      "id": "e4e03c22-8f98-40c3-8987-7e3df28e62ec",
       "name": "Sticky Note"
     },
     {
@@ -623,10 +623,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -896,
+        -1120
       ],
-      "id": "b79f4e02-0429-407a-ac3f-266b679c13d2",
+      "id": "06126875-1899-430f-ba36-bd5dd38589ef",
       "name": "Sticky Note1"
     },
     {
@@ -639,10 +639,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        208,
-        576
+        -688,
+        -544
       ],
-      "id": "d2d911d9-865d-4e4f-bce6-9fb42a9662cb",
+      "id": "aabf830f-f899-4b4a-b696-461cd6fbfb87",
       "name": "Redefinir Senha",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -655,15 +655,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        912,
-        576
+        32,
+        -544
       ],
-      "id": "fc7bdb23-1899-4ac6-bf97-0a5d34d97403",
+      "id": "93c9a830-e7e4-43af-80d4-aeb4a4ee8ef2",
       "name": "ff_redefinir_senha",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -677,10 +677,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -2880,
-        896
+        -3776,
+        -224
       ],
-      "id": "7cd76d02-f55f-47cf-97db-3655a1a59dcc",
+      "id": "d66dbf68-9ba9-47c7-b2c0-f48cdd7ad882",
       "name": "Sticky Note2"
     },
     {
@@ -693,10 +693,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1808,
-        1072
+        -2704,
+        -48
       ],
-      "id": "8683a7cf-4e14-4bd5-9829-589fc4363daa",
+      "id": "9c7fc0de-4366-41c9-92ea-b8efec448f69",
       "name": "Respond to Webhook1"
     },
     {
@@ -728,10 +728,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2336,
-        1072
+        -3232,
+        -48
       ],
-      "id": "87d6b5a6-020e-426d-92cf-292a88ab9192",
+      "id": "f4f66a3c-9ce6-4d66-8593-992bfbff8a20",
       "name": "EditPerfil_usario1"
     },
     {
@@ -744,10 +744,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2608,
-        1072
+        -3504,
+        -48
       ],
-      "id": "8fd7c3c9-13af-47eb-bd05-7332c6c73183",
+      "id": "e3ec4d9d-cf36-41f2-876b-3131a0309265",
       "name": "Lembrete",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -760,10 +760,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        -1728,
-        1264
+        -2624,
+        144
       ],
-      "id": "9888918c-7e40-4d9b-a2a1-4f05cd7adb3f",
+      "id": "29098d31-ea6a-4c38-b746-7d214371b81c",
       "name": "Respond to Webhook2"
     },
     {
@@ -789,10 +789,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -2304,
-        1264
+        -3200,
+        144
       ],
-      "id": "11de0211-1e2f-4f8a-a9f6-8884c1e05bd2",
+      "id": "0033fec2-dfe9-41bb-b44a-72a26dce4206",
       "name": "EditPerfil_usario2"
     },
     {
@@ -804,16 +804,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2112,
-        1072
+        -3008,
+        -48
       ],
-      "id": "1c386166-4bd0-419e-8415-f04eb804b292",
+      "id": "d669c812-3f8f-45cb-913c-5db07ae41ccd",
       "name": "LembretesCtb",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -826,15 +826,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2064,
-        1264
+        -2960,
+        144
       ],
-      "id": "0593d9b5-03c7-4c2d-a642-3f1cf7da887c",
+      "id": "721a1b0e-15b2-40fe-950d-a7f4e59ca7ae",
       "name": "AtualizaLembrete",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -848,10 +848,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -2592,
-        1264
+        -3488,
+        144
       ],
-      "id": "8ff982f3-9f6e-4c61-918b-6bbc1b2df768",
+      "id": "bdd71b69-09d2-41c7-9fd8-51c9fe12ff43",
       "name": "BaixarLembrete",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -864,16 +864,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2560,
-        1472
+        -3456,
+        352
       ],
-      "id": "0b1d32ca-e7df-45c6-bd01-f2147b7c0611",
+      "id": "46ba5f0c-175a-4407-b81f-c20468373d0b",
       "name": "LembretesCtb2",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -886,15 +886,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -2352,
-        1472
+        -3248,
+        352
       ],
-      "id": "6d6c0396-b235-47a6-a936-aa18e2a2f483",
+      "id": "06774e9c-4b0b-46ba-bc14-c1e408f69b52",
       "name": "Execute a SQL query",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -909,10 +909,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -2128,
-        1472
+        -3024,
+        352
       ],
-      "id": "8a1dbc7e-159e-4e58-9f3f-6b2f0905bf65",
+      "id": "29bcf164-ab4b-4eab-8db1-517fd5c7a01f",
       "name": "Send email1",
       "webhookId": "8b95b66e-abfc-43fd-9e1b-bed12c8da574",
       "disabled": true
@@ -1349,10 +1349,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "fa79182e-5f11-446a-bd18-7f8e13fa4c10",
+  "versionId": "51507a12-8f60-4926-a92c-a24eb40bc16d",
   "meta": {
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "gTTP0khRFu8grEgw",
+  "id": "KkQ8ZKfiQJIIeUQ3",
   "tags": []
 }

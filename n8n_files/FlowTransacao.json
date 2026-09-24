@@ -76,6 +76,12 @@
               "name": "forma_recebimento",
               "value": "={{$json.body.forma_recebimento.trim()}}",
               "type": "string"
+            },
+            {
+              "id": "989a02d0-3e24-418f-b994-053052cec5cc",
+              "name": "contabil_id",
+              "value": "={{ $json.body.contabil_id}}",
+              "type": "string"
             }
           ]
         },
@@ -84,10 +90,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        320,
-        304
+        -144,
+        160
       ],
-      "id": "0eb6c09f-1262-4c2c-b592-089259bf2cc1",
+      "id": "a3631495-0610-48b0-9e69-d93c4982d1ea",
       "name": "Edit Fields"
     },
     {
@@ -117,10 +123,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        544,
-        304
+        96,
+        160
       ],
-      "id": "308e19d4-59a9-4eea-9dcc-67d507e6ba07",
+      "id": "84c3444e-488e-497d-a97d-206e0a01e944",
       "name": "If"
     },
     {
@@ -133,34 +139,34 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        112,
-        304
+        -352,
+        160
       ],
-      "id": "9b6e4e4a-f918-4d18-8676-d9bce169b8bd",
+      "id": "1872fa66-f4cd-45b6-b57b-9c390f389317",
       "name": "NovoLancamento",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}','{{ $json.modelo_codigo }}','{{ $json.forma_pagamento}}'\n   \n)",
+        "query": "  select * from ff_registrar_despesa(\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}','{{ $json.modelo_codigo }}','{{ $json.forma_pagamento}}', {{ $json.contabil_id }}\n   \n)",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        736,
-        144
+        288,
+        0
       ],
-      "id": "9834a904-c399-4084-bfd8-80df8747c8ce",
+      "id": "f6fb2e5e-12cd-4b60-8c09-6375a75b8694",
       "name": "registrar_despesa",
       "alwaysOutputData": true,
       "retryOnFail": false,
       "executeOnce": false,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -168,23 +174,23 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}','{{ $json.modelo_codigo }}','{{$json.forma_recebimento}}')",
+        "query": "  select * from ff_registrar_receita (\n   {{ $('Edit Fields').item.json.id_empresa }},\n  {{ $('Edit Fields').item.json.conta }},\n   {{ $json.categoria }},null, null,\n    {{ $('Edit Fields').item.json.valor }},\n  '{{ $('Edit Fields').item.json.descricao }}'\n  ,'{{ $('Edit Fields').item.json.data }}' ,\n    '{{ $json.origem }}', '{{ $json.classificacao }}','{{ $json.modelo_codigo }}','{{$json.forma_recebimento}}', {{ $json.contabil_id }}  )",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        736,
-        416
+        288,
+        272
       ],
-      "id": "b2802f08-32e1-4a34-85a7-cef21a6cb23c",
+      "id": "fe99c6d8-b8f4-4b07-bc24-be3728ff99af",
       "name": "registrar_receita",
       "alwaysOutputData": true,
       "executeOnce": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -199,10 +205,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1184,
-        256
+        736,
+        112
       ],
-      "id": "6238f6fb-c8a3-4be3-8e95-3eebba7e3e5b",
+      "id": "c00dddb3-8017-4baa-b2ac-96c9c816a09d",
       "name": "Respond to Webhook13"
     },
     {
@@ -212,13 +218,13 @@
         "width": 1472,
         "color": 5
       },
-      "id": "1b80dfd5-14a9-4f74-9975-06cb57ee3c0d",
+      "id": "d112f5e3-d408-42dc-bc06-439b8682f5dd",
       "name": "Sticky Note6",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -464,
+        -144
       ]
     },
     {
@@ -228,10 +234,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        912,
-        144
+        464,
+        0
       ],
-      "id": "9e881456-22d2-4518-be95-0ea5927ce434",
+      "id": "e86cc8bd-effd-4427-af21-2a8b9c6bf6cd",
       "name": "Code in JavaScript1"
     },
     {
@@ -241,10 +247,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        928,
-        416
+        480,
+        272
       ],
-      "id": "c5a2faf7-f993-430c-b456-daf8a6f92582",
+      "id": "c01cd760-13b5-4693-9644-e23fce7f5165",
       "name": "Code in JavaScript"
     }
   ],
@@ -339,11 +345,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2e9537e4-b5ef-41f9-8cbb-7979f5b0a94d",
+  "versionId": "94509e3f-d3ee-4b2b-83af-6ef7ed1ac8a5",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "jaCOUUgt6hlpnWB7",
+  "id": "uaWS1lWi8UFJTaj2",
   "tags": []
 }

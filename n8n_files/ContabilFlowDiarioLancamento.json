@@ -11,10 +11,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2832,
-        240
+        672,
+        -1664
       ],
-      "id": "9afc9f57-3b21-44fb-ab68-e6b5f6d1c77e",
+      "id": "2ff2f61e-244b-4d8d-8b71-68a0cfd88879",
       "name": "Respond to Webhook7"
     },
     {
@@ -58,31 +58,31 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2400,
-        240
+        240,
+        -1664
       ],
-      "id": "f054492b-64b0-4ac2-b91a-e2de7fb0201e",
+      "id": "d6739850-5549-47f2-84f8-51bd8901e2e1",
       "name": "EditModeloslinha3"
     },
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "select * from    contab.ff_diario_listar(\n   {{ $json.empresa_id }},\n   '{{$json.data_ini}}',\n    '{{$json.data_fim}}',\n   '{{$json.codigo}}',\n    '{{$json.buscar_nome }}'\n)\n",
+        "query": "select * from    contab.ff_diario_listar(\n   {{ $json.empresa_id }},\n   '{{$json.data_ini}}',\n    '{{$json.data_fim}}',\n   '{{$json.codigo}}',\n    '{{$json.buscar_nome }}'\n) \n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2608,
-        240
+        448,
+        -1664
       ],
-      "id": "66f5a612-f085-42c3-ae03-020c4f9a259a",
+      "id": "16595717-45ef-43e8-8070-fc5d0f2df8b1",
       "name": "ff_diario_listar",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -94,13 +94,13 @@
         "width": 1280,
         "color": 2
       },
-      "id": "79b6093c-05d0-4337-b188-07df991c8ba3",
+      "id": "184fef90-186f-4aed-b7d8-2e97a5181e1e",
       "name": "Sticky Note4",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1888,
-        160
+        -288,
+        -1744
       ]
     },
     {
@@ -112,10 +112,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2192,
-        240
+        32,
+        -1664
       ],
-      "id": "470d2073-a218-4229-a550-4166f3bf5aa6",
+      "id": "17c2b754-a589-4eb0-8e80-99b21318d123",
       "name": "ConsultaDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -129,10 +129,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2800,
-        448
+        640,
+        -1456
       ],
-      "id": "3cbeb4c3-a78f-4093-9c18-761ac21f4ac7",
+      "id": "9ccbba43-3b4b-4b0e-9e87-14dd67de670c",
       "name": "Respond to Webhook8"
     },
     {
@@ -326,15 +326,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2576,
-        448
+        416,
+        -1456
       ],
-      "id": "a5b04711-f1bb-44fb-9209-fed5042b79c5",
+      "id": "4a76a2e5-f9fa-4276-904d-aa63cf2b58a7",
       "name": "InsertConta2",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -349,10 +349,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2160,
-        448
+        -16,
+        -1456
       ],
-      "id": "d1b9ee6d-b3ca-49da-b346-061c1a028a94",
+      "id": "d57279b7-5ead-44fa-afe8-ee727328359d",
       "name": "InsereDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -427,10 +427,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2368,
-        448
+        208,
+        -1456
       ],
-      "id": "e77b5f46-26bb-44f2-8d81-1e68e7a05698",
+      "id": "abfb1ed6-6388-4632-a2e0-1b5bffbbc435",
       "name": "EditInsertDiario"
     },
     {
@@ -443,10 +443,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2816,
-        656
+        656,
+        -1248
       ],
-      "id": "df3a1509-93b0-4aa8-9a81-db6db686f270",
+      "id": "05e4f40c-0deb-4110-9451-40b7af4666a7",
       "name": "Respond to Webhook9"
     },
     {
@@ -458,10 +458,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2176,
-        656
+        16,
+        -1248
       ],
-      "id": "21e623c6-1fb4-4394-8d33-ea511eade0cf",
+      "id": "18c07679-f31b-4628-bf57-c4208c8209a0",
       "name": "EditaDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -488,10 +488,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2384,
-        656
+        224,
+        -1248
       ],
-      "id": "2a5459d6-c352-4992-b2a9-b0d4fd7d6968",
+      "id": "c6ef54a6-5ca3-47d8-bd2b-8cb25d584ff1",
       "name": "EditDiarioRetrieve"
     },
     {
@@ -503,15 +503,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2592,
-        656
+        432,
+        -1248
       ],
-      "id": "6f3db30e-d7bb-499e-b2d0-01b71804da8d",
+      "id": "e858fa7e-186c-40f2-9f1b-a667b84d7c5a",
       "name": "DiarioRetrieve",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -526,10 +526,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2800,
-        864
+        640,
+        -1040
       ],
-      "id": "12162697-21aa-4094-b972-1b4632b2ee53",
+      "id": "6d872105-2cad-4875-b980-1c1834b8ace4",
       "name": "Respond to Webhook10"
     },
     {
@@ -707,15 +707,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2576,
-        864
+        416,
+        -1040
       ],
-      "id": "9a893a8f-340f-461b-8f7b-b1b682cf3e9d",
+      "id": "d705e640-5b69-445d-bd55-6719fc61a8dc",
       "name": "InsertConta3",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -797,10 +797,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2368,
-        864
+        208,
+        -1040
       ],
-      "id": "c65069c0-592f-4149-8949-a3570d4803af",
+      "id": "27eb0303-43a3-4052-a64b-43b6b006ebb3",
       "name": "EditInsertDiario1"
     },
     {
@@ -813,10 +813,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2160,
-        864
+        -16,
+        -1040
       ],
-      "id": "1a9e6d81-6022-48ae-a62c-9202e660c5d9",
+      "id": "8bd2ad9e-cf3e-4b42-bf7a-bdf333c1395f",
       "name": "SalvarDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -830,10 +830,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1440,
-        464
+        -736,
+        -1440
       ],
-      "id": "aa80b73a-e5b0-44b4-9080-759f4dfb4ce6",
+      "id": "e08e54f1-a26c-4504-a35f-dd3bb5a78b44",
       "name": "Respond to Webhook"
     },
     {
@@ -1030,15 +1030,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1056,
-        464
+        -1120,
+        -1440
       ],
-      "id": "e406368d-f820-4b1a-bef7-e971cb63036c",
+      "id": "d1c7030e-152b-446f-9254-0040e3907384",
       "name": "InsertConta",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1053,10 +1053,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        512,
-        464
+        -1664,
+        -1440
       ],
-      "id": "2f6b9b4a-c2d7-4961-b4df-5c7cdd41cd9e",
+      "id": "3a11b3df-4570-424b-a83d-63f2f3ff1c38",
       "name": "ImportarDiario",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1067,10 +1067,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        688,
-        464
+        -1488,
+        -1440
       ],
-      "id": "db775639-e21b-43ba-a28d-e639e6b9c1a0",
+      "id": "a2b1e86d-1e5c-4dc2-8b15-5f47b2b02daa",
       "name": "Code in JavaScript"
     },
     {
@@ -1082,16 +1082,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1248,
-        464
+        -928,
+        -1440
       ],
-      "id": "c5d3f0a4-758a-4f83-9c36-699e501dba1d",
+      "id": "dda6b7fd-75fa-4f6a-93c6-a20a4e59cc8f",
       "name": "Execute a SQL query1",
       "executeOnce": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -1102,10 +1102,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        864,
-        464
+        -1312,
+        -1440
       ],
-      "id": "8474779f-665d-47db-bac9-f3e35b34619f",
+      "id": "f0fd0d74-0942-459b-8ad1-527f5f98631a",
       "name": "CodeArquivo"
     },
     {
@@ -1118,10 +1118,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1328,
-        656
+        -848,
+        -1248
       ],
-      "id": "77652bd2-ea57-4e26-86a3-e3bd45661090",
+      "id": "f5742be7-f4b6-4869-bf23-a83f8e0ace85",
       "name": "Respond to Webhook1"
     },
     {
@@ -1141,10 +1141,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        704,
-        656
+        -1472,
+        -1248
       ],
-      "id": "4ca8ce81-52e3-4566-a474-a156f9e70c1a",
+      "id": "a734f320-bf09-4c89-9caf-e9adeb798a62",
       "name": "EditDelLote"
     },
     {
@@ -1157,10 +1157,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1408,
-        272
+        -768,
+        -1632
       ],
-      "id": "4b49ddac-81f8-412b-bda4-c0d99302dba4",
+      "id": "8e863b8a-ffbf-4665-9639-7465700d47ab",
       "name": "Respond to Webhook2"
     },
     {
@@ -1173,10 +1173,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        496,
-        656
+        -1680,
+        -1248
       ],
-      "id": "91650bfb-89d5-48c6-b9fa-794895db50c3",
+      "id": "6b24b338-f0b5-4827-88ee-4b1f50fc07b5",
       "name": "ExcluirLote",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1190,10 +1190,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        528,
-        272
+        -1648,
+        -1632
       ],
-      "id": "e5476c99-9cfa-4255-bc60-66c1a2704206",
+      "id": "3485db82-4274-44d9-bd6a-1e0fc551ba16",
       "name": "Consultar_lote",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1206,16 +1206,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        912,
-        656
+        -1264,
+        -1248
       ],
-      "id": "4451aed6-ee3b-4510-a93c-16887f37d063",
+      "id": "36170d3a-de75-417d-93ad-fb1e32c02b9f",
       "name": "GetLote",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1237,10 +1237,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        736,
-        272
+        -1440,
+        -1632
       ],
-      "id": "16e15d7b-5fcb-40d8-8667-30fa1604f2b5",
+      "id": "c75a1c0b-8f92-4df3-9ad5-dd541850834a",
       "name": "EditConsulta"
     },
     {
@@ -1252,16 +1252,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        0,
-        0
+        -2176,
+        -1904
       ],
-      "id": "37e15300-d9d4-4d51-9e17-550a357127ce",
+      "id": "23d6ffd1-53a8-4f6d-8d13-a6d24ea76f05",
       "name": "LoteConsulta",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "disabled": true,
@@ -1276,16 +1276,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1104,
-        656
+        -1072,
+        -1248
       ],
-      "id": "4d1ff11b-aef8-4e2f-a28e-ccf6f934fd11",
+      "id": "f79c1279-d2d2-4e6d-942d-0d3f0fa3a8e9",
       "name": "ExcluiLote",
       "executeOnce": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1299,16 +1299,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        928,
-        272
+        -1248,
+        -1632
       ],
-      "id": "31f72a1a-f8b6-4b86-93f5-22eaeb122db2",
+      "id": "6e24d9fd-9332-4a5f-9f14-fd5bb5283987",
       "name": "ff_diario_staging_validar",
       "executeOnce": false,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1320,10 +1320,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1184,
-        272
+        -992,
+        -1632
       ],
-      "id": "08be4cc8-4e47-40a0-92d3-d4d4ac2d10c7",
+      "id": "2cdf0da6-7fd0-4d8f-a624-f000023bc0d2",
       "name": "Code in JavaScript1"
     },
     {
@@ -1333,13 +1333,13 @@
         "width": 1280,
         "color": 3
       },
-      "id": "ad6b0148-7061-4176-8639-cd1adf0e2c5b",
+      "id": "f3c293f4-7b45-4798-8750-71d74fb01508",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        320,
-        160
+        -1856,
+        -1744
       ]
     },
     {
@@ -1352,10 +1352,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1104,
-        1248
+        -1072,
+        -656
       ],
-      "id": "7b1313b8-ee52-440b-8336-7b6125a3453e",
+      "id": "92232d93-11bb-4901-84bc-8ec097cb68d0",
       "name": "Respond to Webhook3"
     },
     {
@@ -1367,10 +1367,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        464,
-        1248
+        -1712,
+        -656
       ],
-      "id": "5ce282be-98ab-4128-9846-682462cd07ee",
+      "id": "a68ea986-9035-4dd5-bc11-37499edeb3a2",
       "name": "LanctoContabil",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1409,10 +1409,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        672,
-        1248
+        -1504,
+        -656
       ],
-      "id": "6ff5a7b4-39e5-4d6d-aa72-b5022bf1614a",
+      "id": "eac638de-3c0a-4071-b4ce-84230ab777b8",
       "name": "EditLanct"
     },
     {
@@ -1424,16 +1424,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        896,
-        1248
+        -1280,
+        -656
       ],
-      "id": "687c4c93-7552-4f0b-b305-38c9ad73b490",
+      "id": "9ad61560-34dc-4efd-86b5-339d7def9e76",
       "name": "ff_razao_sintetico_mensal (lancto Contabeis)",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1441,17 +1441,17 @@
     {
       "parameters": {
         "content": "## Lançamentos Contabeis.  \nConsultas de lancamentos, Altera Saldo e inclui um lançamento especifico",
-        "height": 876,
+        "height": 956,
         "width": 1280,
         "color": 5
       },
-      "id": "28a1d391-42c8-410a-960c-0cb61d513259",
+      "id": "0b08af9c-1828-4305-8f65-cd59b89be9c2",
       "name": "Sticky Note1",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        240,
-        1216
+        -1936,
+        -688
       ]
     },
     {
@@ -1464,10 +1464,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1104,
-        1472
+        -1072,
+        -432
       ],
-      "id": "4a15e854-1e67-4c5f-b696-a64199f8fa1c",
+      "id": "c951a6e3-e78d-403a-b144-b4890fb4e5b0",
       "name": "Respond to Webhook4"
     },
     {
@@ -1499,10 +1499,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        688,
-        1472
+        -1488,
+        -432
       ],
-      "id": "baccdb6a-ff73-4b1d-a03b-ea3dfa091bfc",
+      "id": "68486a0f-5805-45b1-877e-ff1fe36fd828",
       "name": "EditLanct1"
     },
     {
@@ -1515,10 +1515,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        480,
-        1472
+        -1696,
+        -432
       ],
-      "id": "5b15e74e-1afb-4aae-8c05-fd672a90ac7f",
+      "id": "f700f79f-b641-47ff-9a2e-139ed08c01f2",
       "name": "AlteraSaldoLancamentos",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1532,10 +1532,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1120,
-        1696
+        -1056,
+        -208
       ],
-      "id": "68d426c1-b0ba-44c1-a9c6-bbb32b9f6cc2",
+      "id": "dabc7da6-e59c-4fad-9c8b-bf4a5c1c9cb0",
       "name": "Respond to Webhook5"
     },
     {
@@ -1555,10 +1555,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1712,
-        2144
+        -464,
+        240
       ],
-      "id": "3ed993b2-2681-4701-80e0-fd9c6ee6ca5f",
+      "id": "e524b708-c0e0-4cf4-b63f-d899671b24d6",
       "name": "Editcontas_contabeis_lancaveis",
       "disabled": true
     },
@@ -1715,15 +1715,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1696,
-        1328
+        -480,
+        -576
       ],
-      "id": "cffd90ad-7e6c-418f-8025-6aad3c960c7c",
+      "id": "118ab7a5-bc6c-461d-b5f8-ba45e267f6a9",
       "name": "InsereLanctoContabilManual",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -1736,16 +1736,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1920,
-        2144
+        -240,
+        272
       ],
-      "id": "bdad2ceb-4704-4d1b-b297-4b6f92500769",
+      "id": "7ae77025-e95c-4260-a9d6-f4a9e1154317",
       "name": "Contas Contabeis",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "disabled": true,
@@ -1760,15 +1760,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        864,
-        1872
+        -1312,
+        -32
       ],
-      "id": "cf2c8286-2a60-450e-ae06-1bdc815fc6d7",
+      "id": "9a75d0c2-91af-4ea4-b280-49038c6c6c4a",
       "name": "Execute a SQL query",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -1782,10 +1782,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1104,
-        1872
+        -1072,
+        -32
       ],
-      "id": "bf5aeece-5156-4736-a36d-20f949777f47",
+      "id": "5030690a-c1a2-46bd-a6d9-bc428d5de524",
       "name": "Respond to Webhook6"
     },
     {
@@ -1805,10 +1805,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        672,
-        1872
+        -1504,
+        -32
       ],
-      "id": "b053d871-272a-4e45-8f83-d6944b5a00f1",
+      "id": "2716f16d-a10d-45a1-ac32-962f330d4dab",
       "name": "Editcontas_contabeis_lancaveis1"
     },
     {
@@ -1820,10 +1820,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        480,
-        1696
+        -1696,
+        -208
       ],
-      "id": "306a6669-d44c-4666-a9f8-f2cad4e139b2",
+      "id": "fc11bfc5-e8b3-4bf5-9f3c-a616c6529fec",
       "name": "Lancaveis",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1836,10 +1836,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        464,
-        1872
+        -1712,
+        -32
       ],
-      "id": "0bfda066-880c-4aec-b3b0-ef037ed0e48e",
+      "id": "15b89cca-6b48-4fbe-b772-bd65db9f5389",
       "name": "LancaveisSemSaldo",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -1852,15 +1852,15 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        896,
-        1472
+        -1280,
+        -432
       ],
-      "id": "0267cc03-99fe-42c4-a34e-7132a80416bd",
+      "id": "5c5896cf-85b6-4f02-a2e2-b2118fd6aa19",
       "name": "ImplantaSaldoInicial",
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       }
     },
@@ -1905,10 +1905,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        672,
-        1696
+        -1504,
+        -208
       ],
-      "id": "5b09cdba-5d57-4def-a09c-629091f932be",
+      "id": "c0c95c08-63b5-4ccf-a52a-9304e33b85d0",
       "name": "Editcontas_contabeis_lancaveis2"
     },
     {
@@ -1920,16 +1920,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        896,
-        1696
+        -1280,
+        -208
       ],
-      "id": "78fb0d17-7c3e-4f48-ad3b-5166dfde1bf2",
+      "id": "ee8d00e4-48e2-4ac9-bc71-d2aa0fb12c3f",
       "name": "Contas Contabeis1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -1937,17 +1937,17 @@
     {
       "parameters": {
         "content": "## Lançamentos Contabeis.  \nConsultas de lancamentos, Altera Saldo e inclui um lançamento especifico",
-        "height": 876,
+        "height": 1068,
         "width": 1280,
         "color": 4
       },
-      "id": "5d3b7e71-3ac7-49a1-8bae-4aaba4178b41",
+      "id": "75792be6-045a-4a65-a70d-fa5fedfd4019",
       "name": "Sticky Note2",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1904,
-        1232
+        -272,
+        -672
       ]
     },
     {
@@ -1960,10 +1960,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2880,
-        1424
+        720,
+        -480
       ],
-      "id": "14b60912-7028-4821-88f1-62734154050d",
+      "id": "03207de7-5f08-4934-800c-d4883650fa1f",
       "name": "Respond to Webhook11"
     },
     {
@@ -1976,10 +1976,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2080,
-        1424
+        -96,
+        -480
       ],
-      "id": "8b588424-6ad7-46a3-aa44-9436d8abe6e1",
+      "id": "c6eb196c-3f8c-4037-8e0d-b1a5a63a2491",
       "name": "Lancaveis1",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
     },
@@ -2006,10 +2006,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2304,
-        1424
+        144,
+        -480
       ],
-      "id": "af8fb201-6f2f-42f4-a6ff-ef1126c00d0b",
+      "id": "6ef3713f-7225-4556-85e4-d1b0032fa56f",
       "name": "Editcontas_contabeis_lancaveis3"
     },
     {
@@ -2021,16 +2021,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2496,
-        1424
+        336,
+        -480
       ],
-      "id": "c2ceb176-b2f8-4c19-829f-2a86c573b93a",
+      "id": "ebf28c10-1d29-4d53-b0fb-c2b3187d832c",
       "name": "Contas Contabeis2",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -2042,10 +2042,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2704,
-        1424
+        544,
+        -480
       ],
-      "id": "7c8006f8-cde3-4786-acb0-69e7aadcc42f",
+      "id": "460f5fe3-1b42-4b4d-b258-740d45ea09e8",
       "name": "Code in JavaScript2"
     },
     {
@@ -2058,10 +2058,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        2896,
-        1728
+        736,
+        -176
       ],
-      "id": "38f821e5-e615-4c31-ba24-fd18055f956a",
+      "id": "184a663f-9b6f-418b-ba03-c0dfb1838700",
       "name": "Respond to Webhook12"
     },
     {
@@ -2087,10 +2087,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2320,
-        1728
+        160,
+        -176
       ],
-      "id": "e68648b0-ba31-4721-8b28-8cdc9c5f2f69",
+      "id": "eeaffc67-c695-403c-ae9f-157549528200",
       "name": "Editcontas_contabeis_lancaveis4"
     },
     {
@@ -2100,10 +2100,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2720,
-        1728
+        560,
+        -176
       ],
-      "id": "510551c0-a96a-4560-b036-b500bb2ba135",
+      "id": "38e2671d-05b3-4e30-8674-a551a43560d3",
       "name": "Code in JavaScript3"
     },
     {
@@ -2115,16 +2115,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2512,
-        1728
+        352,
+        -176
       ],
-      "id": "97845eac-c6cb-4b89-be17-352f52939f1b",
+      "id": "1d780b61-d806-4088-b257-5c4fc590ea8d",
       "name": "LancamentoEdicao",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -2138,16 +2138,16 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        2592,
-        1856
+        432,
+        -48
       ],
-      "id": "d455ff4a-3711-46ee-89d2-17cfd71ef734",
+      "id": "fc63391c-b6be-4b6d-ac53-2b17bb473ca8",
       "name": "LancamentoEdicao1",
       "alwaysOutputData": true,
       "credentials": {
         "postgres": {
-          "id": "wvOAuqaHViEwm60r",
-          "name": "FInanceFlow"
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
         }
       },
       "onError": "continueRegularOutput"
@@ -2161,12 +2161,165 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        2096,
-        1728
+        -80,
+        -176
       ],
-      "id": "6b503be0-3c0a-4760-a555-5b765e0d7994",
+      "id": "332484db-7977-47d2-bb99-5cdeacf05406",
       "name": "BuscaLote",
       "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -1040,
+        -1040
+      ],
+      "id": "3fcc46ab-568c-483e-8c09-6a36bcb439a8",
+      "name": "Respond to Webhook13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.body.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1472,
+        -1040
+      ],
+      "id": "b6521a54-f182-4e96-915d-e204f57aaace",
+      "name": "Editcontas_contabeis_lancaveis5"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT *\nFROM public.ff_aprender_historicos_contabeis(\n  {{ $json.empresa_id }}\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1280,
+        -1040
+      ],
+      "id": "7cdb4aeb-e891-45cc-a98d-d9f85aba8014",
+      "name": "ff_aprender_historicos_contabeis",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "aprender_historicos",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1680,
+        -1040
+      ],
+      "id": "1c81f905-9b7e-4940-9cbb-a7b0bcf6f69d",
+      "name": "Atualiza_regras",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        576,
+        128
+      ],
+      "id": "75d4b6ec-7be2-431a-8212-8daef0f44a7f",
+      "name": "Respond to Webhook14"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4616a119-9b3f-4dcd-b548-0be8d5f7a3b4",
+              "name": "empresa_id",
+              "value": "={{ $json.query.empresa_id}}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        128
+      ],
+      "id": "1bbc7e57-e4ce-40ac-b462-065913a7292a",
+      "name": "Editcontas_contabeis_lancaveis6"
+    },
+    {
+      "parameters": {
+        "path": "status_reclassificacao",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -80,
+        128
+      ],
+      "id": "4360bbd6-0d86-4ebc-95bb-897b49c39149",
+      "name": "status_reclassificacao",
+      "webhookId": "77c2764f-3d24-48db-aef2-07b64e9ecdeb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": " SELECT count(*) AS qtd\nFROM public.regras_classificacao_contabil\nWHERE empresa_id = {{ $json.empresa_id }}\n  AND (\n    conta_id IS NULL \n  );",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        336,
+        128
+      ],
+      "id": "f5b43d2f-99f9-43cb-b45c-24913b7c1730",
+      "name": "classificar_contabil",
+      "credentials": {
+        "postgres": {
+          "id": "2CNjdfsJzrRLFqHu",
+          "name": "FinanceFlow"
+        }
+      }
     }
   ],
   "pinData": {
@@ -2199,6 +2352,20 @@
         "json": {
           "empresa_id": 1,
           "lote_id": 8
+        }
+      }
+    ],
+    "Editcontas_contabeis_lancaveis5": [
+      {
+        "json": {
+          "empresa_id": 1
+        }
+      }
+    ],
+    "Editcontas_contabeis_lancaveis6": [
+      {
+        "json": {
+          "empresa_id": 1
         }
       }
     ]
@@ -2545,11 +2712,6 @@
         ]
       ]
     },
-    "Contas Contabeis": {
-      "main": [
-        []
-      ]
-    },
     "Editcontas_contabeis_lancaveis1": {
       "main": [
         [
@@ -2714,17 +2876,83 @@
           }
         ]
       ]
+    },
+    "Editcontas_contabeis_lancaveis5": {
+      "main": [
+        [
+          {
+            "node": "ff_aprender_historicos_contabeis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ff_aprender_historicos_contabeis": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza_regras": {
+      "main": [
+        [
+          {
+            "node": "Editcontas_contabeis_lancaveis5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Editcontas_contabeis_lancaveis6": {
+      "main": [
+        [
+          {
+            "node": "classificar_contabil",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "status_reclassificacao": {
+      "main": [
+        [
+          {
+            "node": "Editcontas_contabeis_lancaveis6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "classificar_contabil": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a2baa320-4b11-4098-9d43-ca4c5c67313b",
+  "versionId": "bbe6185f-f181-4554-a719-14bb54e8c7f9",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "33738330930e3881dd5571eca013f36ddf8aab20e4ea5c1f2ebaf4a2b4668ac6"
+    "instanceId": "b3ad269e5ed8d3b4685167408bbbe03e6a154b6945c16284e8864807e278e62f"
   },
-  "id": "QeuYHtFfALsC85Z1",
+  "id": "VABaKVDfsiWqVNdx",
   "tags": []
 }
