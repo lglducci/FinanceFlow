@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { fetchSeguro } from "../utils/apiSafe";
 import { hojeLocal } from "../utils/dataLocal";
+import QuadroConferenciaRecebiveis from "../components/QuadroConferenciaRecebiveis";
 
 export default function RelatorioRecebiveis() {
   const empresa_id = localStorage.getItem("empresa_id");
@@ -18,6 +19,7 @@ export default function RelatorioRecebiveis() {
   const [erro, setErro] = useState("");
 
   const [aba, setAba] = useState("PERIODO");
+  const [quadroAberto, setQuadroAberto] = useState(false);
 
   function moeda(valor) {
     return Number(valor || 0).toLocaleString("pt-BR", {
@@ -286,6 +288,11 @@ export default function RelatorioRecebiveis() {
                 >
                 🖨️ Imprimir
                 </button>
+
+              <button type="button" onClick={() => setQuadroAberto(true)}
+                className="rounded-full border border-cyan-300 bg-white px-5 py-2.5 text-sm font-black text-[#0F172A] hover:bg-cyan-50">
+                Conferência Getnet × banco
+              </button>
 
             </div>
 
@@ -771,6 +778,12 @@ export default function RelatorioRecebiveis() {
         </div>
        </div>
       </div>
+      {quadroAberto && <QuadroConferenciaRecebiveis
+        empresaId={empresa_id}
+        dataInicioInicial={dataInicio}
+        dataFimInicial={dataFim}
+        onClose={() => setQuadroAberto(false)}
+      />}
     </div>
   );
 }

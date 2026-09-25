@@ -7,6 +7,7 @@
     
    import { buildWebhookUrl } from "../config/globals";
 import * as XLSX from "xlsx";
+import QuadroConferenciaRecebiveis from "../components/QuadroConferenciaRecebiveis";
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 const WEBHOOK_IMPORTAR = "/webhook/importa_venda_getnet";
 const WEBHOOK_CONFERIR = "/webhook/confere_consumer_getnet";
@@ -173,6 +174,7 @@ const [contasBanco, setContasBanco] = useState([]);
 const [indiceContaBanco, setIndiceContaBanco] = useState(0);
 const [contaBancoId, setContaBancoId] = useState("");
 const [saldoBanco, setSaldoBanco] = useState(0);
+const [quadroAberto, setQuadroAberto] = useState(false);
 
 const contaBancoAtual =
   contasBanco?.[indiceContaBanco] || null; 
@@ -993,6 +995,12 @@ function nomeFormaPagamento(forma) {
               {carregandoConferencia ? "Conferindo..." : "Conferir período"}
             </button>
 
+            <button type="button" onClick={() => setQuadroAberto(true)}
+              disabled={!empresa_id || !contasBanco.length || !dataInicio || !dataFim}
+              className="h-10 rounded-lg border border-blue-700 bg-white px-4 text-sm font-semibold text-blue-800 hover:bg-blue-50 disabled:opacity-50">
+              Conferência Getnet × banco
+            </button>
+
             <div className="pb-2 text-xs font-semibold text-slate-500">
               Operadora: <strong className="text-slate-700">GETNET</strong>
             </div>
@@ -1277,6 +1285,14 @@ function nomeFormaPagamento(forma) {
           </>
         )}
       </div>
+      {quadroAberto && <QuadroConferenciaRecebiveis
+        empresaId={empresa_id}
+        contaInicial={contaBancoId}
+        contasBanco={contasBanco}
+        dataInicioInicial={dataInicio}
+        dataFimInicial={dataFim}
+        onClose={() => setQuadroAberto(false)}
+      />}
     </div>
   );
 }

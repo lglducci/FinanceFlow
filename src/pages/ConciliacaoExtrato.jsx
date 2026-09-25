@@ -1,6 +1,7 @@
-   import { useEffect, useRef, useState } from "react";
+    import { useEffect, useRef, useState } from "react";
  
 import { buildWebhookUrl } from "../config/globals";
+import QuadroConferenciaRecebiveis from "../components/QuadroConferenciaRecebiveis";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
 
 import {
@@ -43,6 +44,7 @@ export default function ConciliacaoExtratoPdf() {
   const [dadosContabeis, setDadosContabeis] = useState([]);
   const [carregandoContabil, setCarregandoContabil] = useState(false);
   const [erroContabil, setErroContabil] = useState("");
+  const [quadroAberto, setQuadroAberto] = useState(false);
 
   const contaAtual = contas[indiceConta] || null;
   const contaId = contaAtual?.conta_id || null;
@@ -1374,6 +1376,11 @@ function converterLinhaContabil(item) {
               >
                 ↻ Atualizar saldos
               </button>
+              <button type="button" onClick={() => setQuadroAberto(true)}
+                disabled={!empresa_id || !contaId || !inicio || !fim}
+                className="mt-2 w-full rounded-xl border border-slate-300 bg-slate-100 py-2 text-xs font-black text-slate-700 hover:bg-slate-200 disabled:opacity-50">
+                Conferência Getnet × banco
+              </button>
             </div>
           </div>
 
@@ -2007,9 +2014,16 @@ function converterLinhaContabil(item) {
           )}
         </div>
       </div>
+      {quadroAberto && <QuadroConferenciaRecebiveis
+        empresaId={empresa_id}
+        contaInicial={contaId}
+        contasBanco={contas.filter((conta) => String(conta.nro_banco || "") !== "000")}
+        dataInicioInicial={inicio}
+        dataFimInicial={fim}
+        onClose={() => setQuadroAberto(false)}
+      />}
     </div>
 
-    
   );
 }
 
