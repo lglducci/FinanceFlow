@@ -1,4 +1,4 @@
-  import { useEffect, useState } from "react";
+   import { useEffect, useState } from "react";
 import { buildWebhookUrl } from "../config/globals";
 import { useNavigate } from "react-router-dom";
 import { fetchSeguro } from "../utils/apiSafe";
@@ -76,7 +76,9 @@ const linhasFiltradas =
   filtroSituacao === "rejeitado"
     ? linhas.filter((l) => l.situacao === "rejeitado")
     : filtroSituacao === "pendente"
-      ? linhas.filter((l) => l.situacao === "pendente")
+      ? linhas.filter((l) => l.situacao === "pendente" && exigeContaContabil(l) && !possuiContaContabil(l))
+      : filtroSituacao === "aguardando_aceite"
+        ? linhas.filter((l) => l.situacao === "pendente" && (!exigeContaContabil(l) || possuiContaContabil(l)))
       : filtroSituacao === "ok"
         ? linhas.filter((l) => l.situacao === "ok")
         : filtroSituacao === "divergencia_financeiro"
@@ -227,7 +229,7 @@ if (lista.length > 0) {
   );
 }
  
- async function aceitarSelecionados(idsParam = null, rejeitado = 0, tipo_evento = "") {
+ async function aceitarSelecionados(idsParam = null, rejeitado = 0, tipo_evento = "", contaAplicada = null) {
   const idsParaEnviar = Array.isArray(idsParam)
     ? idsParam
     : idsParam
@@ -241,7 +243,7 @@ if (lista.length > 0) {
 
   if (idsParaEnviar.length === 0) {
     alert("Selecione ao menos uma linha.");
-    return;
+    return false;
   }
 
   const linhasSemConta = idsParaEnviar
@@ -252,7 +254,8 @@ if (lista.length > 0) {
     (l) =>
       l &&
       exigeContaContabil(l) &&
-      !possuiContaContabil(l)
+      !possuiContaContabil(l) &&
+      !(contaAplicada && Number(contaAplicada.id) > 0)
   );
 
 if (linhasSemConta.length > 0) {
@@ -260,7 +263,7 @@ if (linhasSemConta.length > 0) {
     `${linhasSemConta.length} linha(s) estão sem conta contábil.\n\n` +
     "Selecione a conta antes de aceitar."
   );
-  return;
+  return false;
 }
 
   const idsNumeros = idsParaEnviar.map(Number);
@@ -274,7 +277,7 @@ if (linhasSemConta.length > 0) {
       "Confirma que NÃO é transferência de mesma titularidade e deseja aceitar mesmo assim?"
     );
 
-    if (!confirma) return;
+    if (!confirma) return false;
   }
 
   const url = buildWebhookUrl("aceitar_conciliacao", {
@@ -282,7 +285,7 @@ if (linhasSemConta.length > 0) {
     conta_id,
   });
 
-  await fetch(url, {
+  const resposta = await fetchSeguro(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -291,12 +294,19 @@ if (linhasSemConta.length > 0) {
       ids: idsNumeros,
     }),
   });
+  if (resposta?.ok === false || resposta?.data?.ok === false) {
+    throw new Error(resposta.message || resposta.data?.message || "Não foi possível aceitar as linhas.");
+  }
 
   setLinhas((prev) =>
     prev.map((l) =>
       idsNumeros.includes(Number(l.id))
         ? {
             ...l,
+            ...(contaAplicada ? {
+              conta_id: Number(contaAplicada.id),
+              conta_descricao: `${contaAplicada.codigo} - ${contaAplicada.nome}`,
+            } : {}),
             situacao: "ok",
             mensagem: "Aceito manualmente pelo usuário",
           }
@@ -305,6 +315,7 @@ if (linhasSemConta.length > 0) {
   );
 
   setSelecionados([]);
+  return true;
   //setMostrarPendentes(false);
 //setMostrarRejeitados(false);
 }
@@ -325,11 +336,20 @@ if (linhasSemConta.length > 0) {
   return;
 }
 
-  if (!confirm("Confirma executar a conciliação das linhas marcadas como OK?")) {
+  if (!confirm("Confirma aceitar os registros classificados e executar a conciliação?")) {
     return;
   }
 
   try {
+    const idsClassificados = linhas
+      .filter((l) => l.situacao === "pendente" && l.importar !== false &&
+        (!exigeContaContabil(l) || possuiContaContabil(l)))
+      .map((l) => Number(l.id));
+    if (idsClassificados.length > 0) {
+      const aceitou = await aceitarSelecionados(idsClassificados);
+      if (!aceitou) return;
+    }
+
     const url = buildWebhookUrl("execucao_conciliacao", {
       empresa_id,
       conta_id,
@@ -382,26 +402,6 @@ if (resultado?.ok === false) {
 }
 
 function aceitarTodosCheckbox() {
-  const pendentes = linhas.filter(
-    (l) => l.situacao !== "ok" && l.situacao !== "executado" && l.importar !== false
-  );
-
-  if (pendentes.length === 0) {
-    setAviso("Não há linhas pendentes para selecionar.");
-    setTimeout(() => setAviso(""), 10000);
-    return;
-  }
-
-  setSelecionados(pendentes.map((l) => l.id));
-
-  setAviso(
-    `Atenção: ${pendentes.length} linha(s) pendente(s) foram marcadas. Esta tela serve para revisar possíveis erros antes da conciliação.`
-  );
-
-  setTimeout(() => setAviso(""), 10000);
-}
-
- function aceitarTodosCheckbox() {
   if (selecionados.length > 0) {
     setSelecionados([]);
     setAviso("Seleção removida.");
@@ -409,11 +409,8 @@ function aceitarTodosCheckbox() {
     return;
   }
 
-  const pendentes = linhas.filter(
-    (l) =>
-      l.situacao !== "ok" &&
-      l.situacao !== "executado" &&
-      l.importar !== false
+  const pendentes = linhasFiltradasComTexto.filter(
+    (l) => l.situacao === "pendente" && l.importar !== false
   );
 
   if (pendentes.length === 0) {
@@ -568,11 +565,19 @@ const faltamContas = linhasValidasParaExecutar.filter(
   (l) => exigeContaContabil(l) && !possuiContaContabil(l)
 );
 
+const semContaPendentes = linhas.filter(
+  (l) => l.situacao === "pendente" && exigeContaContabil(l) && !possuiContaContabil(l)
+);
+const aguardandoAceite = linhas.filter(
+  (l) => l.situacao === "pendente" && (!exigeContaContabil(l) || possuiContaContabil(l))
+);
+
 const podeExecutar =
   linhasValidasParaExecutar.length > 0 &&
   faltamContas.length === 0 &&
   linhas.every((l) =>
-    ["ok", "rejeitado", "executado"].includes(l.situacao)
+    ["ok", "rejeitado", "executado"].includes(l.situacao) ||
+    (l.situacao === "pendente" && (!exigeContaContabil(l) || possuiContaContabil(l)))
   );
 
 
@@ -1021,33 +1026,30 @@ async function aplicarContaEmLote() {
     return;
   }
 
-  await Promise.all(
-    ids.map((id) =>
-      fetchSeguro(buildWebhookUrl("conciliacao_atualizar_conta"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresa_id,
-          id,
-          conta_id: Number(contaLoteSelecionada.id),
-        }),
-      })
-    )
-  );
-
-  setLinhas((prev) =>
-    prev.map((l) =>
-      ids.includes(Number(l.id))
-        ? {
-            ...l,
+  try {
+    await Promise.all(
+      ids.map((id) =>
+        fetchSeguro(buildWebhookUrl("conciliacao_atualizar_conta"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            empresa_id,
+            id,
             conta_id: Number(contaLoteSelecionada.id),
-            conta_descricao: `${contaLoteSelecionada.codigo} - ${contaLoteSelecionada.nome}`,
-          }
-        : l
-    )
-  );
+          }),
+        })
+      )
+    );
 
-  await aceitarSelecionados(ids);
+    // O React ainda não aplicou setLinhas: valide com a conta recém-salva.
+    const aceitou = await aceitarSelecionados(ids, 0, "", contaLoteSelecionada);
+    if (!aceitou) return;
+  } catch (e) {
+    console.error(e);
+    alert(e.message || "Erro ao aplicar ou aceitar as linhas.");
+    await carregarDados();
+    return;
+  }
 
   setTextoContaLote("");
   setContaLoteSelecionada(null);
@@ -1461,7 +1463,7 @@ async function salvarHistoricoLancamento(linha) {
 
             <div className="ml-12 text-sm font-bold text-slate-700">
               Total: {linhas.length} | Exibindo: {linhasFiltradas.length} |
-              Pendentes: {linhas.filter((l) => l.situacao === "pendente").length} |
+              Pendentes: {semContaPendentes.length} | Classificados: {aguardandoAceite.length} |
               Rejeitados: {linhas.filter((l) => l.situacao === "rejeitado").length} |
               OK: {linhas.filter((l) => l.situacao === "ok").length}
             </div>
@@ -1562,9 +1564,8 @@ async function salvarHistoricoLancamento(linha) {
                 className="h-9 rounded-full border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700"
               >
                 <option value="todos">Todos ({linhas.length})</option>
-                <option value="pendente">
-                  Pendentes ({linhas.filter((l) => l.situacao === "pendente").length})
-                </option>
+                <option value="pendente">Pendentes ({semContaPendentes.length})</option>
+                <option value="aguardando_aceite">Classificados ({aguardandoAceite.length})</option>
                 <option value="rejeitado">
                   Rejeitados ({linhas.filter((l) => l.situacao === "rejeitado").length})
                 </option>
@@ -2035,7 +2036,9 @@ async function salvarHistoricoLancamento(linha) {
                                 ? "REJEITADO"
                                 : l.situacao === "executado"
                                   ? "EXECUTADO"
-                                  : "PENDENTE"}
+                                  : l.situacao === "pendente" && (!exigeContaContabil(l) || possuiContaContabil(l))
+                                    ? "CLASSIFICADO"
+                                    : "PENDENTE"}
                         </span>
                       </td>
 
