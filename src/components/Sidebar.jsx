@@ -250,14 +250,15 @@ function alternarFixacao() {
             label="Extrato Bancário"
             onClick={() => navigate("/importacao-bancaria")}
           />
+        
 
-          {/*} <SubItem
-            compact={!sidebarAberta}
-            icon={<IconDoc />}
-            label="Concilia Razão"
-            onClick={() => navigate("/conciliacao-extrato")}
-          />
-             <SubItem  icon={<IconDoc />} label="Conciliação Operadora" onClick={() => navigate("/conciliacao-operadora")} />*/}
+           <SubItem
+                compact={!sidebarAberta}
+                icon={<IconCardTransaction />}
+                label="Operadora"
+                onClick={() => navigate("/conciliacao-operadora")}
+              /> 
+           
 
           </MenuGroup>
         )}
@@ -281,12 +282,12 @@ function alternarFixacao() {
                 onClick={() => navigate("/conciliacao-extrato")}
               />
 
-              <SubItem
+             {/*} <SubItem
                 compact={!sidebarAberta}
                 icon={<IconCardTransaction />}
                 label="Operadora"
                 onClick={() => navigate("/conciliacao-operadora")}
-              />
+              />*/}
            
 
               <SubItem
