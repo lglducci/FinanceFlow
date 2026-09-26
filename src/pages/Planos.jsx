@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 const PRECOS = {
-  mensal: 79.0,
-  semestral: 69.0,
-  anual: 50.0
+  mensal: 109.0,
+  semestral: 89.0,
+  anual: 70.0
 };
 
 export default function Planos() {
