@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 
@@ -18,13 +18,33 @@ const [sidebarAberta, setSidebarAberta] = useState(() => {
   return localStorage.getItem("sidebarFixada") === "true";
 });
 
-function alternarFixacao() {
-  const novaFixacao = !sidebarFixada;
+const [larguraSidebar, setLarguraSidebar] = useState(() => {
+  const salva = Number(localStorage.getItem("sidebarLargura"));
+  return Number.isFinite(salva) && salva >= 220 && salva <= 500 ? salva : 256;
+});
+const redimensionando = useRef(false);
 
-  setSidebarFixada(novaFixacao);
-  setSidebarAberta(novaFixacao);
+function iniciarRedimensionamento(event) {
+  if (!sidebarAberta) return;
+  event.preventDefault();
+  redimensionando.current = true;
+  event.currentTarget.setPointerCapture(event.pointerId);
+}
 
-  localStorage.setItem("sidebarFixada", String(novaFixacao));
+function moverRedimensionamento(event) {
+  if (!redimensionando.current) return;
+  setLarguraSidebar(Math.min(500, Math.max(220, event.clientX)));
+}
+
+function terminarRedimensionamento(event) {
+  if (!redimensionando.current) return;
+  redimensionando.current = false;
+  const largura = Math.min(500, Math.max(220, event.clientX));
+  setLarguraSidebar(largura);
+  localStorage.setItem("sidebarLargura", String(largura));
+  if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+    event.currentTarget.releasePointerCapture(event.pointerId);
+  }
 }
 
   const logout = () => {
@@ -56,11 +76,10 @@ function alternarFixacao() {
 });
 
 function alternarFixacao() {
-  setSidebarFixada((prev) => {
-    const novoValor = !prev;
-    localStorage.setItem("sidebarFixada", String(novoValor));
-    return novoValor;
-  });
+  const novaFixacao = !sidebarFixada;
+  setSidebarFixada(novaFixacao);
+  setSidebarAberta(novaFixacao);
+  localStorage.setItem("sidebarFixada", String(novaFixacao));
 }
 
   function alternarSidebar() {
@@ -105,14 +124,28 @@ function alternarFixacao() {
     }
   }}
   onMouseLeave={() => {
-    if (!sidebarFixada) {
+    if (!sidebarFixada && !redimensionando.current) {
       setSidebarAberta(false);
     }
   }}
-  className={`transition-all duration-200 bg-[#061f4a] text-white flex flex-col h-full border-r border-white/10 shadow-sm ${
-    sidebarAberta ? "w-64" : "w-[68px]"
-  }`}
+  className="relative transition-[width] duration-200 bg-[#061f4a] text-white flex flex-col h-full border-r border-white/10 shadow-sm shrink-0"
+  style={{ width: sidebarAberta ? larguraSidebar : 68 }}
 >
+      {sidebarAberta && (
+        <div
+          role="separator"
+          aria-label="Arraste para ajustar a largura do menu"
+          aria-orientation="vertical"
+          onPointerDown={iniciarRedimensionamento}
+          onPointerMove={moverRedimensionamento}
+          onPointerUp={terminarRedimensionamento}
+          onPointerCancel={terminarRedimensionamento}
+          className="absolute right-0 top-1/2 z-30 flex h-12 w-4 -translate-y-1/2 translate-x-1/2 cursor-col-resize touch-none items-center justify-center rounded-lg border border-white/20 bg-[#153567] text-slate-200 shadow-md select-none hover:bg-blue-600"
+          title="Arraste para aumentar ou diminuir o menu"
+        >
+          <span aria-hidden="true" className="text-lg leading-none">⋮</span>
+        </div>
+      )}
      
       <div
         className={`
