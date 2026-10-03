@@ -1,41 +1,31 @@
  import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
-
 export default function Sidebar() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [openSub, setOpenSub] = useState(null);
-
   const toggleSub = (m) => setOpenSub(openSub === m ? null : m);
   const toggle = (m) => setOpen(open === m ? null : m);
-
-
- 
-
 const [sidebarAberta, setSidebarAberta] = useState(() => {
   return localStorage.getItem("sidebarFixada") === "true";
 });
-
 const [larguraSidebar, setLarguraSidebar] = useState(() => {
   const salva = Number(localStorage.getItem("sidebarLargura"));
   return Number.isFinite(salva) && salva >= 220 && salva <= 500 ? salva : 256;
 });
 const redimensionando = useRef(false);
-
 function iniciarRedimensionamento(event) {
   if (!sidebarAberta) return;
   event.preventDefault();
   redimensionando.current = true;
   event.currentTarget.setPointerCapture(event.pointerId);
 }
-
 function moverRedimensionamento(event) {
   if (!redimensionando.current) return;
   setLarguraSidebar(Math.min(500, Math.max(220, event.clientX)));
 }
-
 function terminarRedimensionamento(event) {
   if (!redimensionando.current) return;
   redimensionando.current = false;
@@ -46,53 +36,43 @@ function terminarRedimensionamento(event) {
     event.currentTarget.releasePointerCapture(event.pointerId);
   }
 }
-
   const logout = () => {
     localStorage.removeItem("ff_token");
     localStorage.removeItem("force_reset_password");
     localStorage.removeItem("ff_token");
     window.location.href = "/login";
   };
-
   async function carregaPerfil() {
     const empresa_id =
       localStorage.getItem("empresa_id") ||
       localStorage.getItem("id_empresa");
-
     const resp = await fetch(buildWebhookUrl("perfil"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ empresa_id }),
     });
-
     const json = await resp.json();
     localStorage.setItem("perfil", json.codigo);
     setPerfil(json.codigo || "TOTAL");
   }
- 
-
   const [sidebarFixada, setSidebarFixada] = useState(() => {
   return localStorage.getItem("sidebarFixada") === "true";
 });
-
 function alternarFixacao() {
   const novaFixacao = !sidebarFixada;
   setSidebarFixada(novaFixacao);
   setSidebarAberta(novaFixacao);
   localStorage.setItem("sidebarFixada", String(novaFixacao));
 }
-
   function alternarSidebar() {
     setSidebarAberta((prev) => {
       localStorage.setItem("sidebarAberta", String(!prev));
       return !prev;
     });
   }
-
   useEffect(() => {
     carregaPerfil();
   }, []);
-
   const MENU_PERMISSOES = {
     visao_geral: ["FINANCEIRO", "TOTAL"],
     dashboard_contabil: ["CONTABIL", "TOTAL"],
@@ -102,20 +82,16 @@ function alternarFixacao() {
     cadastro: ["FINANCEIRO", "CONTABIL", "TOTAL"],
     configuracoes: ["TOTAL"],
   };
-
   function podeVer(menuKey) {
     const permitidos = MENU_PERMISSOES[menuKey] || [];
     return permitidos.includes(perfil);
   }
-
   function abrirSidebar() {
     setSidebarAberta(true);
   }
-
   function fecharSidebar() {
     setSidebarAberta(false);
   }
-
   return (
     <aside
   onMouseEnter={() => {
@@ -146,7 +122,6 @@ function alternarFixacao() {
           <span aria-hidden="true" className="text-lg leading-none">⋮</span>
         </div>
       )}
-     
       <div
         className={`
           bg-[#061f4a]
@@ -163,20 +138,17 @@ function alternarFixacao() {
                 className="h-9 w-9 object-contain"
               />
             </div>
-
             {sidebarAberta && (
               <div>
                 <h2 className="text-base font-bold tracking-tight whitespace-nowrap">
                     FinanceFlow
                   </h2>
-
                   <p className="text-[10px] text-slate-400 font-medium whitespace-nowrap">
                     Gestão financeira e contábil
                   </p>
               </div>
             )}
           </div>
-
           <div
             className={`flex items-center ${
               sidebarAberta ? "justify-between" : "justify-center"
@@ -189,7 +161,6 @@ function alternarFixacao() {
             >
               {/* LOGO E NOME PERMANECEM AQUI */}
             </div>
-
             {sidebarAberta && (
               <button
                 type="button"
@@ -207,22 +178,37 @@ function alternarFixacao() {
           </div>
         </div>
       </div>
-
       <nav
          className={`flex-1 py-5 overflow-y-auto text-white text-sm font-bold ${
           sidebarAberta ? "px-4 space-y-2" : "px-2 space-y-4"
         }`}
       >
-        {sidebarAberta && <SectionTitle label="Painel" />}
-        {podeVer("visao_geral") && (
-          <MenuItem compact={!sidebarAberta} icon={<IconHome />} label="Painel Financeiro" onClick={() => navigate("/diagnostico-financeiro")} active />
-        )}
-        <MenuItem compact={!sidebarAberta} icon={<IconChart />} label="Painel Contábil" onClick={() => navigate("/dashboardcontabil")} /> 
+{sidebarAberta && <SectionTitle label="Menu Principal" />}
+        <MenuGroup
+          compact={!sidebarAberta}
+          icon={<IconHome />}
+          label="Painel"
+          open={open === "painel"}
+          onClick={() => toggle("painel")}
+        >
+          {podeVer("visao_geral") && (
+            <SubItem
+              compact={!sidebarAberta}
+              icon={<IconWallet />}
+              label="Financeiro"
+              onClick={() => navigate("/diagnostico-financeiro")}
+            />
+          )}
+          <SubItem
+            compact={!sidebarAberta}
+            icon={<IconChart />}
+            label="Contábil"
+            onClick={() => navigate("/dashboardcontabil")}
+          />
+        </MenuGroup>
 
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Financeiro" />}
-
-        
         {podeVer("visao_geral") && (
           <MenuGroup
             compact={!sidebarAberta}
@@ -232,44 +218,35 @@ function alternarFixacao() {
             onClick={() => toggle("financeiro")}
           >
             <SubItem compact={!sidebarAberta} icon={<IconDoc />} label="Lançamentos" onClick={() => navigate("/transactions")} />
-
             <NestedButton
               open={openSub === "contas"}
               onClick={() => toggleSub("contas")}
               icon={<IconMoney />}
               label="Contas"
             />
-
             {openSub === "contas" && (
               <div className="ml-8 space-y-1">
-
                   <SubItem compact={!sidebarAberta}  icon={<IconRepeat />} label="Recorrentes" onClick={() => navigate("/conta-recorrente")} color="green" />
-                 
                 <SubItem compact={!sidebarAberta} icon={<IconArrowUp />} label="A Pagar" onClick={() => navigate("/contas-pagar")} color="green" />
                 <SubItem compact={!sidebarAberta} icon={<IconArrowDown />} label="A Receber" onClick={() => navigate("/contas-receber")} color="green" />
               </div>
             )}
-
             <SubItem compact={!sidebarAberta} icon={<IconCalendar />} label="Painel de Títulos" onClick={() => navigate("/titulos-vencidos")} color="red" />
-
             <NestedButton
               open={openSub === "dinheiro"}
               onClick={() => toggleSub("dinheiro")}
               icon={<IconBank />}
               label="Bancos"
             />
-
             {openSub === "dinheiro" && (
               <div className="ml-8 space-y-1">
                 <SubItem icon={<IconCardTransaction />} label="Cartões" onClick={() => navigate("/cartoes")} />
                 <SubItem icon={<IconBank />} label="Contas Financeiras" onClick={() => navigate("/contacorrente")} /> 
                 <SubItem  icon={<IconDoc />} label="Extrato Bancário" onClick={() => navigate("/extrato-bancario" )} />
-              
               </div>
             )}
           </MenuGroup>
         )}
-
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Importações" />}
         {podeVer("visao_geral") && (
@@ -288,21 +265,14 @@ function alternarFixacao() {
             label="Extrato Bancário"
             onClick={() => navigate("/importacao-bancaria")}
           />
-        
-
            <SubItem
                 compact={!sidebarAberta}
                 icon={<IconCardTransaction />}
                 label="Operadora"
                 onClick={() => navigate("/conciliacao-operadora")}
               /> 
-           
-
           </MenuGroup>
         )}
-
-
-       
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Conciliações " />}
         {podeVer("visao_geral") && (
@@ -319,34 +289,20 @@ function alternarFixacao() {
                 label="Razão"
                 onClick={() => navigate("/conciliacao-extrato")}
               />
-
              {/*} <SubItem
                 compact={!sidebarAberta}
                 icon={<IconCardTransaction />}
                 label="Operadora"
                 onClick={() => navigate("/conciliacao-operadora")}
               />*/}
-           
-
               <SubItem
                 compact={!sidebarAberta}
                 icon={<IconCardTransaction />}
                 label="Cartões"
                 onClick={() => navigate("/conciliacao-cartao")}
               />
-
-
-
-                
             </MenuGroup>
         )}
-
- 
-
-
-
-
-
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Contabilidade" />}
         {(podeVer("diario_contabil") || podeVer("configuracoes")) && (
@@ -365,11 +321,10 @@ function alternarFixacao() {
             )}
             <SubItem compact={!sidebarAberta} icon={<IconBook />} label="Lançamentos Contábeis" onClick={() => navigate("/relatorios/diario")} />
             <SubItem compact={!sidebarAberta} icon={<IconBank />} label="Saldos Iniciais" onClick={() => navigate("/saldosiniciais")} />
-           {/* <SubItem compact={!sidebarAberta} icon={<IconChart />} label="Apuração de Resultado" onClick={() => navigate("/apuracaoresultado")} />
-            <SubItem compact={!sidebarAberta} icon={<IconBell />} label="Lembretes Contábeis" onClick={() => navigate("/lembretecontabil")} />*/}
+            <SubItem compact={!sidebarAberta} icon={<IconChart />} label="Apuração de Resultado" onClick={() => navigate("/apuracaoresultado")} />
+            {/* <SubItem compact={!sidebarAberta} icon={<IconBell />} label="Lembretes Contábeis" onClick={() => navigate("/lembretecontabil")} />*/}
           </MenuGroup>
         )}
-
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Cadastros" />}
         <MenuGroup
@@ -385,13 +340,11 @@ function alternarFixacao() {
           <SubItem compact={!sidebarAberta} icon={<IconBook />} label="Plano de Contas" onClick={() => navigate("/contascontabeis")} />
           <SubItem compact={!sidebarAberta} icon={<IconSettings />} label="Modelos Contábeis" onClick={() => navigate("/mapeamento-contabil")} />
         </MenuGroup>
-
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Relatórios" />}
         {podeVer("diario_contabil") && (
           <MenuItem compact={!sidebarAberta} icon={<IconChart />} label="Relatórios" onClick={() => navigate("/reports")} />
         )}
-
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Configurações" />}
         {podeVer("diario_contabil") && (
@@ -408,7 +361,6 @@ function alternarFixacao() {
           </MenuGroup>
         )}
       </nav>
-
       <div className={`${sidebarAberta ? "px-5" : "px-2"} py-4 border-t border-yellow-500/40 bg-[#061f4a]`}>
         <button
           onClick={logout}
@@ -426,7 +378,6 @@ function alternarFixacao() {
     </aside>
   );
 }
-
  function SectionTitle({ label }) {
   return (
     <div className="px-2 pt-2 text-[10px] uppercase tracking-wide font-black text-yellow-300/80">
@@ -434,11 +385,9 @@ function alternarFixacao() {
     </div>
   );
 }
-
  function SectionDivider() {
   return <div className="h-px bg-yellow-500/40 mx-2 my-3" />;
 }
-
 function MenuItem({ icon, label, onClick, compact = false, active = false }) {
   return (
     <button
@@ -468,7 +417,6 @@ function MenuItem({ icon, label, onClick, compact = false, active = false }) {
     </button>
   );
 }
-
 function MenuGroup({ icon, label, open, onClick, children, compact = false }) {
   return (
     <div>
@@ -488,14 +436,12 @@ function MenuGroup({ icon, label, open, onClick, children, compact = false }) {
           </span>
           {!compact && <span className="truncate">{label}</span>}
         </span>
-
         {!compact && (
           <span className={`text-sm text-white/70 transition-transform duration-200 ${open ? "rotate-180" : ""}`}>
             ▾
           </span>
         )}
       </button>
-
       {!compact && open && (
         <div className="ml-8 mt-1 space-y-1 border-l border-slate-300/70 pl-3">
           {children}
@@ -504,7 +450,6 @@ function MenuGroup({ icon, label, open, onClick, children, compact = false }) {
     </div>
   );
 }
-
 function NestedButton({ icon, label, open, onClick }) {
   return (
     <button
@@ -521,7 +466,6 @@ function NestedButton({ icon, label, open, onClick }) {
     </button>
   );
 }
-
 function SubItem({ icon, label, onClick, compact = false, color = "blue" }) {
   const colorClass =
     color === "green"
@@ -529,7 +473,6 @@ function SubItem({ icon, label, onClick, compact = false, color = "blue" }) {
       : color === "red"
       ? "text-red-300 border-red-300/30 group-hover:bg-red-500/20 group-hover:border-red-300/60"
       : "text-white border-white/20 group-hover:bg-white/20 group-hover:border-white/30";
-
   return (
     <button
       onClick={onClick}
@@ -548,7 +491,6 @@ function SubItem({ icon, label, onClick, compact = false, color = "blue" }) {
     </button>
   );
 }
-
 const IconPin = ({ fixada = false }) => (
   <svg
     className={`w-4 h-4 stroke-current transition-transform ${
@@ -563,7 +505,6 @@ const IconPin = ({ fixada = false }) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
-
     <path
       d="M12 14v7"
       strokeWidth="1.8"
@@ -571,10 +512,8 @@ const IconPin = ({ fixada = false }) => (
     />
   </svg>
 );
-
 const base = "w-[18px] h-[18px] stroke-current";
 const smallBase = "w-4 h-4 stroke-current";
-
 const IconLogo = () => (
   <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path d="M5 20V11" strokeWidth="3" strokeLinecap="round" />
@@ -582,11 +521,9 @@ const IconLogo = () => (
     <path d="M19 20V3" strokeWidth="3" strokeLinecap="round" />
   </svg>
 );
-
 const IconRepeat = () => (
   <span style={{ fontSize: 16, lineHeight: 1 }}>🔁</span>
 );
-
 const IconHome = () => (<svg className={base} fill="none" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M4 10v10h16V10" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>);
 const IconMoney = () => (<svg className={smallBase} fill="none" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2" strokeWidth="2"/><circle cx="12" cy="12" r="3" strokeWidth="2"/></svg>);
 const IconWallet = () => (<svg className={base} fill="none" viewBox="0 0 24 24"><path d="M4 7h14a3 3 0 0 1 3 3v8H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" strokeWidth="2"/><path d="M16 13h5" strokeWidth="2"/><path d="M6 7V5h11" strokeWidth="2"/></svg>);
