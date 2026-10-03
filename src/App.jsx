@@ -1,4 +1,4 @@
- import { Routes, Route } from "react-router-dom";
+ import { Routes, Route, Navigate } from "react-router-dom";
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -424,7 +424,7 @@ const rotaAtual = window.location.pathname;
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/landing" element={<Landing />} />
-      <Route path="/login" element={<Login onLogin={() => window.location.reload()} />} />
+      <Route path="/login" element={<Login onLogin={() => window.location.replace("/diagnostico-financeiro")} />} />
       <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       <Route path="/planos" element={<Planos />} />
        <Route path="/cadastro" element={<Cadastro />} />
@@ -470,7 +470,8 @@ const rotaAtual = window.location.pathname;
 
   
   {/* Visão Geral */}
-  <Route path="/" element={<DashboardContabil />} />
+  <Route path="/" element={<Navigate to="/diagnostico-financeiro" replace />} />
+  <Route path="/login" element={<Navigate to="/diagnostico-financeiro" replace />} />
   <Route path="/dashboard" element={<Dashboard />} />
 
  
@@ -736,6 +737,8 @@ const rotaAtual = window.location.pathname;
 
 
   
+
+  <Route path="*" element={<Navigate to="/diagnostico-financeiro" replace />} />
 
 </Routes>
 
