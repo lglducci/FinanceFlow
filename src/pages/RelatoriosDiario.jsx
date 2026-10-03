@@ -317,12 +317,12 @@ return (
         ⚡ Novo Lançamento
       </button>
 
-      <button
+     {/*} <button
         onClick={() => navigate("/livro-caixa")}
         className="btn-pill btn-white"
       >
         <FileUp size={16} /> Importar
-      </button>
+      </button>*/}
 
     </div>
 

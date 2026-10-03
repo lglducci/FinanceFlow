@@ -1298,7 +1298,7 @@ return (
         </button> 
  
           
-     <button
+     {/*    <button
       onClick={VisaoFinanceira}
       title="Mostra saldo atual, contas abertas, vencidos e projeção dos próximos 30 dias"
       className="btn-pill btn-white"
@@ -1307,13 +1307,13 @@ return (
 </button>
 
           
-     <button
+  <button
       onClick={ContaRecorrente}
        title="Gerar e revisar contas fixas ou recorrentes, como aluguel, internet e assinaturas"
        className="btn-pill btn-white"
    >
       <Repeat size={16} /> {t("lancamentos.transacoesRecorrentes", "Transações recorrentes")}
-    </button>
+    </button> 
 
      <button
       onClick={ReclassifacaoContabil}
@@ -1321,7 +1321,7 @@ return (
        className="btn-pill btn-white"
    >
         <ScrollText size={16} /> {t("lancamentos.reclassificacao", "Reclassificação")} 
-    </button>
+    </button> 
 
 
      
@@ -1331,7 +1331,7 @@ return (
        className="btn-pill btn-white"
    >
         <FilePlus size={16} /> {t("lancamentos.importar", "Importar")} 
-    </button>
+    </button>*/}
 
 
      <button
