@@ -215,12 +215,14 @@ function alternarFixacao() {
       >
         {sidebarAberta && <SectionTitle label="Painel" />}
         {podeVer("visao_geral") && (
-          <MenuItem compact={!sidebarAberta} icon={<IconHome />} label="Painel Financeiro" onClick={() => navigate("/dashboardfinanceiro")} active />
+          <MenuItem compact={!sidebarAberta} icon={<IconHome />} label="Painel Financeiro" onClick={() => navigate("/diagnostico-financeiro")} active />
         )}
-        <MenuItem compact={!sidebarAberta} icon={<IconChart />} label="Painel Contábil" onClick={() => navigate("/dashboardcontabil")} />
+        <MenuItem compact={!sidebarAberta} icon={<IconChart />} label="Painel Contábil" onClick={() => navigate("/dashboardcontabil")} /> 
 
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Financeiro" />}
+
+        
         {podeVer("visao_geral") && (
           <MenuGroup
             compact={!sidebarAberta}
@@ -240,8 +242,11 @@ function alternarFixacao() {
 
             {openSub === "contas" && (
               <div className="ml-8 space-y-1">
-                <SubItem compact={!sidebarAberta} icon={<IconArrowUp />} label="Contas a Pagar" onClick={() => navigate("/contas-pagar")} color="green" />
-                <SubItem compact={!sidebarAberta} icon={<IconArrowDown />} label="Contas a Receber" onClick={() => navigate("/contas-receber")} color="green" />
+
+                  <SubItem compact={!sidebarAberta}  icon={<IconRepeat />} label="Recorrentes" onClick={() => navigate("/conta-recorrente")} color="green" />
+                 
+                <SubItem compact={!sidebarAberta} icon={<IconArrowUp />} label="A Pagar" onClick={() => navigate("/contas-pagar")} color="green" />
+                <SubItem compact={!sidebarAberta} icon={<IconArrowDown />} label="A Receber" onClick={() => navigate("/contas-receber")} color="green" />
               </div>
             )}
 
@@ -251,7 +256,7 @@ function alternarFixacao() {
               open={openSub === "dinheiro"}
               onClick={() => toggleSub("dinheiro")}
               icon={<IconBank />}
-              label="Contas / Bancos"
+              label="Bancos"
             />
 
             {openSub === "dinheiro" && (
@@ -275,7 +280,7 @@ function alternarFixacao() {
             open={open === "importacao"}
             onClick={() => toggle("importacao")}
           >
-            <SubItem compact={!sidebarAberta} icon={<IconBook />} label="Livro Caixa" onClick={() => navigate("/livro-caixa")} />
+          {/*  <SubItem compact={!sidebarAberta} icon={<IconBook />} label="Livro Caixa" onClick={() => navigate("/livro-caixa")} />*/}
             <SubItem compact={!sidebarAberta} icon={<IconCardTransaction />} label="Faturas de Cartão" onClick={() => navigate("/importacao-cartao")} />
             <SubItem
             compact={!sidebarAberta}
@@ -336,20 +341,7 @@ function alternarFixacao() {
             </MenuGroup>
         )}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 
@@ -373,8 +365,8 @@ function alternarFixacao() {
             )}
             <SubItem compact={!sidebarAberta} icon={<IconBook />} label="Lançamentos Contábeis" onClick={() => navigate("/relatorios/diario")} />
             <SubItem compact={!sidebarAberta} icon={<IconBank />} label="Saldos Iniciais" onClick={() => navigate("/saldosiniciais")} />
-            <SubItem compact={!sidebarAberta} icon={<IconChart />} label="Apuração de Resultado" onClick={() => navigate("/apuracaoresultado")} />
-            <SubItem compact={!sidebarAberta} icon={<IconBell />} label="Lembretes Contábeis" onClick={() => navigate("/lembretecontabil")} />
+           {/* <SubItem compact={!sidebarAberta} icon={<IconChart />} label="Apuração de Resultado" onClick={() => navigate("/apuracaoresultado")} />
+            <SubItem compact={!sidebarAberta} icon={<IconBell />} label="Lembretes Contábeis" onClick={() => navigate("/lembretecontabil")} />*/}
           </MenuGroup>
         )}
 
@@ -589,6 +581,10 @@ const IconLogo = () => (
     <path d="M12 20V6" strokeWidth="3" strokeLinecap="round" />
     <path d="M19 20V3" strokeWidth="3" strokeLinecap="round" />
   </svg>
+);
+
+const IconRepeat = () => (
+  <span style={{ fontSize: 16, lineHeight: 1 }}>🔁</span>
 );
 
 const IconHome = () => (<svg className={base} fill="none" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M4 10v10h16V10" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>);
