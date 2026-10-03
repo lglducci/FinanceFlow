@@ -442,8 +442,8 @@
          </div>
 
          <div className="mt-2 grid grid-cols-1 gap-1.5">
-           <ResumoSaldos titulo="Extrato" resumo={resumoBanco} consultado={!!extrato} debitoEhEntrada={false} />
-           <ResumoSaldos titulo="Razão" resumo={resumoRazao} consultado={!!razao && !razao.semVinculo} debitoEhEntrada />
+           <ResumoSaldos titulo="Extrato" resumo={resumoBanco} consultado={!!extrato} />
+           <ResumoSaldos titulo="Razão" resumo={resumoRazao} consultado={!!razao && !razao.semVinculo} />
          </div>
          {!loading && !extrato && !erro && (
            <div className="mt-3 text-xs text-slate-500">Selecione a conta e o período e clique em Pesquisar.</div>
@@ -501,18 +501,17 @@
    );
  }
 
- // No extrato, débito é saída e crédito é entrada.
- // No razão da conta bancária (ativo), débito aumenta e crédito reduz o saldo.
- function ResumoSaldos({ titulo, resumo, consultado, debitoEhEntrada }) {
+ // Ambos os resumos usam a mesma ordem: saldo inicial, entradas, saídas e saldo final.
+ function ResumoSaldos({ titulo, resumo, consultado }) {
    const cards = [
      { label: "Saldo inicial", valor: resumo.saldoInicial },
-     { label: "Débitos", valor: debitoEhEntrada ? resumo.entradas : resumo.saidas },
-     { label: "Créditos", valor: debitoEhEntrada ? resumo.saidas : resumo.entradas },
+     { label: "Entradas", valor: resumo.entradas },
+     { label: "Saídas", valor: resumo.saidas },
      { label: "Saldo final", valor: resumo.saldoFinal },
    ];
    return (
      <section className="flex items-center rounded-lg border border-slate-200 bg-white px-2 py-1.5">
-       <h3 className="w-14 shrink-0 text-xs font-bold text-slate-800" title={debitoEhEntrada ? "Débito: entrada · Crédito: saída" : "Débito: saída · Crédito: entrada"}>{titulo}</h3>
+       <h3 className="w-14 shrink-0 text-xs font-bold text-slate-800">{titulo}</h3>
        <div className="grid min-w-0 flex-1 grid-cols-2 sm:grid-cols-4 gap-y-1">
          {cards.map(card => (
            <div key={card.label} className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-2 border-l border-slate-200 px-2 sm:px-3">
