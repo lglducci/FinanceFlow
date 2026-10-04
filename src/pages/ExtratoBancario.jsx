@@ -460,7 +460,7 @@
            <Aba ativo={aba === "comparacao"} onClick={() => setAba("comparacao")}>Comparação</Aba>
           <Aba ativo={aba === "conciliacao"} onClick={() => setAba("conciliacao")}> Conciliação </Aba>
           <Aba ativo={aba === "linha"} onClick={() => setAba("linha")}>  Linha a Linha </Aba>
-           */}das
+           */}
 
          </div>
 
@@ -556,40 +556,118 @@
  }
 
  function TabelaExtrato({ linhas }) {
-   return (
-     <div className="mt-2 rounded-xl border border-slate-200 bg-white overflow-hidden">
-       <div className="grid grid-cols-[1fr_130px_160px_110px_130px_160px_130px_130px] gap-2 bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700">
-         <div>Descrição</div>
-         <div>Data Movimento</div>
-         <div>Conta</div>
-         <div>Tipo</div>
-         <div>Origem</div>
-         <div>Classificação</div>
-         <div>Forma</div>
-         <div className="text-right">Valor</div>
-       </div>
+  return (
+    <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="max-h-[560px] overflow-auto">
+        <table className="w-full min-w-[1200px] table-fixed text-left text-xs">
+          <colgroup>
+            <col />
+            <col style={{ width: 130 }} />
+            <col style={{ width: 160 }} />
+            <col style={{ width: 110 }} />
+            <col style={{ width: 130 }} />
+            <col style={{ width: 160 }} />
+            <col style={{ width: 130 }} />
+            <col style={{ width: 130 }} />
+          </colgroup>
 
-       <div className="max-h-[560px] overflow-y-auto">
-         {linhas.map((l, idx) => (
-           <div key={l.id || idx} className="grid grid-cols-[1fr_130px_160px_110px_130px_160px_130px_130px] gap-2 border-b border-slate-100 px-4 py-2 text-xs items-center even:bg-slate-50/70 hover:bg-slate-100/70">
-             <div className="font-semibold text-slate-800">{l.descricao || l.historico}</div>
-             <div className="font-medium">{dataBR(l.data_movimento || l.data_mov)}</div>
-             <div>{l.conta_nome || l.conta || "-"}</div>
-             <div className={l.tipo === "entrada" ? "text-emerald-600 font-semibold" : "text-red-600 font-semibold"}>{l.tipo || "-"}</div>
-             <div><span className="rounded-md bg-slate-100 px-2 py-1 text-[10px] font-medium text-slate-500">{l.origem || "Financeiro"}</span></div>
-             <div className="font-medium">{l.classificacao || "-"}</div>
-             <div>{l.forma_pagamento || l.forma || "-"}</div>
-             <div className="text-right font-semibold">{moeda(l.valor)}</div>
-           </div>
-         ))}
+          <thead className="sticky top-0 z-10 bg-slate-100 text-slate-700">
+            <tr>
+              {[
+                "Descrição",
+                "Data Movimento",
+                "Conta",
+                "Tipo",
+                "Origem",
+                "Classificação",
+                "Forma",
+                "Valor",
+              ].map(label => (
+                <th
+                  key={label}
+                  className={`px-3 py-2 font-semibold ${
+                    label === "Valor" ? "text-right" : "text-left"
+                  }`}
+                >
+                  {label}
+                </th>
+              ))}
+            </tr>
+          </thead>
 
-         {linhas.length === 0 && <div className="p-8 text-center font-medium text-slate-400">Nenhum movimento encontrado.</div>}
-       </div>
-     </div>
-   );
- }
+          <tbody>
+            {linhas.map((l, idx) => (
+              <tr
+                key={l.id || idx}
+                className="border-b border-slate-100 even:bg-slate-50/70 hover:bg-slate-100/70"
+              >
+                <td className="break-words px-3 py-2 font-semibold text-slate-800">
+                  {l.descricao || l.historico}
+                </td>
 
-  function TabelaRazao({ linhas }) {
+                <td className="px-3 py-2 font-medium">
+                  {dataBR(l.data_movimento || l.data_mov)}
+                </td>
+
+                <td className="break-words px-3 py-2">
+                  {l.conta_nome || l.conta || "-"}
+                </td>
+
+                <td
+                  className={`px-3 py-2 font-semibold ${
+                    l.tipo === "entrada"
+                      ? "text-emerald-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {l.tipo || "-"}
+                </td>
+
+                <td className="px-3 py-2">
+                  <span className="rounded-md bg-slate-100 px-2 py-1 text-[10px] font-medium text-slate-500">
+                    {l.origem || "Financeiro"}
+                  </span>
+                </td>
+
+                <td className="break-words px-3 py-2 font-medium">
+                  {l.classificacao || "-"}
+                </td>
+
+                <td className="break-words px-3 py-2">
+                  {l.forma_pagamento || l.forma || "-"}
+                </td>
+
+                <td className={`whitespace-nowrap px-3 py-2 text-right font-bold tabular-nums ${
+                  l.tipo === "entrada"
+                    ? "text-emerald-600"
+                    : l.tipo === "saida" || l.tipo === "saída"
+                    ? "text-red-600"
+                    : "text-slate-700"
+                }`}
+              >
+                {moeda(l.valor)}
+              </td>
+              </tr>
+            ))}
+
+            {linhas.length === 0 && (
+              <tr>
+                <td
+                  colSpan={8}
+                  className="p-8 text-center font-medium text-slate-400"
+                >
+                  Nenhum movimento encontrado.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+ 
+function TabelaRazao({ linhas }) {
   function dataBR2(data) {
     if (!data) return "-";
 
@@ -599,99 +677,103 @@
     return `${dia}-${mes}-${ano}`;
   }
 
-  const colunas =
-    "grid-cols-[90px_minmax(280px,1fr)_200px_120px_120px_130px]";
-
   return (
-    <div className="mt-2 rounded-xl border border-slate-200 bg-white overflow-hidden">
-      <div className="overflow-x-auto">
-        <div className="min-w-[1100px]">
-          {/* Cabeçalho */}
-          <div
-            className={`grid ${colunas} gap-2 bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700`}
-          >
-            <div>Data</div>
-            <div>Histórico</div>
-            <div>Conta</div>
-            <div className="text-right">Valor</div>
-            <div className="text-right">Saldo</div>
-            <div className="text-center" >Origem</div>
-          </div>
+    <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="max-h-[560px] overflow-auto">
+        <table className="w-full min-w-[1100px] table-fixed text-left text-xs">
+          <colgroup>
+            <col style={{ width: 100 }} />
+            <col />
+            <col style={{ width: 200 }} />
+            <col style={{ width: 120 }} />
+            <col style={{ width: 120 }} />
+            <col style={{ width: 130 }} />
+          </colgroup>
 
-          {/* Linhas */}
-          <div className="max-h-[560px] overflow-y-auto">
+          <thead className="sticky top-0 z-10 bg-slate-100 text-slate-700">
+            <tr>
+              <th className="px-3 py-2 text-left font-semibold">Data</th>
+              <th className="px-3 py-2 text-left font-semibold">Histórico</th>
+              <th className="px-3 py-2 text-left font-semibold">Conta</th>
+              <th className="px-3 py-2 text-right font-semibold">Valor</th>
+              <th className="px-3 py-2 text-right font-semibold">Saldo</th>
+              <th className="px-3 py-2 text-center font-semibold">Origem</th>
+            </tr>
+          </thead>
+
+          <tbody>
             {linhas.map((l, idx) => {
-              const origem =
-                String(l.origem ?? "").trim() || "-";
+              const sistema = l.origem == null;
+              const origem = sistema ? "Sistema" : "Manual";
+              const conta =
+                l.conta_contrapartida || l.conta_nome || l.conta || "-";
 
               return (
-                <div
+                <tr
                   key={l.id || idx}
-                  className={`grid ${colunas} gap-2 border-b border-slate-100 px-4 py-2 text-xs items-center even:bg-slate-50/70 hover:bg-slate-100/70`}
+                  className="border-b border-slate-100 even:bg-slate-50/70 hover:bg-slate-100/70"
                 >
-                  <div className="font-medium whitespace-nowrap">
+                  <td className="whitespace-nowrap px-3 py-2 font-medium">
                     {dataBR2(l.data_mov || l.data_lanc || l.data)}
-                  </div>
+                  </td>
 
-                  <div
-                    className="font-semibold text-slate-800 truncate"
+                  <td
+                    className="truncate px-3 py-2 font-semibold text-slate-800"
                     title={l.historico || ""}
                   >
                     {l.historico || "-"}
-                  </div>
+                  </td>
 
-                  <div
-                    className="truncate"
-                    title={
-                      l.conta_contrapartida ||
-                      l.conta_nome ||
-                      l.conta ||
-                      ""
-                    }
-                  >
-                    {l.conta_contrapartida ||
-                      l.conta_nome ||
-                      l.conta ||
-                      "-"}
-                  </div>
+                  <td className="truncate px-3 py-2" title={conta}>
+                    {conta}
+                  </td>
 
-                  <div
-                    className={`text-right font-semibold ${
+                  <td
+                    className={`whitespace-nowrap px-3 py-2 text-right font-bold tabular-nums ${
                       Number(l.valor || 0) < 0
                         ? "text-red-600"
                         : "text-emerald-700"
                     }`}
                   >
                     {moeda(l.valor || 0)}
-                  </div>
+                  </td>
 
-                  <div
-                    className={`text-right font-semibold ${
+                  <td
+                    className={`whitespace-nowrap px-3 py-2 text-right font-bold tabular-nums ${
                       Number(l.saldo_final || 0) < 0
                         ? "text-red-600"
                         : "text-emerald-700"
                     }`}
                   >
                     {moeda(l.saldo_final || 0)}
-                  </div>
-
-                  <div
-                    className="truncate text-xs font-semibold text-slate-500  text-center"
-                    title={origem}
-                  >
-                    {origem}
-                  </div>
-                </div>
+                  </td>
+                    <td className="px-3 py-2 text-center" title={origem}>
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
+                          sistema
+                            ? "border-blue-300 bg-blue-50 text-blue-700"
+                            : "border-red-300 bg-red-50 text-red-600"
+                        }`}
+                      >
+                        {origem}
+                      </span>
+                    </td>
+                </tr>
               );
             })}
 
             {linhas.length === 0 && (
-              <div className="p-8 text-center font-medium text-slate-400">
-                Nenhum lançamento contábil encontrado.
-              </div>
+              <tr>
+                <td
+                  colSpan={6}
+                  className="p-8 text-center font-medium text-slate-400"
+                >
+                  Nenhum lançamento contábil encontrado.
+                </td>
+              </tr>
             )}
-          </div>
-        </div>
+          </tbody>
+        </table>
       </div>
     </div>
   );
