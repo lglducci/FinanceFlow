@@ -406,17 +406,17 @@
 
    return (
      <div className="min-h-screen bg-slate-50 px-2 py-2 text-slate-700">
-       <div className="mx-auto w-full max-w-[1720px]">
+       <div className="mx-auto w-full max-w-[1620px]">
          <div className="rounded-xl border border-slate-200 bg-[#f4f7fb] px-3 py-2 shadow-sm">
            <h2 className="mb-2 text-base font-bold text-slate-800">🏦 Extrato Bancário</h2>
            <div className="flex flex-wrap items-center gap-2">
              <div className="flex min-w-0 w-full items-center gap-1.5 lg:w-auto lg:flex-1 lg:min-w-[320px]">
                <button type="button" onClick={contaAnterior} disabled={indiceConta === 0} aria-label="Conta anterior" className="h-8 w-8 shrink-0 rounded-md border border-slate-300 bg-white text-base font-bold text-slate-600 hover:bg-slate-400 disabled:opacity-80">   ◀</button>
-               <div className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2">
+               <div className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-400 bg-white px-2">
                  {contaAtual ? (
                    <>
-                     {contaAtual.icone_url ? <img src={contaAtual.icone_url} alt={contaAtual.banco_nome || contaAtual.nome} className="h-6 w-6 shrink-0 object-contain" /> : <span className="text-lg">🏦</span>}
-                     <div className="flex min-w-0 flex-1 items-center gap-2" title={`${contaAtual.nome || contaAtual.conta_nome || ""} • ${contaAtual.banco_nome || ""} • Banco ${contaAtual.nro_banco || "-"} • Ag. ${contaAtual.agencia || "-"} • Conta ${contaAtual.conta || "-"}`}>
+                     {contaAtual.icone_url ? <img src={contaAtual.icone_url} alt={contaAtual.banco_nome || contaAtual.nome} className="h-6 w-6 shrink-0 object-contain font-bold" /> : <span className="text-lg">🏦</span>}
+                     <div className="flex min-w-0 flex-1 items-center gap-2 font-bold" title={`${contaAtual.nome || contaAtual.conta_nome || ""} • ${contaAtual.banco_nome || ""} • Banco ${contaAtual.nro_banco || "-"} • Ag. ${contaAtual.agencia || "-"} • Conta ${contaAtual.conta || "-"}`}>
                        <span className="shrink-0 max-w-[160px] truncate text-base font-bold text-slate-800">{contaAtual.nome || contaAtual.conta_nome}</span>
                        <span className="min-w-0 truncate text-[13px] text-slate-500">{contaAtual.banco_nome || "Banco"} · Ag. {contaAtual.agencia || "-"} · Conta {contaAtual.conta || "-"}</span>
                      </div>
@@ -427,10 +427,10 @@
                <button type="button" onClick={proximaConta} disabled={!contas.length || indiceConta >= contas.length - 1} aria-label="Próxima conta" className="h-8 w-8 shrink-0 rounded-md border border-slate-300 bg-white text-base font-bold text-slate-600 hover:bg-slate-400 disabled:opacity-80">   ▶</button>
              </div>
              <div className="flex flex-wrap items-center gap-1.5">
-               <label className="flex items-center gap-1 text-[10px] text-slate-500">
+               <label className="flex items-center gap-1 text-[12px] text-slate-700">
                  De <input type="date" value={dataIni} onChange={e => setDataIni(e.target.value)} className="h-8 w-[120px] rounded-md border border-slate-300 bg-white px-1.5 text-[11px] text-slate-700 outline-none focus:border-slate-500" />
                </label>
-               <label className="flex items-center gap-1 text-[10px] text-slate-500">
+               <label className="flex items-center gap-1 text-[12px] text-slate-700">
                  Até <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} className="h-8 w-[120px] rounded-md border border-slate-300 bg-white px-1.5 text-[11px] text-slate-700 outline-none focus:border-slate-500" />
                </label>
                <div className="flex items-center gap-1">
@@ -460,7 +460,7 @@
            <Aba ativo={aba === "comparacao"} onClick={() => setAba("comparacao")}>Comparação</Aba>
           <Aba ativo={aba === "conciliacao"} onClick={() => setAba("conciliacao")}> Conciliação </Aba>
           <Aba ativo={aba === "linha"} onClick={() => setAba("linha")}>  Linha a Linha </Aba>
-           */}
+           */}das
 
          </div>
 
@@ -510,7 +510,7 @@
      { label: "Saldo final", valor: resumo.saldoFinal },
    ];
    return (
-     <section className="flex items-center rounded-lg border border-slate-200 bg-white px-2 py-1.5">
+     <section className="flex items-center rounded-lg border border-slate-400 bg-white px-2 py-1.5 font-bol">
        <h3 className="w-14 shrink-0 text-sm font-bold text-slate-800">{titulo}</h3>
        <div className="grid min-w-0 flex-1 grid-cols-2 sm:grid-cols-4 gap-y-1">
          {cards.map(card => (
