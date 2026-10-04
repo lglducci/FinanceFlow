@@ -17,7 +17,8 @@ export default function AppContas() {
   const [drawerAberto, setDrawerAberto] = useState(false);
   const [drawerAtivo, setDrawerAtivo] = useState(null); // null | "menu" | "nova_conta" | "transferencia"
  const [contaExtrato, setContaExtrato] = useState(null);
- 
+ const OpenFinanceConect = false; // Troque para true quando quiser habilitar.
+
   const empresa_id =
     localStorage.getItem("empresa_id") ||
     localStorage.getItem("id_empresa") ||
@@ -432,11 +433,13 @@ export default function AppContas() {
                   Editar
                 </button>
                     
-
-                    <button
+                 <button
                     type="button"
+                    disabled={!OpenFinanceConect}
+                    title={!OpenFinanceConect ? "Open Finance indisponível" : "Consultar extrato"}
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (!OpenFinanceConect) return;
 
                       setContaExtrato({
                         ...c,
@@ -444,22 +447,33 @@ export default function AppContas() {
                         conta_id: c.conta_id ?? c.id ?? c.id_conta,
                       });
                     }}
-                    className="rounded-full border border-emerald-300 bg-emerald-600 px-3 py-1 text-xs font-black text-white hover:bg-emerald-700"
+                    className={`rounded-full border px-3 py-1 text-xs font-black ${
+                      OpenFinanceConect
+                        ? "border-emerald-300 bg-emerald-600 text-white hover:bg-emerald-700"
+                        : "cursor-not-allowed border-gray-300 bg-gray-200 text-gray-500"
+                    }`}
                   >
                     Extrato
                   </button>
 
                   <button
                     type="button"
+                    disabled={!OpenFinanceConect}
+                    title={!OpenFinanceConect ? "Open Finance indisponível" : "Conectar conta"}
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (!OpenFinanceConect) return;
 
                       setContaConectar({
                         ...c,
                         conta_id: c.conta_id ?? c.id ?? c.id_conta,
                       });
                     }}
-                    className="rounded-full border border-blue-300 bg-blue-600 px-3 py-1 text-xs font-black text-white hover:bg-blue-700"
+                    className={`rounded-full border px-3 py-1 text-xs font-black ${
+                      OpenFinanceConect
+                        ? "border-blue-300 bg-blue-600 text-white hover:bg-blue-700"
+                        : "cursor-not-allowed border-gray-300 bg-gray-200 text-gray-500"
+                    }`}
                   >
                     🔗 Conectar
                   </button>
