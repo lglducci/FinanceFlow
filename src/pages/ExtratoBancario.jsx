@@ -408,23 +408,23 @@
      <div className="min-h-screen bg-slate-50 px-2 py-2 text-slate-700">
        <div className="mx-auto w-full max-w-[1720px]">
          <div className="rounded-xl border border-slate-200 bg-[#f4f7fb] px-3 py-2 shadow-sm">
-           <h2 className="mb-2 text-sm font-semibold text-slate-800">🏦 Extrato Bancário</h2>
+           <h2 className="mb-2 text-base font-bold text-slate-800">🏦 Extrato Bancário</h2>
            <div className="flex flex-wrap items-center gap-2">
              <div className="flex min-w-0 w-full items-center gap-1.5 lg:w-auto lg:flex-1 lg:min-w-[320px]">
-               <button type="button" onClick={contaAnterior} disabled={indiceConta === 0} aria-label="Conta anterior" className="h-8 w-8 shrink-0 rounded-md border border-slate-300 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-40">{"<<"}</button>
+               <button type="button" onClick={contaAnterior} disabled={indiceConta === 0} aria-label="Conta anterior" className="h-8 w-8 shrink-0 rounded-md border border-slate-300 bg-white text-base font-bold text-slate-600 hover:bg-slate-400 disabled:opacity-80">   ◀</button>
                <div className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2">
                  {contaAtual ? (
                    <>
                      {contaAtual.icone_url ? <img src={contaAtual.icone_url} alt={contaAtual.banco_nome || contaAtual.nome} className="h-6 w-6 shrink-0 object-contain" /> : <span className="text-lg">🏦</span>}
                      <div className="flex min-w-0 flex-1 items-center gap-2" title={`${contaAtual.nome || contaAtual.conta_nome || ""} • ${contaAtual.banco_nome || ""} • Banco ${contaAtual.nro_banco || "-"} • Ag. ${contaAtual.agencia || "-"} • Conta ${contaAtual.conta || "-"}`}>
-                       <span className="shrink-0 max-w-[160px] truncate text-xs font-semibold text-slate-800">{contaAtual.nome || contaAtual.conta_nome}</span>
-                       <span className="min-w-0 truncate text-[10px] text-slate-500">{contaAtual.banco_nome || "Banco"} · Ag. {contaAtual.agencia || "-"} · Conta {contaAtual.conta || "-"}</span>
+                       <span className="shrink-0 max-w-[160px] truncate text-base font-bold text-slate-800">{contaAtual.nome || contaAtual.conta_nome}</span>
+                       <span className="min-w-0 truncate text-[13px] text-slate-500">{contaAtual.banco_nome || "Banco"} · Ag. {contaAtual.agencia || "-"} · Conta {contaAtual.conta || "-"}</span>
                      </div>
                      <span className="shrink-0 text-[10px] text-slate-400">{indiceConta + 1}/{contas.length}</span>
                    </>
                  ) : <span className="text-xs text-slate-500">Nenhuma conta encontrada</span>}
                </div>
-               <button type="button" onClick={proximaConta} disabled={!contas.length || indiceConta >= contas.length - 1} aria-label="Próxima conta" className="h-8 w-8 shrink-0 rounded-md border border-slate-300 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-40">{">>"}</button>
+               <button type="button" onClick={proximaConta} disabled={!contas.length || indiceConta >= contas.length - 1} aria-label="Próxima conta" className="h-8 w-8 shrink-0 rounded-md border border-slate-300 bg-white text-base font-bold text-slate-600 hover:bg-slate-400 disabled:opacity-80">   ▶</button>
              </div>
              <div className="flex flex-wrap items-center gap-1.5">
                <label className="flex items-center gap-1 text-[10px] text-slate-500">
@@ -441,18 +441,18 @@
            </div>
          </div>
 
-         <div className="mt-2 grid grid-cols-1 gap-1.5">
+         <div className="mt-2 grid grid-cols-1 gap-1.5 text-base text-base font-bold">
            <ResumoSaldos titulo="Extrato" resumo={resumoBanco} consultado={!!extrato} />
            <ResumoSaldos titulo="Razão" resumo={resumoRazao} consultado={!!razao && !razao.semVinculo} />
          </div>
          {!loading && !extrato && !erro && (
-           <div className="mt-3 text-xs text-slate-500">Selecione a conta e o período e clique em Pesquisar.</div>
+           <div className="mt-3 text-sm text-slate-500">Selecione a conta e o período e clique em Pesquisar.</div>
          )}
          {razao?.semVinculo && <div className="mt-3 text-xs text-slate-500">Esta conta bancária não possui vínculo com uma conta contábil.</div>}
 
          {erro && <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-700">{erro}</div>}
 
-         <div className="mt-2 flex flex-wrap items-center gap-1.5">
+         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-base font-bold">
            <Aba ativo={aba === "extrato"} onClick={() => setAba("extrato")}>Extrato</Aba>
            <Aba ativo={aba === "razao"} onClick={() => setAba("razao")}>Razão</Aba>
            <input value={busca} onChange={e => setBusca(e.target.value)} aria-label="Buscar histórico" placeholder="Buscar histórico, PIX, fornecedor..." className="ml-auto h-8 w-full sm:w-[300px] rounded-md border border-slate-300 bg-white px-2 text-[11px] text-slate-700 placeholder:text-slate-400 outline-none focus:border-slate-500" />
@@ -511,11 +511,11 @@
    ];
    return (
      <section className="flex items-center rounded-lg border border-slate-200 bg-white px-2 py-1.5">
-       <h3 className="w-14 shrink-0 text-xs font-bold text-slate-800">{titulo}</h3>
+       <h3 className="w-14 shrink-0 text-sm font-bold text-slate-800">{titulo}</h3>
        <div className="grid min-w-0 flex-1 grid-cols-2 sm:grid-cols-4 gap-y-1">
          {cards.map(card => (
            <div key={card.label} className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-2 border-l border-slate-200 px-2 sm:px-3">
-             <span className="text-[10px] font-semibold text-slate-500">{card.label}</span>
+             <span className="text-[12px] font-bold text-slate-500">{card.label}</span>
              <span className={`text-xs font-bold tabular-nums ${consultado && card.valor != null && Number(card.valor) < 0 ? "text-red-600" : "text-slate-800"}`}>
                {consultado && card.valor != null ? moeda(card.valor) : "—"}
              </span>

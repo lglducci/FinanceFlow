@@ -1904,16 +1904,17 @@ diagnosticoPdfRef.current = {
       return (
 
         
-     <div className="min-h-screen bg-[#eef7fd] px-1 py-1">
+     <div className="min-h-screen bg-slate-50 px-2 py-2 text-slate-700">
         
           <div className="mx-auto w-full max-w-[1620px]">
-         <div className="rounded-[28px]  bg-gradient-to-b from-[#061f4a] via-[#061f4a] to-[#061f4a]  border border-cyan-100 shadow-[0_8px_30px_rgba(15,23,42,0.08)] p-2">
-           <div className="mb-5">
-            <h2 className="text-xl font-bold tracking-tight text-white mb-4">
+         <div className="rounded-xl border border-slate-200 bg-[#f4f7fb] shadow-sm px-3 py-2">
+           <div className="mb-0">
+            <h2 className="text-base font-bold tracking-tight text-slate-800 mb-1">
                📘 Importação Bancária
              </h2>
    
-             <div className="flex items-start justify-between mb-4 ">
+             <div className="flex items-center justify-end mb-1">
+             {/* Abas Lançamentos e Layout temporariamente ocultas:
              <div className="flex gap-3"> 
                  <button
                    type="button"
@@ -2004,11 +2005,12 @@ diagnosticoPdfRef.current = {
                  </div>
                )}
                
-                 <div className="text-right text-white">
-                     <div className="text-base text-gray-550">{t("importacaoBancaria.saldoAtual", "Saldo atual")}</div>
+             */}
+                 <div className="flex items-baseline gap-2 text-right text-slate-600">
+                     <div className="text-[14px] font-medium text-slate-800">{t("importacaoBancaria.saldoAtual", "Saldo atual")}</div>
    
                      <div
-                       className={`text-lg font-black ${
+                       className={`text-sm font-semibold ${
                          saldo > 0
                            ? "text-green-600"
                            : saldo < 0
@@ -2027,19 +2029,19 @@ diagnosticoPdfRef.current = {
                 </div>
    
                {abaAtiva === "lancamentos" && (
-                  <div className="space-y-3">
+                  <div className="space-y-1">
                    <div className="flex flex-col gap-1">
-                     <label className="text-sm font-bold text-white">
+                     <label className="text-[14px] font-bold text-slate-700">
                        {t("importacaoBancaria.contaBancaria", "Conta Bancária")}
                      </label>
    
                      <div>
                   
-                       <div className="flex items-center justify-start gap-4 pl-0">
+                       <div className="flex items-center justify-start gap-2 pl-0">
                               <button
                                 type="button"
                                 onClick={contaAnterior}
-                                className="btn-pill btn-white flex items-center gap-2"
+                                aria-label="Conta anterior" className="h-8 w-9 shrink-0 rounded-md border border-slate-300 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-100"
                               >
                                 ◀
                               </button>
@@ -2063,19 +2065,13 @@ diagnosticoPdfRef.current = {
                                     }, 0);
                                   }}
                                   className={`
-                                    w-full max-w-[520px] rounded-3xl border bg-white px-5 py-4
-                                    flex items-center gap-4 transition hover:scale-[1.01] cursor-pointer
+                                    w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 py-2
+                                    flex items-center gap-3 transition hover:border-slate-300 cursor-pointer
                                   `}
-                                  style={{
-                                    borderColor: contaAtual.cor_hex || "#bae6fd",
-                                    boxShadow:
-                                      String(contaId) === String(contaAtual.conta_id)
-                                        ? `0 0 0 2px ${contaAtual.cor_hex || "#2563eb"}33, 0 12px 28px ${contaAtual.cor_hex || "#2563eb"}33`
-                                        : `0 8px 20px ${contaAtual.cor_hex || "#0f172a"}22`,
-                                  }}
+
                                 >
                                   <div
-                                    className="h-16 w-16 rounded-2xl border flex items-center justify-center overflow-hidden"
+                                    className="h-9 w-9 shrink-0 rounded-lg border flex items-center justify-center overflow-hidden"
                                     style={{
                                       background: `${contaAtual.cor_hex || "#f8fafc"}12`,
                                       borderColor: `${contaAtual.cor_hex || "#e2e8f0"}55`,
@@ -2085,39 +2081,33 @@ diagnosticoPdfRef.current = {
                                       <img
                                         src={contaAtual.icone_url}
                                         alt={contaAtual.banco_nome || contaAtual.nome}
-                                        className="h-10 w-10 object-contain"
+                                        className="h-6 w-6 object-contain"
                                       />
                                     ) : (
-                                      <span className="text-3xl">🏦</span>
+                                      <span className="text-xl">🏦</span>
                                     )}
                                   </div>
  
                                 
-                                  <div className="flex-1 text-left">
-                                    <div className="text-lg font-black text-slate-800">
+                                  <div className="flex-1 min-w-0 text-left">
+                                    <div className="text-base font-bold text-slate-800 truncate">
                                       {contaAtual.nome || contaAtual.conta_nome}
                                     </div>
   
-                                    <div className="mt-1 text-xs font-bold text-slate-400">
-                                      {contaAtual.banco_nome || t("importacaoBancaria.contaBancariaMinusculo", "Conta bancária")}
-                                    </div>
- 
-                                    <div className="mt-1 text-xs font-bold text-slate-500">
-                                     Banco {contaAtual.nro_banco || "-"} • Ag. {contaAtual.agencia || "-"} • Conta {contaAtual.conta || "-"}
-                                   </div>
-  
-                                    <div className="mt-1 text-xs font-bold text-slate-500">
-                                      Conta {indiceConta + 1} de {contas.length}
+                                    <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[12px] text-slate-700 font-bold  ">
+                                      <span>{contaAtual.banco_nome || t("importacaoBancaria.contaBancariaMinusculo", "Conta bancária")}</span>
+                                      <span>Banco {contaAtual.nro_banco || "-"} • Ag. {contaAtual.agencia || "-"} • Conta {contaAtual.conta || "-"}</span>
+                                      <span className="text-slate-500 font-bold ">{indiceConta + 1} de {contas.length}</span>
                                     </div>
                                   </div>
   
-                                  <div className="text-right">
-                                    <div className="text-xs font-bold text-slate-400">
+                                  <div className="flex shrink-0 items-center gap-3 text-right font-bold ">
+                                    <div className="text-[14px] font-medium text-slate-700">
                                       Saldo
                                     </div>
   
                                     <div
-                                      className={`text-lg font-black ${
+                                      className={`text-base font-bold ${
                                         Number(contaAtual.saldo_final || 0) >= 0
                                           ? "text-emerald-700"
                                           : "text-red-600"
@@ -2132,7 +2122,7 @@ diagnosticoPdfRef.current = {
                                     <button
                                       type="button"
                                       onClick={abrirModalEditarConta}
-                                      className="mt-2 rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-xs font-black text-[#063452] hover:bg-cyan-100"
+                                      className="rounded-md border border-slate-400 bg-slate-50 px-2 py-1 text-[12px] font-semibold text-slate-600 hover:bg-slate-100"
                                     >
                                       ✏️ Editar conta
                                     </button>
@@ -2150,7 +2140,7 @@ diagnosticoPdfRef.current = {
                                   </div>
                                 </div>
                               ) : (
-                                <div className="w-full max-w-[520px] rounded-3xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center font-bold text-slate-400">
+                                <div className="w-full rounded-lg border border-dashed border-slate-300 bg-white px-3 py-3 text-center text-xs font-medium text-slate-400">
                                   Nenhuma conta encontrada
                                 </div>
                               )}
@@ -2158,7 +2148,7 @@ diagnosticoPdfRef.current = {
                               <button
                                 type="button"
                                 onClick={proximaConta}
-                                className="btn-pill btn-white flex items-center gap-2"
+                                aria-label="Próxima conta" className="h-8 w-9 shrink-0 rounded-md border border-slate-300 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-100"
                               >
                                 ▶
                               </button>
@@ -2404,7 +2394,7 @@ diagnosticoPdfRef.current = {
                  )}
                </div>
    
-             <div className="mt-5 flex items-center justify-between">
+             <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
      <div className="flex items-center gap-2">
        <input
          id="inputOfx"
@@ -2417,7 +2407,7 @@ diagnosticoPdfRef.current = {
       
       <button
            onClick={() => inputOfxRef.current?.click()}
-           className="h-10 px-4 rounded-xl border border-cyan-200 bg-cyan-50 text-[#063452] font-bold text-sm shadow-sm hover:bg-cyan-100 transition"
+           className="h-8 px-3 rounded-lg border border-cyan-200 bg-cyan-50 text-[#063452] font-semibold text-xs shadow-sm hover:bg-cyan-100 transition"
          >
            📥  {t("importacaoBancaria.importarOFX", "Importar OFX")}
          </button>
@@ -2427,7 +2417,7 @@ diagnosticoPdfRef.current = {
               type="button"
               onClick={() => inputPdfRef.current?.click()}
               disabled={importandoPdf || salvando}
-              className={`h-10 px-4 rounded-xl border font-bold text-sm shadow-sm transition ${
+              className={`h-8 px-3 rounded-lg border font-semibold text-xs shadow-sm transition ${
                 importandoPdf || salvando
                   ? "border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed"
                   : "border-red-200 bg-red-50 text-red-700 hover:bg-red-100"
@@ -2438,7 +2428,9 @@ diagnosticoPdfRef.current = {
                 : "📄 Importar PDF"}
             </button>
    
+       {/* Importação Excel temporariamente oculta:
        <ImportadorSicoob onTextoPronto={receberTextoImportadorSicoob} />
+       */}
 
 
        <input
@@ -2451,17 +2443,17 @@ diagnosticoPdfRef.current = {
         />
      </div>
    
-     <div className="flex items-center gap-2 mr-10">
+     <div className="flex items-center gap-2">
        <button
          onClick={limparEdicao}
-         className="h-10 px-4 rounded-xl border border-red-100 bg-red-50 text-red-700 font-bold text-sm shadow-sm hover:bg-red-100 transition"
+         className="h-8 px-3 rounded-lg border border-red-100 bg-red-50 text-red-700 font-semibold text-xs shadow-sm hover:bg-red-100 transition"
        >
           {t("importacaoBancaria.limpar", "Limpar")}
        </button>
    
        <button
          onClick={() => navigate("/importacao-bancaria")}
-         className="h-10 px-4 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-sm shadow-sm hover:bg-slate-50 transition"
+         className="h-8 px-3 rounded-lg border border-slate-200 bg-white text-slate-600 font-semibold text-xs shadow-sm hover:bg-slate-50 transition"
        >
             {t("importacaoBancaria.sair", "Sair")}
        </button>
@@ -2469,10 +2461,10 @@ diagnosticoPdfRef.current = {
         <button
          onClick={() => salvarLancamentos()}
          disabled={salvando}
-         className={`h-10 px-5 rounded-xl text-white font-black text-sm shadow-sm transition ${
+         className={`h-8 px-4 rounded-lg text-white font-semibold text-xs shadow-sm transition ${
            salvando
              ? "bg-slate-400 cursor-not-allowed"
-             : "bg-[#063452] hover:brightness-110"
+             : "bg-[#526b8b] hover:bg-[#425a79]"
          }`}
        >
          {salvando ? "Salvando..." : t("importacaoBancaria.salvar", "Salvar")}
