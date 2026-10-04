@@ -500,31 +500,47 @@
      </div>
    );
  }
-
- // Ambos os resumos usam a mesma ordem: saldo inicial, entradas, saídas e saldo final.
+ 
  function ResumoSaldos({ titulo, resumo, consultado }) {
-   const cards = [
-     { label: "Saldo inicial", valor: resumo.saldoInicial },
-     { label: "Entradas", valor: resumo.entradas },
-     { label: "Saídas", valor: resumo.saidas },
-     { label: "Saldo final", valor: resumo.saldoFinal },
-   ];
-   return (
-     <section className="flex items-center rounded-lg border border-slate-400 bg-white px-2 py-1.5 font-bol">
-       <h3 className="w-14 shrink-0 text-sm font-bold text-slate-800">{titulo}</h3>
-       <div className="grid min-w-0 flex-1 grid-cols-2 sm:grid-cols-4 gap-y-1">
-         {cards.map(card => (
-           <div key={card.label} className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-2 border-l border-slate-200 px-2 sm:px-3">
-             <span className="text-[12px] font-bold text-slate-500">{card.label}</span>
-             <span className={`text-xs font-bold tabular-nums ${consultado && card.valor != null && Number(card.valor) < 0 ? "text-red-600" : "text-slate-800"}`}>
-               {consultado && card.valor != null ? moeda(card.valor) : "—"}
-             </span>
-           </div>
-         ))}
-       </div>
-     </section>
-   );
- }
+  const cards = [
+    { label: "Saldo inicial", valor: resumo.saldoInicial },
+    { label: "Entradas", valor: resumo.entradas, cor: "text-emerald-700" },
+    { label: "Saídas", valor: resumo.saidas, cor: "text-red-600" },
+    { label: "Saldo final", valor: resumo.saldoFinal },
+  ];
+
+  return (
+    <section className="flex items-center rounded-lg border border-slate-400 bg-white px-2 py-1.5">
+      <h3 className="w-14 shrink-0 text-sm font-bold text-slate-800">
+        {titulo}
+      </h3>
+
+      <div className="grid min-w-0 flex-1 grid-cols-2 sm:grid-cols-4 gap-y-1">
+        {cards.map(card => {
+          const temValor = consultado && card.valor != null;
+          const corValor = temValor
+            ? card.cor || (Number(card.valor) < 0 ? "text-red-600" : "text-slate-800")
+            : "text-slate-400";
+
+          return (
+            <div
+              key={card.label}
+              className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-2 border-l border-slate-200 px-2 sm:px-3"
+            >
+              <span className={`text-[12px] font-bold ${card.cor || "text-slate-500"}`}>
+                {card.label}
+              </span>
+
+              <span className={`text-xs font-bold tabular-nums ${corValor}`}>
+                {temValor ? moeda(card.valor) : "—"}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
 
  function Aba({ ativo, onClick, children }) {
    return (
