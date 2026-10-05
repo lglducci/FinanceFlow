@@ -1,5 +1,6 @@
     import { useEffect, useRef, useState } from "react";
  
+import { createPortal } from "react-dom";
 import { buildWebhookUrl } from "../config/globals";
 import QuadroConferenciaRecebiveis from "../components/QuadroConferenciaRecebiveis";
 import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -25,6 +26,7 @@ const inicioMes = () => `${hojeLocal().slice(0, 7)}-01`;
 
 export default function ConciliacaoExtratoPdf() {
   const navigate = useNavigate();
+  const [ajudaAberta, setAjudaAberta] = useState(false);
   const inputPdfRef = useRef(null);
 
   const empresa_id =
@@ -1206,32 +1208,30 @@ function converterLinhaContabil(item) {
   origem: campos[11] || null,
 };
 }
-
  function imprimirAbaAtiva() {
   window.print();
 }
 
   return ( 
    <div className="min-h-screen bg-[#eef7fd] px-1 py-2">
+      {ajudaAberta && <AjudaConciliacaoExtrato onClose={() => setAjudaAberta(false)} />}
       <div className="mx-auto w-[98%] max-w-[1740px]">
-         <div className="overflow-hidden rounded-[24px] border border-gray-200 bg-[#f8fbfd] shadow-[0_8px_30px_rgba(15,23,42,0.08)]">
-           <div className="flex items-center justify-between border-b border-blue-200 bg-[#082a57] px-5 py-3">
+         <div className="overflow-hidden rounded-[24px] border border-gray-200 bg-[#ffffff] shadow-[0_8px_30px_rgba(15,23,42,0.08)]">
+           <div className="flex items-center justify-between gap-3 border-b px-5 py-3" style={{ background: "linear-gradient(110deg, #f0f5fc, #f4f8f9)", borderColor: "#d8e2ee", borderLeft: "3px solid #6d8caf" }}> 
               <div>
-                <h1 className="text-lg font-black text-white">
-                  📄 Conciliação de Extrato Razão.  
+                <h1 className="text-base font-semibold text-slate-800">
+                  📄 Conciliação de Extrato × Razão  
                 </h1>
 
-                <p className="mt-0.5 text-xs font-semibold text-blue-100">
+                <p className="mt-0.5 text-xs font-bold text-gray-500">
                   Extrato bancário x razão contábil
                 </p>
               </div>
 
-              <button
-                onClick={() => navigate(-1)}
-                className="rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-black text-white hover:bg-white/20"
-              >
-                Sair
-              </button>
+              <div className="flex shrink-0 items-center gap-2">
+                <button type="button" onClick={() => setAjudaAberta(true)} title="Ajuda" aria-label="Ajuda sobre conciliação de extrato e Razão" style={{width:28,height:28,background:'#ffffff',color:'#1d4ed8',border:'1px solid #bacce3'}} className="rounded-full text-sm font-bold">?</button>
+                <button type="button" onClick={() => navigate(-1)} className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Sair</button>
+              </div>
             </div>
            <div className="grid gap-2.5 lg:grid-cols-[1.45fr_0.55fr]">
             <div className="min-h-[185px] rounded-2xl border border-cyan-300 bg-white p-5 shadow-sm">
@@ -2053,5 +2053,118 @@ function Card({ titulo, valor, alerta = false, ok = false }) {
         {valor}
       </div>
     </div>
+  );
+}
+
+
+function AjudaConciliacaoExtrato({ onClose }) {
+  const painelRef = useRef(null);
+  const fecharRef = useRef(null);
+  const etapas = [
+  {
+    "titulo": "O que esta janela confere",
+    "texto": "Compare os movimentos do extrato/financeiro com o Razão contábil de uma conta bancária específica e de um período. A tela mostra diferenças, permite criar registros contábeis faltantes e revisar contrapartidas quando permitido. O quadro Getnet × banco amplia a conferência dos recebíveis e dos repasses da operadora para essa conta."
+  },
+  {
+    "titulo": "Prepare os dados e selecione a conta",
+    "texto": "Importe primeiro o extrato bancário na janela de Importação Bancária e conclua a revisão necessária. Aqui a conferência utiliza os dados já registrados. Escolha a conta bancária pelas setas e confira banco, agência e número da conta. O resultado vale para a conta selecionada; não representa todas as contas da empresa."
+  },
+  {
+    "titulo": "Defina o período e execute a conciliação",
+    "texto": "Preencha Início e Fim e clique em Executar conciliação. A tela compara os dados disponíveis e carrega o Razão equivalente do período. Ao mudar a conta ou as datas, execute novamente para obter uma conferência atualizada. Atualizar saldos atualiza as informações das contas e não substitui a execução da conciliação."
+  },
+  {
+    "titulo": "Leia o resumo e as pendências",
+    "texto": "Na aba Pendências da Conciliação, confira data, histórico, valor, origem, contrapartida e ação proposta. Criar no Razão indica um registro contábil faltante; Excluir do Razão indica um lote para revisar antes de remover. Os valores do resumo são relativos às pendências: uma diferença líquida zero não dispensa conferir os itens, pois valores opostos podem se compensar."
+  },
+  {
+    "titulo": "Crie o lançamento contábil faltante",
+    "texto": "Para uma linha com Criar no Razão, confira o movimento e selecione a contrapartida contábil apropriada, pesquisando e escolhendo uma conta da lista. Depois use Criar. A contrapartida define a outra conta do lançamento; verifique se representa a operação real. Não crie novamente um registro que já exista ou apenas para fazer o total coincidir."
+  },
+  {
+    "titulo": "Confira o Razão e reclassifique quando permitido",
+    "texto": "Abra Razão importado para consultar os lançamentos equivalentes da conta no período. Confira histórico, contas, valor, diário, lote e origem. Use Reclassificar para escolher outra contrapartida e confirmar o ajuste quando a ação estiver habilitada. Lançamentos de origem MANUAL não podem ser reclassificados nesta tela. Atualizar Razão recarrega a consulta contábil; para recalcular as pendências, execute a conciliação novamente."
+  },
+  {
+    "titulo": "Revise o lote inteiro antes de excluir",
+    "texto": "Excluir remove todos os lançamentos contábeis vinculados ao lote indicado, conforme a confirmação exibida. A ação não se limita necessariamente à linha visível. Confira o número do lote, seus vínculos e o motivo da diferença antes de confirmar. Depois da correção, execute novamente a conciliação para verificar o resultado."
+  },
+  {
+    "titulo": "Confira receitas e repasses Getnet nesta conta",
+    "texto": "Abra Conferência Getnet × banco para consultar o quadro Getnet × banco × Razão. Ele ajuda a comparar as receitas/movimentos informados pela Getnet, os respectivos repasses recebidos nesta conta bancária e os registros contábeis. Importe também o arquivo da Getnet na Conciliação de Operadora e confira o extrato do banco. Considere taxas, antecipações e datas de repasse: uma venda e seu crédito no banco podem ocorrer em dias diferentes."
+  },
+  {
+    "titulo": "Verifique o resultado final",
+    "texto": "Depois de criar, excluir ou reclassificar, use Executar conciliação novamente e confira as duas abas. Leia qualquer aviso de reexecução. Se persistirem diferenças, revise a conta, o período, as importações, as contrapartidas e as datas dos repasses. Use Imprimir na aba desejada para obter a consulta. As ações desta tela ajustam registros no FinanceFlow; não movimentam dinheiro no banco."
+  }
+];
+
+  useEffect(() => {
+    const focoAnterior = document.activeElement;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    fecharRef.current?.focus();
+    function teclado(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+      if (event.key === "Tab") {
+        const botoes = painelRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+        );
+        if (!botoes?.length) return;
+        const primeiro = botoes[0];
+        const ultimo = botoes[botoes.length - 1];
+        if (event.shiftKey && document.activeElement === primeiro) {
+          event.preventDefault(); ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+          event.preventDefault(); primeiro.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", teclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener("keydown", teclado);
+      if (focoAnterior?.isConnected) focoAnterior.focus();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/55 p-3 sm:p-5"
+      onClick={event => { if (event.target === event.currentTarget) onClose(); }}
+    >
+      <div
+        ref={painelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ajuda-conciliacao-extrato-titulo"
+        aria-describedby="ajuda-conciliacao-extrato-descricao"
+        style={{ width: "min(680px, 100%)", maxWidth: 680, maxHeight: "90vh", backgroundColor: "#ffffff", color: "#1e293b", borderRadius: 20 }}
+        className="flex flex-col overflow-hidden shadow-2xl"
+      >
+        <div style={{ background: "linear-gradient(110deg, #203c86, #0e7490)", color: "#ffffff", padding: "14px 18px" }} className="flex shrink-0 items-start justify-between gap-3">
+          <div>
+            <h2 id="ajuda-conciliacao-extrato-titulo" style={{ color: "#ffffff", fontSize: 18 }} className="text-xl font-extrabold leading-tight">Como conciliar o extrato com o Razão</h2>
+            <p id="ajuda-conciliacao-extrato-descricao" style={{ color: "#ffffff" }} className="mt-1 text-xs font-medium">Confira a conta, corrija pendências e acompanhe os repasses da Getnet.</p>
+          </div>
+          <button ref={fecharRef} type="button" onClick={onClose} aria-label="Fechar ajuda" style={{ background: "#ffffff", color: "#203c86", border: "1px solid #cbd5e1", width: 30, height: 30, fontSize: 22 }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg font-bold hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">×</button>
+        </div>
+        <div style={{ padding: 16 }} className="space-y-2 overflow-y-auto">
+          {etapas.map((etapa, indice) => (
+            <div key={etapa.titulo} style={{ background: "#f7f9fc", border: "1px solid #dce5f1", padding: "12px 14px" }} className="flex items-start gap-3 rounded-xl">
+              <span aria-hidden="true" style={{ background: "#2251df", color: "#ffffff", width: 32, height: 32 }} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2251df] text-base font-bold text-white">{indice + 1}</span>
+              <div className="min-w-0">
+                <h3 style={{ color: "#1e293b" }} className="text-sm font-bold">{etapa.titulo}</h3>
+                <p style={{ color: "#334155", fontSize: 12, lineHeight: 1.5 }} className="mt-1">{etapa.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }

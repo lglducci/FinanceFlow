@@ -6,6 +6,7 @@
 } from "react";
     
    import { buildWebhookUrl } from "../config/globals";
+import { createPortal } from "react-dom";
 import * as XLSX from "xlsx";
 import QuadroConferenciaRecebiveis from "../components/QuadroConferenciaRecebiveis";
  import { hojeLocal, hojeMaisDias } from "../utils/dataLocal";
@@ -143,6 +144,7 @@ function Filtro({ ativo, children, onClick }) {
 export default function ConciliacaoOperadora() {
   const empresa_id = localStorage.getItem("empresa_id");
   const inputFileRef = useRef(null);
+  const [ajudaAberta, setAjudaAberta] = useState(false);
   const [contas, setContas] = useState([]);
   const [contaId, setContaId] = useState("");
   const [arquivo, setArquivo] = useState(null);
@@ -854,13 +856,18 @@ function nomeFormaPagamento(forma) {
 
 
   return (
-    <div className="min-h-screen bg-slate-100 p-4 md:p-6">
+     <div className="min-h-screen bg-slate-100 p-4 md:p-6">
+      {ajudaAberta && <AjudaConciliacaoOperadora onClose={() => setAjudaAberta(false)} />}
       <div className="mx-auto max-w-[1500px]">
         <div className="mb-4 overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
-          <div className="bg-[#0F172A] px-5 py-4">
-            <h1 className="text-lg font-semibold text-white">Conciliação de Operadora (GETNET)</h1>
-            <p className="mt-1 text-xs text-slate-300">Importe o arquivo da operadora, confira vendas, taxas e divergências.</p>
+          <div className="flex items-start justify-between gap-3 border-b px-4 py-3" style={{ background: "linear-gradient(110deg, #f0f5fc, #f4f8f9)", borderColor: "#d8e2ee", borderLeft: "3px solid #6d8caf" }}>
+            <div>
+              <h1 className="text-base font-semibold" style={{ color: "#263c55" }}>Conciliação de Operadora (GETNET)</h1>
+              <p className="mt-1 text-xs" style={{ color: "#475569" }}>Importe o arquivo da operadora, confira vendas, taxas e divergências.</p>
+            </div>
+            <button type="button" onClick={() => setAjudaAberta(true)} aria-label="Ajuda sobre conciliação Getnet" title="Ajuda" style={{ width: 28, height: 28, background: "#ffffff", color: "#1d4ed8", border: "1px solid #bacce3" }} className="shrink-0 rounded-full text-sm font-bold">?</button>
           </div>
+
 
            <div className="p-4">
 
@@ -868,9 +875,9 @@ function nomeFormaPagamento(forma) {
  
 
             <div className="border-t border-slate-200 px-4 py-4">
-  <label className="mb-2 block text-xs font-semibold text-slate-600">
-    Arquivo da operadora
-  </label>
+          <label className="mb-2 block text-xs font-semibold text-slate-600">
+            Arquivo da operadora
+          </label>
 
   <div className="flex items-center gap-3">
     <div className="flex h-10 flex-1 overflow-hidden rounded-lg border border-slate-300 bg-blue-450">
@@ -1294,5 +1301,114 @@ function nomeFormaPagamento(forma) {
         onClose={() => setQuadroAberto(false)}
       />}
     </div>
+  );
+}
+
+
+function AjudaConciliacaoOperadora({ onClose }) {
+  const painelRef = useRef(null);
+  const fecharRef = useRef(null);
+  const etapas = [
+  {
+    "titulo": "O que você confere nesta janela",
+    "texto": "Esta tela utiliza, por enquanto, arquivos da Getnet. Você importa os dados da operadora, confere as operações de um período e identifica registros realizados, pendentes ou rejeitados. As ações permitidas podem reconhecer vendas, contabilizar taxas e enviar o valor líquido para a conta transitória, conforme o resultado de cada item."
+  },
+  {
+    "titulo": "Exporte e salve o arquivo Getnet",
+    "texto": "Acesse o portal da Getnet com o usuário da empresa. Localize o relatório de vendas/movimentos usado nesta importação, escolha o período desejado e exporte em Excel (.xlsx ou .xls). Os nomes das opções variam no portal. Salve o arquivo no computador e preserve as abas e colunas originais. Esta janela aceita Excel; não utiliza PDF nesta etapa."
+  },
+  {
+    "titulo": "Importe e confira o retorno",
+    "texto": "Clique em Escolher arquivo, localize a planilha e depois em Importar arquivo. Aguarde a confirmação. Confira a mensagem, o número da importação e a quantidade de movimentos, quando apresentados. Importado com sucesso significa que os dados da operadora foram gravados; ainda é preciso conferir o período e tratar as ações pendentes."
+  },
+  {
+    "titulo": "Confira o período desejado",
+    "texto": "Revise Data inicial e Data final: quando o retorno informa as datas do arquivo, a tela pode sugeri-las. Clique em Conferir período para consultar os dados Getnet já importados. Confira a conta e o período exibidos no resultado. Você pode consultar outro intervalo sem importar o mesmo arquivo novamente, desde que os dados desse intervalo já estejam no sistema."
+  },
+  {
+    "titulo": "Entenda as situações e os totais",
+    "texto": "Pendentes são operações que permitem processamento; Realizadas são ações já concluídas nesta conferência; Rejeitados são itens não processáveis que precisam ser revisados. Todas exibe o conjunto. Confira bruto, taxas, líquido, previsão de pagamento e status da operadora. Realizada nesta lista não comprova, por si só, que o dinheiro entrou no banco: essa verificação é feita na conferência de repasses."
+  },
+  {
+    "titulo": "Revise e processe as pendências",
+    "texto": "Use o filtro Pendentes e leia O que será feito em cada linha. A conferência pode marcar automaticamente as ações permitidas; revise a seleção antes de executar. Selecionar ações marca os itens elegíveis do filtro visível; Limpar desmarca a seleção. Clique em Processar Selecionados para executar as ações marcadas. Depois, confira o retorno e use Conferir período novamente para verificar o que foi concluído e o que permanece pendente."
+  },
+  {
+    "titulo": "Compare Getnet × banco × Razão",
+    "texto": "Abra Conferência Getnet × banco. O quadro compara o que a Getnet informou com os valores recebidos no banco e os registros do Razão, ajudando a identificar repasses e diferenças. Para a comparação fazer sentido, importe também o extrato bancário da conta que recebe da Getnet e confira a conta e o período no quadro. Considere as datas previstas de repasse, taxas e antecipações: a data da venda pode ser diferente da data do crédito bancário."
+  },
+  {
+    "titulo": "O que fazer quando houver diferença",
+    "texto": "Confira primeiro o arquivo e o período importados, o extrato do banco, a data do repasse e as taxas. Observe se a operação ainda está pendente ou foi rejeitada e leia os avisos apresentados. Revise cada diferença antes de processar um ajuste. Não cadastre outra venda apenas para fazer os totais coincidirem. O processamento registra operações no FinanceFlow; não transfere dinheiro nem antecipa recebíveis na Getnet."
+  }
+];
+
+  useEffect(() => {
+    const focoAnterior = document.activeElement;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    fecharRef.current?.focus();
+    function teclado(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+      if (event.key === "Tab") {
+        const botoes = painelRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+        );
+        if (!botoes?.length) return;
+        const primeiro = botoes[0];
+        const ultimo = botoes[botoes.length - 1];
+        if (event.shiftKey && document.activeElement === primeiro) {
+          event.preventDefault(); ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+          event.preventDefault(); primeiro.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", teclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener("keydown", teclado);
+      if (focoAnterior?.isConnected) focoAnterior.focus();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/55 p-3 sm:p-5"
+      onClick={event => { if (event.target === event.currentTarget) onClose(); }}
+    >
+      <div
+        ref={painelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ajuda-conciliacao-operadora-titulo"
+        aria-describedby="ajuda-conciliacao-operadora-descricao"
+        style={{ width: "min(680px, 100%)", maxWidth: 680, maxHeight: "90vh", backgroundColor: "#ffffff", color: "#1e293b", borderRadius: 20 }}
+        className="flex flex-col overflow-hidden shadow-2xl"
+      >
+        <div style={{ background: "linear-gradient(110deg, #203c86, #0e7490)", color: "#ffffff", padding: "14px 18px" }} className="flex shrink-0 items-start justify-between gap-3">
+          <div>
+            <h2 id="ajuda-conciliacao-operadora-titulo" style={{ color: "#ffffff", fontSize: 18 }} className="text-xl font-extrabold leading-tight">Como conferir as operações da Getnet</h2>
+            <p id="ajuda-conciliacao-operadora-descricao" style={{ color: "#ffffff" }} className="mt-1 text-xs font-medium">Importação, pendências e conferência Getnet × banco × Razão.</p>
+          </div>
+          <button ref={fecharRef} type="button" onClick={onClose} aria-label="Fechar ajuda" style={{ background: "#ffffff", color: "#203c86", border: "1px solid #cbd5e1", width: 30, height: 30, fontSize: 22 }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg font-bold hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">×</button>
+        </div>
+        <div style={{ padding: 16 }} className="space-y-2 overflow-y-auto">
+          {etapas.map((etapa, indice) => (
+            <div key={etapa.titulo} style={{ background: "#f7f9fc", border: "1px solid #dce5f1", padding: "12px 14px" }} className="flex items-start gap-3 rounded-xl">
+              <span aria-hidden="true" style={{ background: "#2251df", color: "#ffffff", width: 32, height: 32 }} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2251df] text-base font-bold text-white">{indice + 1}</span>
+              <div className="min-w-0">
+                <h3 style={{ color: "#1e293b" }} className="text-sm font-bold">{etapa.titulo}</h3>
+                <p style={{ color: "#334155", fontSize: 12, lineHeight: 1.5 }} className="mt-1">{etapa.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }

@@ -1,4 +1,5 @@
-   import { useEffect, useMemo, useState } from "react";
+   import { useEffect, useMemo, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from "../config/globals";
 import { hojeLocal } from "../utils/dataLocal";
@@ -51,6 +52,7 @@ const extrairDados = (json) => {
 
 export default function ConciliacaoCartoesCredito() {
   const navigate = useNavigate();
+  const [ajudaAberta, setAjudaAberta] = useState(false);
   const empresaId = localStorage.getItem("empresa_id");
   const [cartoes, setCartoes] = useState([]);
   const [cartaoId, setCartaoId] = useState("");
@@ -220,23 +222,21 @@ const listaContas =
 
   return (
     <div className="min-h-screen bg-slate-100 p-3 text-slate-800">
+      {ajudaAberta && <AjudaReclassificacaoCartao onClose={() => setAjudaAberta(false)} />}
       <div className="mx-auto max-w-[1600px]">
         <section className="mb-3 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex items-center justify-between gap-3 bg-[#0b3260] px-4 py-2.5 text-white">
+          <div className="flex items-center justify-between gap-3 border-b px-4 py-2.5" style={{ background: "linear-gradient(110deg, #f0f5fc, #f4f8f9)", borderColor: "#d8e2ee", borderLeft: "3px solid #6d8caf", color: "#263c55" }}>
             <div>
-              <div className="text-sm font-black">▣ Conciliação de Cartão de Crédito</div>
-              <div className="mt-0.5 text-[10px] font-bold text-slate-300">
-                Compras, razão contábil e reclassificação
+              <div className="text-sm font-semibold">▣ Conciliação de Cartão de Crédito</div>
+              <div className="mt-0.5 text-[11px] font-medium text-slate-600">
+                Razão das compras e reclassificação das despesas
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="h-8 rounded-lg border border-white/25 bg-white/10 px-3 text-xs font-black text-white hover:bg-white/20"
-            >
-              ← Voltar
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              <button type="button" onClick={() => setAjudaAberta(true)} title="Ajuda" aria-label="Ajuda sobre reclassificação contábil do cartão" style={{width:28,height:28,background:'#ffffff',color:'#1d4ed8',border:'1px solid #bacce3'}} className="rounded-full text-sm font-bold">?</button>
+              <button type="button" onClick={() => navigate(-1)} className="h-8 rounded-lg border border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">← Voltar</button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 p-3 xl:grid-cols-[minmax(0,1fr)_360px]">
@@ -610,5 +610,114 @@ const listaContas =
         </div>
       )}
     </div>
+  );
+}
+
+
+function AjudaReclassificacaoCartao({ onClose }) {
+  const painelRef = useRef(null);
+  const fecharRef = useRef(null);
+  const etapas = [
+  {
+    "titulo": "Para que serve esta janela",
+    "texto": "Apesar do nome Conciliação de Cartão de Crédito, esta tela consulta o Razão das compras de um cartão específico e permite corrigir a classificação contábil das despesas. Você escolhe o cartão e o período, confere cada compra ou parcela e altera sua conta de débito quando necessário."
+  },
+  {
+    "titulo": "Selecione o cartão e consulte o período",
+    "texto": "Use << e >> para escolher o cartão e confira o nome e os últimos quatro dígitos. Informe Início e Fim e clique em Consultar. A consulta utiliza os registros já existentes no sistema; importe a fatura na janela de Importação de Cartão quando precisar trazer novas compras. Ao trocar o cartão, a lista é limpa; consulte novamente. Ao alterar as datas, clique em Consultar para atualizar os registros."
+  },
+  {
+    "titulo": "Confira os dados de cada compra",
+    "texto": "A lista mostra data, estabelecimento, parcela, conta de débito, valor, lote e status retornado pela consulta. Confira o código e o nome da conta na coluna Débito: ela indica onde a compra foi classificada contabilmente. O status da consulta não comprova, sozinho, o pagamento da fatura. Para corrigir a classificação, use Reclassificar na linha correspondente."
+  },
+  {
+    "titulo": "Entenda despesa e passivo do cartão",
+    "texto": "No lançamento de uma compra, o débito registra a despesa ou custo e o crédito registra a obrigação na conta de passivo do cartão. Por exemplo, uma compra de material de limpeza pode ser reclassificada para a conta de despesa adequada, mantendo o valor devido ao cartão. Esta tela permite alterar somente a conta de débito; a conta de crédito/passivo permanece protegida."
+  },
+  {
+    "titulo": "Escolha a nova conta contábil",
+    "texto": "Clique em Reclassificar e confira histórico, data, valor e número do lote. O quadro Débito atual mostra a classificação que será alterada; Crédito atual mostra a conta protegida. Em Nova conta de débito, pesquise pelo código ou nome e clique em uma conta da lista. Apenas digitar não confirma a escolha. Se o botão estiver desabilitado por falta de lote, o registro não pode ser reclassificado nesta tela."
+  },
+  {
+    "titulo": "Confirme e confira o resultado",
+    "texto": "Após selecionar a conta correta, clique em Confirmar reclassificação e aguarde a gravação. Cancelar fecha o formulário sem aplicar a alteração. A operação é feita sobre a conta de débito do lote indicado; confira esse lote antes de confirmar. Depois, verifique a classificação exibida e use Consultar novamente para conferir o resultado gravado. A reclassificação muda a conta contábil da despesa, sem alterar o valor da compra nem liquidar a fatura."
+  },
+  {
+    "titulo": "Como o passivo é reduzido",
+    "texto": "As compras acumulam a obrigação no passivo do cartão. Quando o pagamento da fatura é registrado no sistema, o lançamento correspondente reduz essa obrigação e registra a saída na conta financeira utilizada. Esse pagamento é uma etapa separada, realizada no fluxo apropriado de faturas ou pela importação/conciliação bancária quando identificada. Reclassificar uma despesa aqui não paga a fatura e não altera a conta passiva."
+  },
+  {
+    "titulo": "Se não encontrar a compra ou a conta",
+    "texto": "Confira o cartão, as datas da consulta e se a compra/fatura já foi registrada e possui lançamento contábil. A busca de Nova conta de débito apresenta as contas de despesas/custos disponibilizadas pelo sistema. Se houver erro ao salvar, leia a mensagem e consulte novamente antes de tentar outra alteração. Editar cartão altera o cadastro do cartão; não substitui a reclassificação da compra."
+  }
+];
+
+  useEffect(() => {
+    const focoAnterior = document.activeElement;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    fecharRef.current?.focus();
+    function teclado(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+      if (event.key === "Tab") {
+        const botoes = painelRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+        );
+        if (!botoes?.length) return;
+        const primeiro = botoes[0];
+        const ultimo = botoes[botoes.length - 1];
+        if (event.shiftKey && document.activeElement === primeiro) {
+          event.preventDefault(); ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+          event.preventDefault(); primeiro.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", teclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener("keydown", teclado);
+      if (focoAnterior?.isConnected) focoAnterior.focus();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/55 p-3 sm:p-5"
+      onClick={event => { if (event.target === event.currentTarget) onClose(); }}
+    >
+      <div
+        ref={painelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ajuda-reclassificacao-cartao-titulo"
+        aria-describedby="ajuda-reclassificacao-cartao-descricao"
+        style={{ width: "min(680px, 100%)", maxWidth: 680, maxHeight: "90vh", backgroundColor: "#ffffff", color: "#1e293b", borderRadius: 20 }}
+        className="flex flex-col overflow-hidden shadow-2xl"
+      >
+        <div style={{ background: "linear-gradient(110deg, #203c86, #0e7490)", color: "#ffffff", padding: "14px 18px" }} className="flex shrink-0 items-start justify-between gap-3">
+          <div>
+            <h2 id="ajuda-reclassificacao-cartao-titulo" style={{ color: "#ffffff", fontSize: 18 }} className="text-xl font-extrabold leading-tight">Como revisar as despesas do cartão</h2>
+            <p id="ajuda-reclassificacao-cartao-descricao" style={{ color: "#ffffff" }} className="mt-1 text-xs font-medium">Consulte as compras e ajuste a despesa, mantendo o passivo protegido.</p>
+          </div>
+          <button ref={fecharRef} type="button" onClick={onClose} aria-label="Fechar ajuda" style={{ background: "#ffffff", color: "#203c86", border: "1px solid #cbd5e1", width: 30, height: 30, fontSize: 22 }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg font-bold hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">×</button>
+        </div>
+        <div style={{ padding: 16 }} className="space-y-2 overflow-y-auto">
+          {etapas.map((etapa, indice) => (
+            <div key={etapa.titulo} style={{ background: "#f7f9fc", border: "1px solid #dce5f1", padding: "12px 14px" }} className="flex items-start gap-3 rounded-xl">
+              <span aria-hidden="true" style={{ background: "#2251df", color: "#ffffff", width: 32, height: 32 }} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2251df] text-base font-bold text-white">{indice + 1}</span>
+              <div className="min-w-0">
+                <h3 style={{ color: "#1e293b" }} className="text-sm font-bold">{etapa.titulo}</h3>
+                <p style={{ color: "#334155", fontSize: 12, lineHeight: 1.5 }} className="mt-1">{etapa.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }

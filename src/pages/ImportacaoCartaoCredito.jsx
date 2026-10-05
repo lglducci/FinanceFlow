@@ -1,4 +1,5 @@
-           import { useEffect, useState } from "react";
+           import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { buildWebhookUrl } from "../config/globals";
@@ -11,6 +12,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 export default function ImportacaoCartaoCredito() {
   const navigate = useNavigate();
+  const [ajudaAberta, setAjudaAberta] = useState(false);
   const empresa_id = localStorage.getItem("empresa_id");
 
   const [senhaPDF, setSenhaPDF] = useState("");
@@ -1058,11 +1060,7 @@ processarLinhasImportadas(
     linhasConvertidas
   );
 
-processarLinhasImportadas(
-  linhasConvertidas,
-  retornoPDF.validacao || null,
-  referenciaPDF
-);
+processarLinhasImportadas(linhasConvertidas, validacao);
 
     if (validacao?.bloqueiaSalvar) {
       alert(`${linhasConvertidas.length} lançamentos carregados, mas a importação ficou BLOQUEADA: ${validacao.mensagem}`);
@@ -1951,29 +1949,31 @@ async function buscarContasContabeisImportacao(linhasImportadas) {
 }
 
 return (
-  <div className="min-h-screen bg-gradient-to-br from-slate-100 via-sky-50 to-slate-200 px-4 py-4">
-    <div className="mx-auto w-full max-w-[1700px] rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+  <div className="min-h-screen bg-slate-50 px-3 py-3">
+    {ajudaAberta && <AjudaImportacaoCartao onClose={() => setAjudaAberta(false)} />}
+    <div className="mx-auto w-full max-w-[1700px] rounded-xl bg-white shadow-sm border border-slate-200 overflow-hidden">
 
-      <div className="bg-[#0b3260] px-4 py-2.5">
+      <div className="border-b border-slate-200 bg-slate-50 px-4 py-2.5" style={{ background: "#f1f5f9", color: "#1e293b" }}>
         <div className="flex items-center justify-between gap-4">
            <div>
-              <h2 className="text-sm font-black tracking-wide text-white">
-                💳 Central de Importação de Cartões
+              <h2 className="text-sm font-bold tracking-wide text-slate-800">
+                💳 Importação de faturas
               </h2>
 
-              <p className="mt-0.5 text-[10px] font-semibold text-sky-100">
+              <p className="mt-0.5 text-[11px] font-medium text-slate-600">
                 Importe faturas por Excel, CSV, TXT ou PDF.
               </p>
             </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button type="button" onClick={() => setAjudaAberta(true)} aria-label="Ajuda sobre importação de faturas" title="Ajuda" style={{width:28,height:28,background:'#eff6ff',color:'#1d4ed8',border:'1px solid #bfdbfe'}} className="rounded-full text-sm font-bold">?</button>
             <button
               type="button"
               onClick={() => setAbaAtiva("lancamentos")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-black shadow ${
+              className={`rounded-lg border px-3 py-1.5 text-xs font-bold ${
                 abaAtiva === "lancamentos"
-                  ? "bg-cyan-400 text-slate-950"
-                  : "bg-white/10 text-white hover:bg-white/20"
+                  ? "border-blue-200 bg-blue-50 text-blue-800"
+                  : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100"
               }`}
             >
               💳 Lançamentos
@@ -1982,10 +1982,10 @@ return (
             <button
               type="button"
               onClick={() => setAbaAtiva("layout")}
-              className={`rounded-lg px-3 py-1.5 text-xs font-black shadow ${
+              className={`rounded-lg border px-3 py-1.5 text-xs font-bold ${
                 abaAtiva === "layout"
-                  ? "bg-cyan-400 text-slate-950"
-                  : "bg-white/10 text-white hover:bg-white/20"
+                  ? "border-blue-200 bg-blue-50 text-blue-800"
+                  : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100"
               }`}
             >
               📄 Layout da Planilha
@@ -2000,11 +2000,11 @@ return (
     <div className="mx-4 mt-4 overflow-hidden rounded-2xl border border-emerald-300 bg-white shadow-xl">
       <div className="flex items-center justify-between gap-4 bg-emerald-700 px-5 py-4 text-white">
         <div>
-          <h3 className="text-xl font-black">
+          <h3 className="text-xl font-bold">
             ✅ Fatura conciliada com sucesso
           </h3>
 
-          <p className="mt-1 text-xs font-semibold text-emerald-100">
+          <p className="mt-1 text-xs font-bold text-emerald-100">
             Fatura nº {resultadoConciliacao.fatura_id} ·
             Importação nº {resultadoConciliacao.importacao_id}
           </p>
@@ -2025,7 +2025,7 @@ return (
             Processadas
           </div>
 
-          <div className="text-xl font-black text-slate-800">
+          <div className="text-xl font-bold text-slate-800">
             {resultadoConciliacao.processadas || 0}
           </div>
         </div>
@@ -2035,7 +2035,7 @@ return (
             Criadas
           </div>
 
-          <div className="text-xl font-black text-emerald-700">
+          <div className="text-xl font-bold text-emerald-700">
             {resultadoConciliacao.compras_criadas ||
               resultadoConciliacao
                 .compras_implantacao_criadas ||
@@ -2048,7 +2048,7 @@ return (
             Recriadas
           </div>
 
-          <div className="text-xl font-black text-blue-700">
+          <div className="text-xl font-bold text-blue-700">
             {resultadoConciliacao.compras_recriadas || 0}
           </div>
         </div>
@@ -2058,7 +2058,7 @@ return (
             Pendentes
           </div>
 
-          <div className="text-xl font-black text-amber-700">
+          <div className="text-xl font-bold text-amber-700">
             {resultadoConciliacao
               .pendentes_compras_antigas || 0}
           </div>
@@ -2069,7 +2069,7 @@ return (
             Ignoradas
           </div>
 
-          <div className="text-xl font-black text-slate-700">
+          <div className="text-xl font-bold text-slate-700">
             {resultadoConciliacao.ignoradas || 0}
           </div>
         </div>
@@ -2077,7 +2077,7 @@ return (
 
       <div className="flex items-center justify-between bg-slate-800 px-5 py-3 text-white">
         <div>
-          <div className="font-black">
+          <div className="font-semibold">
             Lançamentos da fatura
           </div>
 
@@ -2086,7 +2086,7 @@ return (
           </div>
         </div>
 
-        <div className="text-xs font-black">
+        <div className="text-xs font-semibold">
           {transacoesFatura.length} registro(s)
         </div>
       </div>
@@ -2153,13 +2153,13 @@ return (
                       {item.descricao}
                     </div>
 
-                    <div className="mt-0.5 text-[11px] font-semibold text-slate-400">
+                    <div className="mt-0.5 text-[12px] font-bold text-slate-500">
                       {item.nome} · {item.bandeira} · Final{" "}
                       {String(item.numero || "").slice(-4)}
                     </div>
                   </td>
 
-                  <td className="p-3 text-center font-black text-slate-700">
+                  <td className="p-3 text-center font-semibold text-slate-700">
                     {item.parcela_num || 1}/
                     {item.parcela_total || 1}
                   </td>
@@ -2180,7 +2180,7 @@ return (
                       .join("/")}
                   </td>
 
-                  <td className="p-3 text-right font-black text-red-700">
+                  <td className="p-3 text-right font-semibold text-red-700">
                     {Number(item.valor || 0).toLocaleString(
                       "pt-BR",
                       {
@@ -2197,12 +2197,12 @@ return (
               <tr>
                 <td
                   colSpan={5}
-                  className="p-3 text-right font-black"
+                  className="p-3 text-right font-semibold"
                 >
                   Total desta fatura
                 </td>
 
-                <td className="p-3 text-right text-base font-black">
+                <td className="p-3 text-right text-base font-semibold">
                   {transacoesFatura
                     .reduce(
                       (total, item) =>
@@ -2223,125 +2223,35 @@ return (
   )}
 
         {abaAtiva === "lancamentos" && !resultadoConciliacao && (
-           <div className="grid grid-cols-1 items-stretch gap-3 border-b border-slate-200 bg-white p-4 xl:grid-cols-[minmax(0,1fr)_420px_220px]">
-            <div className="rounded-xl border border-cyan-300 bg-white p-3">
-              <label className="mb-2 block text-[10px] font-black uppercase tracking-wide text-slate-400">
-                Cartão
-              </label>
-
+           <div className="grid grid-cols-1 items-stretch gap-2 border-b border-slate-200 bg-white p-3 xl:grid-cols-[minmax(0,1fr)_300px_160px]">
+            <div className="rounded-xl border border-slate-200 bg-white p-2.5">
+              <label className="mb-1 block text-[11px] font-semibold text-slate-600">Cartão</label>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => trocarCartao("anterior")}
-                  className="h-8 w-8 shrink-0 rounded-full border border-slate-200 bg-white text-xs font-black text-blue-700 shadow-sm hover:bg-blue-50"
-                >
-                  {"<<"}
-                </button>
-
-                <div className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <div className="text-base font-black text-slate-900">
-                          {cartaoSelecionado?.nome ||
-                            `Cartão ${cartaoSelecionado?.id || ""}`}
-                        </div>
-
-                        <div className="text-sm font-bold text-slate-500">
-                          Final{" "}
-                          {String(
-                            cartaoSelecionado?.numero || ""
-                          ).slice(-4)}
-                        </div>
-
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            disabled={!cartaoSelecionado?.id}
-                            onClick={() =>
-                              navigate(
-                                `/app/edit-card/${cartaoSelecionado.id}`
-                              )
-                            }
-                            className="
-                              inline-flex items-center gap-1
-                              rounded-lg border border-blue-200
-                              bg-blue-50 px-2.5 py-1
-                              text-[11px] font-black text-blue-700
-                              hover:bg-blue-100
-                              disabled:cursor-not-allowed
-                              disabled:opacity-40
-                            "
-                          >
-                            ✏️ Editar cartão
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              navigate("/app/new-card")
-                            }
-                            className="
-                              inline-flex items-center gap-1
-                              rounded-lg border border-emerald-200
-                              bg-emerald-50 px-2.5 py-1
-                              text-[11px] font-black text-emerald-700
-                              hover:bg-emerald-100
-                            "
-                          >
-                            ＋ Novo cartão
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="text-right">
-                        <div className="text-xs font-bold text-slate-400">
-                          Disponível
-                        </div>
-
-                        <div className="text-base font-black text-emerald-700">
-                          {formatarMoeda(
-                            cartaoSelecionado?.limite_disponivel
-                          )}
-                        </div>
-                      </div>
+                <button type="button" onClick={() => trocarCartao("anterior")} aria-label="Cartão anterior" className="h-7 w-7 shrink-0 rounded-md border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50">{"<<"}</button>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-bold text-slate-800">{cartaoSelecionado?.nome || `Cartão ${cartaoSelecionado?.id || ""}`}</div>
+                      <div className="text-[13px] text-slate-600 font-bold">Final {String(cartaoSelecionado?.numero || "").slice(-4)}</div>
                     </div>
-
-                   <div className="mt-2 grid grid-cols-3 gap-1.5 text-[11px]">
-                    <div  className="rounded-lg bg-slate-100 px-2 py-1.5">
-                      <div className="text-slate-500 font-bold">Limite</div>
-                      <div className="text-slate-900 font-black">
-                        {formatarMoeda(cartaoSelecionado?.limite_total)}
-                      </div>
-                    </div>
-
-                    <div  className="rounded-lg bg-slate-100 px-2 py-1.5">
-                      <div className="text-slate-500 font-bold">Fecha</div>
-                      <div className="text-slate-900 font-black">
-                        Dia {cartaoSelecionado?.fechamento_dia || "-"}
-                      </div>
-                    </div>
-
-                    <div  className="rounded-lg bg-slate-100 px-2 py-1.5">
-                      <div className="text-slate-500 font-bold">Vence</div>
-                      <div className="text-slate-900 font-black">
-                        Dia {cartaoSelecionado?.vencimento_dia || "-"}
-                      </div>
+                    <div className="flex items-center gap-1">
+                      <button type="button" disabled={!cartaoSelecionado?.id} onClick={() => navigate(`/app/edit-card/${cartaoSelecionado.id}`)} className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[12px] font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40">Editar</button>
+                      <button type="button" onClick={() => navigate("/app/new-card")} className=" font-bold rounded-md border border-slate-200 bg-white px-2 py-1 text-[12px] font-medium text-slate-600 hover:bg-slate-50">＋ Novo</button>
                     </div>
                   </div>
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-100 pt-1.5 text-[14px] text-slate-600">
+                    <span>Disponível <strong className="font-bold text-emerald-700">{formatarMoeda(cartaoSelecionado?.limite_disponivel)}</strong></span>
+                    <span>Limite <strong className="font-bold text-slate-800">{formatarMoeda(cartaoSelecionado?.limite_total)}</strong></span>
+                    <span>Fecha <strong className="font-bold text-slate-800">dia {cartaoSelecionado?.fechamento_dia || "-"}</strong></span>
+                    <span>Vence <strong className="font-bold text-slate-800">dia {cartaoSelecionado?.vencimento_dia || "-"}</strong></span>
+                  </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => trocarCartao("proximo")}
-                  className="h-8 w-8 shrink-0 rounded-full border border-slate-200 bg-white text-xs font-black text-blue-700 shadow-sm hover:bg-blue-50"
-                >
-                  {">>"}
-                </button>
+                <button type="button" onClick={() => trocarCartao("proximo")} aria-label="Próximo cartão" className="h-7 w-7 shrink-0 rounded-md border border-slate-200 bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50">{">>"}</button>
               </div>
             </div>
 
-            <div className="flex flex-col rounded-xl border border-cyan-300 bg-white p-3">
-              <label className="text-[10px] font-black uppercase tracking-wide text-slate-400">
+            <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-2.5">
+              <label className="text-[10px] font-semibold text-slate-600">
                 Referência da fatura
               </label>
               <input
@@ -2367,12 +2277,12 @@ return (
             />
             </div>
 
-            <div className="flex flex-col justify-center rounded-xl border border-cyan-300 bg-white p-3 text-right">
-              <div className="text-[10px] font-black uppercase tracking-wide text-slate-400">
+            <div className="flex flex-col justify-center rounded-xl border border-slate-200 bg-white p-2.5 text-right">
+              <div className="text-[10px] font-semibold text-slate-600">
                 Total líquido
               </div>
               <div
-                className={`mt-2 text-xl font-black ${
+                className={`mt-1 text-lg font-semibold ${
                   (resumo?.liquido || 0) >= 0
                     ? "text-emerald-700"
                     : "text-red-700"
@@ -2387,10 +2297,10 @@ return (
           </div>
         )}
 
-      <div className="p-5 bg-slate-50">
+      <div className="p-3 bg-white">
         {abaAtiva === "layout" && (
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow">
-              <h3 className="text-xl font-black text-slate-800 mb-3">
+              <h3 className="text-xl font-semibold text-slate-800 mb-3">
                 📄 Layout esperado da planilha de cartão
               </h3>
 
@@ -2398,7 +2308,7 @@ return (
                 A planilha deve conter as colunas abaixo. O arquivo pode ser Excel, CSV ou TXT separado por ponto e vírgula.
               </p>
 
-              <table className="w-full text-sm border border-slate-200 overflow-hidden rounded-xl">
+              <table className="w-full text-base border border-slate-200 overflow-hidden rounded-xl font-bold">
                 <thead className="bg-slate-900 text-white">
                   <tr>
                     <th className="p-2 border border-slate-700">Data</th>
@@ -2414,7 +2324,7 @@ return (
                     <td className="p-2 border">02/05/2026</td>
                     <td className="p-2 border font-semibold">HETZNER ONLINE GMBH</td>
                     <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                    <td className="p-2 border text-red-700 font-black">R$ 3,67</td>
+                    <td className="p-2 border text-red-700 font-semibold">R$ 3,67</td>
                     <td className="p-2 border">-</td>
                   </tr>
 
@@ -2422,7 +2332,7 @@ return (
                     <td className="p-2 border">20/04/2026</td>
                     <td className="p-2 border font-semibold">Pagamentos Validos Normais</td>
                     <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                    <td className="p-2 border text-green-700 font-black">R$ -272,44</td>
+                    <td className="p-2 border text-green-700 font-semibold">R$ -272,44</td>
                     <td className="p-2 border">-</td>
                   </tr>
 
@@ -2430,7 +2340,7 @@ return (
                     <td className="p-2 border">27/04/2026</td>
                     <td className="p-2 border font-semibold">MP*MERCADOLIVRE</td>
                     <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                    <td className="p-2 border text-red-700 font-black">R$ 10,68</td>
+                    <td className="p-2 border text-red-700 font-semibold">R$ 10,68</td>
                     <td className="p-2 border">1 de 7</td>
                   </tr>
 
@@ -2438,14 +2348,14 @@ return (
                     <td className="p-2 border">27/07/2025</td>
                     <td className="p-2 border font-semibold">ASA*NO CODE START UP N</td>
                     <td className="p-2 border">LUIS GUSTAVO LANDUCCI</td>
-                    <td className="p-2 border text-red-700 font-black">R$ 157,53</td>
+                    <td className="p-2 border text-red-700 font-semibold">R$ 157,53</td>
                     <td className="p-2 border">10 de 12</td>
                   </tr>
                 </tbody>
               </table>
 
               <div className="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-700 space-y-1 font-semibold">
-                <p className="font-black text-slate-900">Regras:</p>
+                <p className="font-semibold text-slate-900">Regras:</p>
                 <p>• Data deve estar no formato DD/MM/AAAA.</p>
                 <p>• Estabelecimento é obrigatório.</p>
                 <p>• Portador é opcional, mas recomendado.</p>
@@ -2470,7 +2380,7 @@ return (
   resumo &&
   !resultadoConciliacao && (
 
-           <div className="mb-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-800">
+           <div className="mb-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">
             ✔ {resumo.qtd} registros importados | Compras:{" "}
             {resumo.compras.toLocaleString("pt-BR", {
               style: "currency",
@@ -2493,7 +2403,7 @@ return (
   validacaoPDF &&
   !resultadoConciliacao && (
           <div
-             className={`mb-2 rounded-xl border px-3 py-2 text-xs font-black ${
+             className={`mb-2 rounded-xl border px-3 py-2 text-xs font-semibold ${
               validacaoPDF.ok
                 ? "bg-emerald-50 border-emerald-300 text-emerald-800"
                 : "bg-red-50 border-red-300 text-red-800"
@@ -2510,14 +2420,14 @@ return (
 
       {/* Filtro */}
       <div className="flex items-center gap-2">
-        <span className="text-xs font-black text-slate-500">
+        <span className="text-xs font-semibold text-slate-500">
           Exibir:
         </span>
 
         <select
           value={filtroStatus}
           onChange={(e) => setFiltroStatus(e.target.value)}
-          className="h-9 min-w-[155px] rounded-xl border border-amber-300 bg-amber-50 px-3 text-xs font-black text-amber-800 outline-none focus:ring-2 focus:ring-amber-200"
+          className="h-9 min-w-[155px] rounded-xl border border-amber-300 bg-amber-50 px-3 text-xs font-semibold text-amber-800 outline-none focus:ring-2 focus:ring-amber-200"
         >
           <option value="pendentes">
             Pendentes ({quantidadePendentes})
@@ -2545,7 +2455,7 @@ return (
               setContaLoteId(null);
               setMostrarContasLote(true);
             }}
-            className="h-9 w-full rounded-xl border border-blue-200 bg-blue-50 px-3 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-200"
+            className="h-9 w-full rounded-xl border border-blue-200 bg-white px-3 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-200"
           />
 
           {mostrarContasLote &&
@@ -2582,7 +2492,7 @@ return (
                       }}
                       className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
                     >
-                      <span className="font-black text-slate-800">
+                      <span className="font-semibold text-slate-800">
                         {conta.codigo}
                       </span>
 
@@ -2604,7 +2514,7 @@ return (
             !linhasSelecionadas.length ||
             !contaLoteId
           }
-          className="h-9 whitespace-nowrap rounded-xl bg-[#061f4a] px-4 text-xs font-black text-white shadow hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-40"
+          className="h-9 whitespace-nowrap rounded-xl bg-slate-700 px-4 text-xs font-semibold text-white shadow hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Aplicar ({linhasSelecionadas.length})
         </button>
@@ -2616,7 +2526,7 @@ return (
   !resultadoConciliacao && (
           <div className="max-h-[580px] overflow-y-auto overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow">
             <div className="min-w-[1500px]">
-              <div className="sticky top-0 z-10 grid grid-cols-[44px_110px_minmax(280px,1.8fr)_220px_100px_320px_140px_120px] items-center gap-3 border-b border-slate-200 bg-slate-900 px-4 py-3 text-sm text-white">
+              <div className="sticky top-0 z-10 grid grid-cols-[44px_110px_minmax(280px,1.8fr)_220px_100px_320px_140px_120px] items-center gap-3 border-b border-slate-200 bg-slate-100 px-4 py-2 text-xs text-slate-700">
                 <div className="flex justify-center">
                   <input
                     type="checkbox"
@@ -2633,13 +2543,13 @@ return (
                     className="h-4 w-4 cursor-pointer accent-blue-700"
                   />
                 </div>
-                <div className="text-left font-black">Data</div>
-                <div className="text-left font-black">Estabelecimento</div>
-                <div className="text-left font-black">Portador</div>
-                <div className="text-center font-black">Parcela</div>
-                <div className="text-left font-black">Conta contábil</div>
-                <div className="text-right font-black">Valor</div>
-                <div className="text-center font-black">Tipo</div>
+                <div className="text-left font-semibold">Data</div>
+                <div className="text-left font-semibold">Estabelecimento</div>
+                <div className="text-left font-semibold">Portador</div>
+                <div className="text-center font-semibold">Parcela</div>
+                <div className="text-left font-semibold">Conta contábil</div>
+                <div className="text-right font-semibold">Valor</div>
+                <div className="text-center font-semibold">Tipo</div>
               </div>
 
               {linhasExibidas.map((l) => (
@@ -2725,7 +2635,7 @@ return (
                             setContaDropdownLinha(chaveLinha);
                             filtrarContasDaLinha(texto);
                           }}
-                          className="h-9 w-full rounded-xl border border-blue-200 bg-blue-50 px-3 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-200"
+                          className="h-9 w-full rounded-xl border border-blue-200 bg-white px-3 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-200"
                         />
 
                         {Number(contaDropdownLinha) === Number(l.linha) &&
@@ -2741,7 +2651,7 @@ return (
                                   }}
                                   className="block w-full px-3 py-2 text-left text-xs hover:bg-blue-50"
                                 >
-                                  <span className="font-black text-slate-800">
+                                  <span className="font-semibold text-slate-800">
                                     {conta.codigo}
                                   </span>
                                   <span className="text-slate-600">
@@ -2763,7 +2673,7 @@ return (
                   </div>
 
                   <div
-                    className={`text-right font-mono font-black ${
+                    className={`text-right font-mono font-semibold ${
                       l.valor >= 0 ? "text-red-700" : "text-green-700"
                     }`}
                   >
@@ -2775,7 +2685,7 @@ return (
 
                   <div className="text-center">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-black ${
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
                         l.tipo_linha === "compra"
                           ? "bg-red-100 text-red-700"
                           : l.tipo_linha === "pagamento"
@@ -2794,7 +2704,7 @@ return (
 
           {abaAtiva === "lancamentos" &&
   !resultadoConciliacao && (
-           <div className="mt-5 flex items-center justify-end gap-3 pr-20">
+           <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
             <label
               className={`btn-pill flex items-center gap-2 ${
                 statusEtapa === "importar"
@@ -2855,4 +2765,117 @@ return (
     </div>
   </div>
 );
+}
+
+
+function AjudaImportacaoCartao({ onClose }) {
+  const painelRef = useRef(null);
+  const fecharRef = useRef(null);
+  const etapas = [
+  {
+    "titulo": "Exporte a fatura no banco ou na administradora",
+    "texto": "Acesse o aplicativo ou internet banking, abra a seção Cartões e escolha o cartão e a fatura do mês desejado. Procure opções como Fatura, Baixar, Exportar ou Download. Os nomes variam por instituição. Exporte em PDF ou Excel e salve o arquivo em uma pasta fácil de encontrar no computador. Prefira a fatura completa, com o detalhamento das compras e parcelas."
+  },
+  {
+    "titulo": "Confira o cartão e a referência",
+    "texto": "Use << e >> para selecionar o cartão correspondente ao arquivo e confira o nome e os últimos quatro dígitos. Se necessário, use Novo ou Editar para ajustar o cadastro. A referência identifica o mês/competência da fatura: confira a data sugerida após importar. Se o PDF exigir senha, preencha Senha do PDF antes de escolher o arquivo."
+  },
+  {
+    "titulo": "Importe o arquivo e confira a prévia",
+    "texto": "Clique em 1. Importar Arquivo e escolha o arquivo salvo. A tela aceita PDF, XLSX, XLS, CSV e TXT; a leitura depende do formato do arquivo. A importação carrega uma prévia para conferência. Confira datas, estabelecimento, portador, parcelas, valores e tipo de cada item antes de salvar."
+  },
+  {
+    "titulo": "Se usar planilha, confira o layout",
+    "texto": "Na aba Layout da Planilha, veja o exemplo e use Exportar Layout se precisar preparar uma planilha compatível. Utilize as colunas Data, Estabelecimento, Portador, Valor e Parcela. Informe datas como DD/MM/AAAA; estabelecimento é obrigatório. Portador é opcional; parcela pode ser -, 1 de 7 ou 1/7. CSV e TXT devem ter cabeçalho e campos separados por ponto e vírgula."
+  },
+  {
+    "titulo": "Confira o total e os avisos do PDF",
+    "texto": "Compare os registros e o total com a fatura original. Compras positivas aumentam o valor; créditos e estornos negativos reduzem. Pagamentos de faturas anteriores são tratados separadamente na validação do PDF. Se houver divergência que bloqueie a gravação, revise o arquivo e os avisos. Se o total não puder ser identificado com segurança, faça a conferência manual antes de continuar."
+  },
+  {
+    "titulo": "Classifique as compras contabilmente",
+    "texto": "Depois de importar, escolha a conta contábil de cada compra ou parcela. Digite o código ou nome no campo Conta contábil e clique em uma opção da lista: apenas escrever não confirma a escolha. Por exemplo, uma despesa de internet deve usar a conta correspondente no plano da empresa. Revise também as contas sugeridas pelo sistema. Créditos e pagamentos mostram Não se aplica nesta etapa."
+  },
+  {
+    "titulo": "Classifique vários itens de uma vez",
+    "texto": "Para itens que realmente usam a mesma conta, marque as caixas de seleção, pesquise a Conta contábil para selecionados, escolha uma opção e clique em Aplicar. Use Exibir: Pendentes para localizar compras sem classificação. Atenção: a caixa do cabeçalho seleciona todas as compras/parcelas elegíveis da importação, inclusive as que estiverem fora do filtro visível."
+  },
+  {
+    "titulo": "Salve a prévia e depois concilie",
+    "texto": "Com os itens conferidos e todas as compras/parcelas classificadas, clique em 2. Salvar prévia. A gravação é bloqueada quando faltam contas obrigatórias ou existe uma divergência de PDF que impede salvar. Depois, confirme a referência e clique em 3. Conciliar. Salvar a prévia e concluir a conciliação são etapas distintas."
+  },
+  {
+    "titulo": "Confira o resultado da fatura",
+    "texto": "Após conciliar, a tela apresenta o resultado, os registros processados e os lançamentos gravados na fatura. Confira os totais e eventuais pendências. Importar e conciliar a fatura organiza os registros no FinanceFlow; não efetua o pagamento no banco. Use Nova importação para começar outro arquivo; durante a preparação, Limpar descarta os dados da tela, sem ser uma ação de exclusão do que já foi gravado."
+  }
+];
+
+  useEffect(() => {
+    const focoAnterior = document.activeElement;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    fecharRef.current?.focus();
+    function teclado(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+      if (event.key === "Tab") {
+        const botoes = painelRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+        );
+        if (!botoes?.length) return;
+        const primeiro = botoes[0];
+        const ultimo = botoes[botoes.length - 1];
+        if (event.shiftKey && document.activeElement === primeiro) {
+          event.preventDefault(); ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+          event.preventDefault(); primeiro.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", teclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener("keydown", teclado);
+      if (focoAnterior?.isConnected) focoAnterior.focus();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/55 p-3 sm:p-5"
+      onClick={event => { if (event.target === event.currentTarget) onClose(); }}
+    >
+      <div
+        ref={painelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ajuda-importacao-cartao-titulo"
+        aria-describedby="ajuda-importacao-cartao-descricao"
+        style={{ width: "min(680px, 100%)", maxWidth: 680, maxHeight: "90vh", backgroundColor: "#ffffff", color: "#1e293b", borderRadius: 20 }}
+        className="flex flex-col overflow-hidden shadow-2xl"
+      >
+        <div style={{ background: "linear-gradient(110deg, #203c86, #0e7490)", color: "#ffffff", padding: "14px 18px" }} className="flex shrink-0 items-start justify-between gap-3">
+          <div>
+            <h2 id="ajuda-importacao-cartao-titulo" style={{ color: "#ffffff", fontSize: 18 }} className="text-xl font-extrabold leading-tight">Como importar a fatura do cartão</h2>
+            <p id="ajuda-importacao-cartao-descricao" style={{ color: "#ffffff" }} className="mt-1 text-xs font-medium">Do arquivo do banco à classificação contábil e à conciliação da fatura.</p>
+          </div>
+          <button ref={fecharRef} type="button" onClick={onClose} aria-label="Fechar ajuda" style={{ background: "#ffffff", color: "#203c86", border: "1px solid #cbd5e1", width: 30, height: 30, fontSize: 22 }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg font-bold hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">×</button>
+        </div>
+        <div style={{ padding: 16 }} className="space-y-2 overflow-y-auto">
+          {etapas.map((etapa, indice) => (
+            <div key={etapa.titulo} style={{ background: "#f7f9fc", border: "1px solid #dce5f1", padding: "12px 14px" }} className="flex items-start gap-3 rounded-xl">
+              <span aria-hidden="true" style={{ background: "#2251df", color: "#ffffff", width: 32, height: 32 }} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2251df] text-base font-bold text-white">{indice + 1}</span>
+              <div className="min-w-0">
+                <h3 style={{ color: "#1e293b" }} className="text-sm font-bold">{etapa.titulo}</h3>
+                <p style={{ color: "#334155", fontSize: 12, lineHeight: 1.5 }} className="mt-1">{etapa.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
 }

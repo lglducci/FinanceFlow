@@ -559,7 +559,7 @@
   return (
     <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white">
       <div className="max-h-[560px] overflow-auto">
-        <table className="w-full min-w-[1200px] table-fixed text-left text-xs">
+        <table className="w-full min-w-[1200px] table-fixed text-left text-sm">
           <colgroup>
             <col />
             <col style={{ width: 130 }} />
@@ -571,7 +571,7 @@
             <col style={{ width: 130 }} />
           </colgroup>
 
-          <thead className="sticky top-0 z-10 bg-slate-100 text-slate-700">
+          <thead className="sticky top-0 z-10 bg-slate-100 text-slate-700 ">
             <tr>
               {[
                 "Descrição",
@@ -680,7 +680,7 @@ function TabelaRazao({ linhas }) {
   return (
     <div className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white">
       <div className="max-h-[560px] overflow-auto">
-        <table className="w-full min-w-[1100px] table-fixed text-left text-xs">
+        <table className="w-full min-w-[1100px] table-fixed text-left text-sm">
           <colgroup>
             <col style={{ width: 100 }} />
             <col />

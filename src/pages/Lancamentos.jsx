@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
       import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildWebhookUrl } from '../config/globals';
@@ -24,6 +25,7 @@ import { ClipboardEdit } from "lucide-react";
 
 
 export default function Lancamentos() {
+  const [ajudaLancamentosAberta, setAjudaLancamentosAberta] = useState(false);
   const { t } = useTranslation();
   const [dataIni, setDataIni] = useState("");
   const [dataFim, setDataFim] = useState("");
@@ -1220,6 +1222,7 @@ console.log("iconeConta:", iconeConta);
 
 return (
   <div className="flex h-[calc(100vh-20px)] gap-4 p-4 overflow-hidden">
+    {ajudaLancamentosAberta && <AjudaLancamentos onClose={() => setAjudaLancamentosAberta(false)} />}
     <div className={`${drawerNovo ? "w-[65%]" : "w-full"} space-y-4 overflow-y-auto transition-all duration-300`}> 
 
     {msgEstorno && (
@@ -1240,7 +1243,10 @@ return (
     {/* HEADER */}
    <div className="flex justify-between items-start">
   
-    <h1 className="text-2xl font-bold text-blue-800">{t("lancamentos.titulo", "Transações Financeiras")}</h1>
+    <div className="flex items-center gap-2">
+      <h1 className="text-2xl font-bold text-blue-800">{t("lancamentos.titulo", "Transações Financeiras")}</h1>
+      <button type="button" onClick={() => setAjudaLancamentosAberta(true)} aria-label="Ajuda sobre lançamentos" title="Como consultar e trabalhar com lançamentos" style={{ color: "#1d4ed8", background: "#ffffff", border: "1px solid #bfdbfe", width: 28, height: 28 }} className="flex shrink-0 items-center justify-center rounded-full text-sm font-bold hover:bg-blue-50">?</button>
+    </div>
   <div>
 
   
@@ -2257,4 +2263,132 @@ return (
 );
 
   
+}
+
+function AjudaLancamentos({ onClose }) {
+  const painelRef = useRef(null);
+  const fecharRef = useRef(null);
+  const etapas = [
+    {
+        "titulo": "Entenda o que esta tela reúne",
+        "texto": "Consulte movimentações à vista, contas a pagar e a receber, compras e faturas de cartão, títulos vencidos, próximos vencimentos, baixados e estornados. Compromissos a prazo e contas geradas por recorrência também podem ser acompanhados nas consultas de pagar e receber."
+    },
+    {
+        "titulo": "Comece pela importação quando houver extrato",
+        "texto": "Se você já tem o arquivo do banco, use Importação Bancária para importar o PDF ou OFX e revisar a conciliação. A importação pode fazer grande parte dos registros e baixas quando os títulos e faturas estão cadastrados e as configurações permitem identificar o movimento do extrato. Nem toda movimentação precisa ser lançada ou baixada manualmente."
+    },
+    {
+        "titulo": "Confira o resultado antes de agir manualmente",
+        "texto": "Depois de importar e concluir a conciliação, consulte os movimentos e os títulos baixados. A existência de uma conta cadastrada não garante que todo movimento seja identificado automaticamente. Se um compromisso continuar aberto, confira o pagamento ou recebimento no banco, o extrato importado e a revisão antes de repetir a operação manualmente."
+    },
+    {
+        "titulo": "Escolha o tipo de consulta e o período",
+        "texto": "Em Filtros, escolha as datas, a conta para consulta, a busca e o tipo de registro; depois clique em Aplicar filtros. Você também pode escolher o tipo de consulta na tela e clicar em Consultar. A pesquisa por texto ajuda a localizar um histórico. Se não encontrar um registro, confira o período e os filtros ativos."
+    },
+    {
+        "titulo": "Use a consulta certa para cada situação",
+        "texto": "À vista mostra movimentos financeiros; A pagar e A receber mostram compromissos; Compras cartão e Faturas mostram os respectivos registros. Vencidos e Vence 7 dias ajudam a priorizar pendências. Baixados permite conferir pagamentos e recebimentos registrados; Estornados permite consultar operações desfeitas."
+    },
+    {
+        "titulo": "Leia os dados e os totais da consulta",
+        "texto": "Confira histórico, conta, tipo, classificação, forma de pagamento, vencimento, status e valor. As colunas variam conforme a consulta; títulos podem mostrar parcelas, e faturas mostram informações do cartão. Use os totais como apoio e observe os filtros: uma lista parcial não representa toda a movimentação da empresa."
+    },
+    {
+        "titulo": "Diferencie a conta do filtro da conta da operação",
+        "texto": "A conta escolhida em Filtros limita os registros consultados. A conta financeira selecionada na tela é usada nas ações de pagar, receber ou pagar fatura. Antes de executar uma baixa manual, escolha a conta pela qual o dinheiro realmente saiu ou entrou; não presuma que é a mesma conta usada no filtro."
+    },
+    {
+        "titulo": "Cadastre manualmente somente o que for necessário",
+        "texto": "Em Novo lançamento, escolha Recebimento ou Pagamento e a forma: à vista, Pix, cartão de débito, cartão de crédito ou a prazo. Há também Transferência entre contas e lançamento contábil rápido. Preencha e confira os dados antes de salvar. Antes de cadastrar, verifique se o registro já existe ou será tratado pela importação."
+    },
+    {
+        "titulo": "Acompanhe contas a prazo, recorrências e faturas",
+        "texto": "Contas a prazo e compromissos recorrentes podem ficar em aberto até que o pagamento ou recebimento seja registrado. Consulte-os por vencimento e confira se a importação e a conciliação já fizeram a baixa. Uma compra no cartão e o pagamento da fatura são etapas diferentes; confira a fatura correspondente antes de pagá-la manualmente."
+    },
+    {
+        "titulo": "Pague ou receba manualmente quando necessário",
+        "texto": "Se o compromisso continua aberto e não foi resolvido pela importação, confirme que o pagamento ou recebimento realmente ocorreu. Selecione a conta financeira correta, marque o título e use Pagar Seleção, Receber Seleção ou Pagar Faturas, conforme a consulta. Essa ação registra a baixa no FinanceFlow; não efetua uma transferência ou pagamento no banco."
+    },
+    {
+        "titulo": "Use seleção em lote com atenção",
+        "texto": "Marque os registros pelas caixas de seleção; a caixa do cabeçalho seleciona os itens visíveis da consulta. O botão de ação muda conforme o tipo: pagar, receber, pagar faturas, baixar ou estornar. Antes de clicar, confira o nome do botão, os registros selecionados e a conta financeira. Nas baixas, se os itens pertencem a contas diferentes, execute cada grupo separadamente."
+    },
+    {
+        "titulo": "Edite, exclua ou estorne com o objetivo correto",
+        "texto": "Para editar, clique duas vezes na linha: o sistema abre a tela correspondente ao tipo do registro. Excluir remove um cadastro quando permitido; registros pagos, recebidos ou com vínculos podem bloquear a exclusão. Estornar desfaz uma operação registrada e exige confirmação. Na consulta Estornados, os registros são apenas consultados."
+    },
+    {
+        "titulo": "Confira o resultado e acompanhe a contabilidade",
+        "texto": "Após salvar, baixar ou estornar, consulte novamente para verificar o status, os valores e o saldo da conta. Use Imprimir para imprimir a consulta. Quando houver lançamentos pendentes de processamento contábil, siga o aviso do sistema e realize esse processamento para conferir os reflexos nos relatórios contábeis."
+    }
+];
+
+  useEffect(() => {
+    const focoAnterior = document.activeElement;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    fecharRef.current?.focus();
+    function teclado(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+      if (event.key === "Tab") {
+        const botoes = painelRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+        );
+        if (!botoes?.length) return;
+        const primeiro = botoes[0];
+        const ultimo = botoes[botoes.length - 1];
+        if (event.shiftKey && document.activeElement === primeiro) {
+          event.preventDefault(); ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+          event.preventDefault(); primeiro.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", teclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener("keydown", teclado);
+      if (focoAnterior?.isConnected) focoAnterior.focus();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/55 p-3 sm:p-5"
+      onClick={event => { if (event.target === event.currentTarget) onClose(); }}
+    >
+      <div
+        ref={painelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ajuda-lancamentos-titulo"
+        aria-describedby="ajuda-lancamentos-descricao"
+        style={{ width: "min(680px, 100%)", maxWidth: 680, maxHeight: "90vh", backgroundColor: "#ffffff", color: "#1e293b", borderRadius: 20 }}
+        className="flex flex-col overflow-hidden shadow-2xl"
+      >
+        <div style={{ background: "linear-gradient(110deg, #203c86, #0e7490)", color: "#ffffff", padding: "14px 18px" }} className="flex shrink-0 items-start justify-between gap-3">
+          <div>
+            <h2 id="ajuda-lancamentos-titulo" style={{ color: "#ffffff", fontSize: 18 }} className="text-xl font-extrabold leading-tight">Como consultar e trabalhar com lançamentos</h2>
+            <p id="ajuda-lancamentos-descricao" style={{ color: "#ffffff" }} className="mt-1 text-xs font-medium">Consulta, importação e ações manuais: entenda quando usar cada uma.</p>
+          </div>
+          <button ref={fecharRef} type="button" onClick={onClose} aria-label="Fechar ajuda" style={{ background: "#ffffff", color: "#203c86", border: "1px solid #cbd5e1", width: 30, height: 30, fontSize: 22 }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg font-bold hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">×</button>
+        </div>
+        <div style={{ padding: 16 }} className="space-y-2 overflow-y-auto">
+          {etapas.map((etapa, indice) => (
+            <div key={etapa.titulo} style={{ background: "#f7f9fc", border: "1px solid #dce5f1", padding: "12px 14px" }} className="flex items-start gap-3 rounded-xl">
+              <span aria-hidden="true" style={{ background: "#2251df", color: "#ffffff", width: 32, height: 32 }} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2251df] text-base font-bold text-white">{indice + 1}</span>
+              <div className="min-w-0">
+                <h3 style={{ color: "#1e293b" }} className="text-sm font-bold">{etapa.titulo}</h3>
+                <p style={{ color: "#334155", fontSize: 12, lineHeight: 1.5 }} className="mt-1">{etapa.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
 }

@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
      import { useState,useEffect } from "react";
    import { useNavigate } from "react-router-dom";
    import { buildWebhookUrl } from "../config/globals";
@@ -16,6 +17,7 @@ import ImportadorSicoob from "../components/ImportadorSicoob";
      const { t } = useTranslation();
     
     const [mensagemImportacao, setMensagemImportacao] = useState(null);
+    const [ajudaImportacaoAberta, setAjudaImportacaoAberta] = useState(false);
      const [saldo, setSaldo] = useState(0);
       const empresa_id = localStorage.getItem("empresa_id");
     const [contas, setContas] = useState([]);
@@ -1909,9 +1911,16 @@ diagnosticoPdfRef.current = {
           <div className="mx-auto w-full max-w-[1620px]">
          <div className="rounded-xl border border-slate-200 bg-[#f4f7fb] shadow-sm px-3 py-2">
            <div className="mb-0">
-            <h2 className="text-base font-bold tracking-tight text-slate-800 mb-1">
-               📘 Importação Bancária
-             </h2>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <h2 className="text-base font-bold tracking-tight text-slate-800">📘 Importação Bancária</h2>
+              <button
+                type="button"
+                onClick={() => setAjudaImportacaoAberta(true)}
+                aria-label="Ajuda sobre importação bancária"
+                title="Como importar um extrato bancário"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-white text-sm font-bold text-blue-700 transition hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600"
+              >?</button>
+            </div>
    
              <div className="flex items-center justify-end mb-1">
              {/* Abas Lançamentos e Layout temporariamente ocultas:
@@ -2477,6 +2486,10 @@ diagnosticoPdfRef.current = {
          </div>
     
    
+       {ajudaImportacaoAberta && (
+         <AjudaImportacaoBancaria onClose={() => setAjudaImportacaoAberta(false)} />
+       )}
+
        <ModalBase
          open={modalContaAberto}
          onClose={() => setModalContaAberto(false)}
@@ -2634,3 +2647,107 @@ diagnosticoPdfRef.current = {
    );
    }
    
+
+function AjudaImportacaoBancaria({ onClose }) {
+  const painelRef = useRef(null);
+  const fecharRef = useRef(null);
+  const etapas = [
+    {
+      titulo: "Acesse o extrato no seu banco",
+      texto: "Entre no aplicativo ou internet banking e abra o extrato da conta que deseja importar. Este é o começo: trazer os movimentos do banco para o FinanceFlow.",
+    },
+    {
+      titulo: "Escolha o período",
+      texto: "Selecione a data inicial e final do extrato. Confira se a conta e o período são os desejados antes de baixar o arquivo. Se tiver várias contas, exporte um arquivo para cada uma.",
+    },
+    {
+      titulo: "Exporte em OFX ou PDF",
+      texto: "No banco, procure a opção de baixar ou exportar o extrato e escolha OFX ou PDF. O nome dessa opção varia conforme o banco. Salve o arquivo no computador, em uma pasta fácil de encontrar, como Downloads.",
+    },
+    {
+      titulo: "Selecione a conta no FinanceFlow",
+      texto: "Nesta tela, use as setas para escolher a mesma conta bancária do arquivo. Confira banco, agência e número da conta. Se o cadastro estiver incorreto, use Editar conta antes de importar.",
+    },
+    {
+      titulo: "Escolha o arquivo para importar",
+      texto: "Clique em Importar OFX ou Importar PDF, conforme o formato que você baixou. Localize o arquivo salvo e confirme a seleção. Aguarde o processamento; a importação de PDF depende dos bancos e formatos disponíveis no sistema.",
+    },
+    {
+      titulo: "Valide o arquivo e avance para a classificação",
+      texto: "O sistema valida os dados da conta, as movimentações e os saldos. Se estiver tudo correto, salva a importação automaticamente e abre a tela para classificar e revisar cada lançamento. Você não precisa clicar em Salvar novamente. Se houver erro, confira o aviso e corrija antes de tentar novamente.",
+    },
+    {
+      titulo: "Classifique cada lançamento e revise a conciliação",
+      texto: "Na próxima tela, confira o histórico, a data e o valor de cada lançamento e atribua ou confirme a conta contábil e a classificação corretas. Depois de revisar os registros, aceite ou rejeite o que será conciliado e execute a conciliação.",
+    },
+  ];
+
+  useEffect(() => {
+    const focoAnterior = document.activeElement;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    fecharRef.current?.focus();
+    function teclado(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+      if (event.key === "Tab") {
+        const botoes = painelRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+        );
+        if (!botoes?.length) return;
+        const primeiro = botoes[0];
+        const ultimo = botoes[botoes.length - 1];
+        if (event.shiftKey && document.activeElement === primeiro) {
+          event.preventDefault(); ultimo.focus();
+        } else if (!event.shiftKey && document.activeElement === ultimo) {
+          event.preventDefault(); primeiro.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", teclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener("keydown", teclado);
+      if (focoAnterior?.isConnected) focoAnterior.focus();
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/55 p-3 sm:p-5"
+      onClick={event => { if (event.target === event.currentTarget) onClose(); }}
+    >
+      <div
+        ref={painelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ajuda-importacao-titulo"
+        aria-describedby="ajuda-importacao-descricao"
+        style={{ width: "min(680px, 100%)", maxWidth: 680, maxHeight: "90vh", backgroundColor: "#ffffff", color: "#1e293b", borderRadius: 20 }}
+        className="flex flex-col overflow-hidden shadow-2xl"
+      >
+        <div style={{ background: "linear-gradient(110deg, #203c86, #0e7490)", color: "#ffffff", padding: "14px 18px" }} className="flex shrink-0 items-start justify-between gap-3">
+          <div>
+            <h2 id="ajuda-importacao-titulo" style={{ color: "#ffffff", fontSize: 18 }} className="text-xl font-extrabold leading-tight">Como importar seu extrato bancário</h2>
+            <p id="ajuda-importacao-descricao" style={{ color: "#ffffff" }} className="mt-1 text-xs font-medium">Do arquivo do banco à revisão: siga as etapas abaixo.</p>
+          </div>
+          <button ref={fecharRef} type="button" onClick={onClose} aria-label="Fechar ajuda" style={{ background: "#ffffff", color: "#203c86", border: "1px solid #cbd5e1", width: 30, height: 30, fontSize: 22 }} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg font-bold hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">×</button>
+        </div>
+        <div style={{ padding: 16 }} className="space-y-2 overflow-y-auto">
+          {etapas.map((etapa, indice) => (
+            <div key={etapa.titulo} style={{ background: "#f7f9fc", border: "1px solid #dce5f1", padding: "12px 14px" }} className="flex items-start gap-3 rounded-xl">
+              <span aria-hidden="true" style={{ background: "#2251df", color: "#ffffff", width: 32, height: 32 }} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#2251df] text-base font-bold text-white">{indice + 1}</span>
+              <div className="min-w-0">
+                <h3 style={{ color: "#1e293b" }} className="text-sm font-bold">{etapa.titulo}</h3>
+                <p style={{ color: "#334155", fontSize: 12, lineHeight: 1.5 }} className="mt-1">{etapa.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
