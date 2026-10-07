@@ -13,8 +13,9 @@ import { hojeLocal } from '../utils/dataLocal';
  * Payload: empresa_id, contas:[origem_id], conta_id, data_pagto:hojeLocal().
  * Recorrentes: a funcao de referencia nao possui esse ramo; usa baixarNormalmente
  * quando fornecida a rotina correta.
- * confirmarAssociacao(payload): deve rejeitar em caso de erro e somente
- * resolver quando o servidor confirmar a baixa. Sem callback, nao faz baixa.
+ * Associacao: POST buildWebhookUrl('associar_baixa').
+ * confirmarAssociacao(payload) pode substituir a chamada padrao; deve retornar
+ * a confirmacao da proc { ok: true } ou rejeitar em caso de erro.
  *
  * <PossibilidadesBaixa empresaId={empresa_id}
  *   carregarPossibilidades={consultarNaApi}
@@ -47,6 +48,57 @@ const chave = t => t.chave_titulo || [t.tipo_origem, t.origem_id, t.competencia]
 const tipos = { PAGAR: 'Conta a pagar', RECEBER: 'Conta a receber', FATURA_CARTAO: 'Fatura cartão', RECORRENTE: 'Recorrente' };
 const criterios = { VINCULO_EXISTENTE: 'Vínculo já existente', DOCUMENTO_E_DATA: 'Documento e data', DOCUMENTO_VALOR_E_DATA: 'Documento, valor e data', FINAL_CARTAO_VALOR_E_DATA: 'Final do cartão, valor e data', VALOR_E_DATA_SEM_IDENTIFICACAO: 'Valor e data · cartão não identificado' };
 const erroTexto = e => e?.message || 'Não foi possível concluir a operação.';
+
+// Aceita a resposta direta da proc ou os formatos de retorno do Postgres/n8n.
+export function normalizarBaixa(valor) {
+  let atual = valor;
+  for (let i = 0; i < 8; i += 1) {
+    if (typeof atual === 'string') { atual = JSON.parse(atual); continue; }
+    if (Array.isArray(atual)) {
+      if (atual.length !== 1) throw new Error('O servidor não retornou uma única confirmação de baixa.');
+      atual = atual[0]; continue;
+    }
+    if (atual?.erro || atual?.error || atual?.ok === false || atual?.sucesso === false)
+      throw new Error(atual.message || atual.mensagem || atual.erro || atual.error || 'O servidor recusou a associação.');
+    if (atual?.ok === true) return atual;
+    const proximo = atual && (atual.ff_associar_baixa ?? atual.resultado ?? atual.data);
+    if (proximo !== undefined) { atual = proximo; continue; }
+    break;
+  }
+  throw new Error('A baixa não foi confirmada pelo servidor. Atualize a consulta antes de tentar novamente.');
+}
+
+export async function associarBaixa(parametros) {
+  const idValido = v => Number.isSafeInteger(Number(v)) && Number(v) > 0;
+  const tipo = String(parametros.tipo_origem ?? '').trim().toUpperCase();
+  if (![parametros.empresa_id, parametros.origem_id, parametros.transacao_id].every(idValido))
+    throw new Error('Empresa, título e transação devem ter IDs válidos.');
+  if (!['PAGAR', 'RECEBER', 'FATURA_CARTAO', 'RECORRENTE'].includes(tipo))
+    throw new Error('Tipo de título inválido para associação.');
+  const competencia = tipo === 'RECORRENTE' ? String(parametros.competencia ?? '').slice(0, 10) : null;
+
+  if (tipo === 'RECORRENTE' && !/^\d{4}-\d{2}-\d{2}$/.test(competencia))
+    throw new Error('Informe a competência da recorrente.');
+  const payload = {
+    empresa_id: Number(parametros.empresa_id), tipo_origem: tipo,
+    origem_id: Number(parametros.origem_id), transacao_id: Number(parametros.transacao_id),   competencia: competencia ?? hojeLocal(),
+  };
+  // Conta, data e valor são obtidos pela proc da transação escolhida.
+  const resp = await fetch(buildWebhookUrl('associar_baixa'), {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+  });
+  const texto = await resp.text();
+  let retorno;
+  try { retorno = texto ? JSON.parse(texto) : null; }
+  catch { throw new Error('Resposta inválida ao associar. Atualize a consulta antes de tentar novamente.'); }
+  if (!resp.ok) {
+    try { normalizarBaixa(retorno); }
+    catch (e) { throw new Error(`Falha na associação (${resp.status}): ${erroTexto(e)}`); }
+    throw new Error(`Falha na associação (${resp.status}). Atualize a consulta antes de tentar novamente.`);
+  }
+  return normalizarBaixa(retorno);
+}
+
 export default function PossibilidadesBaixa({
   empresaId, dadosIniciais, carregarPossibilidades, urlConsulta,
   acaoConsulta, confirmarAssociacao, contasFinanceiras = [], onVoltar, autoCarregar = true, baixarNormalmente,
@@ -74,13 +126,14 @@ export default function PossibilidadesBaixa({
   const tituloRef = useRef(tituloKey);
   const fecharRef = useRef(null);
   const modalRef = useRef(null);
+  const associacaoEmAndamento = useRef(false);
   const empresaSessao = typeof window !== 'undefined'
     ? (window.localStorage.getItem('empresa_id') || window.localStorage.getItem('id_empresa'))
     : null;
   const empresa = empresaId ?? empresaSessao ?? dados?.empresa_id;
   const urlEfetiva = urlConsulta || buildWebhookUrl('possibilidades_baixa');
   const podeConsultar = typeof carregarPossibilidades === 'function' || Boolean(urlEfetiva);
-  const podeConfirmar = typeof confirmarAssociacao === 'function';
+  const podeConfirmar = true; // Chamada padrão ao webhook ou callback fornecido.
   useEffect(() => { tituloRef.current = tituloKey; }, [tituloKey]);
   useEffect(() => {
     requisicao.current += 1; abortRef.current?.abort();
@@ -215,22 +268,25 @@ export default function PossibilidadesBaixa({
     finally { setSalvando(false); }
   }
   async function confirmar() {
-    if (!titulo || !movimento || !podeConfirmar || salvando) return;
+    if (!titulo || !movimento || salvando || associacaoEmAndamento.current) return;
+    associacaoEmAndamento.current = true;
     const selecionado = titulo;
     const empresaAtual = empresa;
     const versao = requisicao.current;
     setSalvando(true); setErro('');
     try {
-      const resposta = await confirmarAssociacao({ empresa_id: empresaAtual, tipo_origem: titulo.tipo_origem, origem_id: titulo.origem_id,
-        competencia: titulo.competencia ?? null, transacao_id: movimento.transacao_id });
-      if (resposta?.sucesso === false || resposta?.ok === false || resposta?.erro) throw new Error(resposta.mensagem || resposta.erro || 'O servidor não confirmou a baixa.');
+      const parametros = { empresa_id: empresaAtual, tipo_origem: titulo.tipo_origem, origem_id: titulo.origem_id,
+        competencia: titulo.tipo_origem === 'RECORRENTE' ? titulo.competencia : null, transacao_id: movimento.transacao_id };
+      const enviar = typeof confirmarAssociacao === 'function' ? confirmarAssociacao : associarBaixa;
+      normalizarBaixa(await enviar(parametros));
       if (versao !== requisicao.current) return;
       setRevisao(false); setMovimentoId(null);
+      window.dispatchEvent(new Event('contabil-atualizado'));
       if (podeConsultar) await consultar();
       else setDados(prev => prev ? { ...prev, titulos: prev.titulos.filter(t => chave(t) !== chave(selecionado)).map(t => ({ ...t, possibilidades: t.possibilidades.filter(m => String(m.transacao_id) !== String(movimento.transacao_id)) })) } : prev);
       setSucesso('Associação e baixa confirmadas pelo servidor.');
     } catch (e) { if (versao === requisicao.current) setErro(erroTexto(e)); }
-    finally { setSalvando(false); }
+    finally { associacaoEmAndamento.current = false; setSalvando(false); }
   }
   return <div className="ffpb">
     <style>{estilos}</style>
@@ -323,6 +379,7 @@ export default function PossibilidadesBaixa({
         <div className="ffpb-modal-body"><small>OBRIGAÇÃO</small><h3>{titulo.descricao}</h3><p>Vencimento: {dataBR(titulo.vencimento)} · {titulo.tipo_origem === 'RECORRENTE' ? 'Previsão' : 'Valor'}: {moeda(titulo.valor)}</p>
           <div className="ffpb-review-movement"><small>MOVIMENTO ESCOLHIDO</small><h3>{contaNome(movimento)}</h3><p>{dataBR(movimento.data_movimento)} · <strong>{moeda(movimento.valor)}</strong></p><p>{movimento.descricao}</p></div>
           <p>A associação deve baixar esta obrigação usando o movimento já existente, sem criar outra entrada ou saída.</p>
+          {Number(movimento.valor) !== Number(titulo.valor) && <div className="ffpb-alert ffpb-warning">O movimento tem valor diferente do título. Ao confirmar, a obrigação será baixada integralmente pelo movimento escolhido, sem calcular saldo restante.</div>}
           {movimento.disputado && <div className="ffpb-alert ffpb-warning">Confira com atenção: o movimento aparece como candidato para outras obrigações.</div>}
           {!podeConfirmar && <div className="ffpb-alert ffpb-warning">A seleção está pronta. Para efetivar a baixa, é necessário conectar a confirmação à API.</div>}
           {erro && <div className="ffpb-alert ffpb-error" role="alert">{erro}</div>}
@@ -332,6 +389,8 @@ export default function PossibilidadesBaixa({
     </div>}
   </div>;
 }
+
+
 const estilos = `
 .ffpb{color:#253348;background:#f5f7fa;padding:14px;font:13px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:1700px;margin:auto}.ffpb *{box-sizing:border-box}.ffpb button,.ffpb input,.ffpb select{font:inherit}.ffpb button{cursor:pointer;border:1px solid #ccd6e2;background:white;color:#334155;border-radius:7px;padding:7px 12px;font-weight:600;white-space:nowrap}.ffpb button:disabled{opacity:.5;cursor:not-allowed}.ffpb button:focus-visible,.ffpb input:focus-visible,.ffpb select:focus-visible,.ffpb tr:focus-visible{outline:2px solid #2563eb;outline-offset:2px}.ffpb .ffpb-primary{background:#345c91;color:white;border-color:#345c91}.ffpb-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:linear-gradient(110deg,#edf3fa,#f2f7f7);border:1px solid #d8e2ee;border-left:3px solid #6d8caf;border-radius:10px}.ffpb h1,.ffpb h2,.ffpb h3,.ffpb p{margin:0}.ffpb h1{font-size:19px;line-height:1.3;color:#263c55}.ffpb-header p{font-size:12px;color:#52647a;margin-top:3px}.ffpb-filtros{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;padding:12px 0}.ffpb-filtros label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:600;color:#52647a}.ffpb input,.ffpb select{border:1px solid #cbd5e1;border-radius:6px;background:white;color:#334155;padding:7px 9px;min-width:0}.ffpb-filtros input{width:82px}.ffpb-resumo{margin-left:auto;align-self:center;color:#617087;font-size:12px}.ffpb-resumo strong{color:#334155}.ffpb-resumo span{margin:0 7px}.ffpb-alert{padding:9px 12px;border-radius:7px;margin:0 0 10px}.ffpb-error{background:#fff1f2;color:#9f1239;border:1px solid #fecdd3}.ffpb-success{background:#ecfdf5;color:#166534;border:1px solid #bbf7d0}.ffpb-warning{background:#fffbeb;color:#854d0e;border:1px solid #fde68a}.ffpb-paineis{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(360px,1fr);gap:12px;align-items:start}.ffpb-loading{opacity:.6;pointer-events:none}.ffpb-painel{background:white;border:1px solid #dce3ec;border-radius:10px;overflow:hidden}.ffpb-panel-title{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f0f4f8;border-bottom:1px solid #dce3ec;padding:10px 13px}.ffpb h2{font-size:13px;font-weight:700}.ffpb-panel-title span{font-size:11px;color:#617087}.ffpb-busca{display:flex;gap:6px;padding:9px;border-bottom:1px solid #e8edf3;flex-wrap:wrap}.ffpb-busca input{flex:1 1 180px}.ffpb-busca select{font-size:11px;flex:0 1 auto}.ffpb-scroll{overflow:auto;max-height:calc(100vh - 240px);min-height:320px}.ffpb table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px}.ffpb th{position:sticky;top:0;z-index:1;background:#f8fafc;padding:8px 10px;text-align:left;font-size:10px;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap}.ffpb td{padding:10px;border-bottom:1px solid #edf1f6;vertical-align:middle}.ffpb tbody tr{cursor:pointer}.ffpb tbody tr:nth-child(even){background:#fafbfd}.ffpb tbody tr:hover{background:#f1f6fc}.ffpb tr.ffpb-selected{background:#edf4fc}.ffpb tr.ffpb-selected td:first-child{box-shadow:inset 3px 0 #547bac}.ffpb td small{display:block;font-size:10px;color:#64748b;margin-top:3px}.ffpb .ffpb-right{text-align:right;font-variant-numeric:tabular-nums}.ffpb .ffpb-center{text-align:center}.ffpb-nowrap{white-space:nowrap}.ffpb-row-tags{display:flex;gap:5px;align-items:center;margin-bottom:4px}.ffpb-chip{display:inline-flex;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:650;background:#eef2f6;color:#52647a;white-space:nowrap}.ffpb-PAGAR{background:#fff1f2;color:#be123c}.ffpb-RECEBER{background:#ecfdf5;color:#047857}.ffpb-FATURA_CARTAO{background:#f4f0ff;color:#7546b5}.ffpb-RECORRENTE{background:#fff7e7;color:#a16207}.ffpb-critical{font-size:9px;color:#b45309}.ffpb-descricao{display:block;line-height:1.4;overflow-wrap:anywhere;font-weight:600}.ffpb-count{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700}.ffpb-count-found{background:#eaf5ee;color:#157347}.ffpb .ffpb-green{color:#16834b}.ffpb .ffpb-red{color:#c13d43}.ffpb-title-detail{padding:12px 14px;border-bottom:1px solid #e8edf3;background:#fcfdff}.ffpb-title-detail h3{font-size:14px;margin-top:7px;line-height:1.4}.ffpb-title-detail p{color:#64748b;font-size:11px;margin-top:3px}.ffpb-title-detail>small{color:#64748b;font-size:10px}.ffpb-metrics{display:flex;gap:25px;flex-wrap:wrap;margin:12px 0 6px}.ffpb-metrics small{display:block;font-size:10px;color:#64748b}.ffpb-metrics strong{display:block;font-size:13px;font-variant-numeric:tabular-nums;margin-top:2px}.ffpb-opcoes{padding:10px;max-height:calc(100vh - 405px);overflow:auto;min-height:200px}.ffpb fieldset{border:0;padding:0;margin:0;min-width:0}.ffpb-opcao{display:flex;gap:9px;border:1px solid #dce3ec;border-radius:8px;padding:12px;margin-bottom:9px;cursor:pointer;background:white}.ffpb-opcao:hover{border-color:#90a9c9;background:#fafcfe}.ffpb-opcao-selected{border-color:#6386b3;box-shadow:0 0 0 1px #6386b3;background:#f5f9ff}.ffpb-opcao input{margin-top:3px;accent-color:#345c91;flex-shrink:0}.ffpb-opcao-content{min-width:0;flex:1}.ffpb-opcao-top{display:flex;justify-content:space-between;gap:10px}.ffpb-opcao-top strong:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}.ffpb-opcao-data{font-size:10px;color:#64748b;margin-top:3px}.ffpb-opcao p{font-size:12px;margin:6px 0;overflow-wrap:anywhere}.ffpb-opcao small{font-size:10px;color:#64748b}.ffpb-note{font-size:10px;color:#93631b;background:#fff9ec;padding:6px 8px;border-radius:5px;margin-top:7px}.ffpb-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;color:#52647a;padding:38px 22px;min-height:250px}.ffpb-empty strong{font-size:13px;color:#475569}.ffpb-empty p{font-size:12px;max-width:370px;color:#64748b}.ffpb-empty-symbol{font-size:29px;line-height:1;color:#90a4be}.ffpb-not-found{min-height:190px}.ffpb-footer{display:flex;flex-direction:column;gap:8px;padding:11px 13px;border-top:1px solid #e8edf3;background:#fafbfd}.ffpb-footer p{font-size:11px;color:#52647a}.ffpb-footer button{align-self:flex-end}.ffpb-overlay{position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;padding:16px}.ffpb-modal{width:min(520px,100%);max-height:90vh;overflow:auto;background:white;border-radius:13px;box-shadow:0 15px 50px rgba(15,23,42,.18)}.ffpb-modal .ffpb-panel-title{padding:12px 16px}.ffpb-modal .ffpb-panel-title button{padding:0;width:28px;height:28px;font-size:20px}.ffpb-modal-body{padding:16px}.ffpb-modal-body>small,.ffpb-review-movement>small{font-size:10px;font-weight:700;color:#64748b}.ffpb-modal h3{font-size:14px;margin:4px 0}.ffpb-modal-body p{font-size:12px;color:#52647a;margin:5px 0 10px}.ffpb-review-movement{background:#f5f8fc;border:1px solid #dce3ec;border-radius:8px;padding:12px;margin:14px 0}.ffpb-modal-actions{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid #e8edf3;flex-wrap:wrap}.ffpb-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 @media(max-width:1050px){.ffpb-paineis{grid-template-columns:minmax(0,1.1fr) minmax(300px,1fr)}.ffpb td,.ffpb th{padding:8px}.ffpb-resumo{margin-left:0}.ffpb-busca select{flex:1}.ffpb-busca input{flex-basis:100%}}
@@ -340,7 +399,7 @@ const estilos = `
 /* Leitura mais clara e paineis mais amplos. */
 .ffpb{width:100%;max-width:none;padding:16px 20px;font-size:15px;color:#1e293b;background:#f3f6fa}
 .ffpb-header{padding:15px 18px;border-color:#c7d6e8;border-left-width:4px}.ffpb h1{font-size:23px;font-weight:700}.ffpb-header p{font-size:14px;color:#40536b}
-.ffpb-filtros{padding:14px 0;gap:12px}.ffpb-filtros label{font-size:13px;color:#334155}.ffpb-resumo{font-size:14px;color:#475569}.ffpb-resumo strong{font-size:16px;color:#1e293b}.ffpb input,.ffpb select{font-size:14px;padding:8px 10px;color:#24364c}.ffpb input::placeholder{color:#64748b;opacity:1}.ffpb button{font-size:14px;padding:9px 14px}
+.ffpb-filtros{padding:14px 0;gap:12px}.ffpb-filtros label{font-size:15px;font-weight:700;color:#0f172a;gap:6px}.ffpb-resumo{font-size:14px;color:#475569}.ffpb-resumo strong{font-size:16px;color:#1e293b}.ffpb input,.ffpb select{font-size:14px;padding:8px 10px;color:#24364c}.ffpb input::placeholder{color:#64748b;opacity:1}.ffpb button{font-size:14px;padding:9px 14px}
 .ffpb-paineis{grid-template-columns:minmax(0,1.15fr) minmax(410px,1fr);gap:16px}.ffpb-painel{border-color:#c8d6e6;box-shadow:0 2px 6px #24364c08}.ffpb-panel-title{padding:13px 16px;background:#eaf0f8;border-color:#ccd9e8}.ffpb h2{font-size:16px;color:#263c55}.ffpb-panel-title span{font-size:13px;color:#475569}
 .ffpb-scroll{min-height:420px;max-height:calc(100vh - 255px)}.ffpb table{font-size:14px}.ffpb th{font-size:12px;color:#334155;font-weight:700;padding:11px 12px}.ffpb td{padding:13px 12px}.ffpb td small{font-size:12px;color:#52647a}.ffpb-descricao{font-size:14px;color:#24364c}.ffpb-chip{font-size:12px;padding:3px 9px}.ffpb-critical{font-size:11px;font-weight:650}.ffpb-row-tags{gap:7px;margin-bottom:6px}.ffpb-count{width:29px;height:29px;font-size:13px}
 .ffpb tr.ffpb-selected{background:#e5effb}.ffpb tr.ffpb-selected td:first-child{box-shadow:inset 4px 0 #345c91}.ffpb tr.ffpb-selected .ffpb-descricao{color:#153d6e;font-weight:750}
