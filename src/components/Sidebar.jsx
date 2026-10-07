@@ -275,35 +275,35 @@ function alternarFixacao() {
               /> 
           </MenuGroup>
         )}
-        {sidebarAberta && <SectionDivider />}
-        {sidebarAberta && <SectionTitle label="Conciliações " />}
+         {sidebarAberta && <SectionDivider />}
+        {sidebarAberta && <SectionTitle label="Reclassificações" />}
         {podeVer("visao_geral") && (
           <MenuGroup
+            compact={!sidebarAberta}
+            icon={<IconBook />}
+            label="Reclassificações"
+            open={open === "conciliacoes"}
+            onClick={() => toggle("conciliacoes")}
+          >
+            <SubItem
               compact={!sidebarAberta}
-              icon={<IconBook />}
-              label="Conciliações"
-              open={open === "conciliacoes"}
-              onClick={() => toggle("conciliacoes")}
-            >
-              <SubItem
-                compact={!sidebarAberta}
-                icon={<IconDoc />}
-                label="Razão"
-                onClick={() => navigate("/conciliacao-extrato")}
-              />
-             {/*} <SubItem
-                compact={!sidebarAberta}
-                icon={<IconCardTransaction />}
-                label="Operadora"
-                onClick={() => navigate("/conciliacao-operadora")}
-              />*/}
-              <SubItem
-                compact={!sidebarAberta}
-                icon={<IconCardTransaction />}
-                label="Cartões"
-                onClick={() => navigate("/conciliacao-cartao")}
-              />
-            </MenuGroup>
+              icon={<IconDoc />}
+              label="Razão"
+              onClick={() => navigate("/conciliacao-extrato")}
+            />
+            {/* <SubItem
+              compact={!sidebarAberta}
+              icon={<IconCardTransaction />}
+              label="Operadora"
+              onClick={() => navigate("/conciliacao-operadora")}
+            /> */}
+            <SubItem
+              compact={!sidebarAberta}
+              icon={<IconCardTransaction />}
+              label="Cartões"
+              onClick={() => navigate("/conciliacao-cartao")}
+            />
+          </MenuGroup>
         )}
         {sidebarAberta && <SectionDivider />}
         {sidebarAberta && <SectionTitle label="Contabilidade" />}
