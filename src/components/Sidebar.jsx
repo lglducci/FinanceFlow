@@ -232,6 +232,8 @@ function alternarFixacao() {
               </div>
             )}
             <SubItem compact={!sidebarAberta} icon={<IconCalendar />} label="Painel de Títulos" onClick={() => navigate("/titulos-vencidos")} color="red" />
+
+             <SubItem compact={!sidebarAberta} icon={<IconCalendar />} label="Baixas de Títulos" onClick={() => navigate("/possibilidades-baixa")} color="red" />
             <NestedButton
               open={openSub === "dinheiro"}
               onClick={() => toggleSub("dinheiro")}
