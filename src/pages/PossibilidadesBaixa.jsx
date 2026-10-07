@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { buildWebhookUrl } from '../config/globals';
 import { hojeLocal } from '../utils/dataLocal';
 /*
@@ -48,7 +49,6 @@ const chave = t => t.chave_titulo || [t.tipo_origem, t.origem_id, t.competencia]
 const tipos = { PAGAR: 'Conta a pagar', RECEBER: 'Conta a receber', FATURA_CARTAO: 'Fatura cartão', RECORRENTE: 'Recorrente' };
 const criterios = { VINCULO_EXISTENTE: 'Vínculo já existente', DOCUMENTO_E_DATA: 'Documento e data', DOCUMENTO_VALOR_E_DATA: 'Documento, valor e data', FINAL_CARTAO_VALOR_E_DATA: 'Final do cartão, valor e data', VALOR_E_DATA_SEM_IDENTIFICACAO: 'Valor e data · cartão não identificado' };
 const erroTexto = e => e?.message || 'Não foi possível concluir a operação.';
-
 // Aceita a resposta direta da proc ou os formatos de retorno do Postgres/n8n.
 export function normalizarBaixa(valor) {
   let atual = valor;
@@ -67,7 +67,6 @@ export function normalizarBaixa(valor) {
   }
   throw new Error('A baixa não foi confirmada pelo servidor. Atualize a consulta antes de tentar novamente.');
 }
-
 export async function associarBaixa(parametros) {
   const idValido = v => Number.isSafeInteger(Number(v)) && Number(v) > 0;
   const tipo = String(parametros.tipo_origem ?? '').trim().toUpperCase();
@@ -76,7 +75,6 @@ export async function associarBaixa(parametros) {
   if (!['PAGAR', 'RECEBER', 'FATURA_CARTAO', 'RECORRENTE'].includes(tipo))
     throw new Error('Tipo de título inválido para associação.');
   const competencia = tipo === 'RECORRENTE' ? String(parametros.competencia ?? '').slice(0, 10) : null;
-
   if (tipo === 'RECORRENTE' && !/^\d{4}-\d{2}-\d{2}$/.test(competencia))
     throw new Error('Informe a competência da recorrente.');
   const payload = {
@@ -98,7 +96,6 @@ export async function associarBaixa(parametros) {
   }
   return normalizarBaixa(retorno);
 }
-
 export default function PossibilidadesBaixa({
   empresaId, dadosIniciais, carregarPossibilidades, urlConsulta,
   acaoConsulta, confirmarAssociacao, contasFinanceiras = [], onVoltar, autoCarregar = true, baixarNormalmente,
@@ -116,6 +113,8 @@ export default function PossibilidadesBaixa({
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [revisao, setRevisao] = useState(false);
+  const [ajudaAberta, setAjudaAberta] = useState(false);
+  const fecharAjuda = useCallback(() => setAjudaAberta(false), []);
   const [baixaAberta, setBaixaAberta] = useState(false);
   const [contaBaixa, setContaBaixa] = useState('');
   const [contasCarregadas, setContasCarregadas] = useState([]);
@@ -175,7 +174,6 @@ export default function PossibilidadesBaixa({
     if (!empresa) { setErro('Empresa não identificada. Entre novamente no sistema.'); return; }
     consultarRef.current();
   }, [autoCarregar, empresa, inicial]);
-
   const titulos = dados?.titulos ?? [];
   const visiveis = useMemo(() => titulos.filter(t => {
     const n = t.possibilidades.length;
@@ -290,9 +288,13 @@ export default function PossibilidadesBaixa({
   }
   return <div className="ffpb">
     <style>{estilos}</style>
+    {ajudaAberta && <AjudaConferenciaBaixas onClose={fecharAjuda} />}
     <header className="ffpb-header">
       <div><h1>Conferência de baixas</h1><p>Selecione uma obrigação e confira os movimentos encontrados nas contas financeiras.</p></div>
-      {onVoltar && <button type="button" onClick={onVoltar} disabled={salvando}>Voltar</button>}
+      <div style={{display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
+        <button type="button" onClick={() => setAjudaAberta(true)} disabled={salvando} title="Ajuda" aria-label="Ajuda sobre conferência de baixas" style={{width:28,height:28,padding:0,borderRadius:'50%',background:'#ffffff',color:'#1d4ed8',border:'1px solid #bacce3',fontSize:14,fontWeight:700}}>?</button>
+        {onVoltar && <button type="button" onClick={onVoltar} disabled={salvando}>Voltar</button>}
+      </div>
     </header>
     <form className="ffpb-filtros" onSubmit={e => { e.preventDefault(); consultar(); }}>
       <label>Incluir a vencer<select value={filtros.dias_a_vencer} onChange={e => setFiltros(v => ({ ...v, dias_a_vencer: Number(e.target.value) }))} disabled={salvando}>
@@ -389,13 +391,99 @@ export default function PossibilidadesBaixa({
     </div>}
   </div>;
 }
-
+function AjudaConferenciaBaixas({ onClose }) {
+  const painelRef = useRef(null);
+  const fecharRef = useRef(null);
+  const etapas = [
+    {
+      titulo: 'Para que serve esta janela',
+      texto: 'A Conferência de baixas ajuda a resolver títulos que continuam em aberto: contas a pagar, contas a receber, recorrentes e faturas de cartão. O pagamento ou recebimento pode já estar registrado em uma conta financeira, mas não ter sido associado ao título durante a importação do extrato. Também pode faltar importar o extrato da conta utilizada, ou a obrigação ainda não ter sido paga ou recebida. Estar vencido e aberto, sozinho, não identifica qual dessas situações ocorreu.',
+    },
+    {
+      titulo: 'Confira primeiro os extratos das contas utilizadas',
+      texto: 'Antes de fazer uma baixa normal, confira se o pagamento ou recebimento já aparece no sistema. Se a empresa utiliza várias contas bancárias, importe os extratos das contas pelas quais ela movimentou dinheiro e depois pesquise novamente. Esta tela procura movimentos já registrados nas contas financeiras da empresa; ela não busca arquivos diretamente no banco. Não encontrar uma opção não comprova que o título está sem pagamento.',
+    },
+    {
+      titulo: 'Ajuste os critérios e clique em Pesquisar',
+      texto: 'Ao abrir, a consulta traz os títulos vencidos e os que vencem hoje. Incluir a vencer amplia essa lista. Dias antes e Dias depois definem quantos dias em torno do vencimento procurar o movimento. Tolerância de valor permite uma diferença em reais para mais ou para menos nas contas a pagar, a receber e nas faturas; zero exige valor igual. Recorrentes podem ter valor diferente do previsto. Depois de alterar esses filtros, clique em Pesquisar para atualizar a busca.',
+    },
+    {
+      titulo: 'Selecione o título à esquerda',
+      texto: 'Use a busca por descrição, fornecedor ou documento e os filtros de tipo e correspondência para localizar a obrigação. Confira fornecedor, vencimento e valor. A coluna Opções informa quantos movimentos candidatos foram encontrados, e não quantos pagamentos devem ser feitos. Clique no título para ver suas possibilidades à direita. Uma recorrente é conferida pela competência indicada no título; quitar um mês não encerra as obrigações dos próximos meses.',
+    },
+    {
+      titulo: 'Compare as possibilidades à direita',
+      texto: 'Confira conta financeira, data, entrada ou saída, valor e descrição de cada movimento. Documento, data e valor ajudam a encontrar correspondências; em faturas, o final do cartão na descrição também ajuda na identificação. Essas opções são sugestões para conferência, não uma prova automática de pagamento. Se aparecerem três opções, escolha apenas a que corresponde ao título. Esta operação não soma vários movimentos para uma baixa parcial. Avisos indicam quando o mesmo movimento é candidato para outros títulos ou quando o cartão não foi identificado.',
+    },
+    {
+      titulo: 'Associar ao extrato: o movimento já existe',
+      texto: 'Selecione o movimento correto e clique em Associar ao extrato. Revise título, conta, data e valor, e use Confirmar associação e baixa. O sistema vincula a transação existente ao título e registra a baixa, sem criar outra entrada, saída ou despesa financeira. Em recorrentes, registra o histórico daquela competência com a conta, a data e o valor do movimento escolhido, preservando o cadastro para os meses seguintes. Uma previsão de energia de R$ 150,00, por exemplo, pode corresponder ao pagamento real de R$ 350,00.',
+    },
+    {
+      titulo: 'Atenção quando os valores forem diferentes',
+      texto: 'A tolerância ajuda a localizar candidatos, mas não resolve automaticamente descontos, juros, pagamentos parciais ou diferenças de fatura. Ao confirmar a associação, o título é baixado integralmente usando o movimento escolhido; a operação não calcula saldo restante. Confira a diferença antes de confirmar. Para recorrentes, o valor real pode variar em relação à previsão; confira também fornecedor, data e competência.',
+    },
+    {
+      titulo: 'Baixar normalmente: gerar o movimento financeiro',
+      texto: 'Use Baixar normalmente quando precisar registrar o pagamento ou recebimento pelo fluxo normal do sistema, após confirmar que o movimento ainda não existe. Escolha a conta bancária e confirme: essa opção gera o financeiro, em vez de associar uma transação existente. Registrar essa baixa e depois importar o mesmo movimento exige conferência para evitar duplicidade. Se o título ainda não foi efetivamente pago ou recebido, mantenha-o em aberto. Quando a baixa normal não estiver disponível para um tipo de título, utilize o fluxo específico desse título.',
+    },
+    {
+      titulo: 'Se aparecer “Não encontrado” ou ocorrer um erro',
+      texto: 'A mensagem Não encontrado em nenhum extrato bancário significa que nenhum movimento compatível foi encontrado nos registros e critérios pesquisados. Confira os extratos importados, as datas, a tolerância e a identificação do fornecedor ou cartão. Importe o que faltar e pesquise novamente. Após uma confirmação bem-sucedida, a lista de pendências é atualizada. Se houver erro ou dúvida sobre a resposta, atualize a consulta e confira a situação do título antes de tentar outra baixa.',
+    },
+  ];
+  useEffect(() => {
+    const focoAnterior = document.activeElement;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    fecharRef.current?.focus();
+    function teclado(event) {
+      if (event.key === 'Escape') { event.preventDefault(); onClose(); }
+      if (event.key === 'Tab') {
+        const itens = painelRef.current?.querySelectorAll('button:not([disabled]), a[href], [tabindex="0"]');
+        if (!itens?.length) return;
+        const primeiro = itens[0], ultimo = itens[itens.length - 1];
+        if (event.shiftKey && document.activeElement === primeiro) { event.preventDefault(); ultimo.focus(); }
+        else if (!event.shiftKey && document.activeElement === ultimo) { event.preventDefault(); primeiro.focus(); }
+      }
+    }
+    document.addEventListener('keydown', teclado);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      document.removeEventListener('keydown', teclado);
+      if (focoAnterior?.isConnected) focoAnterior.focus();
+    };
+  }, [onClose]);
+  return createPortal(
+    <div style={{position:'fixed',inset:0,zIndex:10000,display:'flex',alignItems:'center',justifyContent:'center',background:'rgba(0,0,0,.55)',padding:12,fontFamily:'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',boxSizing:'border-box'}} onClick={event => { if (event.target === event.currentTarget) onClose(); }}>
+      <div ref={painelRef} role="dialog" aria-modal="true" aria-labelledby="ajuda-baixas-titulo" aria-describedby="ajuda-baixas-descricao" style={{width:'min(680px,100%)',maxWidth:680,maxHeight:'90vh',backgroundColor:'#ffffff',color:'#1e293b',borderRadius:20,display:'flex',flexDirection:'column',overflow:'hidden',boxShadow:'0 25px 50px -12px rgba(0,0,0,.35)'}}>
+        <div style={{background:'linear-gradient(110deg, #203c86, #0e7490)',color:'#ffffff',padding:'14px 18px',display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,flexShrink:0}}>
+          <div>
+            <h2 id="ajuda-baixas-titulo" style={{margin:0,color:'#ffffff',fontSize:18,fontWeight:800,lineHeight:1.25}}>Como conferir e baixar títulos em aberto</h2>
+            <p id="ajuda-baixas-descricao" style={{margin:'4px 0 0',color:'#ffffff',fontSize:12,fontWeight:500,lineHeight:1.5}}>Encontre o movimento correto e escolha entre associação e baixa normal.</p>
+          </div>
+          <button ref={fecharRef} type="button" onClick={onClose} aria-label="Fechar ajuda" style={{background:'#ffffff',color:'#203c86',border:'1px solid #cbd5e1',width:30,height:30,padding:0,fontSize:22,fontWeight:700,borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}}>×</button>
+        </div>
+        <div tabIndex={0} aria-label="Instruções de conferência de baixas" style={{padding:16,overflowY:'auto',minHeight:0}}>
+          {etapas.map((etapa, indice) => (
+            <div key={etapa.titulo} style={{background:'#f7f9fc',border:'1px solid #dce5f1',padding:'12px 14px',display:'flex',alignItems:'flex-start',gap:12,borderRadius:12,marginBottom:indice < etapas.length - 1 ? 8 : 0}}>
+              <span aria-hidden="true" style={{background:'#2251df',color:'#ffffff',width:32,height:32,borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,fontWeight:700}}>{indice + 1}</span>
+              <div style={{minWidth:0}}>
+                <h3 style={{margin:0,color:'#1e293b',fontSize:14,fontWeight:700,lineHeight:1.4}}>{etapa.titulo}</h3>
+                <p style={{margin:'4px 0 0',color:'#334155',fontSize:12,lineHeight:1.5}}>{etapa.texto}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>, document.body
+  );
+}
 
 const estilos = `
 .ffpb{color:#253348;background:#f5f7fa;padding:14px;font:13px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;max-width:1700px;margin:auto}.ffpb *{box-sizing:border-box}.ffpb button,.ffpb input,.ffpb select{font:inherit}.ffpb button{cursor:pointer;border:1px solid #ccd6e2;background:white;color:#334155;border-radius:7px;padding:7px 12px;font-weight:600;white-space:nowrap}.ffpb button:disabled{opacity:.5;cursor:not-allowed}.ffpb button:focus-visible,.ffpb input:focus-visible,.ffpb select:focus-visible,.ffpb tr:focus-visible{outline:2px solid #2563eb;outline-offset:2px}.ffpb .ffpb-primary{background:#345c91;color:white;border-color:#345c91}.ffpb-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:linear-gradient(110deg,#edf3fa,#f2f7f7);border:1px solid #d8e2ee;border-left:3px solid #6d8caf;border-radius:10px}.ffpb h1,.ffpb h2,.ffpb h3,.ffpb p{margin:0}.ffpb h1{font-size:19px;line-height:1.3;color:#263c55}.ffpb-header p{font-size:12px;color:#52647a;margin-top:3px}.ffpb-filtros{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;padding:12px 0}.ffpb-filtros label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:600;color:#52647a}.ffpb input,.ffpb select{border:1px solid #cbd5e1;border-radius:6px;background:white;color:#334155;padding:7px 9px;min-width:0}.ffpb-filtros input{width:82px}.ffpb-resumo{margin-left:auto;align-self:center;color:#617087;font-size:12px}.ffpb-resumo strong{color:#334155}.ffpb-resumo span{margin:0 7px}.ffpb-alert{padding:9px 12px;border-radius:7px;margin:0 0 10px}.ffpb-error{background:#fff1f2;color:#9f1239;border:1px solid #fecdd3}.ffpb-success{background:#ecfdf5;color:#166534;border:1px solid #bbf7d0}.ffpb-warning{background:#fffbeb;color:#854d0e;border:1px solid #fde68a}.ffpb-paineis{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(360px,1fr);gap:12px;align-items:start}.ffpb-loading{opacity:.6;pointer-events:none}.ffpb-painel{background:white;border:1px solid #dce3ec;border-radius:10px;overflow:hidden}.ffpb-panel-title{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f0f4f8;border-bottom:1px solid #dce3ec;padding:10px 13px}.ffpb h2{font-size:13px;font-weight:700}.ffpb-panel-title span{font-size:11px;color:#617087}.ffpb-busca{display:flex;gap:6px;padding:9px;border-bottom:1px solid #e8edf3;flex-wrap:wrap}.ffpb-busca input{flex:1 1 180px}.ffpb-busca select{font-size:11px;flex:0 1 auto}.ffpb-scroll{overflow:auto;max-height:calc(100vh - 240px);min-height:320px}.ffpb table{border-collapse:separate;border-spacing:0;width:100%;font-size:12px}.ffpb th{position:sticky;top:0;z-index:1;background:#f8fafc;padding:8px 10px;text-align:left;font-size:10px;color:#64748b;border-bottom:1px solid #e2e8f0;white-space:nowrap}.ffpb td{padding:10px;border-bottom:1px solid #edf1f6;vertical-align:middle}.ffpb tbody tr{cursor:pointer}.ffpb tbody tr:nth-child(even){background:#fafbfd}.ffpb tbody tr:hover{background:#f1f6fc}.ffpb tr.ffpb-selected{background:#edf4fc}.ffpb tr.ffpb-selected td:first-child{box-shadow:inset 3px 0 #547bac}.ffpb td small{display:block;font-size:10px;color:#64748b;margin-top:3px}.ffpb .ffpb-right{text-align:right;font-variant-numeric:tabular-nums}.ffpb .ffpb-center{text-align:center}.ffpb-nowrap{white-space:nowrap}.ffpb-row-tags{display:flex;gap:5px;align-items:center;margin-bottom:4px}.ffpb-chip{display:inline-flex;padding:2px 7px;border-radius:12px;font-size:10px;font-weight:650;background:#eef2f6;color:#52647a;white-space:nowrap}.ffpb-PAGAR{background:#fff1f2;color:#be123c}.ffpb-RECEBER{background:#ecfdf5;color:#047857}.ffpb-FATURA_CARTAO{background:#f4f0ff;color:#7546b5}.ffpb-RECORRENTE{background:#fff7e7;color:#a16207}.ffpb-critical{font-size:9px;color:#b45309}.ffpb-descricao{display:block;line-height:1.4;overflow-wrap:anywhere;font-weight:600}.ffpb-count{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700}.ffpb-count-found{background:#eaf5ee;color:#157347}.ffpb .ffpb-green{color:#16834b}.ffpb .ffpb-red{color:#c13d43}.ffpb-title-detail{padding:12px 14px;border-bottom:1px solid #e8edf3;background:#fcfdff}.ffpb-title-detail h3{font-size:14px;margin-top:7px;line-height:1.4}.ffpb-title-detail p{color:#64748b;font-size:11px;margin-top:3px}.ffpb-title-detail>small{color:#64748b;font-size:10px}.ffpb-metrics{display:flex;gap:25px;flex-wrap:wrap;margin:12px 0 6px}.ffpb-metrics small{display:block;font-size:10px;color:#64748b}.ffpb-metrics strong{display:block;font-size:13px;font-variant-numeric:tabular-nums;margin-top:2px}.ffpb-opcoes{padding:10px;max-height:calc(100vh - 405px);overflow:auto;min-height:200px}.ffpb fieldset{border:0;padding:0;margin:0;min-width:0}.ffpb-opcao{display:flex;gap:9px;border:1px solid #dce3ec;border-radius:8px;padding:12px;margin-bottom:9px;cursor:pointer;background:white}.ffpb-opcao:hover{border-color:#90a9c9;background:#fafcfe}.ffpb-opcao-selected{border-color:#6386b3;box-shadow:0 0 0 1px #6386b3;background:#f5f9ff}.ffpb-opcao input{margin-top:3px;accent-color:#345c91;flex-shrink:0}.ffpb-opcao-content{min-width:0;flex:1}.ffpb-opcao-top{display:flex;justify-content:space-between;gap:10px}.ffpb-opcao-top strong:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}.ffpb-opcao-data{font-size:10px;color:#64748b;margin-top:3px}.ffpb-opcao p{font-size:12px;margin:6px 0;overflow-wrap:anywhere}.ffpb-opcao small{font-size:10px;color:#64748b}.ffpb-note{font-size:10px;color:#93631b;background:#fff9ec;padding:6px 8px;border-radius:5px;margin-top:7px}.ffpb-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;color:#52647a;padding:38px 22px;min-height:250px}.ffpb-empty strong{font-size:13px;color:#475569}.ffpb-empty p{font-size:12px;max-width:370px;color:#64748b}.ffpb-empty-symbol{font-size:29px;line-height:1;color:#90a4be}.ffpb-not-found{min-height:190px}.ffpb-footer{display:flex;flex-direction:column;gap:8px;padding:11px 13px;border-top:1px solid #e8edf3;background:#fafbfd}.ffpb-footer p{font-size:11px;color:#52647a}.ffpb-footer button{align-self:flex-end}.ffpb-overlay{position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;padding:16px}.ffpb-modal{width:min(520px,100%);max-height:90vh;overflow:auto;background:white;border-radius:13px;box-shadow:0 15px 50px rgba(15,23,42,.18)}.ffpb-modal .ffpb-panel-title{padding:12px 16px}.ffpb-modal .ffpb-panel-title button{padding:0;width:28px;height:28px;font-size:20px}.ffpb-modal-body{padding:16px}.ffpb-modal-body>small,.ffpb-review-movement>small{font-size:10px;font-weight:700;color:#64748b}.ffpb-modal h3{font-size:14px;margin:4px 0}.ffpb-modal-body p{font-size:12px;color:#52647a;margin:5px 0 10px}.ffpb-review-movement{background:#f5f8fc;border:1px solid #dce3ec;border-radius:8px;padding:12px;margin:14px 0}.ffpb-modal-actions{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid #e8edf3;flex-wrap:wrap}.ffpb-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 @media(max-width:1050px){.ffpb-paineis{grid-template-columns:minmax(0,1.1fr) minmax(300px,1fr)}.ffpb td,.ffpb th{padding:8px}.ffpb-resumo{margin-left:0}.ffpb-busca select{flex:1}.ffpb-busca input{flex-basis:100%}}
 @media(max-width:760px){.ffpb{padding:8px}.ffpb-paineis{grid-template-columns:1fr}.ffpb-scroll{min-height:180px;max-height:350px}.ffpb-opcoes{max-height:420px}.ffpb-header{padding:11px}.ffpb h1{font-size:17px}.ffpb-resumo{flex-basis:100%}.ffpb-filtros{gap:7px}.ffpb table{min-width:520px}.ffpb-footer button{width:100%}}
-
 /* Leitura mais clara e paineis mais amplos. */
 .ffpb{width:100%;max-width:none;padding:16px 20px;font-size:15px;color:#1e293b;background:#f3f6fa}
 .ffpb-header{padding:15px 18px;border-color:#c7d6e8;border-left-width:4px}.ffpb h1{font-size:23px;font-weight:700}.ffpb-header p{font-size:14px;color:#40536b}
