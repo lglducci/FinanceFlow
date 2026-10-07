@@ -214,6 +214,8 @@ import ExtratoPluggy from "./pages/ExtratoPluggy";
 
 import  ConciliacaoCartoesCredito  from "./pages/ConciliacaoCartoesCredito";
 
+import PossibilidadesBaixa from "./pages/PossibilidadesBaixa";
+
 export default function App() {
   const token = localStorage.getItem("ff_token");
 const navigate = useNavigate();
@@ -734,7 +736,12 @@ const rotaAtual = window.location.pathname;
   element={<ConciliacaoCartoesCredito />}
 />
  
-
+ 
+<Route
+  path="/possibilidades-baixa"
+  element={<PossibilidadesBaixa />}
+/>
+ 
 
   
 
