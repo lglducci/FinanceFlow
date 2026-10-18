@@ -9,26 +9,21 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <!-- Chat de atendimento Chatwoot -->
-    <script>
-      window.chatwootSettings = {
-        position: "right",
-        type: "standard",
-        launcherTitle: ""
-      };
-      (function (d, t) {
-        var BASE_URL = "https://atendimento.lglducci.com.br";
-        var g = d.createElement(t);
-        var s = d.getElementsByTagName(t)[0];
-        g.src = BASE_URL + "/packs/js/sdk.js";
-        g.async = true;
-        g.onload = function () {
-          window.chatwootSDK.run({
-            websiteToken: "YhaqC23vDgUXt8FUmiouD8aH",
-            baseUrl: BASE_URL
-          });
-        };
-        s.parentNode.insertBefore(g, s);
-      })(document, "script");
-    </script>
+   <script>
+  (function(d,t) {
+    var BASE_URL="https://atendimento.lglducci.com.br";
+    var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+    g.src=BASE_URL+"/packs/js/sdk.js";
+    g.async = true;
+    s.parentNode.insertBefore(g,s);
+    g.onload=function(){
+      window.chatwootSDK.run({
+        websiteToken: 'c66jpjUtjHHTjvpBHTgJG4sz',
+        baseUrl: BASE_URL
+      })
+    }
+  })(document,"script");
+</script>
+
   </body>
 </html>
