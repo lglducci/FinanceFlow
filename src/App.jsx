@@ -215,6 +215,7 @@ import ExtratoPluggy from "./pages/ExtratoPluggy";
 import  ConciliacaoCartoesCredito  from "./pages/ConciliacaoCartoesCredito";
 
 import PossibilidadesBaixa from "./pages/PossibilidadesBaixa";
+import ConciliacaoCartoes from "./pages/ConciliacaoCartoes";
 
 export default function App() {
   const token = localStorage.getItem("ff_token");
@@ -734,6 +735,21 @@ const rotaAtual = window.location.pathname;
 <Route
   path="/conciliacao-cartao"
   element={<ConciliacaoCartoesCredito />}
+/>
+
+{/* Diagnóstico de pagamento de faturas — separado da reclassificação. */}
+<Route
+  path="/conciliacao/cartoes"
+  element={
+    <ConciliacaoCartoes
+      empresaId={
+        localStorage.getItem("empresa_id") ||
+        localStorage.getItem("id_empresa")
+      }
+      supabase={supabase}
+      onVoltar={() => navigate("/diagnostico-financeiro")}
+    />
+  }
 />
  
  
