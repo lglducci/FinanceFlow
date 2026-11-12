@@ -427,6 +427,17 @@ export default function Header() {
         </div>
 
         <div className="flex flex-col items-end gap-2">
+          {["FINANCEIRO", "CONTABIL", "TOTAL"].includes(perfil) && (
+            <button
+              type="button"
+              onClick={() => navigate("/conciliacao/cartoes")}
+              className="rounded-lg border border-blue-300/40 px-3 py-1 text-xs font-bold text-white hover:bg-white/10"
+              title="Conferir pagamentos de faturas, financeiro e contabilidade"
+            >
+              Conciliação de cartões
+            </button>
+          )}
+
           <a href="/ajuda" className="text-white underline font-medium">
             🔗 Abrir ajuda
           </a>

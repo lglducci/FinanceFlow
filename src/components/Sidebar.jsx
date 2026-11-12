@@ -81,6 +81,7 @@ function alternarFixacao() {
     apuracao_resultado: ["CONTABIL", "TOTAL"],
     cadastro: ["FINANCEIRO", "CONTABIL", "TOTAL"],
     configuracoes: ["TOTAL"],
+    conciliacao_cartoes: ["FINANCEIRO", "CONTABIL", "TOTAL"],
   };
   function podeVer(menuKey) {
     const permitidos = MENU_PERMISSOES[menuKey] || [];
@@ -276,6 +277,26 @@ function alternarFixacao() {
           </MenuGroup>
         )}
          {sidebarAberta && <SectionDivider />}
+        {podeVer("conciliacao_cartoes") && (
+          <>
+            {sidebarAberta && <SectionTitle label="Conciliação" />}
+            <MenuGroup
+              compact={!sidebarAberta}
+              icon={<IconRefresh />}
+              label="Conciliação"
+              open={open === "conciliacao_pagamentos"}
+              onClick={() => toggle("conciliacao_pagamentos")}
+            >
+              <SubItem
+                compact={!sidebarAberta}
+                icon={<IconCardTransaction />}
+                label="Cartões"
+                onClick={() => navigate("/conciliacao/cartoes")}
+              />
+            </MenuGroup>
+            {sidebarAberta && <SectionDivider />}
+          </>
+        )}
         {sidebarAberta && <SectionTitle label="Reclassificações" />}
         {podeVer("visao_geral") && (
           <MenuGroup
