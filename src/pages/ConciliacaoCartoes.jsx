@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { buildWebhookUrl } from '../config/globals';
-import { hojeLocal } from '../utils/dataLocal';
+import { hojeLocal, hojeMaisDias } from '../utils/dataLocal';
 
 /** Conciliação > Cartões. Webhook POST diagnostico_pagamento_cartoes.
  * A empresa vem das props ou do localStorage. Segue o padrão atual de
@@ -13,6 +13,17 @@ const money = value => value == null ? '—' : new Intl.NumberFormat('pt-BR', { 
 const date = value => value ? String(value).slice(0, 10).split('-').reverse().join('/') : '—';
 const list = value => Array.isArray(value) ? value : [];
 const numeric = value => Number(value || 0);
+const cardName = row => row.cartao_nome || row.nomecartao || `Cartão ${row.cartao_id ?? ''}`;
+const cardFinal = row => String(row.cartao_final || row.cartao_numero || '').replace(/\D/g, '').slice(-4);
+const cardLabel = row => `${cardName(row)}${cardFinal(row) ? ` · Final ${cardFinal(row)}` : ''}`;
+function InvoiceStatus({ value }) {
+  const status = String(value || '').toLowerCase().trim();
+  const names = { paga: 'Paga', aberta: 'Aberta', fechada: 'Fechada' };
+  return <span className={`tag invoice-status ${names[status] ? `invoice-${status}` : 'invoice-unknown'}`}>{names[status] || value || 'Não informada'}</span>;
+}
+function CardIdentity({ row }) {
+  return <div className="card-identity"><div className="card-name">{cardName(row)}</div><span className={`card-final ${cardFinal(row) ? '' : 'unknown'}`}>{cardFinal(row) ? `Final ${cardFinal(row)}` : 'Final não informado'}</span></div>;
+}
 const labels = {
   SEM_CONCILIACAO_VINCULADA: 'Sem conciliação vinculada',
   CONCILIACAO_SEM_FINANCEIRO_VINCULADO: 'Conciliação sem financeiro',
@@ -61,11 +72,39 @@ function exportCsv(headers, rows, filename) {
 
 const css = `
 .ffcc{--border:#dce5f1;--ink:#142f4e;--muted:#60758d;--blue:#2860ed;font-family:Arial,sans-serif;background:#f7f9fc;color:var(--ink);padding:24px;min-height:100%;font-size:13px}.ffcc *{box-sizing:border-box}.ffcc button,.ffcc input,.ffcc select{font:inherit}.ffcc button{cursor:pointer}.ffcc button:disabled{opacity:.5;cursor:default}.ffcc button:focus-visible,.ffcc input:focus-visible,.ffcc select:focus-visible{outline:3px solid #8bb6ff;outline-offset:2px}.ffcc .card{background:white;border:1px solid var(--border);border-radius:20px;box-shadow:0 2px 3px #102d4c06}.ffcc .heading{display:flex;justify-content:space-between;gap:16px;padding:18px;border-bottom:1px solid #edf1f7;align-items:center}.ffcc h1{font-size:21px;margin:0 0 6px;font-weight:750}.ffcc p{margin:0;line-height:1.5}.ffcc .sub{color:var(--muted);font-size:12px}.ffcc .btn{border:1px solid var(--border);border-radius:10px;background:white;color:var(--ink);padding:10px 13px;box-shadow:0 1px 2px #112e4910;white-space:nowrap}.ffcc .primary{background:var(--blue);color:white;border-color:var(--blue)}.ffcc .filters{display:flex;flex-wrap:wrap;gap:10px;padding:18px;align-items:flex-end}.ffcc label.field{display:flex;flex-direction:column;gap:6px;min-width:140px}.ffcc label.field span{font-size:10px;font-weight:700;letter-spacing:.4px;color:var(--muted);text-transform:uppercase}.ffcc input,.ffcc select{height:38px;border:1px solid #cbd8eb;border-radius:10px;background:white;color:var(--ink);padding:8px 10px;max-width:100%}.ffcc .grow{flex:1;min-width:190px}.ffcc .tabs{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#f7f9fc;border:1px solid var(--border);border-radius:13px;padding:10px 12px;margin:0 18px 18px}.ffcc .tablist{display:flex;gap:8px;flex-wrap:wrap}.ffcc .pill{border:1px solid var(--border);background:white;border-radius:25px;padding:9px 14px;color:var(--ink);font-weight:600;font-size:12px}.ffcc .pill.active{background:var(--blue);border-color:var(--blue);color:white}.ffcc .check{display:flex;align-items:center;gap:7px;font-size:12px}.ffcc .check input{width:15px;height:15px}.ffcc .notice{margin-top:14px;padding:12px 14px;border:1px solid #e5d4a4;background:#fffbef;border-radius:10px;color:#795618;line-height:1.6}.ffcc .error{background:#fff3f3;border-color:#efcccc;color:#9a3030}.ffcc .result{margin-top:18px;overflow:hidden;border-radius:11px}.ffcc .resulthead{padding:12px 10px;display:flex;justify-content:space-between;gap:12px;align-items:center}.ffcc h2{font-size:16px;margin:0 0 4px}.ffcc .scroll{overflow:auto}.ffcc table{border-collapse:collapse;width:100%;font-size:12px}.ffcc th{background:#101a2d;color:white;padding:10px;text-align:left;font-size:10px;text-transform:uppercase;white-space:nowrap}.ffcc td{padding:12px 10px;border-bottom:1px solid #edf1f7;vertical-align:top}.ffcc tbody tr:nth-child(even){background:#f8fafc}.ffcc .num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.ffcc .small{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.45}.ffcc .tag{display:inline-block;padding:4px 8px;border-radius:6px;background:#edf3fc;font-size:11px;white-space:nowrap}.ffcc .warn{background:#fff3d7;color:#845e12}.ffcc .ok{background:#eaf5ee;color:#276445}.ffcc .diagnosis{min-width:210px;max-width:300px;line-height:1.6}.ffcc .link{color:#2359c9;border:0;background:transparent;padding:0;text-align:left;font-weight:600;text-decoration:underline;text-underline-offset:3px}.ffcc .empty{padding:45px 20px;text-align:center;color:var(--muted)}.ffcc .foot{padding:12px;font-size:11px;color:var(--muted);line-height:1.6}.ffcc .overlay{position:fixed;inset:0;background:#0c1d3755;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}.ffcc .dialog{width:min(1120px,100%);max-height:90vh;overflow:auto;background:white;border-radius:16px;box-shadow:0 15px 70px #0003}.ffcc .dialogbody{padding:18px}.ffcc .dialog h3{font-size:14px;margin:22px 0 10px}.ffcc .dialog table{min-width:650px}.ffcc .facts{display:flex;gap:20px;flex-wrap:wrap;padding:14px;background:#f7f9fc;border-radius:10px}.ffcc .facts strong{display:block;margin-top:5px}.ffcc details{margin-top:12px}.ffcc summary{cursor:pointer;color:#2359c9}.ffcc pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;max-height:300px;overflow:auto;background:#f7f9fc;padding:12px}.ffcc .nowrap{white-space:nowrap}
+
+.ffcc .filters{display:grid;grid-template-columns:150px 150px minmax(220px,1fr) 160px auto;gap:12px;align-items:end}
+.ffcc label.field{min-width:0;gap:7px}.ffcc label.field span{line-height:14px;min-height:14px;font-weight:800;color:#4b6381}
+.ffcc input,.ffcc select,.ffcc .btn{height:40px;line-height:20px}.ffcc .filter-actions{display:flex;gap:8px;align-items:center}
+.ffcc th{padding:13px 12px;font-weight:800;letter-spacing:.25px}.ffcc td{padding:16px 12px;line-height:1.5}
+.ffcc .num{text-align:right;font-weight:750;color:#142f4e}.ffcc th.num{color:white}.ffcc .num .small{font-weight:400}
+.ffcc .status-cell{text-align:center;min-width:130px}.ffcc .status-cell .small{max-width:170px;margin-left:auto;margin-right:auto}
+.ffcc .card-identity{margin-top:7px;min-width:155px}.ffcc .card-name{font-weight:900;font-size:13px;color:#102e53;line-height:1.45}
+.ffcc .card-final{display:inline-block;margin-top:6px;padding:3px 8px;background:#e8efff;border:1px solid #ccdaf7;border-radius:6px;color:#164690;font-weight:850;font-size:11px;letter-spacing:.3px}
+.ffcc .card-final.unknown{background:#f1f4f8;border-color:#e1e6ef;color:#65758a;font-weight:500;letter-spacing:0}
+.ffcc .fatura-link{font-size:12px;font-weight:850;color:#2458bf}.ffcc .due-date{font-weight:700;color:#2d4360}
+.ffcc .tag{font-weight:750;padding:5px 9px}.ffcc .small{color:#566d88}.ffcc tbody tr:hover{background:#f0f5ff}
+.ffcc .dialog .card-name{font-size:18px;color:#0d2d53}.ffcc .dialog .card-final{font-size:12px;padding:4px 10px}
+.ffcc .dialog .heading{align-items:flex-start}.ffcc .dialog h2{font-size:15px;color:#526986}.ffcc .dialog .heading .sub{margin-top:9px}
+.ffcc .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;padding:0;background:none}
+.ffcc .facts>div{padding:14px;border:1px solid #dbe5f1;border-radius:10px;background:#f7f9fc;color:#506884;font-size:11px;font-weight:700}
+.ffcc .facts strong{color:#122f53;font-size:15px;font-weight:850;margin-top:8px}.ffcc .facts .fact-primary{background:#edf3ff;border-color:#c7d7fa}
+.ffcc .facts .fact-primary strong{color:#1948a3;font-size:19px}.ffcc .dialog h3{font-weight:850;color:#153857;padding-bottom:8px;border-bottom:1px solid #e1e9f3}
+.ffcc .invoice-status{font-weight:850;border:1px solid transparent;padding:5px 11px;line-height:1.4;font-size:12px}
+.ffcc .invoice-paga{background:#dcfce7;color:#166534;border-color:#86d5a2}
+.ffcc .invoice-aberta{background:#ffedd5;color:#9a3412;border-color:#fdba74}
+.ffcc .invoice-fechada{background:#dbeafe;color:#1e40af;border-color:#93b8f4}
+.ffcc .invoice-unknown{background:#f1f5f9;color:#475569;border-color:#cbd5e1}
+@media(max-width:1200px){.ffcc .filters{grid-template-columns:150px 150px minmax(200px,1fr)}.ffcc .filter-actions{grid-column:2 / -1;justify-content:flex-end}}
+@media(max-width:700px){.ffcc .filters{grid-template-columns:1fr 1fr;gap:12px}.ffcc .filters .grow{grid-column:1 / -1}.ffcc .filter-actions{grid-column:1 / -1;justify-content:flex-start;flex-wrap:wrap}.ffcc label.field{min-width:0}.ffcc .dialog .card-name{font-size:16px}}
 @media(max-width:700px){.ffcc{padding:12px}.ffcc .heading{align-items:flex-start}.ffcc h1{font-size:18px}.ffcc .filters{padding:12px}.ffcc .tabs{margin:0 12px 12px}.ffcc label.field{flex:1;min-width:135px}.ffcc .overlay{padding:8px}}
 @media print{body *{visibility:hidden}.ffcc,.ffcc *{visibility:visible}.ffcc{position:absolute;left:0;top:0;width:100%;padding:0;background:white}.ffcc .filters,.ffcc .tabs,.ffcc .heading .btn,.ffcc .no-print,.ffcc .overlay{display:none!important}.ffcc .scroll{overflow:visible}.ffcc table{font-size:8px}.ffcc th,.ffcc td{padding:5px}.ffcc th{color:black;background:#e9eef5}.ffcc .card{box-shadow:none}.ffcc .diagnosis{min-width:100px}.ffcc .result{overflow:visible}.ffcc tr{break-inside:avoid}@page{size:A4 landscape;margin:10mm}}
 `;
 
-function Grid({ headers, children }) { return <div className="scroll"><table><thead><tr>{headers.map(h => <th key={h}>{h}</th>)}</tr></thead><tbody>{children}</tbody></table></div>; }
+function Grid({ headers, children }) {
+  const moneyHeaders = new Set(['Valor', 'Valor fatura', 'Conciliação', 'Financeiro', 'Contábil sistema', 'Contábil direto']);
+  return <div className="scroll"><table><thead><tr>{headers.map(h => <th key={h} className={moneyHeaders.has(h) ? 'num' : h === 'Situação fatura' ? 'status-cell' : undefined}>{h}</th>)}</tr></thead><tbody>{children}</tbody></table></div>;
+}
 function Baixas({ rows }) {
   if (!rows.length) return <p className="sub">Nenhuma baixa encontrada neste grupo.</p>;
   return <Grid headers={['Data', 'Valor', 'Origem', 'Modelo', 'Lançamento / lote', 'Créditos da partida']}>
@@ -88,8 +127,8 @@ function Detalhe({ row, onClose }) {
     return () => { document.removeEventListener('keydown', keyboard); previous?.focus(); };
   }, [onClose]);
   return <div className="overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}><div className="dialog" role="dialog" aria-modal="true" aria-label={`Detalhe da fatura ${row.fatura_id}`}>
-    <div className="heading"><div><h2>Fatura #{row.fatura_id} — {row.cartao_nome || row.nomecartao || 'Cartão'}</h2><p className="sub">Vencimento {date(row.vencimento)} · Referência {String(row.mes_referencia || '').slice(0, 7)}</p></div><button ref={close} className="btn" onClick={onClose}>Fechar</button></div>
-    <div className="dialogbody"><div className="facts"><div>Valor da fatura<strong>{money(row.valor_fatura)}</strong></div><div>Situação registrada<strong>{row.status_fatura || 'Não informada'}</strong></div><div>Data de pagamento informada<strong>{date(row.data_pagamento)}</strong></div><div>Financeiro líquido<strong>{money(row.valor_financeiro_liquido)}</strong></div><div>Contábil vinculado<strong>{money(row.valor_contabil_vinculado)}</strong></div></div>
+    <div className="heading"><div><h2>Fatura #{row.fatura_id}</h2><CardIdentity row={row} /><p className="sub">Vencimento {date(row.vencimento)} · Referência {String(row.mes_referencia || '').slice(0, 7)}</p></div><button ref={close} className="btn" onClick={onClose}>Fechar</button></div>
+    <div className="dialogbody"><div className="facts"><div className="fact-primary">Valor da fatura<strong>{money(row.valor_fatura)}</strong></div><div>Situação registrada<strong><InvoiceStatus value={row.status_fatura} /></strong></div><div>Data de pagamento informada<strong>{date(row.data_pagamento)}</strong></div><div>Financeiro líquido<strong>{money(row.valor_financeiro_liquido)}</strong></div><div>Contábil vinculado<strong>{money(row.valor_contabil_vinculado)}</strong></div></div>
       {issues(row).length > 0 && <div className="notice">{issues(row).join(' · ')}</div>}
       <h3>Conciliação do pagamento</h3>
       {list(row.conciliacoes).length ? <Grid headers={['ID / data', 'Valor', 'Situação', 'Importar', 'Transação', 'Mensagem']}>
@@ -109,7 +148,7 @@ export default function ConciliacaoCartoes({ empresaId: empresaIdProp, onVoltar 
   const navigate = useNavigate();
   const empresaId = empresaIdProp || localStorage.getItem('empresa_id') || localStorage.getItem('id_empresa');
   const voltar = onVoltar || (() => navigate('/diagnostico-financeiro'));
-  const [inicio, setInicio] = useState(''); const [fim, setFim] = useState('');
+  const [inicio, setInicio] = useState(() => hojeMaisDias(-30)); const [fim, setFim] = useState(() => hojeLocal());
   const [cartao, setCartao] = useState(''); const [situacao, setSituacao] = useState('');
   const [somenteDivergencias, setSomenteDivergencias] = useState(false);
   const [tab, setTab] = useState('faturas'); const [data, setData] = useState(null);
@@ -154,14 +193,14 @@ export default function ConciliacaoCartoes({ empresaId: empresaIdProp, onVoltar 
       if (id === requestId.current) setLoading(false);
     }
   }
-  const cartoes = useMemo(() => Array.from(new Map(list(data?.faturas).map(f => [String(f.cartao_id), f.cartao_nome || f.nomecartao || `Cartão ${f.cartao_id}`])).entries()), [data]);
+  const cartoes = useMemo(() => Array.from(new Map(list(data?.faturas).map(f => [String(f.cartao_id), cardLabel(f)])).entries()), [data]);
   const rows = useMemo(() => list(data?.faturas).filter(f => (!cartao || String(f.cartao_id) === cartao) && (!situacao || f.status_fatura === situacao) && (!somenteDivergencias || issues(f).length > 0)), [data, cartao, situacao, somenteDivergencias]);
   const baixas = list(data?.baixas_contabeis_sem_fatura_toda_empresa);
   const conflitos = list(data?.conflitos_vinculo_conciliacao);
   const stale = consulta && (consulta.inicio !== inicio || consulta.fim !== fim);
   const periodo = consulta ? `${consulta.inicio ? date(consulta.inicio) : 'Sem limite inicial'} a ${consulta.fim ? date(consulta.fim) : 'sem limite final'}` : '';
   function exportar() {
-    if (tab === 'faturas') exportCsv(['Fatura', 'Cartão', 'Vencimento', 'Valor da fatura', 'Situação da fatura', 'Conciliação identificada', 'Conciliação OK/executado', 'Financeiro líquido', 'Contábil sistema', 'Contábil direto vinculado', 'Baixas manuais candidatas (não confirmadas)', 'Diagnóstico'], rows.map(f => [f.fatura_id, f.cartao_nome || f.nomecartao, date(f.vencimento), money(f.valor_fatura), f.status_fatura, money(f.valor_identificado_conciliacao), money(f.valor_conciliacao_ok_executado), money(f.valor_financeiro_liquido), money(f.valor_contabil_sistema), money(f.valor_contabil_direto_vinculado), list(f.possiveis_baixas_manuais_mesmo_valor).map(b => `#${b.lancamento_id}: ${money(b.valor)}`).join(' / '), issues(f).join(' / ') || 'Sem divergências nas verificações atuais']), 'conciliacao-cartoes.csv');
+    if (tab === 'faturas') exportCsv(['Fatura', 'Cartão', 'Final do cartão', 'Vencimento', 'Valor da fatura', 'Situação da fatura', 'Conciliação identificada', 'Conciliação OK/executado', 'Financeiro líquido', 'Contábil sistema', 'Contábil direto vinculado', 'Baixas manuais candidatas (não confirmadas)', 'Diagnóstico'], rows.map(f => [f.fatura_id, cardName(f), cardFinal(f), date(f.vencimento), money(f.valor_fatura), f.status_fatura, money(f.valor_identificado_conciliacao), money(f.valor_conciliacao_ok_executado), money(f.valor_financeiro_liquido), money(f.valor_contabil_sistema), money(f.valor_contabil_direto_vinculado), list(f.possiveis_baixas_manuais_mesmo_valor).map(b => `#${b.lancamento_id}: ${money(b.valor)}`).join(' / '), issues(f).join(' / ') || 'Sem divergências nas verificações atuais']), 'conciliacao-cartoes.csv');
     else exportCsv(['Data', 'Valor', 'Origem', 'Modelo', 'Lançamento', 'Lote', 'Histórico'], baixas.map(b => [date(b.data_mov), money(b.valor), labels[b.origem_baixa] || b.origem_baixa, b.modelo_codigo, b.lancamento_id, b.lote_id, b.historico]), 'baixas-cartoes-sem-fatura.csv');
   }
   return <main className="ffcc"><style>{css}</style><section className="card">
@@ -171,9 +210,9 @@ export default function ConciliacaoCartoes({ empresaId: empresaIdProp, onVoltar 
       <label className="field"><span>Vencimento final</span><input aria-label="Vencimento final" type="date" value={fim} onChange={e => setFim(e.target.value)} /></label>
       <label className="field grow"><span>Cartão</span><select value={cartao} onChange={e => setCartao(e.target.value)} disabled={tab !== 'faturas'}><option value="">Todos os cartões</option>{cartoes.map(([id, nome]) => <option key={id} value={id}>{nome}</option>)}</select></label>
       <label className="field"><span>Situação da fatura</span><select value={situacao} onChange={e => setSituacao(e.target.value)} disabled={tab !== 'faturas'}><option value="">Todas</option><option value="aberta">Aberta</option><option value="fechada">Fechada</option><option value="paga">Paga</option></select></label>
-      <button className="btn primary" disabled={loading} type="submit">{loading ? 'Consultando…' : 'Consultar'}</button>
+      <div className="filter-actions"><button className="btn primary" disabled={loading} type="submit">{loading ? 'Consultando…' : 'Consultar'}</button>
       <button className="btn" type="button" disabled={!data || loading || !!stale} onClick={() => window.print()}>Imprimir</button>
-      <button className="btn" type="button" disabled={!data || loading || !!stale} onClick={exportar}>Exportar CSV</button>
+      <button className="btn" type="button" disabled={!data || loading || !!stale} onClick={exportar}>Exportar CSV</button></div>
     </form>
     <div className="tabs"><div className="tablist" role="group" aria-label="Visões do diagnóstico"><button className={`pill ${tab === 'faturas' ? 'active' : ''}`} aria-pressed={tab === 'faturas'} onClick={() => setTab('faturas')}>Por fatura {data ? `(${data.faturas.length})` : ''}</button><button className={`pill ${tab === 'baixas' ? 'active' : ''}`} aria-pressed={tab === 'baixas'} onClick={() => setTab('baixas')}>Baixas sem fatura vinculada {data ? `(${baixas.length})` : ''}</button></div><label className="check"><input type="checkbox" checked={somenteDivergencias} disabled={tab !== 'faturas'} onChange={e => setSomenteDivergencias(e.target.checked)} />Somente divergências</label></div>
   </section>
@@ -182,7 +221,7 @@ export default function ConciliacaoCartoes({ empresaId: empresaIdProp, onVoltar 
     {conflitos.length > 0 && <div className="notice"><strong>{conflitos.length} conflito(s) de vínculo na empresa.</strong> A fatura da conciliação difere da fatura da transação.<details><summary>Ver conflitos</summary>{conflitos.map((c, i) => <p key={i}>Conciliação #{c.conciliacao_id}: fatura #{c.fatura_conciliacao}; transação #{c.transacao_id}: fatura #{c.fatura_transacao}.</p>)}</details></div>}
     <section className="card result" aria-busy={loading}><div className="resulthead"><div><h2>Resultado {data && <span className="sub">— {tab === 'faturas' ? `Vencimentos: ${periodo}` : 'Baixas sem vínculo de toda a empresa'}</span>}</h2><p className="sub" aria-live="polite">{loading ? 'Consultando registros…' : data ? `${tab === 'faturas' ? rows.length : baixas.length} registro(s)` : 'Aguardando consulta'}</p></div></div>
       {!data ? <div className="empty">{loading ? 'Buscando os pagamentos e lançamentos…' : 'Informe o período de vencimento ou deixe as datas vazias para consultar todas as faturas.'}</div> : tab === 'faturas' ? rows.length ? <Grid headers={['Fatura / cartão', 'Vencimento', 'Valor fatura', 'Situação fatura', 'Conciliação', 'Financeiro', 'Contábil sistema', 'Contábil direto', 'Diagnóstico']}>
-        {rows.map(f => <tr key={f.fatura_id}><td><button className="link" onClick={() => setDetalhe(f)}>Fatura #{f.fatura_id}</button><div className="small">{f.cartao_nome || f.nomecartao || `Cartão ${f.cartao_id}`}</div></td><td className="nowrap">{date(f.vencimento)}</td><td className="num">{money(f.valor_fatura)}</td><td><span className={`tag ${f.status_fatura === 'paga' ? 'ok' : ''}`}>{f.status_fatura || 'Não informada'}</span><div className="small">{f.data_pagamento ? `Pagamento informado: ${date(f.data_pagamento)}` : ''}</div></td><td className="num">{money(f.valor_identificado_conciliacao)}<div className="small">{numeric(f.quantidade_conciliacoes)} registro(s)</div><div className="small">OK/executado: {money(f.valor_conciliacao_ok_executado)}</div></td><td className="num">{money(f.valor_financeiro_liquido)}<div className="small">{numeric(f.quantidade_transacoes)} transação(ões)</div></td><td className="num">{money(f.valor_contabil_sistema)}</td><td className="num">{money(f.valor_contabil_direto_vinculado)}{list(f.possiveis_baixas_manuais_mesmo_valor).length > 0 && <div className="small"><span className="tag warn">{f.possiveis_baixas_manuais_mesmo_valor.length} possível(is) baixa(s)</span><br/>Vínculo não confirmado</div>}</td><td className="diagnosis">{issues(f).length ? issues(f).map(x => <div key={x}>{x}</div>) : <><span className="tag ok">Sem divergências detectadas</span><div className="small">Nas verificações atuais</div></>}<button className="link no-print" style={{ marginTop: 8 }} onClick={() => setDetalhe(f)}>Ver detalhes</button></td></tr>)}
+        {rows.map(f => <tr key={f.fatura_id}><td><button className="link fatura-link" onClick={() => setDetalhe(f)}>Fatura #{f.fatura_id}</button><CardIdentity row={f} /></td><td className="nowrap due-date">{date(f.vencimento)}</td><td className="num">{money(f.valor_fatura)}</td><td className="status-cell"><InvoiceStatus value={f.status_fatura} /><div className="small">{f.data_pagamento ? `Pagamento informado: ${date(f.data_pagamento)}` : ''}</div></td><td className="num">{money(f.valor_identificado_conciliacao)}<div className="small">{numeric(f.quantidade_conciliacoes)} registro(s)</div><div className="small">OK/executado: {money(f.valor_conciliacao_ok_executado)}</div></td><td className="num">{money(f.valor_financeiro_liquido)}<div className="small">{numeric(f.quantidade_transacoes)} transação(ões)</div></td><td className="num">{money(f.valor_contabil_sistema)}</td><td className="num">{money(f.valor_contabil_direto_vinculado)}{list(f.possiveis_baixas_manuais_mesmo_valor).length > 0 && <div className="small"><span className="tag warn">{f.possiveis_baixas_manuais_mesmo_valor.length} possível(is) baixa(s)</span><br/>Vínculo não confirmado</div>}</td><td className="diagnosis">{issues(f).length ? issues(f).map(x => <div key={x}>{x}</div>) : <><span className="tag ok">Sem divergências detectadas</span><div className="small">Nas verificações atuais</div></>}<button className="link no-print" style={{ marginTop: 8 }} onClick={() => setDetalhe(f)}>Ver detalhes</button></td></tr>)}
       </Grid> : <div className="empty">Nenhuma fatura encontrada com os filtros aplicados.</div> : <><div className="foot">Esta aba inclui toda a empresa, independentemente do período de vencimento. Baixas sem vínculo não são atribuídas automaticamente a uma fatura.</div>{baixas.length ? <Baixas rows={baixas} /> : <div className="empty">Nenhuma baixa sem fatura vinculada encontrada.</div>}</>}
       {data && <div className="foot">Consultado em {date(consulta?.consultadoEm)}. Valores contábeis representam os débitos identificados. Diários marcados como estornados são excluídos; estornos separados ainda precisam de tratamento no backend. “Direto no contábil” corresponde à origem CONTABIL. Possíveis baixas manuais não integram o total vinculado.</div>}
     </section>
